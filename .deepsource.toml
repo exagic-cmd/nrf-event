@@ -1,0 +1,13 @@
+version = 1
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+  [analyzers.javascript.settings]
+  linter = "eslint"
+
+ignore = [
+  "node_modules",
+  ".next",
+  "out"
+]

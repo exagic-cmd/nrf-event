@@ -1,0 +1,56 @@
+import { Star, Award } from "lucide-react";
+import { useTranslation } from "next-i18next";
+
+const TourHighlights = ({ apiData }) => {
+  const { t } = useTranslation("daytour");
+
+  const mainHighlights = apiData?.product_description?.highlights || [];
+  const groupHighlights =
+    apiData?.is_group && apiData?.group_products
+      ? apiData.group_products.flatMap((p) => p.highlights || [])
+      : [];
+
+  const highlightsRaw = [...mainHighlights, ...groupHighlights];
+
+  const allHighlights = [...new Set(highlightsRaw)]
+    .flatMap((item) => (typeof item === "string" ? item.split(",") : []))
+    .map((h) => h.trim())
+    .filter(Boolean);
+
+  if (allHighlights.length === 0) return null;
+
+  return (
+    <div className="mb-6  ">
+      {/* <h3 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <Star className="text-[#CC9A55]" size={20} />
+        {t("tourHighlights")}
+      </h3> */}
+      <div
+        className="
+          flex gap-3 overflow-x-auto pb-2
+          scrollbar-hide
+        "
+      >
+        {allHighlights.map((highlight, i) => (
+          <div
+            key={i}
+            className="
+              flex items-center gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-200
+              flex-shrink-0 min-w-[250px]
+            "
+          >
+            <Award className="text-[#CC9A55] flex-shrink-0" size={18} />
+            <span className="text-gray-700 text-sm font-medium whitespace-nowrap">
+              {highlight}
+            </span>
+          </div>
+        ))}
+      </div>
+       <div>
+    <p className="py-2 mt-2">{apiData?.product_description?.short_desc}</p>
+   </div>
+    </div>
+  );
+};
+
+export default TourHighlights;

@@ -1,0 +1,102 @@
+{
+  "heading1": "収益化の可能性を解き放とう",
+  "heading2": "私たちのプログラムで",
+
+  "card1": {
+    "title": "コミッション率",
+    "desc": "成功した紹介ごとに最大30％を獲得できます。"
+  },
+  "card2": {
+    "title": "オンボーディング",
+    "desc": "専任サポートによる迅速かつ簡単な設定。"
+  },
+  "card3": {
+    "title": "50以上のアクティビティ",
+    "desc": "成長中のパートナーネットワークに参加しましょう。"
+  },
+  "card4": {
+    "title": "ダッシュボード",
+    "desc": "リアルタイム分析でパフォーマンスを追跡できます。"
+  },
+  "banner": {
+    "startEarning": "今すぐ収益を始めよう",
+    "heading": "Airport Transfers アフィリエイトプログラムに参加",
+    "description": "シンガポールのツアーを宣伝し、コミッションを稼ぎ、オーディエンスを収益化しましょう。",
+    "register": "登録する"
+  },
+  "programWork": {
+    "subtitle": "どのように",
+    "title": "アフィリエイトプログラムが機能するのか？",
+    "steps": {
+      "register": {
+        "title": "登録",
+        "description": "簡単にサインアップしてアフィリエイトプログラムに参加し、収益化の旅を始めましょう。"
+      },
+ "create": {
+  "title": "認定",
+  "description": "今すぐ学習を始めましょう。スキルを高め、専門知識を証明し、自信を持って成長しましょう。今すぐ登録して認定証を取得しましょう。"
+},
+"promote": {
+  "title": "プロモート",
+  "description": "シンガポールのアクティビティを、当社のプロフェッショナルなコンテンツを使ってソーシャルメディアで宣伝しましょう。"
+},
+"ads": {
+  "title": "コミッションを獲得",
+  "description": "人気のアクティビティを宣伝し、あなた専用のリンクを共有して、成功した予約ごとにコミッションを獲得しましょう。"
+}
+    }
+  },
+  "affiliate": {
+    "growWithUs": "私たちと一緒に成長しよう",
+    "webinarTitle": "アフィリエイトネットワーキングウェビナー",
+    "webinarSubtitle": "アフィリエイトプログラムについてもっと知りたい方は、近日開催のウェビナーにご参加ください！",
+    "whatToExpect": "期待できること",
+    "expect": {
+      "updates": "アフィリエイトツールの最新情報",
+      "strategies": "コミッション戦略",
+      "cases": "成功事例の紹介",
+      "qa": "ライブQ&A",
+      "earlyAccess": "製品の早期アクセス"
+    },
+    "perfectFor": "初心者にも経験者にも最適！",
+    "nextWebinar": "次回のウェビナー",
+    "durationLabel": "所要時間",
+    "locationLabel": "開催場所",
+    "locationValue": "Zoom（登録後リンク送信）",
+    "liveWebinar": "ライブウェビナー",
+    "interactiveSession": "インタラクティブセッション",
+    "features": {
+      "training": "基本機能のステップバイステップトレーニング",
+      "tips": "作業効率を高めるヒント",
+      "qaSupport": "パーソナライズされたサポートのためのQ&A"
+    },
+    "rsvp": "こちらから参加登録！",
+    "joinNetwork": "成長中のネットワークに参加しよう"
+  },
+  "specialist": {
+    "getCertified": "認定を受ける",
+    "programTitle": "シンガポールスペシャリストプログラム",
+    "programSubtitle": "シンガポール旅行の専門家として認定され、信頼性を高めよう。",
+    "officialCert": "公式認定証",
+    "certName": "シンガポール デスティネーション スペシャリスト",
+    "courseProgress": "コースの進捗状況",
+    "modules": "モジュール",
+    "duration": "期間",
+    "certifiedCTA": "認定スペシャリスト",
+    "joinExperts": "専門家コミュニティに参加",
+    "whyCert": "なぜ認定を受けるのか？",
+    "benefits": {
+      "attractions": "主要観光地",
+      "culture": "現地文化",
+      "packing": "旅行準備",
+      "authority": "信頼性を構築",
+      "featured": "紹介されるチャンス"
+    },
+    "formatLabel": "形式",
+    "formatValue": "自分のペースで進められるモジュール＋クイズ",
+    "certificationLabel": "認定",
+    "certificationValue": "修了時にデジタル認定証を発行",
+    "recognitionLabel": "認知",
+    "recognitionValue": "LinkedIn、ポートフォリオ、パートナープロフィールに追加可能"
+  }
+}

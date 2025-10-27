@@ -1,0 +1,102 @@
+{
+  "heading1": "Desbloquea tu potencial",
+  "heading2": "de ganancias con nuestro programa",
+
+  "card1": {
+    "title": "Tarifas de comisión",
+    "desc": "Gana hasta un 30% por cada referencia exitosa."
+  },
+  "card2": {
+    "title": "Incorporación",
+    "desc": "Configuración rápida y sencilla con soporte dedicado."
+  },
+  "card3": {
+    "title": "Más de 50 actividades ",
+    "desc": "Únete a nuestra red creciente de socios."
+  },
+  "card4": {
+    "title": "Panel de control",
+    "desc": "Supervisa tu rendimiento con análisis en tiempo real."
+  },
+  "banner":{
+  "startEarning": "Comienza a ganar hoy",
+  "heading": "Únete al programa de afiliados de airporttransfers",
+  "description": "Promociona los tours de Singapur, gana comisiones y monetiza tu audiencia al unirte.",
+  "register": "Registrarse"
+},
+"programWork": {
+  "subtitle": "Cómo funciona nuestro",
+  "title": "¿Programa de Afiliados?",
+  "steps": {
+    "register": {
+      "title": "Registrarse",
+      "description": "Regístrate fácilmente para unirte a nuestro programa de afiliados y comenzar a ganar comisiones."
+    },
+  "create": {
+  "title": "Certificación",
+  "description": "Comienza a aprender hoy. Desarrolla tus habilidades. Demuestra tu experiencia. Crece con confianza. Inscríbete ahora y obtén tu certificado."
+},
+"promote": {
+  "title": "Promocionar",
+  "description": "Promociona actividades en Singapur utilizando nuestro contenido profesional a través de redes sociales."
+},
+"ads": {
+  "title": "Gana Comisión",
+  "description": "Promociona las mejores actividades, comparte tu enlace único y gana comisión por cada reserva exitosa."
+}
+  }
+},
+  "affiliate": {
+    "growWithUs": "Crece con nosotros",
+    "webinarTitle": "Seminario web de redes de afiliados",
+    "webinarSubtitle": "¿Quieres saber más sobre el Programa de Afiliados? ¡Únete a nuestro próximo seminario web!",
+    "whatToExpect": "Qué esperar",
+    "expect": {
+      "updates": "Actualizaciones de herramientas de afiliados",
+      "strategies": "Estrategias de comisión",
+      "cases": "Casos principales de afiliados",
+      "qa": "Preguntas y respuestas en vivo",
+      "earlyAccess": "Acceso anticipado a productos"
+    },
+    "perfectFor": "¡Perfecto tanto para principiantes como para profesionales!",
+    "nextWebinar": "Próximo seminario web",
+    "durationLabel": "Duración",
+    "locationLabel": "Ubicación",
+    "locationValue": "Zoom (enlace enviado tras el registro)",
+    "liveWebinar": "Seminario web en vivo",
+    "interactiveSession": "Sesión interactiva",
+    "features": {
+      "training": "Entrenamiento paso a paso en funciones principales",
+      "tips": "Consejos para mejorar tu flujo de trabajo",
+      "qaSupport": "Preguntas y respuestas en vivo para soporte personalizado"
+    },
+    "rsvp": "¡Confirma tu asistencia aquí!",
+    "joinNetwork": "Únete a nuestra creciente red"
+  },
+  "specialist": {
+    "getCertified": "Obtén la certificación",
+    "programTitle": "Programa de Especialistas en Singapur",
+    "programSubtitle": "Conviértete en un experto certificado en viajes a Singapur y mejora tu credibilidad.",
+    "officialCert": "Certificado oficial",
+    "certName": "Especialista en destino Singapur",
+    "courseProgress": "Progreso del curso",
+    "modules": "Módulos",
+    "duration": "Duración",
+    "certifiedCTA": "Especialistas certificados",
+    "joinExperts": "Únete a la comunidad de expertos",
+    "whyCert": "¿Por qué obtener la certificación?",
+    "benefits": {
+      "attractions": "Principales atracciones",
+      "culture": "Cultura local",
+      "packing": "Preparación del tour",
+      "authority": "Gana autoridad",
+      "featured": "Destácate"
+    },
+    "formatLabel": "Formato",
+    "formatValue": "Módulos autodidactas + cuestionario",
+    "certificationLabel": "Certificación",
+    "certificationValue": "Certificado digital al completar",
+    "recognitionLabel": "Reconocimiento",
+    "recognitionValue": "Agrega a LinkedIn, portafolio y perfil de socio"
+  }
+}

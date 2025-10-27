@@ -1,0 +1,103 @@
+{
+  "heading1": "Unlock Your Earning",
+  "heading2": "Potential with Our Program",
+
+  "card1": {
+    "title": "Commission Rates",
+    "desc": "Earn up to 30% on every successful referral."
+  },
+  "card2": {
+    "title": "Onboarding",
+    "desc": "Quick and easy setup with dedicated support."
+  },
+  "card3": {
+    "title": "Over 50 Activities",
+    "desc": "Join our growing network of partners."
+  },
+  "card4": {
+    "title": "Dashboard",
+    "desc": "Track your performance with real-time analytics and insights."
+  },
+  "banner":{
+  "startEarning": "Start Earning Today",
+  "heading": "Become an Affiliate",
+ "description": "Promote Activities in Singapore and earn commission",
+  "register": "Register"
+},
+"programWork": {
+  "subtitle": "How Our",
+  "title": "Affiliate Program Works?",
+  "steps": {
+    "register": {
+      "title": "Register",
+      "description": "Sign up easily to join our affiliate program and start your journey to earning commissions."
+    },
+    "create": {
+      "title": "Certification",
+      "description": "Start Learning Today Build your skills. Prove your expertise. Grow with confidence. Enroll now and earn your certificate"
+    },
+    "promote": {
+      "title": "Promote",
+      "description": "Promote Activities using our professional content throug social media"
+    },
+    "ads": {
+  "title": "Earn Commission",
+  "description": "Promote top activities, share your unique link, and earn commission on every successful booking."
+}
+    
+  }
+},
+  "affiliate": {
+    "growWithUs": "Grow With Us",
+    "webinarTitle": "Affiliate Networking Webinar",
+    "webinarSubtitle": "Want to learn more about the Affilate program join up upcoming Webinar.",
+    "whatToExpect": "What to Expect",
+    "expect": {
+      "updates": "Boost Your Affiliate Potential",
+      "strategies": "Optimized Earning Approach",
+      "cases": "Introduction to Tier Systems",
+      "earlyAccess": "Perks and Rewards",
+      "qa": "Live Q&A"
+    },
+    "perfectFor": "Perfect for beginners and pros alike!",
+    "nextWebinar": "Next Webinar",
+    "durationLabel": "Duration",
+    "locationLabel": "Location",
+    "locationValue": "Zoom (link sent upon registration)",
+    "liveWebinar": "Live Webinar",
+    "interactiveSession": "Interactive Session",
+    "features": {
+      "training": "Step-by-Step Training on Core Features",
+      "tips": "Tips to Boost Your Workflow",
+      "qaSupport": "Live Q&A for Personalized Support"
+    },
+    "rsvp": "RSVP here!",
+    "joinNetwork": "Join our growing network"
+  },
+  "specialist": {
+    "getCertified": "Get Certified",
+    "programTitle": "Singapore Specialist Program",
+    "programSubtitle": "Become a certified singapore travel expert and boost credibility.",
+    "officialCert": "Official Certificate",
+    "certName": "Singapore Destination Specialist",
+    "courseProgress": "Course Progress",
+    "modules": "Modules",
+    "duration": "Duration",
+    "certifiedCTA": "Certified Specialists",
+    "joinExperts": "Join the expert community",
+    "whyCert": "Why Get Certified?",
+    "benefits": {
+      "attractions": "Master Top Tourist Attractions",
+      "culture": "Understand Local Culture Deeply",
+      "packing": "Tour Packing",
+      "authority": "Establish Industry Credibility",
+      "featured": "Get Promoted Across Our Platforms"
+    },
+    "formatLabel": "Format",
+    "formatValue": "Self-paced modules + quiz",
+    "certificationLabel": "Certification",
+    "certificationValue": "Digital certificate on completion",
+    "recognitionLabel": "Recognition",
+    "recognitionValue": "Add to LinkedIn, portfolio, and partner profile"
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "find_perfect_transfer": "Encuentra el traslado perfecto...",
+  "choice_for_singapore": "Elección para Singapur",
+  "airport_transfers": "Traslados al aeropuerto",
+  "trusted_description": "Especializados en traslados del Aeropuerto Changi al hotel y del hotel al aeropuerto. Confiados por viajeros de todo el mundo por su comodidad, seguridad y fiabilidad.",
+  "available_247": "Disponible 24/7",
+  "instant_booking": "Reserva instantánea",
+  "avg_pickup": "Recogida promedio:",
+  "rating": "Calificación",
+  "book_your_ride": "Reserva tu viaje",
+  "one_way": "Solo ida",
+  "round_trip": "Ida y vuelta",
+  "from": "Desde",
+  "to": "Hasta",
+  "search_pickup_location": "Buscar lugar de recogida…",
+  "search_dropoff_location": "Buscar destino…",
+  "select_pickup_first": "Primero seleccione el punto de recogida",
+  "search_hint": "Prueba buscar escribiendo el nombre de un hotel, aeropuerto, atracción o terminal de ferry.",
+  "show_offers": "VER OFERTAS",
+  "or": "o",
+  "chat_with_ai": "Chatea con nuestro asistente AI",
+  "choose_your_perfect": "Elige tu viaje perfecto",
+  "ride": "Viaje",
+  "vehicle_description": "Desde económico hasta lujo, tenemos el vehículo perfecto para cada trayecto y presupuesto",
+  "available_vehicles": "Vehículos disponibles",
+  "whats_included": "Qué está incluido",
+  "default_vehicle_description": "Características estándar de comodidad y seguridad incluidas.",
+  "passengers": "Pasajeros",
+  "luggage": "Equipaje",
+  "no_vehicles_available": "No hay vehículos disponibles",
+  "no_product_found": "No se encontró producto",
+  "reviews": {
+    "heading": "Lo que dicen nuestros clientes",
+    "highlight": "Dicen",
+    "subtitle": "Lea opiniones de clientes satisfechos que eligieron nuestros servicios de traslado.",
+    "list": [
+      {
+        "name": "Sarah Johnson",
+        "comment": "¡Excelente servicio de traslado! El conductor fue puntual y el coche estaba muy limpio y cómodo."
+      },
+      {
+        "name": "Michael Chen",
+        "comment": "Servicio profesional del aeropuerto al hotel. Muy recomendable para quien visite Singapur."
+      },
+      {
+        "name": "Emma Wilson",
+        "comment": "Gran experiencia con el traslado grupal. Perfecto para nuestro viaje familiar a Singapur."
+      }
+    ]
+  },
+  "essentials": {
+    "title": "Esenciales de viaje",
+    "subtitle": "Agrega estos elementos esenciales para que tu experiencia de traslado al aeropuerto sea más fluida.",
+    "viewDetails": "Ver detalles",
+    "loading": "Cargando..."
+  },
+  "categories": {
+    "day-tours": "Tours de un día",
+    "transfers": "Traslados",
+    "package-tours": "Tours con paquete"
+  },
+  "topSection": {
+    "titles": {
+      "transfers": "Encuentra el traslado perfecto",
+      "dayTours": "Descubre tours inolvidables de un día",
+      "accommodations": "Encuentra el hotel ideal",
+      "default": "Planifica tu viaje perfecto"
+    }
+  },
+  "hero": {
+    "headline": "Singapur",
+    "alternating": ["Traslados al aeropuerto", "Traslados en ciudad", "Traslados privados", "Traslados grupales", "Traslados de lujo"],
+    "description": "Servicios de traslado confiables, cómodos y profesionales en toda Singapur. Desde recogidas en el aeropuerto hasta tours urbanos, aseguramos que viajes con comodidad y estilo.",
+    "btnBookTransfer": "Reservar traslado",
+    "transferImage": "Servicio de traslado en Singapur"
+  },
+  "transferType": {
+    "title": "¿Qué tipo de traslado necesitas?",
+    "description": "Elige entre nuestra gama de servicios de traslado profesionales adaptados a tus necesidades.",
+    "types": [
+      {
+        "label": "Aeropuerto",
+        "name": "Traslados al aeropuerto",
+        "description": "Servicios fluidos de recogida y entrega en el aeropuerto."
+      },
+      {
+        "label": "Ciudad",
+        "name": "Traslados en ciudad",
+        "description": "Transporte conveniente dentro de la ciudad de Singapur."
+      },
+      {
+        "label": "Lujo",
+        "name": "Traslados de lujo",
+        "description": "Vehículos premium para una experiencia de viaje sofisticada."
+      },
+      {
+        "label": "Grupo",
+        "name": "Traslados grupales",
+        "description": "Vehículos espaciosos para familias y grupos grandes."
+      },
+      {
+        "label": "Por hora",
+        "name": "Traslados por hora",
+        "description": "Reserva por horas con múltiples destinos."
+      }
+    ]
+  },
+  "transferBenefits": {
+    "title": "Por qué elegir nuestro traslado",
+    "title2": "¿Servicios?",
+    "subtitle": "Experimenta la diferencia con nuestras soluciones de traslado profesionales, confiables y cómodas. Disfruta traslados sin interrupciones en Changi con conductores profesionales, vehículos premium y servicio confiable diseñado para viajeros en Singapur.",
+    "benefits": [
+      {
+        "name": "Disponibilidad 24/7",
+        "feature": "Traslados en Singapur todo el día",
+        "description": "Reserva en cualquier momento, de día o de noche. Ya sea que llegues a las 14:00 o a las 2:00, nuestros conductores están disponibles en Changi."
+      },
+      {
+        "name": "Conductores profesionales",
+        "feature": "Licenciados y experimentados",
+        "description": "Todos nuestros chóferes están capacitados, tienen licencia y conocen los hoteles, rutas y condiciones de tráfico de Singapur."
+      },
+      {
+        "name": "Seguimiento en tiempo real",
+        "feature": "Monitoreo GPS y actualizaciones en vivo",
+        "description": "Sigue la ubicación exacta de tu conductor desde Changi hasta tu hotel. Siempre sabes cuándo llegará."
+      },
+      {
+        "name": "Amigable para grupos",
+        "feature": "De viajeros solitarios a grupos grandes",
+        "description": "Elige entre sedanes, SUVs o vans — perfecto para viajes de negocios, familias o grupos turísticos."
+      },
+      {
+        "name": "Flota premium",
+        "feature": "Vehículos modernos, limpios y cómodos",
+        "description": "Nuestra flota bien mantenida garantiza que cada viaje sea seguro, cómodo y sin estrés."
+      },
+      {
+        "name": "Atención al cliente",
+        "feature": "Asistencia dedicada con base en Singapur",
+        "description": "¿Necesitas ayuda? Nuestro equipo de soporte está siempre disponible para guiarte con reservas y traslados."
+      }
+    ]
+  },
+  "loading": "Cargando...",
+  "common": {
+    "loading": "Cargando..."
+  },
+  "contact": {
+    "title": "Ponte en contacto",
+    "subtitle": "¡Nos encantaría saber de ti!",
+    "name": "Nombre",
+    "namePlaceholder": "Ingresa tu nombre",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "Ingresa tu correo",
+    "message": "Mensaje",
+    "messagePlaceholder": "Escribe tu mensaje aquí...",
+    "terms": "Acepto los Términos y Condiciones",
+    "submit": "Enviar",
+    "submitting": "Enviando...",
+    "validation": {
+      "fields": "Por favor completa todos los campos requeridos.",
+      "terms": "Por favor acepta los términos y condiciones."
+    },
+    "error": {
+      "generic": "Algo salió mal."
+    }
+  },
+  "footer": {
+    "title": "Explora Singapur: experiencias viajeras inolvidables con tours guiados expertos, traslados sin complicaciones y alojamientos cómodos.",
+    "company": "Compañía",
+    "contact": "Contacto",
+    "services": "Servicio",
+    "activities": "Actividad",
+    "packageTours": "Tours con paquete",
+    "transfers": "Traslados",
+    "contactHeading": "Contacto",
+    "call": "Llamar",
+    "email": "Correo",
+    "address": "Dirección",
+    "copyright": "Todos los derechos reservados",
+    "language": "Idioma",
+    "terms": "Términos y Condiciones",
+    "privacy": "Política de privacidad"
+  },
+  "emptyCart": "Tu carrito está vacío.",
+  "transfer": "Traslado",
+  "passengers": "pasajeros",
+  "baggage": "equipaje",
+  "adult": "Adulto",
+  "child": "Niño",
+  "total": "Total",
+  "proceedToCheckout": "Proceder al pago",
+  "continueShopping": "Continuar comprando",
+  "remove": "Eliminar",
+  "view": "Ver",
+  "items": "artículos",
+  "item": "artículo",
+  "deleteItemTitle": "¿Eliminar este artículo?",
+  "deleteConfirmation": "¿Está seguro de que desea eliminar",
+  "fromCart": "del carrito",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "noContentYet": "Aún no hay contenido.",
+  "cart": "Carrito",
+  "tourDetail": "Detalle del tour",
+  "404_title": "404 – Página no encontrada",
+  "404_message": "Lo sentimos, la página que buscas no existe.",
+  "go_home": "Volver al inicio"
+}

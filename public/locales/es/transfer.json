@@ -1,0 +1,269 @@
+{
+  "accept_text": "Acepto",
+  "oneWay": "Solo ida",
+  "searchTransfer": "Buscar traslado",
+  "search": "Buscar",
+  "pickupPoint": "Punto de recogida",
+  "to": "a",
+  "selectPickupLocation": "Seleccionar punto de recogida",
+  "selectDropoffLocation": "Seleccionar destino",
+  "selectPickupFirst": "Primero seleccione el punto de recogida",
+  "searchDestinationsBelow": "Buscar destinos a continuación:",
+  "loading": "Cargando...",
+  "noResultsFound": "No se encontraron resultados",
+  "completeSelections": "Por favor, complete todas las selecciones antes de buscar.",
+  "tripType": {
+    "oneWay": "Solo ida",
+    "roundTrip": "Ida y vuelta"
+  },
+  "change": "Cambiar",
+  "labels": {
+    "pickupPoint": "Punto de recogida",
+    "to": "a"
+  },
+ "addons_total": "Total de complementos",
+ "departure": "Salida",
+ "arrival": "Llegada",
+ "i_agree": "Estoy de acuerdo",
+
+     "pickup_title": "Complementos de recogida",
+    "return_title": "Complementos de regreso",
+    "loading": "Cargando complementos...",
+    "error": "Error al cargar los complementos",
+    "error_loading_addons": "Error al cargar los complementos",
+    "no_addons": "No hay complementos disponibles.",
+    "no_addons_available": "No hay complementos disponibles.",
+    "add": "Agregar",
+    "remove": "Eliminar",
+    "quantity": "Cantidad",
+    "price_currency": "{{price}} SGD",
+    "show_more": "Cargar más ({{count}})",
+    "load_more": "Cargar más",
+    "show_less": "Mostrar menos",
+    "per_pax": "Por persona",
+    "selected": "Seleccionado",
+    "no_image": "No hay imagen disponible",
+    "description": "Descripción",
+    "total": "Total",
+    "added_to_cart": "Agregado al carrito",
+    "update": "Actualizar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "confirm": "Confirmar",
+    "optional": "Opcional",
+    "included": "Incluido",
+    "not_included": "No incluido",
+    "select_addons": "Selecciona tus complementos",
+    "choose_quantity": "Elige la cantidad",
+    "added_success": "Complemento agregado correctamente",
+    "removed_success": "Complemento eliminado correctamente",
+    "details": "Detalles",
+    "view_more": "Ver más",
+    "view_less": "Ver menos",
+    "pickup_addons": "Complementos de recogida",
+    "return_addons": "Complementos de regreso",
+  "specialRequests": {
+    "title": "Solicitudes especiales",
+    "description": "Seleccione si necesita alguna solicitud especial.",
+    "wheelchair": "Silla de ruedas para personas con movilidad reducida",
+    "childSeat": "Asiento para niños"
+  },
+  "serviceBenefits": {
+    "freeCancellation": "Cancelación gratuita 24 h antes de la recogida",
+    "freeWaitingTime": "{{waitTime}} minutos de espera gratuitos",
+    "meetAndGreet": "Servicio de recepción",
+    "freeWater": "Botella de agua de cortesía"
+  },
+  "placeholders": {
+    "selectPickupLocation": "Seleccionar punto de recogida",
+    "selectDropoffLocation": "Seleccionar destino",
+    "selectPickupFirst": "Primero seleccione el punto de recogida"
+  },
+  "buttons": {
+    "search": "Buscar",
+    "searchTransfer": "Buscar traslado",
+    "swapLocations": "Intercambiar ubicaciones"
+  },
+  "modal": {
+    "title": "Buscar traslado"
+  },
+  "suggestions": {
+    "searchDestinationsBelow": "Buscar destinos a continuación:"
+  },
+  "categories": {
+    "hotel": {
+      "name": "Hotel",
+      "subtitle": "Buscar traslados a hoteles"
+    },
+    "airport": {
+      "name": "Aeropuerto",
+      "subtitle": "Servicios de traslado al aeropuerto"
+    },
+    "ferry": {
+      "name": "Terminal de ferry",
+      "subtitle": "Conexiones con puerto de ferry"
+    },
+    "railway": {
+      "name": "Estaciones de tren",
+      "subtitle": "Traslados desde la estación"
+    }
+  },
+  "types": {
+    "hotel": "Hotel",
+    "airport": "Aeropuerto",
+    "ferry": "Ferry",
+    "railway": "Ferrocarril",
+    "default": "Ubicación"
+  },
+  "validation": {
+    "completeAllSelections": "Por favor, complete todas las selecciones antes de buscar."
+  },
+  "noResults": "No se encontraron resultados",
+  "transferType": {
+    "oneWay": "Solo ida",
+    "roundTrip": "Ida y vuelta"
+  },
+  "features": {
+    "maxCapacity": "Capacidad máxima",
+    "luggageCapacity": "Capacidad de equipaje"
+  },
+  "transferInfo": {
+    "requestedDirection": "Dirección solicitada"
+  },
+  "results": {
+    "showingTransfers": "Mostrando traslados en Singapur",
+    "noTransfersFound": "No se encontraron traslados"
+  },
+  "faqs": {
+    "title": "Preguntas frecuentes",
+    "q1": "¿Qué incluye el costo del traslado?",
+    "a1": "El costo del traslado incluye la ruta del punto A al punto B, tarifas de transporte, propinas, encuentro con cartel, y traslado de equipaje desde el punto de encuentro al vehículo.",
+    "q2": "¿Cuáles son los términos para cancelar la orden?",
+    "a2": "Puede cancelar hasta 24 horas antes para obtener un reembolso completo. Las condiciones pueden variar.",
+    "q3": "¿Cómo se recoge al pasajero?",
+    "a3": "El conductor se encontrará con el pasajero en la ubicación especificada con un cartel con nombre.",
+    "q4": "¿Cuánto tiempo esperan los conductores por los pasajeros?",
+    "a4": "Los conductores esperan hasta 60 minutos en aeropuertos y 15 minutos en otras ubicaciones.",
+    "q5": "¿Cómo transportar equipaje de gran tamaño?",
+    "a5": "Por favor notifíquenos con anticipación para arreglos especiales o mejoras de vehículo.",
+    "q6": "¿Dónde encuentro un vale de traslado?",
+    "a6": "Recibirá su vale de traslado por correo después de la confirmación de la reserva.",
+    "q7": "¿Cómo solicitar el traslado de regreso?",
+    "a7": "Puede reservar un traslado de regreso por separado o seleccionar ida y vuelta al hacer la reserva."
+  },
+  "placeholder": {
+    "heading": "Encuentra tu viaje perfecto",
+    "description": "Introduce tus ubicaciones de recogida y destino arriba para descubrir vehículos disponibles y comparar precios.",
+    "features": {
+      "multiplePassengers": "Múltiples pasajeros",
+      "luggageFriendly": "Amigable con equipaje",
+      "flexibleTiming": "Horarios flexibles",
+      "freeCancellation": "Cancelación gratuita"
+    }
+  },
+  "card": {
+    "modal": {
+      "alreadyInCart": "Ya está en el carrito. Por favor, verifica el carrito."
+    },
+    "transferInfo": "Información del traslado",
+    "defaultTransferInfo": "La información detallada del traslado se proporcionará al reservar.",
+    "bookNow": "Reservar ahora",
+    "moreFeatures": "+{{count}} más características",
+    "upToPassengers": "Hasta {{count}} pasajeros",
+    "suitcases": "{{count}} maleta(s)"
+  },
+  "common": {
+    "close": "Cerrar"
+  },
+  "featuresCard": {
+    "wifi": "Wi-Fi disponible",
+    "airConditioning": "Aire acondicionado",
+    "childSeat": "Asiento para niños disponible",
+    "musicSystem": "Sistema de música",
+    "gps": "Navegación GPS",
+    "petFriendly": "Admite mascotas"
+  },
+  "booking": {
+    "track": "Rastrear",
+      "trackMyFlight": "Rastrear mi vuelo",
+    "specifyPickupTime": "Especificar hora de recogida",
+    "specifyReturnTime": "Especificar hora de regreso",
+     "pickupOption": "Opción de recogida",
+    "flightNoteAutoTime": "La hora de recogida se tomará de la llegada del vuelo.",
+   "timeAutoFromFlight": "Automático desde la hora del vuelo",
+    "pickupFlightNumber": "Número de vuelo de recogida",
+    "returnFlightNumber": "Número de vuelo de regreso",
+    "specificTime": "Hora específica",
+    "FlightNumber": "Número de vuelo",
+    "noTransferSelected": "No se ha seleccionado un traslado. Por favor, vuelva atrás y seleccione un vehículo primero.",
+    "pickupDateRequired": "La fecha de recogida es obligatoria",
+    "pickupTimeRequired": "La hora de recogida es obligatoria",
+    "pickupFlightRequired": "El número de vuelo de llegada es obligatorio",
+    "returnDateRequired": "La fecha de regreso es obligatoria",
+    "returnTimeRequired": "La hora de regreso es obligatoria",
+    "returnFlightRequired": "El número de vuelo de regreso es obligatorio",
+    "bookTransferTitle": "Reservar un traslado",
+    "oneMoreStep": "Solo un paso más",
+    "cartUpdated": "Carrito actualizado",
+    "addToCart": "Agregar al carrito",
+    "pickup": "Recogida",
+    "dropoff": "Destino",
+    "pickupDetails": "Detalles de recogida",
+    "pickupDate": "Fecha de recogida",
+    "pickupTime": "Hora de recogida",
+    "returnDetails": "Detalles de regreso",
+    "returnDate": "Fecha de regreso",
+    "returnTime": "Hora de regreso",
+    "arrivalFlightNumber": "Número de vuelo de llegada",
+    "departureFlightNumber": "Número de vuelo de salida",
+    "returnArrivalFlightNumber": "Número de vuelo de llegada de regreso",
+    "returnDepartureFlightNumber": "Número de vuelo de salida de regreso",
+     "returnFlightTime": "Hora de vuelo de regreso",
+"pickupFlightTime": "Hora de vuelo de ida",
+    "flightPlaceholder": "ej. SQ318",
+    "or": "o",
+    "transferInCart": "Este traslado ya está en tu carrito",
+    "updateBookingText": "¿Quieres actualizarlo con los nuevos detalles que acabas de seleccionar?",
+    "updateBooking": "Actualizar reserva",
+    "goToCart": "Ir al carrito",
+    "close": "Cerrar",
+    "return": "Regreso"
+  },
+  "noTransferSelected": "No se ha seleccionado un traslado.",
+  "form": {
+    "selectDate": "Selecciona una fecha",
+    "selectTime": "Selecciona una hora",
+    "time": "Hora",
+    "surchargeApplied": "Se aplicó cargo adicional"
+  },
+  "title": "Equipaje",
+  "available": "{{count}} pieza(s) de equipaje disponible(s)",
+  "available_plural": "{{count}} piezas de equipaje disponibles",
+  "standardBaggage": "Total de equipaje",
+  "trackMyFlight": "Rastrea mi vuelo",
+  "maxPassengersAre": "Los pasajeros máximos son",
+  "maxLuggageCapacity": "La capacidad máxima estándar de equipaje es",
+  "totalPassengers": "Pasajeros totales",
+  "enterBags": "Ingrese el número de maletas",
+  "passengers": "Hasta {{count}} pasajeros",
+  "baggage": "Hasta {{count}} piezas de equipaje",
+  "fareRules": "Reglas de tarifa",
+  "pickupSurcharge": "Recargo de recogida",
+  "returnSurcharge": "Recargo de regreso",
+  "total": "Total",
+  "luggageCapacity": "Capacidad de equipaje",
+  "featuresVehicle": {
+    "waiting time": "Tiempo de espera",
+    "Meeting": "Recepción con cartel",
+    "Flight tracking": "Seguimiento de vuelo",
+    "AC": "Aire acondicionado",
+    "Free Wi-Fi": "Wi-Fi gratis"
+  },
+  "addedToCartAlt": "Añadido al carrito",
+  "addedToCart": "¡Añadido al carrito!",
+  "whatNext": "¿Qué te gustaría hacer ahora?",
+  "proceedToCheckout": "Proceder al pago",
+  "continueShopping": "Continuar comprando",
+  "pleaseWait": "Por favor espera...",
+  "goBack": "Volver"
+}

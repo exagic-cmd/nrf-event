@@ -1,0 +1,216 @@
+{
+   "find_perfect_transfer": "Find the perfect transfer...",
+  "choice_for_singapore": "Choice for Singapore",
+  "airport_transfers": "Airport Transfers.",
+  "trusted_description": "Specialized in Changi Airport to Hotel and Hotel to Changi Airport Transfers. Trusted by travelers worldwide for comfort, safety, and reliability.",
+  "available_247": "24/7 Available",
+  "instant_booking": "Instant Booking",
+  "avg_pickup": "Avg Pickup:",
+  "rating": "Rating",
+  "book_your_ride": "Book Your Ride",
+  "one_way": "One Way",
+  "round_trip": "Round Trip",
+  "from": "From",
+  "to": "To",
+  "search_pickup_location": "Search pickup location...",
+  "search_dropoff_location": "Search dropoff location...",
+  "select_pickup_first": "Select pickup first",
+  "search_hint": "Try searching by putting in the name of a hotel, airport, attraction, or ferry terminal.",
+  "show_offers": "SHOW OFFERS",
+  "or": "or",
+  "chat_with_ai": "Chat with Our AI Assistant",
+  "choose_your_perfect": "Choose Your Perfect",
+  "ride": "Ride",
+  "vehicle_description": "From economy to luxury, we have the perfect vehicle for every journey and budget",
+  "available_vehicles": "Available Vehicles",
+  "whats_included": "What's Included",
+  "default_vehicle_description": "Standard comfort and safety features included.",
+  "passengers": "Passengers",
+  "luggage": "Luggage",
+  "no_vehicles_available": "No vehicles available",
+"no_product_found":"No Product Found",
+
+"reviews": {
+    "heading": "What Our Customers",
+    "highlight": "Say",
+    "subtitle": "Read reviews from satisfied customers who chose our transfer services.",
+    "list": [
+      {
+        "name": "Sarah Johnson",
+        "comment": "Excellent transfer service! The driver was punctual and the car was very clean and comfortable."
+      },
+      {
+        "name": "Michael Chen",
+        "comment": "Professional service from airport to hotel. Highly recommend for anyone visiting Singapore."
+      },
+      {
+        "name": "Emma Wilson",
+        "comment": "Great experience with the group transfer. Perfect for our family trip to Singapore."
+      }
+    ]
+  },
+  "essentials": {
+    "title": "Travel Essentials",
+    "subtitle": "Add these essentials to make your airport transfer experience smoother.",
+    "viewDetails": "View Details",
+    "loading": "Loading..."
+  },
+   "categories": {
+    "day-tours": "Day Tours",
+    "transfers": "Transfers",
+    "package-tours": "Package Tours"
+  },
+  "topSection": {
+    "titles": {
+      "transfers": "Find The Perfect Transfer",
+      "dayTours": "Discover Unforgettable Day Tours",
+      "accommodations": "Find The Right Hotel Today",
+      "default": "Plan Your Perfect Trip"
+    }
+  },
+  "hero": {
+    "headline": "Singapore",
+    "alternating": ["Airport Transfers", "City Transfers", "Private Transfers", "Group Transfers", "Luxury Transfers"],
+    "description": "Reliable, comfortable, and professional transfer services across Singapore. From airport pickups to city tours, we ensure you travel in comfort and style.",
+    "btnBookTransfer": "Book Transfer",
+    "transferImage": "Singapore Transfer Service"
+  },
+  "transferType": {
+    "title": "What Type of Transfer Do You Need?",
+    "description": "Choose from our range of professional transfer services tailored to your specific needs.",
+    "types": [
+      {
+        "label": "Airport",
+        "name": "Airport Transfers",
+        "description": "Seamless airport pickup and drop-off services."
+      },
+      {
+        "label": "City",
+        "name": "City Transfers",
+        "description": "Convenient transportation within Singapore city."
+      },
+      {
+        "label": "Luxury",
+        "name": "Luxury Transfers",
+        "description": "Premium vehicles for a sophisticated travel experience."
+      },
+      {
+        "label": "Group",
+        "name": "Group Transfers",
+        "description": "Spacious vehicles for families and large groups."
+      },
+      {
+        "label": "Hourly",
+        "name": "Hourly Transfers",
+        "description": "Flexible hourly booking for multiple destinations."
+      }
+    ]
+  },
+  "transferBenefits": {
+    "title": "Why Choose Our Transfer",
+    "title2": "Services?",
+    "subtitle": "Experience the difference with our professional, reliable, and comfortable transfer solutions.Experience seamless Changi Airport transfers with professional drivers, premium vehicles, and trusted service designed for travelers in Singapore.",
+    "benefits": [
+      {
+        "name": "24/7 Availability",
+        "feature": "Round-the-clock Singapore transfers",
+        "description": "Book anytime, day or night. Whether you land at 2 PM or 2 AM, our drivers are available 24/7 at Changi Airport."
+      },
+      {
+        "name": "Professional Drivers",
+        "feature": "Licensed & experienced",
+        "description": "All our chauffeurs are trained, licensed, and know Singapore’s hotels, routes, and traffic conditions inside out."
+      },
+      {
+        "name": "Real-time Tracking",
+        "feature": "GPS monitoring & live updates",
+        "description": "Track your driver’s exact location from Changi to your hotel. Always know when your ride is arriving."
+      },
+      {
+        "name": "Group Friendly",
+        "feature": "From solo travelers to large groups",
+        "description": "Choose from sedans, SUVs, or vans — perfect for business trips, families, or tour groups."
+      },
+      {
+        "name": "Premium Fleet",
+        "feature": "Modern, clean & comfortable vehicles",
+        "description": "Our well-maintained fleet ensures every ride is safe, comfortable, and stress-free."
+      },
+      {
+        "name": "Customer Support",
+        "feature": "Dedicated Singapore-based assistance",
+        "description": "Need help? Our support team is always available to guide you with bookings and transfers."
+      }
+    ]
+  },
+
+    "loading": "Loading...",
+
+"common":{
+"loading":"Loading..."
+
+
+},
+"contact": {
+    "title": "Get In Touch",
+    "subtitle": "We'd love to hear from you!",
+    "name": "Name",
+    "namePlaceholder": "Enter Your Name",
+    "email": "Email",
+    "emailPlaceholder": "Enter Your Email",
+    "message": "Message",
+    "messagePlaceholder": "Write your message here...",
+    "terms": "I accept the Terms & Conditions",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "validation": {
+      "fields": "Please fill all required fields.",
+      "terms": "Please accept the terms and conditions."
+    },
+    "error": {
+      "generic": "Something went wrong."
+    }
+  },
+"footer": {
+  "title":"Explore Singapore offers unforgettable travel experiences with expertly guided tours, seamless transfers, & comfortable accommodations.",
+    "company": "Company",
+    "contact": "Contact",
+    "services": "Service",
+    "activities": "Activity",
+    "packageTours": "Package Tours",
+    "transfers": "Transfers",
+    "contactHeading": "Contact",
+    "call": "Call",
+    "email": "Email",
+    "address": "Address",
+    "copyright": "All Rights Reserved",
+    "language": "Language",
+    "terms": "Ters & Conditions",
+    "privacy": "Privacy And Policy"
+  },
+  
+  "emptyCart": "Your cart is empty.",
+  "transfer": "Transfer",
+  "passengers": "passengers",
+  "baggage": "Baggage",
+  "adult": "Adult",
+  "child": "Child",
+  "total": "Total",
+  "proceedToCheckout": "Proceed to Checkout",
+  "continueShopping": "Continue Shopping",
+  "remove": "Remove",
+  "view": "View",
+  "items": "items",
+  "item": "item",
+  "deleteItemTitle": "Delete this item?",
+  "deleteConfirmation": "Are you sure you want to remove",
+  "fromCart": "from the cart",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "noContentYet": "No Content Yet",
+  "cart": "Cart",
+  "tourDetail": "Tour Details",
+   "404_title": "404 - Page Not Found",
+  "404_message": "Sorry, the page you are looking for does not exist.",
+  "go_home": "Go back home"
+}

@@ -1,0 +1,210 @@
+{
+  "find_perfect_transfer": "完璧な送迎を見つける...",
+  "choice_for_singapore": "シンガポールの選択肢",
+  "airport_transfers": "空港送迎",
+  "trusted_description": "チャンギ空港〜ホテルおよびホテル〜チャンギ空港間の専門送迎サービス。快適性、安全性、信頼性を求める旅行者に支持されています。",
+  "available_247": "24時間対応",
+  "instant_booking": "即時予約",
+  "avg_pickup": "平均ピックアップ：",
+  "rating": "評価",
+  "book_your_ride": "乗車を予約",
+  "one_way": "片道",
+  "round_trip": "往復",
+  "from": "出発地",
+  "to": "目的地",
+  "search_pickup_location": "ピックアップ場所を検索…",
+  "search_dropoff_location": "ドロップオフ場所を検索…",
+  "select_pickup_first": "まずピックアップを選択してください",
+  "search_hint": "ホテル、空港、観光地、フェリー乗り場の名前で検索してみてください。",
+  "show_offers": "オファーを表示",
+  "or": "または",
+  "chat_with_ai": "AIアシスタントとチャット",
+  "choose_your_perfect": "あなたに最適な",
+  "ride": "乗車",
+  "vehicle_description": "エコノミーからラグジュアリーまで、あらゆる旅と予算に最適な車両をご用意",
+  "available_vehicles": "利用可能な車両",
+  "whats_included": "含まれている内容",
+  "default_vehicle_description": "標準的な快適性と安全機能が含まれています。",
+  "passengers": "乗客",
+  "luggage": "荷物",
+  "no_vehicles_available": "利用可能な車両はありません",
+  "no_product_found": "製品が見つかりません",
+  "reviews": {
+    "heading": "お客様の声",
+    "highlight": "言う",
+    "subtitle": "当社の送迎サービスを選んだ満足したお客様のレビューをお読みください。",
+    "list": [
+      {
+        "name": "Sarah Johnson",
+        "comment": "素晴らしい送迎サービス！ドライバーは時間通りで、車はとても清潔で快適でした。"
+      },
+      {
+        "name": "Michael Chen",
+        "comment": "空港からホテルまでのプロフェッショナルなサービス。シンガポールを訪れる方に強くおすすめします。"
+      },
+      {
+        "name": "Emma Wilson",
+        "comment": "グループ送迎の素晴らしい体験。家族旅行に最適でした。"
+      }
+    ]
+  },
+  "essentials": {
+    "title": "旅行必需品",
+    "subtitle": "送迎体験をよりスムーズにするために、これらの必需品を追加してください。",
+    "viewDetails": "詳細を見る",
+    "loading": "読み込み中..."
+  },
+  "categories": {
+    "day-tours": "日帰りツアー",
+    "transfers": "送迎",
+    "package-tours": "パッケージツアー"
+  },
+  "topSection": {
+    "titles": {
+      "transfers": "完璧な送迎を見つける",
+      "dayTours": "忘れられない日帰りツアーを発見する",
+      "accommodations": "最適なホテルを見つける",
+      "default": "理想の旅を計画する"
+    }
+  },
+  "hero": {
+    "headline": "シンガポール",
+    "alternating": ["空港送迎", "市内送迎", "プライベート送迎", "グループ送迎", "ラグジュアリー送迎"],
+    "description": "信頼できて快適、プロフェッショナルな送迎サービスをシンガポール全域で提供。空港ピックアップから市内ツアーまで、快適かつスタイルある旅をお約束します。",
+    "btnBookTransfer": "送迎を予約",
+    "transferImage": "シンガポール送迎サービス"
+  },
+  "transferType": {
+    "title": "どのタイプの送迎が必要ですか？",
+    "description": "お客様のニーズに合わせたプロフェッショナルな送迎サービスからお選びください。",
+    "types": [
+      {
+        "label": "空港",
+        "name": "空港送迎",
+        "description": "スムーズな空港のピックアップとドロップオフ。"
+      },
+      {
+        "label": "市内",
+        "name": "市内送迎",
+        "description": "シンガポール市内での便利な移動。"
+      },
+      {
+        "label": "ラグジュアリー",
+        "name": "ラグジュアリー送迎",
+        "description": "洗練された車両でのプレミアムな体験。"
+      },
+      {
+        "label": "グループ",
+        "name": "グループ送迎",
+        "description": "家族や大人数に最適な広い車両。"
+      },
+      {
+        "label": "時間制",
+        "name": "時間制送迎",
+        "description": "複数の目的地に対応する柔軟な時間予約。"
+      }
+    ]
+  },
+  "transferBenefits": {
+    "title": "なぜ当社の送迎を選ぶのか",
+    "title2": "サービス？",
+    "subtitle": "プロフェッショナルで信頼性の高い快適な送迎ソリューションを体験してください。専門ドライバー、上質な車両、信頼のサービスでスムーズなチャンギ空港送迎を提供します。",
+    "benefits": [
+      {
+        "name": "24時間対応",
+        "feature": "24時間体制のシンガポール送迎",
+        "description": "いつでも予約可能。午後2時でも午前2時でも、ドライバーがチャンギ空港にお迎えに上がります。"
+      },
+      {
+        "name": "プロのドライバー",
+        "feature": "有資格＆経験豊富",
+        "description": "すべてのドライバーは訓練を受けており、資格を持ち、シンガポールのホテル、ルート、交通条件を熟知しています。"
+      },
+      {
+        "name": "リアルタイム追跡",
+        "feature": "GPSモニタリング＆ライブ更新",
+        "description": "チャンギからホテルへのドライバーの正確な位置を追跡できます。到着時間がわかります。"
+      },
+      {
+        "name": "グループ対応",
+        "feature": "一人旅から大人数まで",
+        "description": "セダン、SUV、バンから選べます — 出張、家族旅行、ツアーグループに最適です。"
+      },
+      {
+        "name": "プレミアム車両",
+        "feature": "モダンで清潔かつ快適な車両",
+        "description": "整備された車両で、すべての乗車が安全で快適、ストレスフリーです。"
+      },
+      {
+        "name": "カスタマーサポート",
+        "feature": "シンガポール拠点の専任サポート",
+        "description": "サポートが必要なときは、予約や送迎のご案内でいつでもお手伝いします。"
+      }
+    ]
+  },
+  "loading": "読み込み中…",
+  "common": {
+    "loading": "読み込み中…"
+  },
+  "contact": {
+    "title": "お問い合わせ",
+    "subtitle": "ご意見をお聞かせください！",
+    "name": "お名前",
+    "namePlaceholder": "お名前を入力してください",
+    "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "message": "メッセージ",
+    "messagePlaceholder": "こちらにご入力ください…",
+    "terms": "利用規約に同意します",
+    "submit": "送信",
+    "submitting": "送信中…",
+    "validation": {
+      "fields": "必須項目をすべて入力してください。",
+      "terms": "利用規約に同意してください。"
+    },
+    "error": {
+      "generic": "問題が発生しました。"
+    }
+  },
+  "footer": {
+    "title": "シンガポールを探索 — 専門ガイド付きツアー、スムーズな送迎、快適な宿泊で忘れられない旅行体験を。",
+    "company": "会社情報",
+    "contact": "お問い合わせ",
+    "services": "サービス",
+    "activities": "アクティビティ",
+    "packageTours": "パッケージツアー",
+    "transfers": "送迎",
+    "contactHeading": "連絡先",
+    "call": "電話",
+    "email": "メール",
+    "address": "住所",
+    "copyright": "全著作権所有",
+    "language": "言語",
+    "terms": "利用規約",
+    "privacy": "プライバシー・ポリシー"
+  },
+  "emptyCart": "カートは空です。",
+  "transfer": "送迎",
+  "passengers": "乗客",
+  "baggage": "手荷物",
+  "adult": "大人",
+  "child": "子供",
+  "total": "合計",
+  "proceedToCheckout": "チェックアウトへ進む",
+  "continueShopping": "買い物を続ける",
+  "remove": "削除",
+  "view": "表示",
+  "items": "アイテム",
+  "item": "アイテム",
+  "deleteItemTitle": "このアイテムを削除しますか？",
+  "deleteConfirmation": "次のアイテムを削除してもよろしいですか",
+  "fromCart": "カートから",
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "noContentYet": "まだコンテンツはありません。",
+  "cart": "カート",
+  "tourDetail": "ツアー詳細",
+  "404_title": "404 – ページが見つかりません",
+  "404_message": "お探しのページは存在しません。",
+  "go_home": "ホームへ戻る"
+}

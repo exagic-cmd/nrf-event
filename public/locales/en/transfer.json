@@ -1,0 +1,275 @@
+{
+  "oneWay": "One way",
+  "accept_text": "I accept",
+  "searchTransfer": "Search Transfer",
+  "search": "Search",
+  "pickupPoint": "Pick-up point",
+  "to": "To",
+  "selectPickupLocation": "Select pickup location",
+  "selectDropoffLocation": "Select dropoff location",
+  "selectPickupFirst": "Select pickup first",
+  "searchDestinationsBelow": "Search for destinations below:",
+  "loading": "Loading...",
+  "noResultsFound": "No results found",
+  "completeSelections": "Please complete all selections before searching.",
+  
+  "tripType": {
+    "oneWay": "One way",
+    "roundTrip": "Round trip"
+  },
+  "change":"Change",
+  "labels": {
+    "pickupPoint": "Pick-up point",
+    "to": "To"
+  },
+  "addons_total": "Addons Total",
+"departure": "Departure",
+"arrival": "Arrival",
+ "i_agree": "I agree",
+    "pickup_title": "Pickup Add-ons",
+    "return_title": "Return Add-ons",
+    "error": "Error loading add-ons",
+    "error_loading_addons": "Error loading add-ons",
+    "no_addons": "No add-ons available.",
+    "no_addons_available": "No add-ons available.",
+    "add": "Add",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "price_currency": "{{price}} SGD",
+    "show_more": "Load More ({{count}})",
+    "load_more": "Load More",
+    "show_less": "Show Less",
+    "per_pax": "Per person",
+    "selected": "Selected",
+    "no_image": "No image available",
+    "description": "Description",
+    "added_to_cart": "Added to cart",
+    "update": "Update",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "optional": "Optional",
+    "included": "Included",
+    "not_included": "Not included",
+    "select_addons": "Select your add-ons",
+    "choose_quantity": "Choose quantity",
+    "added_success": "Add-on added successfully",
+    "removed_success": "Add-on removed successfully",
+    "details": "Details",
+    "view_more": "View more",
+    "view_less": "View less",
+    "pickup_addons": "Pickup Add-ons",
+    "return_addons": "Return Add-ons",
+  "specialRequests": {
+    "title": "Special Requests",
+    "description": "Select if you need any of the special requests.",
+    "wheelchair": "Wheelchair for Physically Challenged",
+    "childSeat": "Child Seat"
+  },
+  "serviceBenefits": {
+    "freeCancellation": "Free cancellation 24h before pickup",
+    "freeWaitingTime": "Free {{waitTime}} minutes of waiting time",
+    "meetAndGreet": "Meet & Greet service",
+    "freeWater": "Complimentary bottle of water"
+  },
+  "placeholders": {
+    "selectPickupLocation": "Select pickup location",
+    "selectDropoffLocation": "Select dropoff location",
+    "selectPickupFirst": "Select pickup first"
+  },
+  "buttons": {
+    "search": "Search",
+    "searchTransfer": "Search Transfer",
+    "swapLocations": "Swap locations"
+  },
+  "modal": {
+    "title": "Search Transfer"
+  },
+  "suggestions": {
+    "searchDestinationsBelow": "Search for destinations below:"
+  },
+  "categories": {
+    "hotel": {
+      "name": "Hotel",
+      "subtitle": "Find transfers to hotels"
+    },
+    "airport": {
+      "name": "Airport",
+      "subtitle": "Airport transfer services"
+    },
+    "ferry": {
+      "name": "Ferry Terminal",
+      "subtitle": "Ferry port connections"
+    },
+    "railway": {
+      "name": "Railway Stations",
+      "subtitle": "Train station transfers"
+    }
+  },
+  "types": {
+    "hotel": "Hotel",
+    "airport": "Airport",
+    "ferry": "Ferry",
+    "railway": "Railway",
+    "default": "Location"
+  },
+  "validation": {
+    "completeAllSelections": "Please complete all selections before searching."
+  },
+ 
+  "noResults": "No results found",
+  "transferType": {
+    "oneWay": "One Way",
+    "roundTrip": "Round Trip"
+  },
+  "features": {
+    "maxCapacity": "Max Capacity",
+    "luggageCapacity": "Luggage Capacity"
+  },
+  "transferInfo": {
+    "requestedDirection": "Requested Direction"
+  },
+  "results": {
+    "showingTransfers": "Showing Transfers in Singapore",
+    "noTransfersFound": "No Transfers Found"
+  },
+
+  "faqs": {
+    "title": "Frequently Asked Questions",
+    "q1": "What does the transportation cost include?",
+    "a1": "The transportation cost includes the route from point A to point B. Transport fees, tip, meeting with a plate, carrying your baggage from the meeting spot to the car.",
+    "q2": "What are the terms and conditions for the order cancellation?",
+    "a2": "You can cancel up to 24 hours in advance for a full refund. Conditions may vary.",
+    "q3": "How will the passenger be picked up?",
+    "a3": "The driver will meet the passenger at the specified location with a name plate.",
+    "q4": "How long do drivers wait for passengers?",
+    "a4": "Drivers wait up to 60 minutes at airports and 15 minutes at other locations.",
+    "q5": "How to transport oversized baggage?",
+    "a5": "Please notify us in advance for special arrangements or vehicle upgrades.",
+    "q6": "Where can I find a transfer voucher?",
+    "a6": "You will receive your transfer voucher via email after booking confirmation.",
+    "q7": "How to order the return transfer?",
+    "a7": "You can book a return transfer separately or select round trip while booking."
+  },
+  "placeholder": {
+    "heading": "Find Your Perfect Ride",
+    "description": "Enter your pickup and destination locations above to discover available vehicles and compare prices.",
+    "features": {
+      "multiplePassengers": "Multiple passengers",
+      "luggageFriendly": "Luggage friendly",
+      "flexibleTiming": "Flexible timing",
+      "freeCancellation": "Free cancellation"
+    }
+  
+},
+  "card": {
+    "modal": {
+      "alreadyInCart": "Already in cart. Please view cart."
+    },
+    "transferInfo": "Transfer Info",
+    "defaultTransferInfo": "Detailed transfer information will be provided upon booking.",
+    "bookNow": "Book Now",
+    "moreFeatures": "+{{count}} more features",
+    "upToPassengers": "Up to {{count}} passengers",
+    "suitcases": "{{count}} Suitcase"
+  },
+  "common": {
+    "close": "Close"
+  },
+  "featuresCard": {
+    "wifi": "Wi-Fi available",
+    "airConditioning": "Air conditioning",
+    "childSeat": "Child seat available",
+    "musicSystem": "Music system",
+    "gps": "GPS Navigation",
+    "petFriendly": "Pet friendly"
+  },
+  "booking": {
+    "trackMyFlight": "Track my flight",
+    "track": "Track",
+    "specifyPickupTime": "Specify pickup time",
+    "specifyReturnTime": "Specify return time",
+    "pickupOption": "Pickup Option",
+   "timeAutoFromFlight": "Auto from flight time",
+"flightNoteAutoTime": "Pickup time will be taken from flight arrival.",
+    "pickupFlightNumber": "Pickup Flight Number",
+    "returnFlightNumber": "Return Flight Number",
+    "specificTime": "Specific Time",
+    "FlightNumber": "Flight Number",
+    "noTransferSelected": "No transfer selected. Please go back and select a vehicle first.",
+    "pickupDateRequired": "Pickup date is required",
+    "pickupTimeRequired": "Pickup time is required",
+    "pickupFlightRequired": "Pickup flight number is required",
+    "returnDateRequired": "Return date is required",
+    "returnTimeRequired": "Return time is required",
+    "returnFlightRequired": "Return flight number is required",
+    "bookTransferTitle": "Book a transfer",
+    "oneMoreStep": "Just one more step",
+    "cartUpdated": "Cart updated",
+    "addToCart": "Add to Cart",
+    "pickup": "Pickup",
+    "dropoff": "Dropoff",
+    "pickupDetails": "Pickup Details",
+  "pickupDate": "Pickup Date",
+  "pickupTime": "Pickup Time",
+  "returnDetails": "Return Details",
+  "returnDate": "Return Date",
+  "returnTime": "Return Time",
+  "arrivalFlightNumber": "Arrival Flight Number",
+  "departureFlightNumber": "Departure Flight Number",
+  "returnArrivalFlightNumber": "Return Arrival Flight Number",
+  "returnDepartureFlightNumber": "Return Flight Number",
+  "returnFlightTime":" Return Flight Time",
+  "pickupFlightTime":"Pickup Flight Time",
+  "flightPlaceholder": "e.g. SQ318",
+  "or": "or",
+  "transferInCart": "This transfer is already in your cart",
+  "updateBookingText": "Do you want to update it with the new details you just selected?",
+  "updateBooking": "Update Booking",
+  "goToCart": "Go To Cart",
+  "close": "Close",
+ 
+  "return": "Return"
+},
+"noTransferSelected": "No transfer selected.",
+
+  "form": {
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "time": "Time",
+    "surchargeApplied": "Surcharge applied"
+  },
+  "title": "Baggage",
+  "available": "{{count}} piece of baggage available",
+  "available_plural": "{{count}} pieces of baggage are available",
+  "standardBaggage": "Total Baggage",
+  "trackMyFlight": "Track My Flight",
+  "maxPassengersAre": "Max passengers are",
+  "maxLuggageCapacity": "Standard Baggage Max capacity is",
+  "totalPassengers": "Total Passengers",
+  "enterBags": "Enter the number of bags",
+   "passengers": "Up to {{count}} passengers",
+   "baggage": "Up to {{count}} pieces of baggage",
+  "fareRules": "Fare Rules",
+  "pickupSurcharge": "Pickup Surcharge",
+  "returnSurcharge": "Return Surcharge",
+  "total": "Total",
+  "luggageCapacity": "Luggage Capacity",
+
+  "featuresVehicle": {
+    "waiting time": "Waiting time",
+    "Meeting": "Meeting with nameplate",
+    "Flight tracking": "Flight tracking",
+    "AC": "Air Conditioning",
+    "Free Wi-Fi": "Free Wi-Fi"
+  },
+"addedToCartAlt": "Added to cart",
+  "addedToCart": "Added to Cart!",
+  "whatNext": "What would you like to do next?",
+  "proceedToCheckout": "Proceed to Checkout",
+  "continueShopping": "Continue Shopping",
+  "pleaseWait": "Please wait...",
+  "goBack": "Go Back"
+
+
+}

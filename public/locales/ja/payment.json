@@ -1,0 +1,25 @@
+{
+  "message": {
+    "paymentCanceled": "支払いがキャンセルされました。下記から再試行できます。"
+  },
+  "button": {
+    "retryPayment": "支払いを再試行"
+  },
+  "error": {
+    "retryFail": "支払いの再試行中にエラーが発生しました。"
+  },
+  "checkingStatus": "支払い状況を確認中…",
+  "successTitle": "支払いが完了しました！",
+  "successMessage": "ご予約ありがとうございます。お支払いが確認されました。",
+  "notCompletedTitle": "支払いが完了していません",
+  "notCompletedMessage": "お支払いを確認できませんでした。サポートにお問い合わせください。",
+  "failedTitle": "支払いに失敗しました",
+  "failedMessage": "お支払いを確認できませんでした。サポートにお問い合わせください。",
+  "orderId": "注文 ID：",
+  "paymentStatus": "支払い状況：",
+  "paidVia": "支払い方法：",
+  "emailSent": "確認メールを送信しました",
+  "emailDetails": "ご予約の詳細をメールでお送りしました。",
+  "needHelp": "お困りですか？",
+  "backHome": "ホームに戻る"
+}

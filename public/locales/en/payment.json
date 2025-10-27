@@ -1,0 +1,25 @@
+{
+  "message": {
+    "paymentCanceled": "Payment canceled. You can retry below."
+  },
+  "button": {
+    "retryPayment": "Retry Payment"
+  },
+  "error": {
+    "retryFail": "An error occurred while retrying payment."
+  },
+  "checkingStatus": "Checking payment status…",
+  "successTitle": "Payment Successful!",
+  "successMessage": "Thank you for your booking. Your payment has been confirmed.",
+  "notCompletedTitle": "Payment Not Completed",
+  "notCompletedMessage": "We couldn’t verify your payment. Please contact support.",
+  "failedTitle": "Payment Failed",
+  "failedMessage": "We couldn’t verify your payment. Please contact support.",
+  "orderId": "Order ID:",
+  "paymentStatus": "Payment Status:",
+  "paidVia": "Paid via:",
+  "emailSent": "Confirmation email sent",
+  "emailDetails": "Your booking details have been emailed to you.",
+  "needHelp": "Need help?",
+  "backHome": "Back to Home"
+}

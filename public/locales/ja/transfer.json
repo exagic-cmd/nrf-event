@@ -1,0 +1,268 @@
+{
+  "accept_text": "I accept",
+  "oneWay": "片道",
+  "searchTransfer": "送迎を検索",
+  "search": "検索",
+  "pickupPoint": "ピックアップ地点",
+  "to": "〜へ",
+  "selectPickupLocation": "ピックアップ場所を選択",
+  "selectDropoffLocation": "ドロップオフ場所を選択",
+  "selectPickupFirst": "まずピックアップを選択してください",
+  "searchDestinationsBelow": "以下の目的地を検索：",
+  "loading": "読み込み中…",
+  "noResultsFound": "結果が見つかりません",
+  "completeSelections": "検索する前にすべての選択を完了してください。",
+  "tripType": {
+    "oneWay": "片道",
+    "roundTrip": "往復"
+  },
+  "change": "変更",
+  "labels": {
+    "pickupPoint": "ピックアップ地点",
+    "to": "〜へ"
+  },
+"addons_total": "追加オプション合計",
+"departure": "出発",
+"arrival": "到着",
+ "i_agree": "私は同意します",
+   "pickup_title": "送迎オプション",
+    "return_title": "復路オプション",
+    "loading": "オプションを読み込み中...",
+    "error": "オプションの読み込み中にエラーが発生しました",
+    "error_loading_addons": "オプションの読み込み中にエラーが発生しました",
+    "no_addons": "利用可能なオプションはありません。",
+    "no_addons_available": "利用可能なオプションはありません。",
+    "add": "追加",
+    "remove": "削除",
+    "quantity": "数量",
+    "price_currency": "{{price}} SGD",
+    "show_more": "さらに表示 ({{count}})",
+    "load_more": "さらに表示",
+    "show_less": "少なく表示",
+    "per_pax": "1名あたり",
+    "selected": "選択済み",
+    "no_image": "画像がありません",
+    "description": "説明",
+    "total": "合計",
+    "added_to_cart": "カートに追加しました",
+    "update": "更新",
+    "back": "戻る",
+    "next": "次へ",
+    "confirm": "確認",
+    "optional": "オプション",
+    "included": "含まれています",
+    "not_included": "含まれていません",
+    "select_addons": "オプションを選択してください",
+    "choose_quantity": "数量を選択してください",
+    "added_success": "オプションが追加されました",
+    "removed_success": "オプションが削除されました",
+    "details": "詳細",
+    "view_more": "もっと見る",
+    "view_less": "少なく見る",
+    "pickup_addons": "送迎オプション",
+    "return_addons": "復路オプション",
+  "specialRequests": {
+    "title": "特別リクエスト",
+    "description": "必要な特別リクエストがあれば選択してください。",
+    "wheelchair": "障害者用車椅子",
+    "childSeat": "チャイルドシート"
+  },
+  "serviceBenefits": {
+    "freeCancellation": "ピックアップ24時間前までキャンセル無料",
+    "freeWaitingTime": "無料で {{waitTime}} 分の待ち時間",
+    "meetAndGreet": "ミート＆グリートサービス",
+    "freeWater": "無料ミネラルウォーター1本"
+  },
+  "placeholders": {
+    "selectPickupLocation": "ピックアップ場所を選択",
+    "selectDropoffLocation": "ドロップオフ場所を選択",
+    "selectPickupFirst": "まずピックアップを選択してください"
+  },
+  "buttons": {
+    "search": "検索",
+    "searchTransfer": "送迎を検索",
+    "swapLocations": "場所を入れ替え"
+  },
+  "modal": {
+    "title": "送迎を検索"
+  },
+  "suggestions": {
+    "searchDestinationsBelow": "以下の目的地を検索："
+  },
+  "categories": {
+    "hotel": {
+      "name": "ホテル",
+      "subtitle": "ホテルへの送迎を検索"
+    },
+    "airport": {
+      "name": "空港",
+      "subtitle": "空港送迎サービス"
+    },
+    "ferry": {
+      "name": "フェリーターミナル",
+      "subtitle": "フェリー港との接続"
+    },
+    "railway": {
+      "name": "鉄道駅",
+      "subtitle": "駅までの送迎"
+    }
+  },
+  "types": {
+    "hotel": "ホテル",
+    "airport": "空港",
+    "ferry": "フェリー",
+    "railway": "鉄道",
+    "default": "場所"
+  },
+  "validation": {
+    "completeAllSelections": "検索する前にすべての選択を完了してください。"
+  },
+  "noResults": "結果が見つかりません",
+  "transferType": {
+    "oneWay": "片道",
+    "roundTrip": "往復"
+  },
+  "features": {
+    "maxCapacity": "最大乗車人数",
+    "luggageCapacity": "荷物容量"
+  },
+  "transferInfo": {
+    "requestedDirection": "要求された方向"
+  },
+  "results": {
+    "showingTransfers": "シンガポールの送迎を表示中",
+    "noTransfersFound": "送迎が見つかりません"
+  },
+  "faqs": {
+    "title": "よくある質問",
+    "q1": "交通費には何が含まれますか？",
+    "a1": "交通費には出発地から目的地までのルート、交通費、チップ、名札を持った出迎え、会場から車までの荷物運搬が含まれます。",
+    "q2": "キャンセル条件はどうなりますか？",
+    "a2": "24時間前までキャンセル可能で全額返金。条件は変更される場合があります。",
+    "q3": "乗客はどのように迎えられますか？",
+    "a3": "指定された場所で名札を持ったドライバーが乗客をお迎えします。",
+    "q4": "ドライバーは乗客をどのくらい待ちますか？",
+    "a4": "空港では最大60分、それ以外の場所では最大15分待機します。",
+    "q5": "大型の荷物はどう扱いますか？",
+      "a5": "事前にご連絡ください。特別対応または車両アップグレードが可能です。",
+    "q6": "送迎バウチャーはどこで受け取りますか？",
+    "a6": "予約確定後、メールで送迎バウチャーをお送りします。",
+    "q7": "リターン送迎はどう注文しますか？",
+    "a7": "別途リターン送迎を予約するか、予約時に往復を選択できます。"
+  },
+  "placeholder": {
+    "heading": "あなたにぴったりの乗車を見つける",
+    "description": "ピックアップと目的地を入力して、利用可能な車両を検索し、価格を比較しましょう。",
+    "features": {
+      "multiplePassengers": "複数の乗客",
+      "luggageFriendly": "荷物に優しい",
+      "flexibleTiming": "柔軟な時間設定",
+      "freeCancellation": "キャンセル無料"
+    }
+  },
+  "card": {
+    "modal": {
+      "alreadyInCart": "すでにカートにあります。カートを確認してください。"
+    },
+    "transferInfo": "送迎情報",
+    "defaultTransferInfo": "予約時に詳細な送迎情報をご案内します。",
+    "bookNow": "今すぐ予約",
+    "moreFeatures": "+{{count}} の機能",
+    "upToPassengers": "最大 {{count}} 名",
+    "suitcases": "{{count}} 個のスーツケース"
+  },
+  "common": {
+    "close": "閉じる"
+  },
+  "featuresCard": {
+    "wifi": "Wi-Fi 利用可能",
+    "airConditioning": "エアコン",
+    "childSeat": "チャイルドシートあり",
+    "musicSystem": "音響システム",
+    "gps": "GPS ナビゲーション",
+    "petFriendly": "ペット可"
+  },
+  "booking": {
+      "track": "トラック",
+      "trackMyFlight": "フライトを追跡",
+    "specifyPickupTime": "ピックアップ時間を指定",
+    "specifyReturnTime": "リターン時間を指定",
+     "pickupOption": "ピックアップオプション",
+   "timeAutoFromFlight": "フライト時間から自動",
+   "flightNoteAutoTime": "ピックアップ時間はフライト到着時刻から取得されます。",
+   "pickupFlightNumber": "ピックアップ便番号",
+   "returnFlightNumber": "リターン便番号",
+   "specificTime": "特定の時間",
+   "FlightNumber": "便番号",
+   "noTransferSelected": "送迎が選択されていません。先に車両を選択してください。",
+   "pickupDateRequired": "ピックアップ日が必要です",
+    "pickupTimeRequired": "ピックアップ時間が必要です",
+    "pickupFlightRequired": "到着便番号が必要です",
+    "returnDateRequired": "リターン日が必要です",
+    "returnTimeRequired": "リターン時間が必要です",
+    "returnFlightRequired": "出発便番号が必要です",
+    "bookTransferTitle": "送迎を予約する",
+    "oneMoreStep": "あともう一歩",
+    "cartUpdated": "カートが更新されました",
+    "addToCart": "カートに追加",
+    "pickup": "出発",
+    "dropoff": "到着",
+    "pickupDetails": "出発の詳細",
+    "pickupDate": "出発日",
+    "pickupTime": "出発時間",
+    "returnDetails": "リターンの詳細",
+    "returnDate": "リターン日",
+    "returnTime": "リターン時間",
+    "arrivalFlightNumber": "到着便番号",
+    "departureFlightNumber": "出発便番号",
+    "returnArrivalFlightNumber": "リターン到着便番号",
+    "returnDepartureFlightNumber": "リターン出発便番号",
+    "returnFlightTime": "帰りのフライト時間",
+  "pickupFlightTime": "出発のフライト時間",
+    "flightPlaceholder": "例: SQ318",
+    "or": "または",
+    "transferInCart": "この送迎はすでにカートにあります",
+    "updateBookingText": "選択した新しい詳細で更新しますか？",
+    "updateBooking": "予約を更新",
+    "goToCart": "カートへ行く",
+    "close": "閉じる",
+    "return": "リターン"
+  },
+  "noTransferSelected": "送迎が選択されていません。",
+  "form": {
+    "selectDate": "日付を選択",
+    "selectTime": "時間を選択",
+    "time": "時間",
+    "surchargeApplied": "追加料金が適用されます"
+  },
+  "title": "荷物",
+  "available": "{{count}} 個の荷物が利用可能",
+  "available_plural": "{{count}} 個の荷物が利用可能です",
+  "standardBaggage": "総荷物数",
+  "trackMyFlight": "フライト追跡",
+  "maxPassengersAre": "最大乗客数は",
+  "maxLuggageCapacity": "標準荷物の最大容量は",
+  "totalPassengers": "乗客合計",
+  "enterBags": "荷物の数を入力してください",
+  "passengers": "最大 {{count}} 名",
+  "baggage": "最大 {{count}} 個の荷物",
+  "fareRules": "運賃規則",
+  "pickupSurcharge": "ピックアップ追加料金",
+  "returnSurcharge": "リターン追加料金",
+  "total": "合計",
+  "luggageCapacity": "荷物容量",
+  "featuresVehicle": {
+    "waiting time": "待ち時間",
+    "Meeting": "名札での出迎え",
+    "Flight tracking": "フライト追跡",
+    "AC": "エアコン",
+    "Free Wi-Fi": "無料Wi-Fi"
+  },
+  "addedToCartAlt": "カートに追加済み",
+  "addedToCart": "カートに追加しました！",
+  "whatNext": "次は何をしますか？",
+  "proceedToCheckout": "チェックアウトへ進む",
+  "continueShopping": "買い物を続ける",
+  "pleaseWait": "お待ちください…",
+  "goBack": "戻る"
+}

@@ -1,0 +1,25 @@
+{
+  "message": {
+    "paymentCanceled": "Pago cancelado. Puedes volver a intentarlo a continuación."
+  },
+  "button": {
+    "retryPayment": "Reintentar pago"
+  },
+  "error": {
+    "retryFail": "Ocurrió un error al reintentar el pago."
+  },
+  "checkingStatus": "Verificando el estado del pago…",
+  "successTitle": "¡Pago exitoso!",
+  "successMessage": "Gracias por tu reserva. Tu pago ha sido confirmado.",
+  "notCompletedTitle": "Pago no completado",
+  "notCompletedMessage": "No pudimos verificar tu pago. Por favor, contacta con soporte.",
+  "failedTitle": "Pago fallido",
+  "failedMessage": "No pudimos verificar tu pago. Por favor, contacta con soporte.",
+  "orderId": "ID del pedido:",
+  "paymentStatus": "Estado del pago:",
+  "paidVia": "Pagado a través de:",
+  "emailSent": "Correo de confirmación enviado",
+  "emailDetails": "Los detalles de tu reserva se han enviado por correo electrónico.",
+  "needHelp": "¿Necesitas ayuda?",
+  "backHome": "Volver al inicio"
+}
