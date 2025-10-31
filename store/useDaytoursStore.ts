@@ -3,14 +3,18 @@ import { apiRequest } from "@/lib/clientApi";
 
 export const useDaytoursStore = create((set, get) => ({
   countries: [],
+  searchResults: [],
+  suggestedResults: [],
   isLoading: false,
   error: null,
   selectedCity: null,
   selectedCountry: null,
-  suggestedResults: [],
-  searchResults: [],
-  allResults: [],
+  currentCategory: null, // 'daytour' or 'accommodation'
 
+  /**
+   * ✅ Fetch list of countries and cities
+   * Endpoint: getcitiescountries
+   */
   fetchCountriesCities: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -18,71 +22,95 @@ export const useDaytoursStore = create((set, get) => ({
         endpoint: "getcitiescountries",
         method: "GET",
       });
-      set({ countries: res?.data?.result || [], isLoading: false });
-    } catch (err) {
-      set({ isLoading: false, error: err.message || "Failed to fetch" });
-    }
-  },
 
-  fetchSearchSuggestions: async (langID) => {
-    set({ isLoading: true });
-    try {
-      const response = await fetch(`https://app.exploresingapore.ai/api/products/${langID}/search-list?categoryId=3`);
-      const res = await response.json();
-      const items = res?.results || [];
-      set({ suggestedResults: items, isLoading: false });
-    } catch (err) {
-      set({ isLoading: false });
-    }
-  },
-
-
-searchProductsByKeyword: async (query, langID) => {
-  if (!query?.trim()) return [];
-
-  set({ isLoading: true });
-
-  try {
-    const response = await fetch("https://ai.exploresingapore.ai/search-index", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
-
-    const res = await response.json();
-    const products = res?.results || [];
-
-    if (products.length > 0) {
-      set({ allResults: products, isLoading: false });
-      return products;   
-    } else {
-      const fallbackProducts = await get().searchProducts(langID);
-      set({ allResults: fallbackProducts, isLoading: false });
-      return fallbackProducts;  
-    }
-  } catch (err) {
-    console.error("Search error", err);
-    set({ isLoading: false });
-    return [];
-  }
-},
-
-  searchProducts: async (langID) => {
-    try {
-      const res = await apiRequest({
-        endpoint: `getcitiespax/1/2/${langID}`,
-        method: "GET",
+      set({
+        countries: res?.data?.result || [],
+        isLoading: false,
       });
-      const products = res?.data?.products || res?.data?.results || [];
-      return products;
+
+      console.log("✅ Fetched countries:", res?.data?.result);
     } catch (err) {
-      console.error("Fallback searchProducts error", err);
+      set({
+        isLoading: false,
+        error: err.message || "Failed to fetch countries",
+      });
+      console.error("❌ fetchCountriesCities error:", err);
+    }
+  },
+
+  /**
+   * ✅ Fetch search results for both Day Tours (3) and Accommodation (4)
+   * Endpoint: /affliate/get_public_products
+   */
+  fetchSearchResults: async (payload) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!res.ok) throw new Error("Network response was not ok");
+
+      const data = await res.json();
+      const results = data?.products || data?.data || [];
+
+      set({
+        searchResults: results,
+        isLoading: false,
+        currentCategory: payload.category_id === 3 ? 'daytour' : 'accommodation'
+      });
+
+      console.log(`✅ ${payload.category_id === 3 ? 'Day Tours' : 'Accommodation'} API Response:`, data);
+      return results; // Return results for immediate use
+    } catch (err) {
+      console.error("❌ fetchSearchResults error:", err);
+      set({ isLoading: false, error: err.message });
       return [];
     }
   },
 
-  setAllResults: (items) => set({ allResults: items }),
+  /**
+   * ✅ Fetch suggested results for search input
+   */
+  fetchSuggestedResults: async (query) => {
+    try {
+      // You might want to implement a separate endpoint for suggestions
+      // For now, we'll use the same endpoint with minimal payload
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: query,
+            is_b2c_only: 1,
+            // Add other necessary fields for suggestions
+          }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Network response was not ok");
+
+      const data = await res.json();
+      const suggestions = data?.products || data?.data || [];
+
+      set({ suggestedResults: suggestions.slice(0, 5) }); // Limit to 5 suggestions
+    } catch (err) {
+      console.error("❌ fetchSuggestedResults error:", err);
+      set({ suggestedResults: [] });
+    }
+  },
+
+  // ✅ Setters
   setSelectedCity: (city) => set({ selectedCity: city }),
   setSelectedCountry: (country) => set({ selectedCountry: country }),
   setSearchResults: (results) => set({ searchResults: results }),
+  setSuggestedResults: (results) => set({ suggestedResults: results }),
+  setCurrentCategory: (category) => set({ currentCategory: category }),
+  clearResults: () => set({ searchResults: [], suggestedResults: [] }),
 }));
