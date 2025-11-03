@@ -134,7 +134,7 @@ export default function Header() {
       <div className="flex items-center">
         <LocalizedLink href="/">
           <img
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1757669808/External%20Links/Logo_2.png"
+            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1761659321/nrf.png"
             alt="Logo"
             className="h-8 sm:h-10 md:h-12 w-auto object-contain"
           />
@@ -145,7 +145,7 @@ export default function Header() {
       <div className="ml-auto flex items-center gap-2 sm:gap-4" ref={dropdownRef}>
         {/* DESKTOP */}
         <nav className="hidden lg:flex items-center gap-4">
-          {renderLanguageDropdown()}
+          {/* {renderLanguageDropdown()} */}
           {!token ? (
             <Link
               href="/login"
@@ -160,7 +160,7 @@ export default function Header() {
 
         {/* MOBILE */}
         <div className="lg:hidden flex items-center gap-3 sm:gap-4">
-          {renderLanguageDropdown(true)}
+          {/* {renderLanguageDropdown(true)} */}
           {!token ? (
             <Link
               href="/login"
