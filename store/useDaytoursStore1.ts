@@ -3,16 +3,23 @@ import { apiRequest } from "@/lib/clientApi";
 
 export const useDaytoursStore = create((set, get) => ({
   countries: [],
+  cities: [],
   searchResults: [],
+  filteredResults: [],
   suggestedResults: [],
   isLoading: false,
   error: null,
+
+  // 🌍 Selected search context
   selectedCity: null,
   selectedCountry: null,
-  currentCategory: null, // 'daytour' or 'accommodation'
+  currentCategory: null, // "daytour" | "accommodation"
+
+  // 🧭 Last search params (so Listings can use them)
+  searchParams: null,
 
   /**
-   * ✅ Fetch list of countries and cities
+   * ✅ Fetch countries & cities
    * Endpoint: getcitiescountries
    */
   fetchCountriesCities: async () => {
@@ -30,23 +37,24 @@ export const useDaytoursStore = create((set, get) => ({
 
       console.log("✅ Fetched countries:", res?.data?.result);
     } catch (err) {
+      console.error("❌ fetchCountriesCities error:", err);
       set({
         isLoading: false,
         error: err.message || "Failed to fetch countries",
       });
-      console.error("❌ fetchCountriesCities error:", err);
     }
   },
 
   /**
-   * ✅ Fetch search results for both Day Tours (3) and Accommodation (4)
-   * Endpoint: /affliate/get_public_products
+   * ✅ Unified fetch for Day Tours (3) and Accommodation (4)
+   * Endpoint: /affliate/get_public_b2b_products
    */
   fetchSearchResults: async (payload) => {
     set({ isLoading: true, error: null });
+
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_b2b_products`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -59,14 +67,30 @@ export const useDaytoursStore = create((set, get) => ({
       const data = await res.json();
       const results = data?.products || data?.data || [];
 
-      set({
-        searchResults: results,
-        isLoading: false,
-        currentCategory: payload.category_id === 3 ? 'daytour' : 'accommodation'
+      const isDayTour = payload.category_id === 3;
+      const categoryType = isDayTour ? "daytour" : "accommodation";
+
+      // 🧠 Keep only index 0 language (if available)
+      const processedResults = results.map((item) => {
+        if (Array.isArray(item.languages) && item.languages.length > 0) {
+          return item.languages[0];
+        }
+        return item;
       });
 
-      console.log(`✅ ${payload.category_id === 3 ? 'Day Tours' : 'Accommodation'} API Response:`, data);
-      return results; // Return results for immediate use
+      // 🧩 For Day Tours — enable client-side filtering
+      const finalResults = isDayTour ? processedResults : results;
+
+      set({
+        searchResults: finalResults,
+        filteredResults: finalResults,
+        isLoading: false,
+        currentCategory: categoryType,
+        searchParams: payload,
+      });
+
+      console.log(`✅ ${categoryType.toUpperCase()} API Response:`, data);
+      return finalResults;
     } catch (err) {
       console.error("❌ fetchSearchResults error:", err);
       set({ isLoading: false, error: err.message });
@@ -75,12 +99,10 @@ export const useDaytoursStore = create((set, get) => ({
   },
 
   /**
-   * ✅ Fetch suggested results for search input
+   * ✅ Suggestions for input search
    */
   fetchSuggestedResults: async (query) => {
     try {
-      // You might want to implement a separate endpoint for suggestions
-      // For now, we'll use the same endpoint with minimal payload
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
         {
@@ -89,7 +111,6 @@ export const useDaytoursStore = create((set, get) => ({
           body: JSON.stringify({
             name: query,
             is_b2c_only: 1,
-            // Add other necessary fields for suggestions
           }),
         }
       );
@@ -99,18 +120,50 @@ export const useDaytoursStore = create((set, get) => ({
       const data = await res.json();
       const suggestions = data?.products || data?.data || [];
 
-      set({ suggestedResults: suggestions.slice(0, 5) }); // Limit to 5 suggestions
+      set({ suggestedResults: suggestions.slice(0, 5) });
     } catch (err) {
       console.error("❌ fetchSuggestedResults error:", err);
       set({ suggestedResults: [] });
     }
   },
 
-  // ✅ Setters
+  // ✅ Local filtering (no API call)
+  applyClientFilter: (filterFn) => {
+    const all = get().searchResults;
+    const filtered = typeof filterFn === "function" ? all.filter(filterFn) : all;
+    set({ filteredResults: filtered });
+  },
+
+  resetFilters: () => {
+    const all = get().searchResults;
+    set({ filteredResults: all });
+  },
+
+  // ✅ State setters
   setSelectedCity: (city) => set({ selectedCity: city }),
   setSelectedCountry: (country) => set({ selectedCountry: country }),
-  setSearchResults: (results) => set({ searchResults: results }),
+  setSearchResults: (results) => set({ searchResults: results, filteredResults: results }),
   setSuggestedResults: (results) => set({ suggestedResults: results }),
   setCurrentCategory: (category) => set({ currentCategory: category }),
-  clearResults: () => set({ searchResults: [], suggestedResults: [] }),
+  setSearchParams: (params) =>
+    set({
+      searchParams: {
+        ...get().searchParams,
+        ...params,
+      },
+    }),
+
+  /**
+   * 🧹 Reset between searches or on HomePage mount
+   */
+  clearResults: () =>
+    set({
+      searchResults: [],
+      filteredResults: [],
+      suggestedResults: [],
+      searchParams: null,
+      selectedCity: null,
+      selectedCountry: null,
+      currentCategory: null,
+    }),
 }));

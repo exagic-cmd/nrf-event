@@ -41,7 +41,7 @@ const handleBookNow = async () => {
           price: car.price,
           originalPrice: car.originalPrice,
         });
-        localizedPush("/transfers/booking");
+        localizedPush("/listings/booking");
       }
     } else {
       // For daytour & accommodation

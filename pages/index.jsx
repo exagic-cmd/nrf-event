@@ -65,7 +65,7 @@ export default function LandingPage() {
         {/* Transfer Benefits Section */}
         <TransferBenefitsSection />
         {/* Reviews Section */}
-        <ReviewsSection />
+        {/* <ReviewsSection /> */}
        
     </Layout>
   )

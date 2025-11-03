@@ -102,8 +102,7 @@ export default function HomePage() {
     // Route or fetch based on your product flow
     // console.log("Filter Submitted", payload);
   };
-
-  const handleFilterTransfer = async (payload) => {
+const handleFilterTransfer = async (payload) => {
   // 🚗 TRANSFERS
   if (filterActiveTab === 2) {
     if (!payload?.pickup || !payload?.dropoff) {
@@ -121,7 +120,9 @@ export default function HomePage() {
       returnDate: payload.returnDate || null,
     });
 
-    router.push("/transfers?searched=true");
+    // Add category parameter
+    router.push("/listings?searched=true");
+    return;
   }
 
   // 🏖️ DAY TOURS
@@ -133,23 +134,40 @@ export default function HomePage() {
       return;
     }
 
-    // Build payload for Zustand store or API call
-    const dayToursPayload = {
-      country_id: country?.id,
-      city_id: city?.id,
-      name: search || "",
-      category_id: 3,
-      is_b2c_only: 1,
-    };
-
-    console.log("🧭 Day Tours Payload:", dayToursPayload);
     const params = new URLSearchParams({
-      country_id: String(dayToursPayload.country_id),
-      city_id: String(dayToursPayload.city_id),
+      searched: "true",
+      type: "daytour",
+      category_id: String(filterActiveTab),
+     // category: "daytour", // Add category
+      country_id: String(country?.id),
+      city_id: String(city?.id),
     });
-    if (dayToursPayload.name) params.append("name", dayToursPayload.name);
+    if (search) params.append("name", search);
 
-    router.push(`/day-tours?${params.toString()}&searched=true`);
+    router.push(`/listings?${params.toString()}`);
+    return;
+  }
+
+  // 🏨 ACCOMMODATIONS
+  if (filterActiveTab === 4) {
+    const { country, city, search } = payload;
+
+    if (!country || !city) {
+      alert("Please select both country and city");
+      return;
+    }
+
+    const params = new URLSearchParams({
+      searched: "true",
+      type: "accommodation",
+      category_id: String(filterActiveTab),
+      //category: "accommodation", // Add category
+      country_id: String(country?.id),
+      city_id: String(city?.id),
+    });
+    if (search) params.append("name", search);
+
+    router.push(`/listings?${params.toString()}`);
   }
 };
 

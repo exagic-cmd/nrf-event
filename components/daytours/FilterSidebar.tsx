@@ -1,4 +1,4 @@
-// components/daytours/FilterSidebar.jsx
+// components/daytours/FilterSidebar.tsx
 "use client";
 
 import { useState, useMemo, useTransition } from "react";
@@ -24,10 +24,9 @@ const FILTER_LABELS = {
 
 export default function FilterSidebar() {
   const { searchResults, applyClientFilter, resetFilters } = useDaytoursStore();
-
   const [isPending, startTransition] = useTransition();
 
-  // Local selected state – plain object of arrays
+  // Selected filters: { suit_clusters: ["Solo", "Couple"], ... }
   const [selected, setSelected] = useState(() => {
     const init = {};
     FILTER_KEYS.forEach((k) => (init[k] = []));
@@ -35,7 +34,7 @@ export default function FilterSidebar() {
   });
 
   // -----------------------------------------------------------------
-  // 1. Build unique options for every filter key
+  // 1. Build unique options for each filter
   // -----------------------------------------------------------------
   const options = useMemo(() => {
     const uniq = (arr) => Array.from(new Set(arr)).sort();
@@ -60,7 +59,7 @@ export default function FilterSidebar() {
   }, [searchResults]);
 
   // -----------------------------------------------------------------
-  // 2. Apply filters whenever `selected` changes
+  // 2. Apply filter whenever `selected` changes
   // -----------------------------------------------------------------
   useMemo(() => {
     startTransition(() => {
@@ -74,7 +73,7 @@ export default function FilterSidebar() {
       applyClientFilter((item) => {
         return Object.entries(selected).every(([key, selVals]) => {
           if (!selVals.length) return true;
-          const itemVals = (item[key] || []);
+          const itemVals = item[key] || [];
           return selVals.some((v) => itemVals.includes(v));
         });
       });
@@ -83,7 +82,7 @@ export default function FilterSidebar() {
   }, [selected, searchResults]);
 
   // -----------------------------------------------------------------
-  // 3. Toggle helper
+  // 3. Toggle a checkbox
   // -----------------------------------------------------------------
   const toggle = (key, value) => {
     setSelected((prev) => ({
@@ -95,7 +94,7 @@ export default function FilterSidebar() {
   };
 
   // -----------------------------------------------------------------
-  // 4. Clear all
+  // 4. Clear all filters
   // -----------------------------------------------------------------
   const clearAll = () => {
     const empty = {};
@@ -125,7 +124,7 @@ export default function FilterSidebar() {
         </p>
       )}
 
-      {/* ---- Filter groups ---- */}
+      {/* Filter groups */}
       {Object.entries(options).map(([key, values]) =>
         values.length > 0 ? (
           <FilterGroup

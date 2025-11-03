@@ -49,6 +49,9 @@ export default function SearchFilterCard({
   const [dropoffQuery, setDropoffQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [showPickupDropdown, setShowPickupDropdown] = useState(false);
+  const [showDropoffDropdown, setShowDropoffDropdown] = useState(false);
+
   const isLoading = transferLoading || daytoursLoading;
 
   useEffect(() => setPickupQuery(selectedPickup?.name || ""), [selectedPickup]);
@@ -68,26 +71,31 @@ export default function SearchFilterCard({
     }
   }, [filterActiveTab, fetchCountriesCities, countries.length]);
 
-  const onPickupChange = (val) => {
-    setPickupQuery(val);
-    setSelectedPickup(null);
-    setSelectedDropoff(null);
-    setDropoffQuery("");
-    if (val && val.trim()) fetchPickupOptions(val.trim());
-  };
+ const onPickupChange = (val) => {
+  setPickupQuery(val);
+  setShowPickupDropdown(true);
+  setSelectedPickup(null);
+  setSelectedDropoff(null);
+  setDropoffQuery("");
+  if (val && val.trim()) fetchPickupOptions(val.trim());
+};
 
-  const onPickupSelect = (opt) => {
-    setSelectedPickup(opt);
-    setPickupQuery(opt.name || opt.title || "");
-    setSelectedDropoff(null);
-    setDropoffQuery("");
-    if (opt?.id) fetchDropoffOptions(opt.id);
-  };
+// Modify onPickupSelect
+const onPickupSelect = (opt) => {
+  setSelectedPickup(opt);
+  setPickupQuery(opt.name || opt.title || "");
+  setShowPickupDropdown(false); // Hide dropdown after select
+  setSelectedDropoff(null);
+  setDropoffQuery("");
+  if (opt?.id) fetchDropoffOptions(opt.id);
+};
 
-  const onDropoffChange = (val) => {
-    setDropoffQuery(val);
-    setSelectedDropoff(null);
-  };
+// Modify onDropoffChange
+const onDropoffChange = (val) => {
+  setDropoffQuery(val);
+  setShowDropoffDropdown(true);
+  setSelectedDropoff(null);
+};
 
   const filteredPickup = useMemo(() => {
     const q = (pickupQuery || "").toLowerCase();
@@ -272,7 +280,7 @@ const handleCategorySearch = async () => {
                     </div>
 
                     {/* pickup suggestions */}
-                    {pickupQuery && filteredPickup.length > 0 && (
+                    {showPickupDropdown && pickupQuery && filteredPickup.length > 0 && !selectedPickup && (
                       <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
                         {filteredPickup.map((p) => (
                           <button
@@ -288,6 +296,7 @@ const handleCategorySearch = async () => {
                         {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
                       </div>
                     )}
+
                   </div>
 
                   {/* Swap */}
@@ -318,25 +327,26 @@ const handleCategorySearch = async () => {
                     </div>
 
                     {/* dropoff suggestions */}
-                    {selectedPickup && dropoffQuery && filteredDropoff.length > 0 && (
-                      <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
-                        {filteredDropoff.map((d) => (
-                          <button
-                            key={d.id || d.name}
-                            type="button"
-                            onMouseDown={() => {
-                              setSelectedDropoff(d);
-                              setDropoffQuery(d.name || d.title);
-                            }}
-                            className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-                          >
-                            <Building className="h-4 w-4 text-yellow-600" />
-                            <span className="text-sm text-gray-800">{d.name || d.title}</span>
-                          </button>
-                        ))}
-                        {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
-                      </div>
-                    )}
+                    {showDropoffDropdown && selectedPickup && dropoffQuery && filteredDropoff.length > 0 && !selectedDropoff && (
+                    <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
+                      {filteredDropoff.map((d) => (
+                        <button
+                          key={d.id || d.name}
+                          type="button"
+                          onMouseDown={() => {
+                            setSelectedDropoff(d);
+                            setDropoffQuery(d.name || d.title);
+                            setShowDropoffDropdown(false); // Hide dropdown after select
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                        >
+                          <Building className="h-4 w-4 text-yellow-600" />
+                          <span className="text-sm text-gray-800">{d.name || d.title}</span>
+                        </button>
+                      ))}
+                      {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
+                    </div>
+                  )}
                   </div>
                 </div>
               </div>

@@ -1,103 +1,111 @@
-"use client";
-
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from 'next-i18next';
+import DaytourCard from "@/components/daytours/DaytourCard";
+import Pagination from "@/components/common/Pagination";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { getFullImageUrl } from "@/utils/imageService";
-import { Users, Clock, MapPin } from "lucide-react";
-import Pagination from "@/components/common/Pagination";
 
 const ITEMS_PER_PAGE = 8;
 
-function DaytoursList({ tours = [] }) {
-  const { t } = useTranslation(["daytour"]);
-  const [sortBy, setSortBy] = useState("cheapest");
+function DaytoursList({ searchParams, filteredDaytours = null }) {
+  const { t } = useTranslation('daytour');
   const [currentPage, setCurrentPage] = useState(1);
+  const { searchResults, filteredResults, isLoading } = useDaytoursStore();
 
-  const isLoading = useDaytoursStore((state) => state.isLoading);
-  const tourSectionRef = useRef(null);
+  const daytoursSectionRef = useRef(null);
 
-  useEffect(() => {
-    if (tours.length > 0 && tourSectionRef.current) {
-      const yOffset = -100;
-      const y =
-        tourSectionRef.current.getBoundingClientRect().top +
-        window.scrollY +
-        yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
+  // Priority: filteredDaytours (from FilterSidebar) -> filteredResults (from store) -> searchResults
+  const activeData = useMemo(() => {
+    if (filteredDaytours && Array.isArray(filteredDaytours) && filteredDaytours.length > 0) {
+      return filteredDaytours;
     }
-  }, [tours]);
+    if (filteredResults && Array.isArray(filteredResults) && filteredResults.length > 0) {
+      return filteredResults;
+    }
+    return searchResults;
+  }, [filteredDaytours, filteredResults, searchResults]);
 
-  const formattedTours = useMemo(() => {
-    return tours.map((item, index) => {
-      const basePrice = parseFloat(item.final_price || item.price || 0);
+  const daytoursData = useMemo(() => {
+    if (!activeData || !Array.isArray(activeData)) return [];
+
+    return activeData.map((item) => {
+      const basePrice = parseFloat(item.adult_price || item.starting_price);
       const promoPrice = parseFloat(item.final_promo_price || 0);
-      const usePromo = promoPrice > 0;
+      const usePromo = promoPrice > 0 && promoPrice < basePrice;
       const priceToShow = usePromo ? promoPrice : basePrice;
 
-      const uniqueId =
-        item.id ||
-        item.product_id ||
-        `${item.product_name || "tour"}-${index}`;
+      let landmarks = [];
+      try {
+        landmarks = JSON.parse(item.landmark_ids || "[]");
+      } catch {
+        landmarks = [];
+      }
 
       return {
-        id: uniqueId,
+        ...item,
+        id: item.id,
         name: item.product_title,
-        desc: item.short_desc,
-        image: getFullImageUrl(
-          item.thumbnail || item.image || item.image_url || ""
-        ),
-        duration: item.tour_duration,
-        price: item.starting_price
-          ? parseFloat(item.starting_price)
-          : priceToShow,
-        promoPrice: usePromo ? promoPrice : null,
-        currency: item.currency || "USD",
-        location: item.city_name || item.country_name || "",
+        description: item.product_content_desc || item.short_desc,
+        image: getFullImageUrl(item.image),
+        price: priceToShow,
+        originalPrice: usePromo ? basePrice : null,
+        duration: item.tour_duration ? `${item.tour_duration} hours` : null,
+        rating: 4.5,
+        reviews: 0,
+        adultPrice: item.adult_price,
+        childPrice: item.child_price,
+        landmarks,
+        features: [
+          item.tour_duration && `Duration: ${item.tour_duration} hours`,
+          item.physical_aspect?.length > 0 && `Physical: ${item.physical_aspect.join(", ")}`,
+          item.activity_intensity?.length > 0 && `Intensity: ${item.activity_intensity.join(", ")}`,
+          item.preference_activities?.length > 0 && `Activities: ${item.preference_activities.slice(0, 2).join(", ")}`,
+        ].filter(Boolean),
+        rawData: item,
       };
     });
-  }, [tours]);
+  }, [activeData]);
 
-  const sortedTours = useMemo(() => {
-    const sorted = [...formattedTours];
-    if (sortBy === "cheapest") sorted.sort((a, b) => a.price - b.price);
-    else if (sortBy === "expensive") sorted.sort((a, b) => b.price - a.price);
-    return sorted;
-  }, [formattedTours, sortBy]);
+  useEffect(() => {
+    if (activeData && activeData.length > 0 && daytoursSectionRef.current) {
+      const y = daytoursSectionRef.current.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  }, [activeData]);
 
-  const totalPages = Math.ceil(sortedTours.length / ITEMS_PER_PAGE);
-  const paginatedTours = sortedTours.slice(
+  // Reset to first page when filtered data changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredDaytours, filteredResults, searchResults]);
+
+  const sortedDaytours = useMemo(() => {
+    const sortableDaytours = [...daytoursData];
+    return sortableDaytours.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+  }, [daytoursData]);
+
+  const totalPages = Math.ceil(sortedDaytours.length / ITEMS_PER_PAGE);
+  const paginatedDaytours = sortedDaytours.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
-  const formatPrice = (value) => {
-    const num = Number(value);
-    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
-  };
+  // Show loading state only if we're loading from the store AND no filtered data is provided
+  const showLoading = isLoading && !filteredDaytours;
 
   return (
-    <div ref={tourSectionRef} className="space-y-4">
-      {/* 🔽 Sorting Header */}
-      <div className="rounded-xl py-3 px-4 bg-gray-50 flex justify-between items-center">
+    <div ref={daytoursSectionRef} className="space-y-6">
+      <div className="rounded-xl py-3 px-4 bg-gray-50">
         <p className="text-lg font-semibold">
-          {t("results.showingDaytours", "Showing Day Tours")}
+          Showing {sortedDaytours.length} Day Tours
+          {filteredDaytours && filteredDaytours.length > 0 && (
+            <span className="text-sm text-gray-600 ml-2">
+              (Filtered from {searchResults?.length || 0} total)
+            </span>
+          )}
         </p>
-
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none"
-        >
-          <option value="cheapest">{t("sort.cheapest", "Cheapest First")}</option>
-          <option value="expensive">
-            {t("sort.expensive", "Most Expensive First")}
-          </option>
-        </select>
       </div>
 
-      {/* 🌀 Loading */}
-      {isLoading ? (
+      {showLoading ? (
         <div className="flex justify-center items-center py-20">
           <svg
             className="animate-spin h-8 w-8 text-[#CC9A55]"
@@ -120,131 +128,21 @@ function DaytoursList({ tours = [] }) {
             />
           </svg>
         </div>
-      ) : paginatedTours.length > 0 ? (
-        <div className="space-y-4">
-          {paginatedTours.map((tour, index) => (
-            <div
-              key={`${tour.id}-${index}`}
-              className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden"
-            >
-              {/* Desktop View */}
-              <div className="hidden md:flex relative items-center justify-between border rounded-xl bg-white shadow-sm p-4 w-full">
-                {/* Left - Image */}
-                <div className="w-[180px] flex justify-center items-center">
-                  <img
-                    src={tour.image}
-                    alt={tour.name}
-                    className="object-cover h-[120px] w-[180px] rounded-lg"
-                  />
-                </div>
-
-                {/* Middle - Info */}
-                <div className="flex-1 px-6">
-                  <h2 className="font-semibold text-lg">{tour.name}</h2>
-                  {tour.location && (
-                    <p className="flex items-center text-sm text-gray-500 gap-1">
-                      <MapPin size={14} /> {tour.location}
-                    </p>
-                  )}
-                  <p className="text-sm text-gray-600 line-clamp-2 mt-1">
-                    {tour.desc}
-                  </p>
-
-                  {tour.duration && (
-                    <div className="flex items-center gap-1 text-sm text-gray-500 mt-2">
-                      <Clock size={14} /> {tour.duration} hrs
-                    </div>
-                  )}
-                </div>
-
-                {/* Right - Price + Button */}
-                <div className="flex flex-col items-end">
-                  {tour.promoPrice ? (
-                    <>
-                      <p className="text-sm text-gray-400 line-through">
-                        {tour.currency}
-                        {formatPrice(tour.price)}
-                      </p>
-                      <p className="text-xl font-bold text-[#CC9A55]">
-                        {tour.currency}
-                        {formatPrice(tour.promoPrice)}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-xl font-bold text-gray-900">
-                      {tour.currency}
-                      {formatPrice(tour.price)}
-                    </p>
-                  )}
-
-                  <button
-                    className="mt-3 bg-[#CC9A55] text-white text-sm px-5 py-2 rounded-md transition hover:bg-[#b88849]"
-                  >
-                    {t("card.bookNow", "Book Now")}
-                  </button>
-                </div>
-              </div>
-
-              {/* Mobile View */}
-              <div className="md:hidden border rounded-xl bg-white shadow-sm p-3 flex gap-3 items-start">
-                <div className="flex-shrink-0">
-                  <img
-                    src={tour.image}
-                    alt={tour.name}
-                    className="object-cover h-28 w-32 rounded-md"
-                  />
-                </div>
-
-                <div className="flex-1 flex flex-col justify-between">
-                  <h2 className="font-semibold text-sm leading-tight line-clamp-2 h-10">
-                    {tour.name}
-                  </h2>
-                  {tour.location && (
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                      <MapPin size={12} /> {tour.location}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                    {tour.desc}
-                  </p>
-
-                  <div className="flex justify-between items-center mt-2">
-                    <div>
-                      {tour.promoPrice ? (
-                        <>
-                          <p className="text-xs text-gray-400 line-through">
-                            {tour.currency}
-                            {formatPrice(tour.price)}
-                          </p>
-                          <p className="text-sm font-bold text-[#CC9A55]">
-                            {tour.currency}
-                            {formatPrice(tour.promoPrice)}
-                          </p>
-                        </>
-                      ) : (
-                        <p className="text-sm font-bold text-gray-900">
-                          {tour.currency}
-                          {formatPrice(tour.price)}
-                        </p>
-                      )}
-                    </div>
-                    <button className="bg-[#CC9A55] text-white text-xs py-1.5 px-3 rounded-md">
-                      {t("card.bookNow", "Book Now")}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+      ) : paginatedDaytours.length > 0 ? (
+        <div className="space-y-6">
+          {paginatedDaytours.map((tour) => (
+            <DaytourCard key={tour.id} tour={tour} category="daytour" />
           ))}
         </div>
       ) : (
         <div className="text-center py-10 text-gray-500">
-          {t("results.noDaytoursFound", "No day tours found")}
+          {activeData && activeData.length > 0
+            ? `Found ${activeData.length} tours but none are active or processable`
+            : "No day tours found for your search criteria."}
         </div>
       )}
 
-      {/* 📚 Pagination */}
-      {!isLoading && totalPages > 1 && (
+      {!showLoading && totalPages > 1 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

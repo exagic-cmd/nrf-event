@@ -35,7 +35,7 @@ const Footer = () => {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
            
-            <div className="text-sm">
+            {/* <div className="text-sm">
               <h3 className="font-semibold text-white mb-2">Quick Links</h3>
               <div className="flex space-x-4">
                 <LocalizedLink 
@@ -59,10 +59,10 @@ const Footer = () => {
                   Affilate Program
                 </LocalizedLink>
               </div>
-            </div>
+            </div> */}
              <div className="flex space-x-3">
               <a
-                href="https://www.instagram.com/airporttransfers.ai/"
+                href="#"
                 aria-label="Instagram"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -71,7 +71,7 @@ const Footer = () => {
                 <Instagram size={16} />
               </a>
               <a
-                href="https://www.facebook.com/smartairporttransfers/"
+                href="#"
                 aria-label="Facebook"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -80,7 +80,7 @@ const Footer = () => {
                 <Facebook size={16} />
               </a>
               <a
-                href="https://www.tiktok.com/@airporttransfers.ai"
+                href="#"
                 aria-label="TikTok"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -161,7 +161,7 @@ const Footer = () => {
 
        <div className="border-t border-gray-700 mt-8 pt-4 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400 gap-4">
   <p className="text-center sm:text-left">
-    Airport Transfers © {currentYear} | All Rights Reserved
+    NRF © {currentYear} | All Rights Reserved
   </p>
   <div className="flex flex-wrap md:justify-center justify-end space-x-6">
     {/* <p className="flex items-center">

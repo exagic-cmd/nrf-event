@@ -1,29 +1,87 @@
-"use client"
+"use client";
 
-import { useTranslation } from "next-i18next"
-import { useState, useEffect } from "react"
-import { Clock, Shield, MapPin, Users, Car, Headphones } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useTranslation } from "next-i18next";
+import { useState, useEffect } from "react";
+import { Clock, Shield, MapPin, Users, Car, Headphones } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useDaytoursStore } from "@/store/useDaytoursStore";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 
 export function TransferBenefitsSection() {
-  const { t } = useTranslation("common")
-  const benefits = t("transferBenefits.benefits", { returnObjects: true }) || []
-  const icons = [Clock, Shield, MapPin, Users, Car, Headphones]
+  const { t } = useTranslation("common");
+  const { localizedPush } = useLocalizedRouter();
+  const { fetchSearchResults } = useDaytoursStore();
 
+  const [topDayTours, setTopDayTours] = useState([]);
+  const [topAccommodations, setTopAccommodations] = useState([]);
+  const [isLoadingDay, setIsLoadingDay] = useState(true);
+  const [isLoadingAcc, setIsLoadingAcc] = useState(true);
 
-  const [current, setCurrent] = useState(0)
-
+  const benefits = t("transferBenefits.benefits", { returnObjects: true }) || [];
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % benefits.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [benefits.length])
+      setCurrent((prev) => (prev + 1) % benefits.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [benefits.length]);
+
+  /* ---------------------- Load Top Day Tours ---------------------- */
+  useEffect(() => {
+    const loadDayTours = async () => {
+      setIsLoadingDay(true);
+      try {
+        const results = await fetchSearchResults({
+          category_id: 3, // day-tours
+          is_b2c_only: 1,
+        });
+        if (results?.length) setTopDayTours(results.slice(0, 3));
+      } catch (err) {
+        console.error("Error loading day tours:", err);
+      } finally {
+        setIsLoadingDay(false);
+      }
+    };
+    loadDayTours();
+  }, [fetchSearchResults]);
+
+  /* ---------------------- Load Top Accommodations ---------------------- */
+  useEffect(() => {
+    const loadAccommodations = async () => {
+      setIsLoadingAcc(true);
+      try {
+        const results = await fetchSearchResults({
+          category_id: 4, // accommodations
+          is_b2c_only: 1,
+        });
+        if (results?.length) setTopAccommodations(results.slice(0, 3));
+      } catch (err) {
+        console.error("Error loading accommodations:", err);
+      } finally {
+        setIsLoadingAcc(false);
+      }
+    };
+    loadAccommodations();
+  }, [fetchSearchResults]);
+
+  const handleCardClick = (tour, category) => {
+    const path =
+      category === "daytour"
+        ? `/day-tours/detail/${tour.id}`
+        : `/accommodations/detail/${tour.id}`;
+    localizedPush(path);
+  };
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-24 bg-black relative overflow-hidden">
-      {/* Background images */}
+      {/* Backgrounds */}
       <img
         src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756794120/External%20Links/businesswoman-getting-taxi-cab.jpg"
         alt="Singapore Airport"
@@ -36,89 +94,80 @@ export function TransferBenefitsSection() {
       />
 
       <div className="container px-4 md:px-6 mx-auto max-w-7xl relative z-10">
-        {/* Heading */}
-        <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-          <div className="space-y-2">
-            <h2 className="font-bold tracking-tighter text-3xl md:text-4xl text-white">
-              {t("transferBenefits.title")}{" "}
-              <span className="text-[#CC9A55]">{t("transferBenefits.title2")}</span>
-            </h2>
-            <p className="max-w-[900px] md:text-lg/relaxed text-sm/relaxed md:px-0 px-4 text-white">
-              {t("transferBenefits.subtitle")}
-            </p>
-          </div>
+        {/* ---------------------- Day Tours ---------------------- */}
+        <div className="text-center mb-6">
+          <h2 className="font-bold tracking-tighter text-3xl md:text-4xl text-white">
+            Top Day Tours
+          </h2>
         </div>
 
-        {/* Desktop Grid */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.isArray(benefits) &&
-            benefits.map((benefit, index) => {
-              const IconComponent = icons[index] || Car
-              return (
-                <Card
-                  key={index}
-                  className="border-2 text-black border-gray-100 hover:border-orange-200 bg-[#CC9A55] transition-colors duration-300 hover:shadow-lg"
-                >
-                  <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                    <div className="p-2 bg-[#fad6a2] rounded-full text-black">
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold">{benefit.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-grow pt-2">
-                    <p className="text-sm font-medium text-black mb-2">{benefit.feature}</p>
-                    <CardDescription className="text-black text-base leading-relaxed">
-                      {benefit.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              )
-            })}
-        </div>
-
-        {/* Mobile Slider */}
-        <div className="block sm:hidden relative overflow-hidden">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${current * 100}%)` }}
-          >
-            {benefits.map((benefit, index) => {
-              const IconComponent = icons[index] || Car
-              return (
-                <div key={index} className="min-w-full px-4">
-                  <Card className="border-2 text-black border-gray-100 bg-[#CC9A55]">
-                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                      <div className="p-2 bg-[#fad6a2] rounded-full text-black">
-                        <IconComponent className="w-6 h-6" />
-                      </div>
-                      <CardTitle className="text-lg font-semibold">{benefit.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow pt-2">
-                      <p className="text-sm font-medium text-black mb-2">{benefit.feature}</p>
-                      <CardDescription className="text-black text-sm leading-relaxed">
-                        {benefit.description}
-                      </CardDescription>
-                    </CardContent>
-                  </Card>
-                </div>
-              )
-            })}
-          </div>
-
-     
-          <div className="flex justify-center mt-4 space-x-2">
-            {benefits.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrent(index)}
-                className={`w-3 h-3 rounded-full ${
-                  current === index ? "bg-[#CC9A55]" : "bg-gray-400"
-                }`}
-              />
+        {isLoadingDay ? (
+          <p className="text-center text-white">Loading top day tours…</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topDayTours.map((tour, idx) => (
+              <Card
+                key={tour.id ?? idx}
+                onClick={() => handleCardClick(tour, "daytour")}
+                className="border border-gray-200 bg-white cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all duration-300"
+              >
+                <CardHeader className="p-0">
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${tour.image}` || "/placeholder.jpg"}
+                    alt={tour.product_title}
+                    className="w-full h-48 object-cover rounded-t-xl"
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-lg font-semibold mb-2">
+                    {tour.product_title}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-gray-600">
+                    {tour.short_desc || "Explore amazing experiences!"}
+                  </CardDescription>
+                </CardContent>
+              </Card>
             ))}
           </div>
+        )}
+
+        {/* ---------------------- Accommodations ---------------------- */}
+        <div className="text-center mb-6 mt-12">
+          <h2 className="font-bold tracking-tighter text-3xl md:text-4xl text-white">
+            Top Accommodations
+          </h2>
         </div>
+
+        {isLoadingAcc ? (
+          <p className="text-center text-white">Loading top accommodations…</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topAccommodations.map((tour, idx) => (
+              <Card
+                key={tour.id ?? idx}
+                onClick={() => handleCardClick(tour, "accommodation")}
+                className="border border-gray-200 bg-white cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all duration-300"
+              >
+                <CardHeader className="p-0">
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${tour.image}` || "/placeholder.jpg"}
+                    alt={tour.product_title}
+                    className="w-full h-48 object-cover rounded-t-xl"
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-lg font-semibold mb-2">
+                    {tour.product_title}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-gray-600">
+                    {tour.short_desc || "Explore amazing experiences!"}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </section>
-  )
+  );
 }
