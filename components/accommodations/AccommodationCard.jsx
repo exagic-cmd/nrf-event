@@ -20,7 +20,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     return Number.isInteger(num) ? num.toString() : num.toFixed(2);
   };
 
-  const handleBookNow = async () => {
+  const handleCardClick = async () => {
     setIsLoading(true);
     try {
       // Check if already in cart
@@ -59,7 +59,13 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       )}
 
       {/* Card */}
-      <div className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4">
+      <div
+        className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4 cursor-pointer"
+        role="button"
+        tabIndex={0}
+        onClick={handleCardClick}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleCardClick(); }}
+      >
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
             <SvgLoader2 />
@@ -157,13 +163,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
               </p>
             </div>
 
-            <button
-              onClick={handleBookNow}
-              disabled={isLoading || !accommodation.is_active}
-              className="bg-[#CC9A55] text-white text-sm px-4 py-2 rounded-md transition disabled:opacity-70 hover:bg-[#b88a4a]"
-            >
-              {!accommodation.is_active ? "Coming Soon" : "View Details"}
-            </button>
+            {/* Card is clickable — removed separate View button and is_active check */}
           </div>
         </div>
       </div>

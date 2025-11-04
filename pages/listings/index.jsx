@@ -152,6 +152,17 @@ function ListingsPage() {
               </div>
             </div>
           )}
+          { /* Accomodation: No sidebar for now */}
+          {(searchCategory === "accommodation" || searchCategory === "hotels") && (
+          <div className="h-fit md:sticky top-24 self-start z-20">
+            {/* Filter Sidebar (Sticky) */}
+            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
+              {!isLoading && searchResults.length > 0 && (
+                <FilterSidebar />
+              )}
+            </div>
+          </div>
+          )}
 
           {/* Center: Dynamic content */}
           <div className="flex-1 flex flex-col lg:flex-row gap-6">
@@ -162,7 +173,7 @@ function ListingsPage() {
             )}
           </div>
           {/* Google Maps */}
-                  {(searchCategory === "daytour" || searchCategory === "day-tours") && (
+                  {(searchCategory === "daytour" || searchCategory === "day-tours" || searchCategory === "accommodation" || searchCategory === "hotels") && (
                   <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
                     <GoogleMap 
                     center={{ lat: 1.3521, lng: 103.8198 }} // Singapore coordinates

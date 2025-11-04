@@ -59,10 +59,24 @@ const [availablePolicyIds, setAvailablePolicyIds] = useState([]);
     };
 
     try {
+      console.log('Fetching product feature with payload:', payload);
+      if (typeof fetchProductFeature !== 'function') {
+        console.warn('fetchProductFeature is not a function on the store');
+        return;
+      }
+      // call the action; some store implementations return the fetched data, others update store state
       const result = await fetchProductFeature(payload);
-      console.log("Fetched Product Feature:", result);
+      console.log('fetchProductFeature returned:', result);
+
+      // read latest value from the store in case fetchProductFeature updates state instead of returning
+      try {
+        const latest = useTransferStore.getState().productFeature;
+        console.log('productFeature from store state:', latest);
+      } catch (e) {
+        // non-fatal
+      }
     } catch (error) {
-      console.error("Error fetching product feature:", error);
+      console.error('Error fetching product feature:', error);
     }
   }
   loadFeature();

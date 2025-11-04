@@ -66,7 +66,16 @@ function DaytourCard({ tour, category = "daytour" }) {
       )}
 
       {/* Card */}
-      <div className="relative border rounded-xl mb-3 shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4">
+      <div
+        className="relative border rounded-xl mb-3 shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
+        role="button"
+        tabIndex={0}
+        onClick={handleBookNow}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") handleBookNow();
+        }}
+        aria-label={`Open ${tour.name} details`}
+      >
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
             <SvgLoader2 />
@@ -118,25 +127,45 @@ function DaytourCard({ tour, category = "daytour" }) {
             <p className="text-sm text-gray-700 line-clamp-2 mt-2">
               {tour.description}
             </p>
-               {mainLandmark && (
+
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              {mainLandmark && (
                 <div className="flex items-center gap-1">
                   <MapPin size={14} />
-                  <span>{mainLandmark}</span>
+                  <span className="text-gray-600 text-sm">{mainLandmark}</span>
                 </div>
               )}
-            {/* Activities Tags */}
-            {tour.preference_activities && tour.preference_activities.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {tour.preference_activities.slice(0, 3).map((activity, idx) => (
-                  <span 
-                    key={idx}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                  >
-                    {activity}
-                  </span>
-                ))}
-              </div>
-            )}
+
+              {/* Preference activities: show up to 2, if more show "..." with tooltip of remaining */}
+              {tour.preference_activities && tour.preference_activities.length > 0 && (() => {
+                const activities = tour.preference_activities;
+                const visible = activities.slice(0, 2);
+                const remaining = activities.slice(2);
+
+                return (
+                  <>
+                    {visible.map((activity, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                      >
+                        {activity}
+                      </span>
+                    ))}
+
+                    {remaining.length > 0 && (
+                      <span
+                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full cursor-default"
+                        title={remaining.join(', ')}
+                        aria-label={`More activities: ${remaining.join(', ')}`}
+                      >
+                        ...
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
 
             {/* Features */}
             {/* {tour.features && tour.features.length > 0 && (
@@ -172,13 +201,7 @@ function DaytourCard({ tour, category = "daytour" }) {
               )} */}
             </div>
 
-            <button
-              onClick={handleBookNow}
-              disabled={isLoading || !tour.is_active}
-              className="bg-[#CC9A55] text-white text-sm px-4 py-2 rounded-md transition disabled:opacity-70 hover:bg-[#b88a4a]"
-            >
-              {!tour.is_active ? "Coming Soon" : "View"}
-            </button>
+            {/* Card is clickable — removed separate View button and is_active gating */}
           </div>
         </div>
       </div>

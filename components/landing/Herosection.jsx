@@ -150,22 +150,13 @@ const handleFilterTransfer = async (payload) => {
 
   // 🏨 ACCOMMODATIONS
   if (filterActiveTab === 4) {
-    const { country, city, search } = payload;
-
-    if (!country || !city) {
-      alert("Please select both country and city");
-      return;
-    }
+  
 
     const params = new URLSearchParams({
       searched: "true",
       type: "accommodation",
       category_id: String(filterActiveTab),
-      //category: "accommodation", // Add category
-      country_id: String(country?.id),
-      city_id: String(city?.id),
     });
-    if (search) params.append("name", search);
 
     router.push(`/listings?${params.toString()}`);
   }
@@ -191,7 +182,7 @@ const handleFilterTransfer = async (payload) => {
   return (
     <div className=" bg-background">
       {/* Hero */}
-      <section className=" relative min-h-[75vh] h-[50vh] lg:h-[40vh] flex items-center justify-center">
+      <section className=" relative min-h-[85vh] h-[60vh] lg:h-[50vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0 bg-cover min-w-full"
