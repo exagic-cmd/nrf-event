@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from 'next-i18next';
-import DaytourCard from "@/components/daytours/DaytourCard";
+import DaytourCard from "@/components/daytours/DayTourCard";
 import Pagination from "@/components/common/Pagination";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { getFullImageUrl } from "@/utils/imageService";

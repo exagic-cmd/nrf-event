@@ -99,7 +99,7 @@ function DaytourCard({ tour, category = "daytour" }) {
             <h2 className="font-semibold text-lg">{tour.name}</h2>
             
             {/* Landmark and Duration */}
-            <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
+            {/* <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
               {mainLandmark && (
                 <div className="flex items-center gap-1">
                   <MapPin size={14} />
@@ -112,13 +112,18 @@ function DaytourCard({ tour, category = "daytour" }) {
                   <span>{tour.duration}</span>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Description */}
             <p className="text-sm text-gray-700 line-clamp-2 mt-2">
               {tour.description}
             </p>
-
+               {mainLandmark && (
+                <div className="flex items-center gap-1">
+                  <MapPin size={14} />
+                  <span>{mainLandmark}</span>
+                </div>
+              )}
             {/* Activities Tags */}
             {tour.preference_activities && tour.preference_activities.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
@@ -134,13 +139,13 @@ function DaytourCard({ tour, category = "daytour" }) {
             )}
 
             {/* Features */}
-            {tour.features && tour.features.length > 0 && (
+            {/* {tour.features && tour.features.length > 0 && (
               <ul className="text-xs text-gray-500 mt-2 list-disc list-inside">
                 {tour.features.slice(0, 2).map((feature, idx) => (
                   <li key={idx}>{feature}</li>
                 ))}
               </ul>
-            )}
+            )} */}
           </div>
 
           {/* Bottom Section */}
@@ -159,12 +164,12 @@ function DaytourCard({ tour, category = "daytour" }) {
               </div>
               
               {/* Per person info */}
-              {tour.adultPrice && (
+              {/* {tour.adultPrice && (
                 <p className="text-xs text-gray-500 mt-1">
                   Adult: {formatPrice(tour.adultPrice)} {tour.currency || 'SGD'}
                   {tour.childPrice && ` • Child: ${formatPrice(tour.childPrice)} ${tour.currency || 'SGD'}`}
                 </p>
-              )}
+              )} */}
             </div>
 
             <button
