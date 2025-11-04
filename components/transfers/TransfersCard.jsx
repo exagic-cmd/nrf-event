@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { Users, Briefcase, Crown, Star } from "lucide-react";
 import { useTranslation } from "next-i18next";
@@ -9,7 +9,7 @@ import SvgLoader2 from "@/components/common/Loader2Svg";
 function TransfersCard({ car, category = "transfer" }) {
   const { localizedPush } = useLocalizedRouter();
   const { t } = useTranslation("transfer");
-  const { setSelectedTransfer, searchParams } = useTransferStore();
+  const { setSelectedTransfer, searchParams, selectedTransfer } = useTransferStore();
   const { items } = useCartStore();
 
   const [showModal, setShowModal] = useState(false);
@@ -21,38 +21,63 @@ function TransfersCard({ car, category = "transfer" }) {
     return Number.isInteger(num) ? num.toString() : num.toFixed(2);
   };
 
-const handleBookNow = async () => {
-  setIsLoading(true);
-  try {
-    if (category === "transfer") {
-      const alreadyExists = items.some(
-        (item) =>
-          item.tourId === car.rawData.id &&
-          item.searchParams?.pickup?.id === searchParams.pickup?.id &&
-          item.searchParams?.dropoff?.id === searchParams.dropoff?.id &&
-          item.searchParams?.isTwoWay === searchParams.isTwoWay
-      );
+  // Debug: Check what's being stored
+  useEffect(() => {
+  }, [selectedTransfer, car]);
 
-      if (alreadyExists) {
-        setShowModal(true);
+  const handleBookNow = async () => {
+    setIsLoading(true);
+    try {
+      if (category === "transfer") {
+        const alreadyExists = items.some(
+          (item) =>
+            item.tourId === car.id && // Use car.id instead of car.rawData.id
+            item.searchParams?.pickup?.id === searchParams.pickup?.id &&
+            item.searchParams?.dropoff?.id === searchParams.dropoff?.id &&
+            item.searchParams?.isTwoWay === searchParams.isTwoWay
+        );
+
+        if (alreadyExists) {
+          setShowModal(true);
+        } else {
+          // ✅ FIXED: Use car directly since car.rawData is undefined
+          const transferData = {
+            ...car,  // Spread the entire car object
+            price: car.price,
+            originalPrice: car.originalPrice,
+            // Ensure we have all necessary fields
+            id: car.id,
+            name: car.name,
+            subtitle: car.subtitle,
+            desc: car.desc || car.description,
+            image: car.image,
+            features: car.features,
+            feature_type_id: car.feature_type_id,
+            pickup_point_id: car.pickup_point_id,
+            dropoff_point_id: car.dropoff_point_id,
+            pickup_point_group_id: car.pickup_point_group_id,
+            dropoff_point_group_id: car.dropoff_point_group_id
+          };
+
+          console.log("🔄 Setting transfer data:", transferData);
+          
+          setSelectedTransfer(transferData);
+          
+          // Small delay to ensure state is updated before navigation
+          setTimeout(() => {
+            localizedPush("/listings/booking");
+          }, 100);
+        }
       } else {
-        setSelectedTransfer({
-          ...car.rawData,
-          price: car.price,
-          originalPrice: car.originalPrice,
-        });
-        localizedPush("/listings/booking");
+        // For daytour & accommodation
+        localizedPush(`/${category}s/${car.id}`);
       }
-    } else {
-      // For daytour & accommodation
-      localizedPush(`/${category}s/${car.id}`); // Note: plural!
+    } catch (err) {
+      console.error("Booking failed", err);
+    } finally {
+      setTimeout(() => setIsLoading(false), 400);
     }
-  } catch (err) {
-    console.error("Booking failed", err);
-  } finally {
-    setTimeout(() => setIsLoading(false), 400);
-  }
-};
+  };
 
   return (
     <>
@@ -72,7 +97,16 @@ const handleBookNow = async () => {
       )}
 
       {/* Card */}
-      <div className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4">
+      <div
+        className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
+        role="button"
+        tabIndex={0}
+        onClick={handleBookNow}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") handleBookNow();
+        }}
+        aria-label={`Open ${car.name} details`}
+      >
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
             <SvgLoader2 />
@@ -138,17 +172,7 @@ const handleBookNow = async () => {
               </p>
             </div>
 
-            <button
-              onClick={handleBookNow}
-              disabled={isLoading}
-              className="bg-[#CC9A55] text-white text-sm px-4 py-2 rounded-md transition disabled:opacity-70"
-            >
-              {category === "transfer"
-                ? t("card.bookNow")
-                : category === "daytour"
-                ? "View Tour"
-                : "View Details"}
-            </button>
+            {/* Card is clickable — removed separate Book/View button and is_active gating */}
           </div>
         </div>
       </div>

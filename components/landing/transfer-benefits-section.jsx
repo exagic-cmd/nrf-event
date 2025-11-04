@@ -93,7 +93,7 @@ export function TransferBenefitsSection() {
         className="absolute bottom-1/2 right-0 w-36 h-36 object-cover opacity-10 translate-y-1/2 rotate-45 hidden sm:block rounded-xl"
       />
 
-      <div className="container px-4 md:px-6 mx-auto max-w-7xl relative z-10">
+      <div className="container px-4 md:px-6 mx-auto max-w-7xl relative">
         {/* ---------------------- Day Tours ---------------------- */}
         <div className="text-center mb-6">
           <h2 className="font-bold tracking-tighter text-3xl md:text-4xl text-white">
