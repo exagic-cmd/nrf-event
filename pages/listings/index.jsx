@@ -14,7 +14,7 @@ import { useTranslation } from "next-i18next"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import { useSearchParams } from 'next/navigation'
 import { useDaytoursStore } from "@/store/useDaytoursStore";
-// import { GoogleMap } from "@/components/daytours/GoogleMap";
+import GoogleMap from "@/components/daytours/GoogleMap";
 
 
 function ListingsPage() {
@@ -161,16 +161,24 @@ function ListingsPage() {
               renderPlaceholder()
             )}
           </div>
-            {/*Google Maps*/}
-          {/* {(searchCategory === "daytour" || searchCategory === "day-tours") && (
-            <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-              <GoogleMap />
+          {/* Google Maps */}
+                  {(searchCategory === "daytour" || searchCategory === "day-tours") && (
+                  <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
+                    <GoogleMap 
+                    center={{ lat: 1.3521, lng: 103.8198 }} // Singapore coordinates
+                zoom={12}
+                width="100%"
+                height="550px"
+                className="rounded-lg shadow-lg"
+              />
             </div>
-          )} */}
+          )}
           {/* Right: FAQs (only for transfers) */}
-          <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-            {showFaqs && <Faqs />}
-          </div>
+          {searchCategory === "transfer" && (
+            <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
+              {showFaqs && <Faqs />}
+            </div>
+          )}
         </div>
       </div>
     </Layout>
