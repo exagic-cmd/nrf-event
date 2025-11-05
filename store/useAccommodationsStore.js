@@ -56,13 +56,14 @@ export const useAccommodationsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get_public_terms`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/get_terms`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             term: searchTerm,
             local: false,
+            category_id: 4,
           }),
         }
       );
@@ -121,6 +122,7 @@ export const useAccommodationsStore = create((set, get) => ({
         region: payload.region || payload.region_id || null,
         rooms: payload.rooms || [{ adult: 1, children: [] }],
         stars: payload.stars || "0",
+        visitor_id: payload.visitor_id || null,
         start_date:
           payload.start_date || new Date().toISOString().split("T")[0],
       };

@@ -135,7 +135,28 @@ function ListingsPage() {
               />
             </div>
           )}
-
+			 {/* Day Tours: Filter Sidebar + List */}
+          {(searchCategory === "daytour" || searchCategory === "day-tours") && (
+            <div className="h-fit md:sticky top-24 self-start z-20">
+              {/* Filter Sidebar (Sticky) */}
+              <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
+                {!isLoading && searchResults.length > 0 && (
+                  <FilterSidebar />
+                )}
+              </div>
+            </div>
+          )}
+          { /* Accomodation: No sidebar for now */}
+          {(searchCategory === "accommodation" || searchCategory === "hotels") && (
+          <div className="h-fit md:sticky top-24 self-start z-20">
+            {/* Filter Sidebar (Sticky) */}
+            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
+              {/* {!isLoading && searchResults.length > 0 && (
+                <FilterSidebar />
+              )} */}
+            </div>
+          </div>
+          )}
           <div className="flex-1 flex flex-col lg:flex-row gap-6">
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
