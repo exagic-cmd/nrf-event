@@ -1,5 +1,5 @@
 // components/hotels/AccommodationFilter.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   X,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 
 export default function AccommodationFilter({ onSearch }) {
   const [search, setSearch] = useState("");
@@ -18,45 +19,56 @@ export default function AccommodationFilter({ onSearch }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showGuestPopup, setShowGuestPopup] = useState(false);
-  const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
-  const [nationality, setNationality] = useState("all");
+  const [rooms, setRooms] = useState([{ adult: 1, children: [] }]);
+  const [nationality, setNationality] = useState("SG"); // Changed from "all" to "SG"
   const [stars, setStars] = useState("0");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null); // Track selected item
 
-  // Mock data — replace with API
-  const accomItems = [
-    { id: 1, type: "hotel", title: "Burj Al Arab" },
-    { id: 2, type: "hotel", title: "Atlantis The Palm" },
-    { id: 3, type: "region", region_name: "Downtown Dubai" },
-    { id: 4, type: "region", region_name: "Dubai Marina" },
-  ];
+  const { 
+    nationalities, 
+    hotels, 
+    regions, 
+    fetchNationalities, 
+    fetchHotelsAndRegions,
+  } = useAccommodationsStore();
 
-  const nationalities = [
-    { name: "All", code: "all" },
-    { name: "UAE", code: "AE" },
-    { name: "India", code: "IN" },
-    { name: "USA", code: "US" },
-  ];
+  // Fetch nationalities on component mount
+  useEffect(() => {
+    fetchNationalities();
+  }, [fetchNationalities]);
+
+  // Fetch hotels and regions when search changes
+  useEffect(() => {
+    if (search.trim()) {
+      fetchHotelsAndRegions(search);
+    }
+  }, [search, fetchHotelsAndRegions]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
+    
+    const filteredHotels = hotels.filter(
+      (hotel) => hotel.title.toLowerCase().includes(q)
+    );
+    
+    const filteredRegions = regions.filter(
+      (region) => region.region_name.toLowerCase().includes(q)
+    );
+
     return {
-      hotels: accomItems.filter(
-        (i) => i.type === "hotel" && i.title.toLowerCase().includes(q)
-      ),
-      regions: accomItems.filter(
-        (i) => i.type === "region" && i.region_name.toLowerCase().includes(q)
-      ),
+      hotels: filteredHotels,
+      regions: filteredRegions,
     };
-  }, [search]);
+  }, [search, hotels, regions]);
 
   const totalGuests = rooms.reduce(
     (sum, r) => sum + r.adult + r.children.length,
     0
   );
 
-  const addRoom = () => setRooms([...rooms, { adult: 2, children: [] }]);
+  const addRoom = () => setRooms([...rooms, { adult: 1, children: [] }]);
   const removeRoom = (i) => {
     if (rooms.length > 1) setRooms(rooms.filter((_, idx) => idx !== i));
   };
@@ -93,10 +105,9 @@ export default function AccommodationFilter({ onSearch }) {
     setStartDate(start);
     setTempEndDate(end);
     
-    // Only set the actual endDate when range selection is complete
     if (end) {
       setEndDate(end);
-      setTempEndDate(null); // Clear temp after selection is complete
+      setTempEndDate(null);
     }
   };
 
@@ -104,17 +115,61 @@ export default function AccommodationFilter({ onSearch }) {
     setEndDate(date);
   };
 
+  // Handle selection from dropdown - FIXED
+  const handleSelection = (item, type) => {
+    setSelectedItem({ ...item, type });
+    if (type === "hotel") {
+      setSearch(item.title);
+    } else if (type === "region") {
+      setSearch(item.region_name);
+    }
+    setShowDropdown(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSearch({
+    
+    // Validate required fields
+    if (!selectedItem) {
+      alert("Please select a hotel or destination from the dropdown");
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      alert("Please select both check-in and check-out dates");
+      return;
+    }
+
+    // Calculate nights from dates - FIXED
+    const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+    
+    // Format dates properly
+    const formatDate = (date) => {
+      return date.toISOString().split('T')[0];
+    };
+
+    const searchPayload = {
       search,
-      startDate,
-      endDate,
+      start_date: formatDate(startDate),
+      end_date: formatDate(endDate),
+      nights: nights,
       rooms,
-      nationality,
+      nationality: nationality, // Now it will be "SG" instead of "all"
+      refund_policy: refund,
       stars,
-      refund,
-    });
+    };
+
+    // Set region or hotel_id based on selection - FIXED
+    if (selectedItem.type === "hotel") {
+      searchPayload.hotel_id = selectedItem.stuba_id;
+      searchPayload.region = null;
+    } else if (selectedItem.type === "region") {
+      searchPayload.region = selectedItem.region_id;
+      searchPayload.hotel_id = false;
+    }
+
+    console.log("Search Payload:", searchPayload);
+    onSearch(searchPayload);
   };
 
   return (
@@ -130,6 +185,9 @@ export default function AccommodationFilter({ onSearch }) {
               onChange={(e) => {
                 setSearch(e.target.value);
                 setShowDropdown(!!e.target.value.trim());
+                if (!e.target.value.trim()) {
+                  setSelectedItem(null);
+                }
               }}
               placeholder="Search hotels or regions..."
               className="w-full bg-transparent outline-none text-lg"
@@ -137,7 +195,11 @@ export default function AccommodationFilter({ onSearch }) {
             {search && (
               <button
                 type="button"
-                onClick={() => setSearch("")}
+                onClick={() => {
+                  setSearch("");
+                  setSelectedItem(null);
+                  setShowDropdown(false);
+                }}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X className="h-4 w-4" />
@@ -152,52 +214,57 @@ export default function AccommodationFilter({ onSearch }) {
                   <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
                     Destinations
                   </h6>
-                  {filtered.regions.map((r) => (
+                  {filtered.regions.map((region) => (
                     <button
-                      key={r.id}
+                      key={region.id}
                       type="button"
-                      onMouseDown={() => {
-                        setSearch(r.region_name);
-                        setShowDropdown(false);
-                      }}
+                      onMouseDown={() => handleSelection(region, "region")}
                       className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
                     >
                       <MapPin className="h-4 w-4 text-yellow-600" />
-                      {r.region_name}
+                      {region.region_name}
                     </button>
                   ))}
+                  {filtered.regions.length === 0 && (
+                    <div className="px-3 py-2 text-sm text-gray-500">No destinations found</div>
+                  )}
                 </div>
                 <div>
                   <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
                     Hotels
                   </h6>
-                  {filtered.hotels.map((h) => (
+                  {filtered.hotels.map((hotel) => (
                     <button
-                      key={h.id}
+                      key={hotel.id}
                       type="button"
-                      onMouseDown={() => {
-                        setSearch(h.title);
-                        setShowDropdown(false);
-                      }}
+                      onMouseDown={() => handleSelection(hotel, "hotel")}
                       className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
                     >
                       <Building className="h-4 w-4 text-yellow-600" />
-                      {h.title}
+                      {hotel.title}
                     </button>
                   ))}
+                  {filtered.hotels.length === 0 && (
+                    <div className="px-3 py-2 text-sm text-gray-500">No hotels found</div>
+                  )}
                 </div>
               </div>
             </div>
           )}
+          {selectedItem && (
+            <div className="text-xs text-green-600 mt-1">
+              Selected: {selectedItem.type === 'hotel' ? selectedItem.title : selectedItem.region_name}
+            </div>
+          )}
         </div>
 
-        {/* Check-in with Date Range (but only shows start date) */}
+        {/* Check-in with Date Range */}
         <div className="md:col-span-2 relative">
           <DatePicker
             selected={startDate}
             onChange={handleStartDateChange}
             startDate={startDate}
-            endDate={tempEndDate} // Use tempEndDate only during selection
+            endDate={tempEndDate}
             selectsRange
             selectsStart
             minDate={new Date()}
@@ -388,7 +455,7 @@ export default function AccommodationFilter({ onSearch }) {
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-lg"
           >
             {nationalities.map((n) => (
-              <option key={n.code} value={n.code}>
+              <option key={n.id} value={n.code}>
                 {n.name}
               </option>
             ))}

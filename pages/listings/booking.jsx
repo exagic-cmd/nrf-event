@@ -109,7 +109,7 @@ setIsLoading(true)
   const handleContinueShopping = () => {
     setIsLoading(true)
     resetFormData();
-    localizedPush("/transfers");
+    localizedPush("/");
     resetTransferStore();
   };
 const handleGoToCart = async () => {
