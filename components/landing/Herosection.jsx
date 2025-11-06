@@ -139,31 +139,22 @@ export default function HomePage() {
         start_date,
       };
 
-  // 🏨 ACCOMMODATIONS
-  if (filterActiveTab === 4) {
-  
+      // save in Zustand
+      setAccommodationSearchParams(searchPayload);
 
-    const params = new URLSearchParams({
-      searched: "true",
-      type: "accommodation",
-      category_id: String(filterActiveTab),
-    });
+      // navigate
+      router.push(`/listings?searched=true&type=accommodation`);
+      return;
+    }
+  };
 
-    router.push(`/listings?${params.toString()}`);
-  }
-};
-
-
-
-  // Stars / Refund / Nationality callbacks from Hotels tab
   const handleUpdateStars = (value) => setStars(value);
   const handleUpdateRefund = (value) => {};
   const handleNationalitySelected = (code) => {};
 
   return (
-    <div className=" bg-background">
-      {/* Hero */}
-      <section className=" relative min-h-[85vh] h-[60vh] lg:h-[50vh] flex items-center justify-center">
+    <div className="bg-background">
+      <section className="relative min-h-[85vh] h-[60vh] lg:h-[50vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0 bg-cover min-w-full"
