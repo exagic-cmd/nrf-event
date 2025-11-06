@@ -51,6 +51,19 @@ export default function HomePage() {
     fetchVehicles();
   }, [resetTransferStore, fetchVehicles]);
 
+  const [event, setEvent] = useState(null);
+
+  useEffect(() => {
+    async function loadEvent() {
+      const data = await $helpers.getEventData();
+      console.log("EVENT FROM herosection:", data);
+      setEvent(data);
+    }
+
+    loadEvent();
+  }, []);
+
+
   // Tabs
   const [filterActiveTab, setFilterActiveTab] = useState(2);
   const filterTabs = [
@@ -156,11 +169,11 @@ export default function HomePage() {
     <div className="bg-background">
       <section className="relative min-h-[85vh] h-[60vh] lg:h-[50vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
+          {event?.event?.title}
           <div
             className="absolute inset-0 bg-cover min-w-full"
             style={{
-              backgroundImage:
-                "url('https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1761738497/External%20Links/NRF_Singapore.jpg')",
+                              backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.banner}')`,
             }}
           />
           <div className="absolute inset-0 bg-black/10" />
