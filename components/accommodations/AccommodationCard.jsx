@@ -190,6 +190,8 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
                 <span>per stay</span>
               </div> */}
             </div>
+
+            {/* Card is clickable — removed separate View button and is_active check */}
           </div>
         </div>
       </div>
