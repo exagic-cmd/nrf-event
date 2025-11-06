@@ -1,3 +1,4 @@
+// components/accommodations/AccommodationList.jsx
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
@@ -18,30 +19,28 @@ function AccommodationList() {
     accommodations,
     isLoading,
     error,
-    fetchAccommodations,
   } = useAccommodationsStore();
 
   const accommodationSectionRef = useRef(null);
 
-  // 🔍 Log current Zustand data
+  // Debug logs
   useEffect(() => {
     console.log("🏨 AccommodationList Mounted");
     console.log("➡️ Zustand Search Params:", searchParams);
     console.log("➡️ Zustand Accommodations:", accommodations);
-  }, [searchParams, accommodations]);
+    console.log("➡️ Loading State:", isLoading);
+    console.log("➡️ Error State:", error);
+  }, [searchParams, accommodations, isLoading, error]);
 
-  // ✅ Fetch accommodations automatically if payload exists
-  useEffect(() => {
-    if (searchParams && Object.keys(searchParams).length > 0) {
-      console.log("📦 Fetching accommodations with payload:", searchParams);
-      fetchAccommodations(searchParams);
-    }
-  }, [searchParams, fetchAccommodations]);
-
-  // 🧮 Prepare the data for UI
+  // Prepare the data for UI
   const accommodationData = useMemo(() => {
-    if (!accommodations || !Array.isArray(accommodations)) return [];
+    if (!accommodations || !Array.isArray(accommodations)) {
+      console.log("❌ No accommodations data or not an array");
+      return [];
+    }
 
+    console.log("✅ Processing accommodations data:", accommodations.length, "items");
+    
     return accommodations.map((item) => {
       const basePrice = parseFloat(item.price || item.rate || item.starting_price || 0);
       const promoPrice = parseFloat(item.promo_price || item.discounted_price || 0);
@@ -68,17 +67,18 @@ function AccommodationList() {
     });
   }, [accommodations]);
 
-  // 🧭 Auto-scroll to list when loaded
+  // Auto-scroll to list when loaded
   useEffect(() => {
-    if (accommodationData.length > 0 && accommodationSectionRef.current) {
+    if (accommodationData.length > 0 && accommodationSectionRef.current && !isLoading) {
+      console.log("🎯 Auto-scrolling to accommodation list");
       const element = accommodationSectionRef.current;
       const yOffset = -100;
       const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: "smooth" });
     }
-  }, [accommodationData]);
+  }, [accommodationData, isLoading]);
 
-  // 📊 Pagination + Sorting
+  // Pagination + Sorting
   const sortedAccommodations = useMemo(() => {
     const sorted = [...accommodationData];
     return sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
@@ -90,25 +90,21 @@ function AccommodationList() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  // 🧱 Render UI
-  return (
-    <div ref={accommodationSectionRef} className="space-y-6">
-      {/* Error Message */}
-      {error && (
-        <div className="rounded-xl py-3 px-4 bg-red-50 border border-red-200">
-          <p className="text-lg font-semibold text-red-700">Error: {error}</p>
+  // Show different states based on the current situation
+  const renderContent = () => {
+    // No search performed yet
+    if (!searchParams && !isLoading && accommodations.length === 0) {
+      return (
+        <div className="text-center py-10 text-gray-500">
+          <p className="text-lg mb-2">Ready to find your perfect stay?</p>
+          <p>Enter your search criteria above to see available accommodations.</p>
         </div>
-      )}
+      );
+    }
 
-      {/* Summary Header */}
-      <div className="rounded-xl py-3 px-4 bg-gray-50">
-        <p className="text-lg font-semibold">
-          Showing {sortedAccommodations.length} Accommodations
-        </p>
-      </div>
-
-      {/* Loading */}
-      {isLoading ? (
+    // Loading state
+    if (isLoading) {
+      return (
         <div className="flex justify-center items-center py-20">
           <svg
             className="animate-spin h-8 w-8 text-[#CC9A55]"
@@ -130,24 +126,62 @@ function AccommodationList() {
               d="M4 12a8 8 0 018-8v8H4z"
             />
           </svg>
+          <span className="ml-3 text-gray-600">Searching for accommodations...</span>
         </div>
-      ) : paginatedAccommodations.length > 0 ? (
-        // ✅ Render accommodation cards
-        <div className="space-y-6">
-          {paginatedAccommodations.map((accommodation) => (
-            <AccommodationCard
-              key={accommodation.id}
-              accommodation={accommodation}
-              category="accommodation"
-            />
-          ))}
+      );
+    }
+
+    // Error state
+    if (error) {
+      return (
+        <div className="rounded-xl py-3 px-4 bg-red-50 border border-red-200">
+          <p className="text-lg font-semibold text-red-700">Error: {error}</p>
         </div>
-      ) : (
-        // No results
+      );
+    }
+
+    // Search performed but no results
+    if (searchParams && paginatedAccommodations.length === 0) {
+      return (
         <div className="text-center py-10 text-gray-500">
-          No accommodations found for your search criteria.
+          <p className="text-lg mb-2">No accommodations found</p>
+          <p>Try adjusting your search criteria or dates.</p>
+        </div>
+      );
+    }
+
+    // Show results
+    return (
+      <div className="space-y-6">
+        {paginatedAccommodations.map((accommodation) => (
+          <AccommodationCard
+            key={accommodation.id}
+            accommodation={accommodation}
+            category="accommodation"
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div ref={accommodationSectionRef} className="space-y-6">
+      {/* Summary Header - Only show when we have search params */}
+      {searchParams && (
+        <div className="rounded-xl py-3 px-4 bg-gray-50">
+          <p className="text-lg font-semibold">
+            {isLoading ? "Searching..." : `Showing ${sortedAccommodations.length} Accommodations`}
+          </p>
+          {searchParams.search && (
+            <p className="text-sm text-gray-600">
+              For: {searchParams.search} • {searchParams.start_date} to {searchParams.end_date}
+            </p>
+          )}
         </div>
       )}
+
+      {/* Main Content */}
+      {renderContent()}
 
       {/* Pagination */}
       {!isLoading && totalPages > 1 && (

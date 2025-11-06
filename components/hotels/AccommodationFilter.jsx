@@ -20,11 +20,11 @@ export default function AccommodationFilter({ onSearch }) {
   const [endDate, setEndDate] = useState(null);
   const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [rooms, setRooms] = useState([{ adult: 1, children: [] }]);
-  const [nationality, setNationality] = useState("SG"); // Changed from "all" to "SG"
+  const [nationality, setNationality] = useState("SG");
   const [stars, setStars] = useState("0");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null); // Track selected item
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const { 
     nationalities, 
@@ -32,6 +32,7 @@ export default function AccommodationFilter({ onSearch }) {
     regions, 
     fetchNationalities, 
     fetchHotelsAndRegions,
+    setSearchParamsAndSearch
   } = useAccommodationsStore();
 
   // Fetch nationalities on component mount
@@ -115,7 +116,7 @@ export default function AccommodationFilter({ onSearch }) {
     setEndDate(date);
   };
 
-  // Handle selection from dropdown - FIXED
+  // Handle selection from dropdown
   const handleSelection = (item, type) => {
     setSelectedItem({ ...item, type });
     if (type === "hotel") {
@@ -126,7 +127,7 @@ export default function AccommodationFilter({ onSearch }) {
     setShowDropdown(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validate required fields
@@ -140,7 +141,7 @@ export default function AccommodationFilter({ onSearch }) {
       return;
     }
 
-    // Calculate nights from dates - FIXED
+    // Calculate nights from dates
     const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
     
     // Format dates properly
@@ -154,22 +155,29 @@ export default function AccommodationFilter({ onSearch }) {
       end_date: formatDate(endDate),
       nights: nights,
       rooms,
-      nationality: nationality, // Now it will be "SG" instead of "all"
+      nationality: nationality,
       refund_policy: refund,
       stars,
     };
 
-    // Set region or hotel_id based on selection - FIXED
+    // Set region or hotel_id based on selection
     if (selectedItem.type === "hotel") {
       searchPayload.hotel_id = selectedItem.stuba_id;
-      searchPayload.region = null;
+      searchPayload.region = false;
     } else if (selectedItem.type === "region") {
       searchPayload.region = selectedItem.region_id;
       searchPayload.hotel_id = false;
     }
 
-    console.log("Search Payload:", searchPayload);
-    onSearch(searchPayload);
+    console.log("🔍 Search Payload:", searchPayload);
+    
+    // Use the action that sets params AND triggers search
+    await setSearchParamsAndSearch(searchPayload);
+    
+    // Call the onSearch prop if provided
+    if (onSearch) {
+      onSearch(searchPayload);
+    }
   };
 
   return (
@@ -178,7 +186,7 @@ export default function AccommodationFilter({ onSearch }) {
         {/* Search */}
         <div className="md:col-span-3 relative">
           <div className="rounded-2xl border border-gray-200 bg-white px-3 py-2 flex items-center gap-2">
-            <Search className="h-5 w-5 text-gray-500 " />
+            <Search className="h-5 w-5 text-gray-500" />
             <input
               type="text"
               value={search}
@@ -458,7 +466,7 @@ export default function AccommodationFilter({ onSearch }) {
         </div>
 
         <div className="md:col-span-9">
-            <label className="block text-sm mb-1">&nbsp;</label>
+          <label className="block text-sm mb-1">&nbsp;</label>
           <div className="flex flex-wrap gap-2 mb-3">
             {["All", "1 star", "2 star", "3 star", "4 star", "5 star"].map((label, i) => (
               <label

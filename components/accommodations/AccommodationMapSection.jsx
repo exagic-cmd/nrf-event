@@ -1,35 +1,37 @@
 import React, { useEffect, useRef } from "react";
 
-const AccommodationMapSection = ({ latitude, longitude, hotelName, address }) => {
+const AccommodationMapSection = ({ hotelData }) => {
   const mapRef = useRef(null);
 
+  // ✅ Extract coordinates from hotelData
+  const latitude = hotelData?.latitude ? parseFloat(hotelData.latitude) : null;
+  const longitude = hotelData?.longitude ? parseFloat(hotelData.longitude) : null;
+  const hotelName = hotelData?.title || hotelData?.name || "Accommodation";
+
   useEffect(() => {
-    // Don't run on server or without coords
+    // Don't run on server or without valid coordinates
     if (typeof window === "undefined") return;
     if (!latitude || !longitude) return;
-
-    const lat = Number(latitude);
-    const lng = Number(longitude);
 
     const initMap = () => {
       try {
         const map = new window.google.maps.Map(mapRef.current, {
-          center: { lat, lng },
+          center: { lat: latitude, lng: longitude },
           zoom: 15,
           gestureHandling: "auto",
         });
 
         new window.google.maps.Marker({
-          position: { lat, lng },
+          position: { lat: latitude, lng: longitude },
           map,
-          title: hotelName || "Location",
+          title: hotelName,
         });
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error("AccommodationMapSection: failed to initialize map", err);
       }
     };
 
+    // If Google Maps is already loaded
     if (window.google && window.google.maps) {
       initMap();
       return;
@@ -44,7 +46,6 @@ const AccommodationMapSection = ({ latitude, longitude, hotelName, address }) =>
 
     const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     if (!key) {
-      // eslint-disable-next-line no-console
       console.warn("AccommodationMapSection: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is not set");
       return;
     }
@@ -55,40 +56,19 @@ const AccommodationMapSection = ({ latitude, longitude, hotelName, address }) =>
     script.defer = true;
     script.setAttribute("data-google-maps", "true");
     script.onload = initMap;
-    script.onerror = () => {
-      // eslint-disable-next-line no-console
-      console.error("AccommodationMapSection: failed to load Google Maps script");
-    };
     document.head.appendChild(script);
-
-    return () => {
-      // do not remove the script (other components may use it), but cleanup listeners if any
-    };
   }, [latitude, longitude, hotelName]);
+
+  if (!latitude || !longitude) {
+    return null; // Don't render anything if no coordinates
+  }
 
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold text-white mb-4">Location</h2>
       <div className="bg-gray-800 rounded-xl overflow-hidden">
-        <div className="aspect-[8/3] bg-gray-700 relative">
+        <div className="aspect-[8/3] bg-gray-700">
           <div ref={mapRef} className="w-full h-full" />
-        </div>
-
-        <div className="p-4">
-          <h3 className="font-semibold text-white mb-2">{hotelName}</h3>
-          {address && (
-            <p className="text-gray-300 text-sm">
-              {address.address1}
-              {address.address2 && `, ${address.address2}`}
-              {address.address3 && `, ${address.address3}`}
-              <br />
-              {address.city}, {address.country}
-              {address.zip && `, ${address.zip}`}
-            </p>
-          )}
-          {address && address.tel && (
-            <p className="text-gray-400 text-sm mt-1">Tel: {address.tel}</p>
-          )}
         </div>
       </div>
     </div>

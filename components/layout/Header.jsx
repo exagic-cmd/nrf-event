@@ -12,16 +12,6 @@ import { User, ShoppingBag, LogOut } from "lucide-react";
 export default function Header() {
   const setLocale = useLanguageStore((state) => state.setLocale);
   const { token, logout } = useUserStore();
-  const [event, setEvent] = useState(null);
-
-  useEffect(() => {
-    async function loadEvent() {
-      const data = await $helpers.getEventData();
-      setEvent(data);
-    }
-
-    loadEvent();
-  }, []);
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -144,7 +134,7 @@ export default function Header() {
       <div className="flex items-center">
         <LocalizedLink href="/">
           <img
-            src={`https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.logo}`}
+            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1761659321/nrf.png"
             alt="Logo"
             className="h-8 sm:h-10 md:h-12 w-auto object-contain"
           />

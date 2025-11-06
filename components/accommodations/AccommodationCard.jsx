@@ -46,14 +46,14 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     try {
       // Check if already in cart
       const alreadyExists = items.some(
-        (item) => item.tourId === hotelData.id && item.category === "accommodation"
+        (item) => item.tourId === hotelData.stuba_id && item.category === "accommodation"
       );
 
       if (alreadyExists) {
         setShowModal(true);
       } else {
         // Navigate to accommodation details page
-        localizedPush(`/accommodation/detail/${hotelData.id}`);
+        localizedPush(`/accommodation/detail/${hotelData.stuba_id}`);
       }
     } catch (err) {
       console.error("Booking failed", err);

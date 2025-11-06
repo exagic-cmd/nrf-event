@@ -63,7 +63,7 @@ export const useAccommodationsStore = create((set, get) => ({
           body: JSON.stringify({
             term: searchTerm,
             local: false,
-            category_id: 4,
+            caterogry_id: 4,
           }),
         }
       );
@@ -95,58 +95,72 @@ export const useAccommodationsStore = create((set, get) => ({
     }
   },
 
+  // Set search parameters and trigger search immediately
+  setSearchParamsAndSearch: async (payload) => {
+    console.log("🚀 Setting search params and triggering search:", payload);
+    
+    // First, set the search params in store
+    set({ searchParams: payload, isLoading: true, error: null });
+    
+    // Then immediately trigger the search
+    await get().fetchAccommodations(payload);
+  },
+
   // Fetch accommodations search results
   fetchAccommodations: async (payload) => {
+    // If no payload provided, use existing searchParams
+    const searchPayload = payload || get().searchParams;
+    
+    if (!searchPayload) {
+      console.error("❌ No search payload provided");
+      set({ isLoading: false, error: "No search criteria provided" });
+      return [];
+    }
+
     set({ isLoading: true, error: null });
 
     try {
-      // ✅ Safely use nights if provided, or calculate if dates exist
-      const nights =
-        payload?.nights ||
-        (payload.start_date && payload.end_date
-          ? Math.ceil(
-              (new Date(payload.end_date) - new Date(payload.start_date)) /
-                (1000 * 60 * 60 * 24)
-            )
-          : 1);
-
-      // ✅ Build the exact payload structure required by API
       const apiPayload = {
         hotel_id:
-          payload.hotel_id === undefined || payload.hotel_id === null
+          searchPayload.hotel_id === undefined || searchPayload.hotel_id === null
             ? false
-            : payload.hotel_id,
-        nationality: payload.nationality || "SG",
-        nights,
-        refund_policy: payload.refund_policy || "all",
-        region: payload.region || payload.region_id || null,
-        rooms: payload.rooms || [{ adult: 1, children: [] }],
-        stars: payload.stars || "0",
-        visitor_id: payload.visitor_id || null,
+            : searchPayload.hotel_id,
+        region: searchPayload.region || searchPayload.region_id || false,
+        nationality: searchPayload.nationality || "SG",
+        refund_policy: searchPayload.refund_policy || "all",
+        stars: searchPayload.stars || "0",
+        rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
+        nights:
+          searchPayload.nights ||
+          (searchPayload.start_date && searchPayload.end_date
+            ? Math.ceil(
+                (new Date(searchPayload.end_date) - new Date(searchPayload.start_date)) /
+                  (1000 * 60 * 60 * 24)
+              )
+            : 1),
         start_date:
-          payload.start_date || new Date().toISOString().split("T")[0],
+          searchPayload.start_date || new Date().toISOString().split("T")[0],
+        end_date: searchPayload.end_date || null,
+        search: searchPayload.search || "",
+        visitor_id: searchPayload.visitor_id || null,
       };
 
-      // ✅ Store this payload immediately in Zustand for reference
-      //set({ searchParams: apiPayload });
+      console.log("🧾 Final API Payload:", apiPayload);
 
-      console.log("🧾 Zustand Search Params (Saved):", apiPayload);
-      console.log("🌐 Sending payload to /public_stuba:", apiPayload);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiPayload),
+      });
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(apiPayload),
-        }
-      );
-
-      if (!res.ok) throw new Error("Network response was not ok");
+      if (!res.ok) {
+        const txt = await res.text().catch(() => null);
+        throw new Error(`Network response was not ok: ${res.status} ${res.statusText} ${txt || ''}`);
+      }
 
       const data = await res.json();
 
-      // ✅ Assume API returns accommodations in data.accommodations or data.data
+      // Assume API returns accommodations in data.accommodations or data.data
       const results = data?.accommodations || data?.data || data || [];
 
       set({
@@ -221,13 +235,19 @@ export const useAccommodationsStore = create((set, get) => ({
       filteredResults: results,
     }),
   setSuggestedResults: (results) => set({ suggestedResults: results }),
-  setSearchParams: (params) =>
-    set({
-      searchParams: {
-        ...get().searchParams,
-        ...params,
-      },
-    }),
+  
+  // Set search params without triggering search
+  setSearchParams: (params) => {
+    const current = get().searchParams;
+    const next = { ...current, ...params };
+
+    // Prevent unnecessary updates
+    if (JSON.stringify(current) === JSON.stringify(next)) {
+      return;
+    }
+
+    set({ searchParams: next });
+  },
 
   // Reset between searches
   clearAccommodationResults: () =>
