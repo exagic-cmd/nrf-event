@@ -1,3 +1,4 @@
+// components/accommodations/AccommodationDetailPage.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -8,11 +9,14 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useCartStore } from "@/store/useCartStore";
+import { useDrawerStore } from "@/store/useDrawerStore";
 import AccommodationHeader from "@/components/accommodations/AccommodationHeader";
 import AccommodationGallery from "@/components/accommodations/ImageGallery";
 import AccommodationInfoCard from "@/components/accommodations/AccommodationInfoCard";
 import AccommodationRooms from "@/components/accommodations/RoomTypes";
 import AccommodationMap from "@/components/accommodations/AccommodationMapSection";
+import BookingModal from "@/components/accommodations/BookingModal";
 
 export async function getServerSideProps({ locale }) {
   const translations = await serverSideTranslations(locale || "en", [
@@ -26,7 +30,7 @@ export default function AccommodationDetailPage() {
   const { t } = useTranslation(["common", "accommodation"]);
   const router = useRouter();
   const { id: accommodationId, productname } = router.query;
-  const { localizedReplace } = useLocalizedRouter();
+  const { localizedReplace, localizedPush } = useLocalizedRouter();
 
   const {
     selectedRegion,
@@ -35,10 +39,14 @@ export default function AccommodationDetailPage() {
     setSearchParams,
   } = useAccommodationsStore();
 
+  const { items, removeItem } = useCartStore();
+  const { openDrawer, setDrawerContent } = useDrawerStore();
+
   const [accommodation, setAccommodation] = useState(null);
-  const [selectedRoom, setSelectedRoom] = useState(null); // ✅ Add selected room state
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [alreadyModal, setAlreadyModal] = useState(false);
 
   const slugify = useCallback((text) => {
     if (!text) return "";
@@ -52,14 +60,14 @@ export default function AccommodationDetailPage() {
       .replace(/-+$/, "");
   }, []);
 
-  // ✅ Helper function to normalize accommodation data
+  // Normalize accommodation data function (keep your existing implementation)
   const normalizeAccommodationData = (data) => {
+    // Your existing normalizeAccommodationData function
     if (!data) return null;
 
     const hotelData = data.Hotel_Data || data;
     const roomData = data.Result || data.rooms || [];
     
-    // ✅ Extract images from media field
     let images = [];
     try {
       if (hotelData.media) {
@@ -74,7 +82,6 @@ export default function AccommodationDetailPage() {
       console.warn("Failed to parse media:", e);
     }
 
-    // ✅ Parse address
     let address = {};
     try {
       if (hotelData.address) {
@@ -84,7 +91,6 @@ export default function AccommodationDetailPage() {
       console.warn("Failed to parse address:", e);
     }
 
-    // ✅ Parse region
     let region = {};
     try {
       if (hotelData.region) {
@@ -94,7 +100,6 @@ export default function AccommodationDetailPage() {
       console.warn("Failed to parse region:", e);
     }
 
-    // ✅ Parse rating
     let rating = {};
     try {
       if (hotelData.rating) {
@@ -104,7 +109,6 @@ export default function AccommodationDetailPage() {
       console.warn("Failed to parse rating:", e);
     }
 
-    // ✅ Calculate starting price from rooms and find lowest price room
     const roomsWithPrices = roomData.map(room => ({
       ...room,
       price: parseFloat(room.Room?.Price?.["@attributes"]?.amt || 0)
@@ -114,7 +118,6 @@ export default function AccommodationDetailPage() {
       ? Math.min(...roomsWithPrices.map(room => room.price))
       : hotelData.price || 0;
 
-    // ✅ Find the lowest price room
     const lowestPriceRoom = roomsWithPrices.length > 0 
       ? roomsWithPrices.reduce((lowest, room) => 
           room.price < lowest.price ? room : lowest
@@ -168,13 +171,12 @@ export default function AccommodationDetailPage() {
     };
   };
 
-  // ✅ Handle room selection
+  // Handle room selection
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
-    console.log("✅ Room selected:", room);
   };
 
-  // ✅ Handle scroll to room options
+  // Handle scroll to room options
   const handleScrollToOptions = () => {
     const roomTypesSection = document.getElementById('room-types-section');
     if (roomTypesSection) {
@@ -185,35 +187,71 @@ export default function AccommodationDetailPage() {
     }
   };
 
- // ✅ Handle proceed to booking - Updated with proper booking flow
-const handleProceedBooking = () => {
-  if (!selectedRoom) {
-    alert("Please select a room first");
-    return;
-  }
-  
-  console.log("🚀 Proceeding to booking with room:", selectedRoom);
-  
-  // Store booking data in sessionStorage for the booking page
-  const bookingData = {
-    accommodationId: accommodationId,
-    hotelData: hotelData,
-    selectedRoom: selectedRoom,
-    searchParams: searchParams,
-    nights: searchParams?.nights || 1,
-    checkIn: searchParams?.start_date,
-    checkOut: searchParams?.end_date,
-    guests: searchParams?.rooms?.[0]?.adult || 2,
-    timestamp: new Date().toISOString()
+  // Handle proceed to booking with cart validation
+  const handleProceedBooking = () => {
+    if (!selectedRoom) {
+      alert("Please select a room first");
+      return;
+    }
+    
+    // Check if this accommodation is already in cart
+    const exists = items.some(item => 
+      item.tourId === accommodationId && item.type === 'accommodation'
+    );
+    
+    if (exists) {
+      setAlreadyModal(true);
+      return;
+    }
+    
+    console.log("🚀 Proceeding to booking with room:", selectedRoom);
+    
+    // Store booking data in sessionStorage for the booking page
+    const bookingData = {
+      accommodationId: accommodationId,
+      hotelData: hotelData,
+      selectedRoom: selectedRoom,
+      searchParams: searchParams,
+      nights: searchParams?.nights || 1,
+      checkIn: searchParams?.start_date,
+      checkOut: searchParams?.end_date,
+      guests: searchParams?.rooms?.[0]?.adult || 2,
+      timestamp: new Date().toISOString()
+    };
+    
+    sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
+    sessionStorage.setItem("fromAccommodationDetail", "true");
+    
+    // Navigate to booking page
+    localizedPush(`/accommodation/booking/${accommodationId}`);
   };
-  
-  sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
-  sessionStorage.setItem("fromAccommodationDetail", "true");
-  
-  // Navigate to booking page
-  localizedPush(`/accommodation/booking/${accommodationId}`);
-};
 
+  // Handle modal update (remove existing and proceed)
+  const handleModalUpdate = async () => {
+    const existingItem = items.find(item => 
+      item.tourId === accommodationId && item.type === 'accommodation'
+    );
+    
+    if (existingItem) {
+      removeItem(existingItem.key);
+    }
+
+    sessionStorage.setItem("fromAccommodationDetail", "true");
+    setAlreadyModal(false);
+    
+    // Navigate to booking page
+    localizedPush(`/accommodation/booking/${accommodationId}`);
+  };
+
+  // Handle modal go to cart
+  const handleModalGoToCart = async () => {
+    setAlreadyModal(false);
+    const LoadedCartDrawerContent = (await import("@/components/common/CartDrawerContent")).default;
+    setDrawerContent(<LoadedCartDrawerContent />);
+    openDrawer();
+  };
+
+  // Fetch accommodation data (keep your existing useEffect)
   useEffect(() => {
     const fetchAccommodationDetail = async () => {
       if (!accommodationId) return;
@@ -222,33 +260,18 @@ const handleProceedBooking = () => {
       setError(null);
 
       try {
-        // ✅ Dynamic payload similar to Zustand store
         const payload = {
           nationality: searchParams?.nationality || "SG",
-          nights:
-            searchParams?.nights ||
-            (searchParams?.start_date && searchParams?.end_date
-              ? Math.ceil(
-                  (new Date(searchParams.end_date) -
-                    new Date(searchParams.start_date)) /
-                    (1000 * 60 * 60 * 24)
-                )
-              : 1),
+          nights: searchParams?.nights || 1,
           refund_policy: searchParams?.refund_policy || "all",
           region: searchParams?.region || selectedRegion || null,
           rooms: searchParams?.rooms || [{ adult: 2, children: [] }],
           stars: searchParams?.stars || "0",
           visitor_id: searchParams?.visitor_id || "abc123",
-          start_date:
-            searchParams?.start_date ||
-            new Date().toISOString().split("T")[0],
-          end_date:
-            searchParams?.end_date ||
-            new Date(Date.now() + 86400000).toISOString().split("T")[0],
+          start_date: searchParams?.start_date || new Date().toISOString().split("T")[0],
+          end_date: searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
           hotel_id: false,
         };
-
-        console.log("🌐 Fetching /customer/stuba with payload:", payload);
 
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
@@ -261,11 +284,8 @@ const handleProceedBooking = () => {
 
         if (!res.ok) throw new Error("Network response was not ok");
         const data = await res.json();
-        console.log("🏨 Full accommodations response:", data);
 
-        // ✅ Normalize structure safely
         let allResults = [];
-
         if (Array.isArray(data?.accommodations)) {
           allResults = data.accommodations;
         } else if (Array.isArray(data?.data)) {
@@ -276,39 +296,23 @@ const handleProceedBooking = () => {
           allResults = Object.values(data);
         }
 
-        console.log("📦 Normalized results length:", allResults.length);
-
-        // ✅ Match by stuba_id (string-safe)
         const matched = allResults.find((item) => {
-          const id =
-            item?.Hotel_Data?.stuba_id ||
-            item?.stuba_id ||
-            item?.hotel_id ||
-            item?.Hotel?.["@attributes"]?.id;
+          const id = item?.Hotel_Data?.stuba_id || item?.stuba_id || item?.hotel_id || item?.Hotel?.["@attributes"]?.id;
           return String(id) === String(accommodationId);
         });
 
         if (!matched) {
-          console.warn("⚠️ No accommodation found for stuba_id:", accommodationId);
           setError("Accommodation not found");
           setAccommodation(null);
         } else {
-          console.log("✅ Found accommodation:", matched);
-          
-          // ✅ Normalize the data for components
           const normalizedData = normalizeAccommodationData(matched);
           setAccommodation(normalizedData);
 
-          // ✅ Set the lowest price room as default selected room
           if (normalizedData.lowestPriceRoom) {
             setSelectedRoom(normalizedData.lowestPriceRoom);
-            console.log("💰 Default room set to lowest price:", normalizedData.lowestPriceRoom);
           }
 
-          // 🔄 Auto-fix slug mismatch
-          const actualSlug = slugify(
-            normalizedData.normalizedHotelData.title || "accommodation"
-          );
+          const actualSlug = slugify(normalizedData.normalizedHotelData.title || "accommodation");
           if (productname !== actualSlug) {
             const newAs = `/accommodation/${actualSlug}/${accommodationId}`;
             localizedReplace(`/accommodation/[productname]/[id]`, newAs);
@@ -327,7 +331,6 @@ const handleProceedBooking = () => {
     }
   }, [router.isReady, accommodationId, searchParams, selectedRegion]);
 
-  // ---- UI STATES ----
   if (loading) {
     return (
       <Layout>
@@ -352,7 +355,6 @@ const handleProceedBooking = () => {
     );
   }
 
-  // Use normalized data for components
   const hotelData = accommodation.normalizedHotelData;
   const roomData = accommodation.normalizedRoomData;
   const nights = searchParams?.nights || 1;
@@ -375,7 +377,7 @@ const handleProceedBooking = () => {
               hotelData={hotelData}
               startingPrice={hotelData.starting_price}
               allRooms={roomData}
-              selectedRoom={selectedRoom} // ✅ Pass selected room
+              selectedRoom={selectedRoom}
               currency="USD"
               onScrollToOptions={handleScrollToOptions}
               onProceedBooking={handleProceedBooking}
@@ -388,13 +390,21 @@ const handleProceedBooking = () => {
           <AccommodationRooms 
             allRooms={roomData} 
             currency="USD"
-            onRoomSelect={handleRoomSelect} // ✅ Pass room selection handler
+            onRoomSelect={handleRoomSelect}
             nights={nights}
-            selectedRoom={selectedRoom} // ✅ Pass selected room for highlighting
+            selectedRoom={selectedRoom}
           />
           <AccommodationMap hotelData={hotelData} />
         </div>
       </div>
+
+      <BookingModal
+        isOpen={alreadyModal}
+        onClose={() => setAlreadyModal(false)}
+        onUpdate={handleModalUpdate}
+        onGoToCart={handleModalGoToCart}
+        productType="accommodation"
+      />
     </Layout>
   );
 }
