@@ -135,8 +135,30 @@ export default function HomePage() {
 
     // 🏨 ACCOMMODATIONS
     if (filterActiveTab === 4) {
-    router.push(`/listings?searched=true&type=accommodation`);
-  }
+      // compute nights automatically (5 by default)
+      const start_date = payload?.startDate || new Date().toISOString().split("T")[0];
+      const end_date = payload?.endDate || new Date(Date.now() + 5 * 86400000).toISOString().split("T")[0];
+      const nights = Math.ceil((new Date(end_date) - new Date(start_date)) / (1000 * 60 * 60 * 24));
+
+      // build payload
+      const searchPayload = {
+        hotel_id: payload?.hotel_id || false,
+        nationality: payload?.nationality || "SG",
+        nights,
+        refund_policy: payload?.refund_policy || "all",
+        region: payload?.region_id || payload?.region || null,
+        rooms: payload?.rooms || [{ adult: 1, children: [] }],
+        stars: payload?.stars || "0",
+        start_date,
+      };
+
+      // save in Zustand
+      setAccommodationSearchParams(searchPayload);
+
+      // navigate
+      router.push(`/listings?searched=true&type=accommodation`);
+      return;
+    }
   };
 
   const handleUpdateStars = (value) => setStars(value);
