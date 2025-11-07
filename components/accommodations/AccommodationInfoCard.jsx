@@ -7,34 +7,34 @@ const AccommodationInfoCard = ({
   allRooms = [], 
   currency = "USD",
   onScrollToOptions, 
-  onProceedBooking 
+  onProceedBooking,
+  selectedRoom = null // ✅ Add selectedRoom prop
 }) => {
   const [lowestPrice, setLowestPrice] = useState(startingPrice || 0);
   const [amenities, setAmenities] = useState([]);
 
-  // ✅ Calculate the lowest price from available rooms
+  // ✅ Calculate the lowest price from available rooms OR use selected room price
   useEffect(() => {
-    if (allRooms && allRooms.length > 0) {
+    if (selectedRoom) {
+      // Use selected room price
+      setLowestPrice(selectedRoom.price || startingPrice || 0);
+    } else if (allRooms && allRooms.length > 0) {
+      // Use minimum price from available rooms
       const minPrice = Math.min(...allRooms.map(room => room.price || 0));
       setLowestPrice(minPrice > 0 ? minPrice : startingPrice || 0);
     } else {
       setLowestPrice(startingPrice || 0);
     }
-  }, [allRooms, startingPrice]);
+  }, [allRooms, startingPrice, selectedRoom]); // ✅ Add selectedRoom to dependencies
 
   // ✅ Extract and format amenities
   useEffect(() => {
     if (hotelData?.amenities) {
-      // If amenities is a string, split by commas
       if (typeof hotelData.amenities === 'string') {
         setAmenities(hotelData.amenities.split(',').map(a => a.trim()).slice(0, 5));
-      } 
-      // If it's already an array, use it directly
-      else if (Array.isArray(hotelData.amenities)) {
+      } else if (Array.isArray(hotelData.amenities)) {
         setAmenities(hotelData.amenities.slice(0, 5));
-      }
-      // If features array exists, use that
-      else if (Array.isArray(hotelData.features)) {
+      } else if (Array.isArray(hotelData.features)) {
         setAmenities(hotelData.features.slice(0, 5));
       }
     } else if (Array.isArray(hotelData?.features)) {
@@ -57,6 +57,11 @@ const AccommodationInfoCard = ({
 
   // ✅ Get cancellation policy info
   const hasFreeCancellation = () => {
+    if (selectedRoom) {
+      // Check selected room's cancellation policy
+      return selectedRoom.cancellationPolicy && 
+             selectedRoom.cancellationPolicy.toLowerCase().includes('refundable');
+    }
     if (!allRooms || allRooms.length === 0) return false;
     return allRooms.some(room => 
       room.cancellationPolicy && 
@@ -80,7 +85,20 @@ const AccommodationInfoCard = ({
       highlights.push(hotelData.rating.description);
     }
     
-    return highlights.slice(0, 2); // Show max 2 highlights
+    return highlights.slice(0, 2);
+  };
+
+  // ✅ Handle scroll to room options
+  const handleScrollToOptions = () => {
+    if (onScrollToOptions) {
+      onScrollToOptions();
+    } else {
+      // Fallback: scroll to RoomTypes component
+      const roomTypesSection = document.getElementById('room-types-section');
+      if (roomTypesSection) {
+        roomTypesSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   };
 
   const highlights = getHotelHighlights();
@@ -96,14 +114,31 @@ const AccommodationInfoCard = ({
             {formatPrice(lowestPrice)}
           </div>
           <div className="text-gray-400 text-sm">
-            {startingPrice ? "Starting price per night" : "Contact for pricing"}
+            {selectedRoom ? "Selected room price" : startingPrice ? "Starting price per night" : "Contact for pricing"}
           </div>
-          {allRooms && allRooms.length > 0 && (
+          {selectedRoom && (
+            <div className="text-green-400 text-sm mt-1">
+              ✓ Room Selected
+            </div>
+          )}
+          {!selectedRoom && allRooms && allRooms.length > 0 && (
             <div className="text-green-400 text-sm mt-1">
               {roomCountText}
             </div>
           )}
         </div>
+
+        {/* Selected Room Info */}
+        {selectedRoom && (
+          <div className="mb-4 p-3 bg-[#CC9A55]/10 border border-[#CC9A55]/30 rounded-lg">
+            <div className="text-white text-sm font-medium mb-1">
+              {selectedRoom.roomType}
+            </div>
+            <div className="text-gray-300 text-xs">
+              {selectedRoom.mealType}
+            </div>
+          </div>
+        )}
 
         {/* Hotel Highlights */}
         {highlights.length > 0 && (
@@ -120,26 +155,6 @@ const AccommodationInfoCard = ({
             </div>
           </div>
         )}
-
-        {/* Features & Benefits */}
-        <div className="space-y-3 mb-6">
-          {freeCancellationAvailable && (
-            <div className="flex items-center gap-2 text-green-400">
-              <Check size={16} />
-              <span className="text-sm">Free cancellation available</span>
-            </div>
-          )}
-          
-          <div className="flex items-center gap-2 text-green-400">
-            <Check size={16} />
-            <span className="text-sm">Best price guarantee</span>
-          </div>
-
-          <div className="flex items-center gap-2 text-green-400">
-            <Check size={16} />
-            <span className="text-sm">Instant confirmation</span>
-          </div>
-        </div>
 
         {/* Top Amenities Preview */}
         {amenities.length > 0 && (
@@ -161,18 +176,19 @@ const AccommodationInfoCard = ({
         {/* Action Buttons */}
         <div className="space-y-3">
           <button
-            onClick={onScrollToOptions}
+            onClick={handleScrollToOptions} // ✅ Use the fixed handler
             disabled={!allRooms || allRooms.length === 0}
             className="w-full bg-[#CC9A55] text-white py-3 px-4 rounded-xl font-semibold hover:bg-[#b88a45] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {allRooms && allRooms.length > 0 ? `Choose Room (${allRooms.length})` : 'No Rooms Available'}
+            {selectedRoom ? "Change Room" : allRooms && allRooms.length > 0 ? `Choose Room (${allRooms.length})` : 'No Rooms Available'}
           </button>
 
           <button
             onClick={onProceedBooking}
-            className="w-full bg-white text-gray-900 py-3 px-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
+            disabled={!selectedRoom}
+            className="w-full bg-white text-gray-900 py-3 px-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Book Now
+            {selectedRoom ? "Book Now" : "Select a Room First"}
           </button>
         </div>
       </div>

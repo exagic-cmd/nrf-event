@@ -1,13 +1,19 @@
 import { Check, X, Utensils, Calendar, Shield } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // ✅ Add useEffect
 
 const RoomTypes = ({ 
   allRooms = [], 
   currency = "USD", 
   onRoomSelect,
-  nights = 1 
+  nights = 1,
+  selectedRoom = null // ✅ Add selectedRoom prop
 }) => {
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [internalSelectedRoom, setInternalSelectedRoom] = useState(selectedRoom?.id || null);
+
+  // ✅ Sync with external selected room changes
+  useEffect(() => {
+    setInternalSelectedRoom(selectedRoom?.id || null);
+  }, [selectedRoom]);
 
   if (!allRooms || allRooms.length === 0) {
     return (
@@ -32,7 +38,7 @@ const RoomTypes = ({
   }, {});
 
   const handleRoomSelect = (room) => {
-    setSelectedRoom(room.id);
+    setInternalSelectedRoom(room.id);
     if (onRoomSelect) {
       onRoomSelect(room);
     }
@@ -107,7 +113,7 @@ const RoomTypes = ({
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-12 py-8 bg-gray-900">
+    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-8 bg-gray-900">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -146,7 +152,7 @@ const RoomTypes = ({
                 {rooms.map((room, index) => {
                   const cancellation = getCancellationDisplay(room.cancellationPolicy);
                   const mealInfo = getMealDisplay(room.mealType);
-                  const isSelected = selectedRoom === room.id;
+                  const isSelected = internalSelectedRoom === room.id;
 
                   return (
                     <div 
@@ -233,11 +239,6 @@ const RoomTypes = ({
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Footer Info */}
-        <div className="mt-8 text-center text-gray-400 text-sm">
-          <p>.</p>
         </div>
       </div>
     </div>
