@@ -259,11 +259,6 @@ export default function AccommodationFilter({ onSearch }) {
               </div>
             </div>
           )}
-          {selectedItem && (
-            <div className="text-xs text-green-600 mt-1">
-              Selected: {selectedItem.type === 'hotel' ? selectedItem.title : selectedItem.region_name}
-            </div>
-          )}
         </div>
 
         {/* Check-in with Date Range */}
