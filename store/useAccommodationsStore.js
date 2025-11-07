@@ -142,7 +142,7 @@ export const useAccommodationsStore = create((set, get) => ({
           searchPayload.start_date || new Date().toISOString().split("T")[0],
         end_date: searchPayload.end_date || null,
         search: searchPayload.search || "",
-        visitor_id: searchPayload.visitor_id || null,
+        visitor_id: searchPayload.visitor_id || $helpers.getVisitorId(),
       };
 
       console.log("🧾 Final API Payload:", apiPayload);

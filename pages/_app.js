@@ -7,6 +7,7 @@ import Script from 'next/script';
 import App from 'next/app';
 import '@/styles/globals.css';
 
+import '@/lib/helpers'; // loads globally
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const { currentLocale, setLocale } = useLanguageStore();

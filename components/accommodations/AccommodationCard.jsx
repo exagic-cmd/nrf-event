@@ -16,7 +16,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   // Extract hotel data from the new API structure
   const hotelData = accommodation.Hotel_Data;
   const results = Array.isArray(accommodation.Result) ? accommodation.Result : [accommodation.Result];
-  
+  console.log(hotelData)
   // Find the lowest price from all room results
   const lowestPrice = results.reduce((min, result) => {
     const price = parseFloat(result.Room.Price["@attributes"].amt);
@@ -34,7 +34,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   
   // Parse media to get images
   const media = hotelData.media ? JSON.parse(hotelData.media) : [];
-  const mainImage = media.length > 0 ? media[0].url : hotelData.image;
+  const mainImage = hotelData.length > 0 ? media[0].url : hotelData.image;
 
   const formatPrice = (value) => {
     const num = Number(value);
@@ -96,7 +96,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         {/* Image */}
         <div className="relative w-full md:w-[180px] flex-shrink-0 flex justify-center items-center">
           <img
-            src={mainImage}
+            src={`https://res.cloudinary.com/www-travelpakistani-com/${mainImage}`}
             alt={hotelData.title}
             className="object-cover h-[120px] w-full md:w-[180px] rounded-lg"
           />

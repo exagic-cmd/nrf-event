@@ -12,6 +12,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import Herosection from "@/components/landing/Herosection"
 import useUserStore from "@/store/useAuthStore"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
+import { useEventStore } from "@/store/useEventStore";
 export default function LandingPage() {
   const { t } = useTranslation("common")
   const [isLoading, setIsLoading] = useState(true)
@@ -19,6 +20,7 @@ export default function LandingPage() {
   const { token } = useUserStore()
   const [checkingAuth, setCheckingAuth] = useState(true)
     const { trackAffiliateRedirect } = useAffiliateStore();
+    const { FetchEvent } = useEventStore();
   useEffect(() => {
     if (token) {
     
@@ -33,6 +35,8 @@ export default function LandingPage() {
     if (!router.isReady) return;
 
     trackAffiliateRedirect(router);
+ 
+   
   }, [router.isReady]); 
 
   useEffect(() => {

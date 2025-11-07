@@ -151,12 +151,14 @@ function ListingsPage() {
           <div className="h-fit md:sticky top-24 self-start z-20">
             {/* Filter Sidebar (Sticky) */}
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
-              {/* {!isLoading && searchResults.length > 0 && (
+              {!isLoading && searchResults.length > 0 && (
                 <FilterSidebar />
-              )} */}
+              )}
             </div>
           </div>
           )}
+
+          {/* Center: Dynamic content */}
           <div className="flex-1 flex flex-col lg:flex-row gap-6">
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
