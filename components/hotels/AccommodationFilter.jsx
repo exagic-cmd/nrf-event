@@ -1,5 +1,5 @@
 // components/hotels/AccommodationFilter.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   X,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 
 export default function AccommodationFilter({ onSearch }) {
   const [search, setSearch] = useState("");
@@ -256,6 +257,11 @@ export default function AccommodationFilter({ onSearch }) {
                   )}
                 </div>
               </div>
+            </div>
+          )}
+          {selectedItem && (
+            <div className="text-xs text-green-600 mt-1">
+              Selected: {selectedItem.type === 'hotel' ? selectedItem.title : selectedItem.region_name}
             </div>
           )}
         </div>

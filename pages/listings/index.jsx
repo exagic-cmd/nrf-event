@@ -160,17 +160,16 @@ function ListingsPage() {
 
           {/* Center: Dynamic content */}
           <div className="flex-1 flex flex-col lg:flex-row gap-6">
-            {hasSearched ? (
-              renderListComponent()
-            ) : (
-              renderPlaceholder()
-            )}
+            {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
-          {/* Google Maps */}
-                  {(searchCategory === "daytour" || searchCategory === "day-tours" || searchCategory === "accommodation" || searchCategory === "hotels") && (
-                  <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-                    <GoogleMap 
-                    center={{ lat: 1.3521, lng: 103.8198 }} // Singapore coordinates
+
+          {(searchCategory === "daytour" ||
+            searchCategory === "day-tours" ||
+            searchCategory === "accommodation" ||
+            searchCategory === "hotels") && (
+            <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
+              <GoogleMap
+                center={{ lat: 1.3521, lng: 103.8198 }}
                 zoom={12}
                 width="100%"
                 height="550px"
