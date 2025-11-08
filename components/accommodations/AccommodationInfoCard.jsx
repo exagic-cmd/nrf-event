@@ -77,8 +77,8 @@ const AccommodationInfoCard = ({
       highlights.push(`${hotelData.stars}-star hotel`);
     }
     
-    if (hotelData?.type) {
-      highlights.push(hotelData.type);
+    if (hotelData?.category_name) {
+      highlights.push(hotelData.category_name);
     }
     
     if (hotelData?.rating?.description) {

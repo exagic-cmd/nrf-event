@@ -165,26 +165,33 @@ const PayNow = ({ totalPrice }) => {
           adult_count: item.guests || 0,
           child_count: 0,
           total: Number(item.price) || 0,
-          hotel_info: [
-        {
-          checkInDate: item.checkIn,
-          checkOutDate: item.checkOut,
-          guestDetails: item.guestDetails,
-          nationality: item.nationality,
-          nights: item.nights,
-          region: item.region,
-          selectedRoom: {
-            id: item.selectedRoom?.id,
-            roomType: item.selectedRoom?.roomType,
-            mealType: item.selectedRoom?.mealType, 
-            price: item.selectedRoom?.price,
-            roomCode: item.selectedRoom?.roomCode,
-            mealCode: item.selectedRoom?.mealCode,
-            cancellationPolicy: item.selectedRoom?.cancellationPolicy
-          },
-          specialRequests: item.selectedRoom?.specialRequests || ''
-        }
-          ]
+          tour_date: item.checkIn,
+          addons:[],
+				
+				 addons_round:[],
+				 exceptions:null,
+				 baggage:null,
+
+          hotel_info: 
+          {
+            checkInDate: item.checkIn,
+            checkOutDate: item.checkOut,
+            guestDetails: item.guestDetails,
+            nationality: item.nationality,
+            nights: item.nights,
+            region: item.region,
+            roomsDetails: {
+              id: item.selectedRoom?.id,
+              roomType: item.selectedRoom?.roomType,
+              mealType: item.selectedRoom?.mealType, 
+              price: item.selectedRoom?.price,
+              roomCode: item.selectedRoom?.roomCode,
+              mealCode: item.selectedRoom?.mealCode,
+              cancellationPolicy: item.selectedRoom?.cancellationPolicy
+            },
+            specialRequests: item.selectedRoom?.specialRequests || ''
+          }
+          
         };
       }
 

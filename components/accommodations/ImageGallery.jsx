@@ -40,6 +40,7 @@ const ImageGallery = ({ hotelData }) => {
 
   // ✅ Helper function to construct full image URLs
   const getFullImageUrl = (imagePath) => {
+
     if (!imagePath) return "/images/placeholder-hotel.jpg";
     
     // If it's already a full URL, return as is
@@ -49,9 +50,9 @@ const ImageGallery = ({ hotelData }) => {
     
     // If it starts with /, it's probably a relative path from your server
     if (imagePath.startsWith('/')) {
-      return `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}${imagePath}`;
+      return `${$helpers.getEnv('CLOUDINARY_BASE_URL') || ''}${imagePath}`;
     }
-    
+     return `${$helpers.getEnv('CLOUDINARY_BASE_URL') || ''}${imagePath}`;
     // Default fallback
     return imagePath;
   };

@@ -91,7 +91,7 @@ const AccommodationBookNow = () => {
       tourId: bookingData.hotelData.id,
       productTitle: bookingData.hotelData.title,
       productType: "accommodation",
-      price: bookingData.selectedRoom.price * (bookingData.nights || 1),
+      price: bookingData.selectedRoom.price,
       quantity: 1,
       date: bookingData.searchParams.start_date,
       guests: bookingData.searchParams.rooms?.[0]?.adult || 2,
