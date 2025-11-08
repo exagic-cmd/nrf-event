@@ -88,7 +88,7 @@ const AccommodationBookNow = () => {
 
     // === Build cart item (same as Day Tour) ===
     const cartItem = {
-      tourId: bookingData.accommodationId,
+      tourId: bookingData.hotelData.id,
       productTitle: bookingData.hotelData.title,
       productType: "accommodation",
       price: bookingData.selectedRoom.price * (bookingData.nights || 1),
