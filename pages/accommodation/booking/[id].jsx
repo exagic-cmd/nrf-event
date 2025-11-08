@@ -95,7 +95,7 @@ export default function AccommodationBookingPage() {
                     <div className="flex justify-between">
                       <span>Total</span>
                       <span className="text-2xl font-bold text-[#CC9A55]">
-                        USD {bookingData.selectedRoom?.price * bookingData.nights}
+                        USD {bookingData.selectedRoom?.price }
                       </span>
                     </div>
                   </div>

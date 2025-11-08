@@ -67,13 +67,16 @@ export default function AccommodationDetailPage() {
 
     const hotelData = data.Hotel_Data || data;
     const roomData = data.Result || data.rooms || [];
+    console.log('hotelData',hotelData)
     
     let images = [];
     try {
       if (hotelData.media) {
-        const mediaArray = JSON.parse(hotelData.media);
+        console.log(hotelData.media)
+        const mediaArray =hotelData.media;
+          console.log('mediaArray',mediaArray)
         images = mediaArray.map(media => ({
-          url: media.url,
+          url: media.image,
           thumb: media.thumb,
           type: media.type
         }));
@@ -81,15 +84,15 @@ export default function AccommodationDetailPage() {
     } catch (e) {
       console.warn("Failed to parse media:", e);
     }
-
-    let address = {};
-    try {
-      if (hotelData.address) {
-        address = JSON.parse(hotelData.address);
-      }
-    } catch (e) {
-      console.warn("Failed to parse address:", e);
-    }
+    console.log('images',images)
+    let address = hotelData?.address;
+    // try {
+    //   if (hotelData.address) {
+    //     address = JSON.parse(hotelData.address);
+    //   }
+    // } catch (e) {
+    //   console.warn("Failed to parse address:", e);
+    // }
 
     let region = {};
     try {
@@ -123,7 +126,6 @@ export default function AccommodationDetailPage() {
           room.price < lowest.price ? room : lowest
         )
       : null;
-
     return {
       ...data,
       normalizedHotelData: {
@@ -132,8 +134,8 @@ export default function AccommodationDetailPage() {
         title: hotelData.title,
         name: hotelData.title,
         description: hotelData.description,
-        country: hotelData.country,
-        city: hotelData.city,
+        country: hotelData.country_name,
+        city: hotelData.city_name,
         address: address,
         latitude: hotelData.latitude,
         longitude: hotelData.longitude,
@@ -142,11 +144,12 @@ export default function AccommodationDetailPage() {
         type: hotelData.type,
         stars: hotelData.stars,
         amenities: hotelData.amenities,
+        category_name: hotelData.category_name,
         region: region,
         rating: rating,
         starting_price: startingPrice,
         price: startingPrice,
-        location: address.address1 || hotelData.city || "",
+        location: address || hotelData?.city_name || "",
         review_count: 0,
         features: hotelData.amenities ? hotelData.amenities.split(', ') : []
       },

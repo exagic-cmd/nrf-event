@@ -24,7 +24,8 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   }, parseFloat(results[0]?.Room.Price["@attributes"].amt) || 0);
 
   // Parse address if available
-  const address = hotelData.address ? JSON.parse(hotelData.address) : {};
+  // const address = hotelData.address ? JSON.parse(hotelData.address) : {};
+  const address = hotelData?.address;
   
   // Parse rating if available
   const rating = hotelData.rating ? JSON.parse(hotelData.rating) : null;
@@ -33,7 +34,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   const amenities = hotelData.amenities ? hotelData.amenities.split(', ').slice(0, 3) : [];
   
   // Parse media to get images
-  const media = hotelData.media ? JSON.parse(hotelData.media) : [];
+  const media = hotelData.media ? hotelData.media : [];
   const mainImage = hotelData.length > 0 ? media[0].url : hotelData.image;
 
   const formatPrice = (value) => {
@@ -96,7 +97,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         {/* Image */}
         <div className="relative w-full md:w-[180px] flex-shrink-0 flex justify-center items-center">
           <img
-            src={`https://res.cloudinary.com/www-travelpakistani-com/${mainImage}`}
+           src={$helpers.getEnv('CLOUDINARY_BASE_URL') + mainImage}
             alt={hotelData.title}
             className="object-cover h-[120px] w-full md:w-[180px] rounded-lg"
           />
@@ -117,10 +118,10 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
             
             {/* Location and Rating */}
             <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
-              {(address.city || hotelData.city) && (
+              {(address || hotelData.country_name) && (
                 <div className="flex items-center gap-1">
                   <MapPin size={14} />
-                  <span>{address.city || hotelData.city}</span>
+                  <span>{address || hotelData.country_name}</span>
                 </div>
               )}
               {/* {rating && (

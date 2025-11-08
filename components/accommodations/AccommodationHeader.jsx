@@ -6,15 +6,18 @@ const AccommodationHeader = ({ hotelData }) => {
   
   // ✅ Get location information
   const getLocationText = () => {
-    if (hotelData?.address?.address1 && hotelData?.city) {
-      return `${hotelData.address.address1}, ${hotelData.city}, ${hotelData.country}`;
-    }
-    if (hotelData?.city && hotelData?.country) {
-      return `${hotelData.city}, ${hotelData.country}`;
-    }
-    if (hotelData?.location) {
-      return hotelData.location;
-    }
+    // if (hotelData?.address?.address1 && hotelData?.city) {
+    //   return `${hotelData.address.address1}, ${hotelData.city}, ${hotelData.country}`;
+    // }
+    // if (hotelData?.city && hotelData?.country) {
+    //   return `${hotelData.city}, ${hotelData.country}`;
+    // }
+    // if (hotelData?.location) {
+    //   return hotelData.location;
+    // }
+    console.log('hotelData',hotelData)
+     return `${hotelData?.address}, ${hotelData?.city}, ${hotelData?.country}`;
+    return hotelData?.address
     return "Location information not available";
   };
 
@@ -56,9 +59,9 @@ const AccommodationHeader = ({ hotelData }) => {
         )}
         
         {/* Hotel Type Badge */}
-        {hotelData?.type && (
+        {hotelData?.category_name && (
           <span className="bg-gray-600 text-white px-2 py-1 rounded-md text-sm">
-            {hotelData.type}
+            {hotelData.category_name}
           </span>
         )}
         
