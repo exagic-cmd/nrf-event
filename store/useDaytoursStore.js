@@ -47,7 +47,7 @@ export const useDaytoursStore = create((set, get) => ({
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_b2b_products`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

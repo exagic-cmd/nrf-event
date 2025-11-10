@@ -74,7 +74,7 @@ export default function SearchFilterCard({
   // Load data
   useEffect(() => {
     if (filterActiveTab === 2 && !pickupOptions?.length) {
-      fetchPickupOptions("a");
+      fetchPickupOptions();
     }
   }, [filterActiveTab, fetchPickupOptions, pickupOptions?.length]);
 

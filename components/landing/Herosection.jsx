@@ -16,6 +16,7 @@ import {
   Train,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ new import
 import { useRouter } from "next/navigation";
@@ -40,16 +41,16 @@ export default function HomePage() {
     tripType,
     setTripType,
     setSearchParams,
-    fetchVehicles,
+   // fetchVehicles,
     resetTransferStore,
   } = useTransferStore();
 
   const { setSearchParams: setAccommodationSearchParams } = useAccommodationsStore(); // ✅
 
-  useEffect(() => {
-    resetTransferStore();
-    fetchVehicles();
-  }, [resetTransferStore, fetchVehicles]);
+  // useEffect(() => {
+  //   resetTransferStore();
+  //   fetchVehicles();
+  // }, [resetTransferStore, fetchVehicles]);
 
  const [event, setEvent] = useState(null);
 
@@ -160,6 +161,15 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 w-full px-4 lg:px-8">
+          {/* Set favicon to event banner when available */}
+          {event?.event?.banner && (
+            <Head>
+              <link
+                rel="icon"
+                href={`https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.logo}`}
+              />
+            </Head>
+          )}
           <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 lg:items-start max-w-full">
             <div className="flex w-full mx-4 lg:mx-0 justify-center lg:justify-end">
               <Card className="w-full max-w-full p-0 bg-transparent border-0 shadow-none">

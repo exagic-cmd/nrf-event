@@ -3,6 +3,11 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore } from "@/store/useCartStore";
+import $helpers from "@/lib/helpers";
+import {
+  Calendar, Home, Bed, Utensils, AlertCircle,
+  CheckCircle, XCircle, DollarSign, Info
+} from "lucide-react";
 
 const TITLE_OPTIONS = [
   { value: "Mr", label: "Mr" },
@@ -10,66 +15,197 @@ const TITLE_OPTIONS = [
   { value: "Ms", label: "Ms" },
 ];
 
-// Modal Component
+// LARGE & BEAUTIFUL Confirmation Modal
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
-  if (!isOpen) return null;
+  if (!isOpen || !bookingResponse?.data?.[0]) return null;
 
-  const { hotelData, selectedRoom, checkIn, checkOut, nights } = bookingResponse?.bookingData || {};
+  const item = bookingResponse.data[0];
+  const room = item.Room;
+  const totalPrice = (parseFloat(room.TotalSellingPrice?.["@attributes"]?.amt) || 0).toFixed(2);
+  const currency = bookingResponse.currency || "USD";
+  const roomType = room.RoomType?.["@attributes"]?.text || "N/A";
+  const mealType = room.MealType?.["@attributes"]?.text || "N/A";
+  const hotelName = item.HotelName || "Unknown Hotel";
+  const checkIn = item.ArrivalDate;
+  const nights = parseInt(item.Nights) || 1;
+  const cancellationStatus = room.CancellationPolicyStatus || "Unknown";
+
+  // Nightly costs
+  const nightCosts = Array.isArray(room.NightCost) ? room.NightCost : [room.NightCost].filter(Boolean);
+  const perNightPrice = nightCosts.length > 0
+    ? (parseFloat(nightCosts[0]?.SellingPrice?.["@attributes"]?.amt) || 0).toFixed(2)
+    : (parseFloat(totalPrice) / nights).toFixed(2);
+
+  const messages = room.Messages?.Message || [];
+  const generalMessages = messages.filter(m => m.Type === "General");
+  const internalNotes = messages.filter(m => m.Type === "Internal Note");
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">Confirm Booking</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+      {/* LARGE MODAL */}
+      <div className="bg-white rounded-2xl max-w-7xl w-full max-h-[92vh] overflow-y-auto shadow-3xl">
+        <div className="p-6 md:p-10">
 
-        <div className="space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Hotel:</span>
-            <span className="font-medium">{hotelData?.title || "N/A"}</span>
+          {/* Header */}
+          <div className="flex justify-between items-start mb-8">
+            <h3 className="text-1xl font-bold text-gray-900 flex items-center gap-3">
+              <CheckCircle className="h-6 w-6 text-green-600" />
+              Booking Summary
+            </h3>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-700 transition"
+            >
+              <XCircle className="h-8 w-8" />
+            </button>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Room Type:</span>
-            <span className="font-medium">{selectedRoom?.roomType || "Standard"}</span>
+
+          {/* Hotel Banner */}
+          <div className="bg-gradient-to-r from-[#CC9A55] to-[#b88a45] text-white rounded-2xl p-6 mb-8">
+            <h4 className="text-1xl font-bold flex items-center gap-3">
+              <Home className="h-7 w-7" />
+              {hotelName}
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5 text-sm">
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5" />
+                <div>
+                  <p className="opacity-90">Check-in</p>
+                  <p className="font-bold text-lg">{checkIn}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5" />
+                <div>
+                  <p className="opacity-90">Nights</p>
+                  <p className="font-bold text-lg">{nights}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Bed className="h-5 w-5" />
+                <div>
+                  <p className="opacity-90">Room</p>
+                  <p className="font-bold">{roomType}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Utensils className="h-5 w-5" />
+                <div>
+                  <p className="opacity-90">Meal</p>
+                  <p className="font-bold">{mealType}</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Meal Plan:</span>
-            <span className="font-medium">{selectedRoom?.mealType || "Room Only"}</span>
+
+          {/* Price Breakdown */}
+          <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-8 border border-gray-200">
+            <h4 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+              <DollarSign className="h-6 w-6 text-[#CC9A55]" />
+              Price Details
+            </h4>
+
+            <div className="space-y-4">
+              {/* Per Night */}
+              {/* <div className="flex justify-between items-center py-3 border-b border-dashed border-gray-300">
+                <span className="text-gray-700 font-medium">Per Night Rate</span>
+                <span className="text-2xl font-bold text-[#CC9A55]">
+                  {perNightPrice} {currency}
+                </span>
+              </div> */}
+
+              {/* Nightly Breakdown */}
+              {nightCosts.length > 1 && (
+                <div className="bg-blue-50 rounded-xl p-4 mt-4">
+                  <p className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Nightly Rate Breakdown
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                    {nightCosts.map((nc, i) => (
+                      <div key={i} className="bg-white rounded-lg p-3 text-center shadow-sm">
+                        <p className="text-gray-600">Night {parseInt(nc.Night) + 1}</p>
+                        <p className="font-bold text-[#CC9A55]">
+                          {nc.SellingPrice?.["@attributes"]?.amt || "0.00"} {currency}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Total */}
+              <div className="flex justify-between items-center pt-5 border-t-4 border-double border-gray-300">
+                <span className="text-1xl font-bold text-gray-800">Total Amount</span>
+                <span className="text-2xl font-extrabold text-[#CC9A55]">
+                  {totalPrice} {currency}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Check-in:</span>
-            <span className="font-medium">{checkIn}</span>
+
+          {/* Cancellation Policy */}
+          <div className="mb-8">
+            <h5 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <AlertCircle className={`h-6 w-6 ${cancellationStatus === "NonRefundable" ? "text-red-600" : "text-green-600"}`} />
+              Cancellation Policy
+            </h5>
+            <div className={`inline-block px-6 py-3 rounded-xl font-semibold text-md ${
+              cancellationStatus === "NonRefundable"
+                ? "bg-red-100 text-red-800 border-2 border-red-300"
+                : "bg-green-100 text-green-800 border-2 border-green-300"
+            }`}>
+              {cancellationStatus === "NonRefundable"
+                ? "Non-Refundable – 100% charge on cancellation"
+                : "Refundable – Free cancellation available"}
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Check-out:</span>
-            <span className="font-medium">{checkOut}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Nights:</span>
-            <span className="font-medium">{nights}</span>
-          </div>
-          <div className="flex justify-between text-lg font-bold text-[#CC9A55] pt-3 border-t">
-            <span>Total Price:</span>
-            <span>{selectedRoom?.price || "N/A"} AED</span>
-          </div>
-          {selectedRoom?.cancellationPolicy && (
-            <p className="text-xs text-green-600 mt-2">
-              Free cancellation until {selectedRoom.cancellationPolicy}
-            </p>
+
+          {/* Important Messages */}
+          {generalMessages.length > 0 && (
+            <div className="mb-8">
+              <h5 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <AlertCircle className="h-6 w-6 text-orange-600" />
+                Important Information
+              </h5>
+              <div className="space-y-4">
+                {generalMessages.map((msg, i) => (
+                  <div
+                    key={i}
+                    className="bg-orange-50 border-2 border-orange-300 rounded-xl p-5 text-orange-900"
+                    dangerouslySetInnerHTML={{ __html: msg.Text }}
+                  />
+                ))}
+              </div>
+            </div>
           )}
-        </div>
 
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 rounded-lg transition"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="flex-1 bg-[#CC9A55] hover:bg-[#b88a45] text-white font-medium py-3 rounded-lg transition"
-          >
-            Confirm & Add to Cart
-          </button>
+          {internalNotes.length > 0 && (
+            <div className="mb-8">
+              <p className="text-sm font-semibold text-gray-700 mb-3">Additional Notes</p>
+              <div className="bg-gray-50 rounded-xl p-5 text-sm text-gray-600 space-y-2">
+                {internalNotes.map((note, i) => (
+                  <p key={i} dangerouslySetInnerHTML={{ __html: note.Text }} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-5 mt-10">
+            <button
+              onClick={onClose}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-5 rounded-2xl transition text-xl shadow-md"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="flex-1 bg-[#CC9A55] hover:bg-[#b88a45] text-white font-bold py-5 rounded-2xl transition text-xl shadow-xl"
+            >
+              Confirm & Add to Cart
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -82,7 +218,7 @@ const AccommodationBookNow = () => {
 
   const rawData = sessionStorage.getItem("accommodationBookingData");
   const bookingData = rawData ? JSON.parse(rawData) : null;
-console.log("🚀 Booking Data:", bookingData);
+
   if (!bookingData) {
     return (
       <div className="text-white text-center py-10">
@@ -139,7 +275,8 @@ console.log("🚀 Booking Data:", bookingData);
       nights: bookingData.nights,
       rooms: bookingData.searchParams.rooms,
       stars: bookingData.searchParams.stars || "0",
-      quoteId: bookingData.hotelQuoteId,
+      quoteId: bookingData.selectedRoom.id,
+      visitor_id: $helpers.getVisitorId(),
       adult: guests.adults.map((a) => ({
         title: a.title,
         f_name: a.firstName,
@@ -165,7 +302,7 @@ console.log("🚀 Booking Data:", bookingData);
       if (!res.ok) throw new Error("Booking validation failed");
 
       const data = await res.json();
-      return data; // This will be shown in modal
+      return data;
     } catch (err) {
       console.error(err);
       alert("Booking validation failed. Please try again.");
@@ -193,15 +330,11 @@ console.log("🚀 Booking Data:", bookingData);
   };
 
   const confirmAndAddToCart = () => {
-    // Save final data
     const updatedBookingData = {
       ...bookingData,
-      guestDetails: {
-        adults: guests.adults,
-        children: guests.children,
-      },
+      guestDetails: { adults: guests.adults, children: guests.children },
       specialRequests,
-      preBookingResponse: bookingResponse, // optional
+      preBookingResponse: bookingResponse,
     };
 
     sessionStorage.setItem("accommodationBookingData", JSON.stringify(updatedBookingData));
@@ -240,7 +373,7 @@ console.log("🚀 Booking Data:", bookingData);
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
     await new Promise((r) => setTimeout(r, 1200));
-    window.location.href = "/accommodation";
+    window.location.href = "/";
   };
 
   const handleViewCart = async () => {
@@ -256,7 +389,7 @@ console.log("🚀 Booking Data:", bookingData);
         <h2 className="text-2xl font-bold text-white mb-6">Guest Information</h2>
 
         <form onSubmit={handleAddToCart} className="space-y-8">
-          {/* === GUEST FIELDS (same as before) === */}
+          {/* GUEST FIELDS – unchanged */}
           {guests.adults.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold text-white mb-4">
@@ -264,10 +397,7 @@ console.log("🚀 Booking Data:", bookingData);
               </h3>
               <div className="space-y-5">
                 {guests.adults.map((adult, i) => (
-                  <div
-                    key={`adult-${i}`}
-                    className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4"
-                  >
+                  <div key={`adult-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
                       <select
@@ -316,10 +446,7 @@ console.log("🚀 Booking Data:", bookingData);
               </h3>
               <div className="space-y-5">
                 {guests.children.map((child, i) => (
-                  <div
-                    key={`child-${i}`}
-                    className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4"
-                  >
+                  <div key={`child-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                       <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
                       <select
@@ -387,17 +514,17 @@ console.log("🚀 Booking Data:", bookingData);
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#CC9A55] hover:bg-[#b88a45] text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#CC9A55] hover:bg-[#b88a45] text-white font-bold py-4 rounded-xl transition text-xl disabled:opacity-50"
             >
-              {loadingButton === "addToCart" ? "Validating..." : "Add to Cart"}
+              {loadingButton === "addToCart" ? "Validating Booking..." : "Add to Cart"}
             </button>
           ) : (
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
                 onClick={handleContinueShopping}
                 disabled={loadingButton === "continue"}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 rounded-lg transition"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 rounded-xl transition"
               >
                 {loadingButton === "continue" ? "Loading..." : "Continue Shopping"}
               </button>
@@ -405,7 +532,7 @@ console.log("🚀 Booking Data:", bookingData);
                 type="button"
                 onClick={handleViewCart}
                 disabled={loadingButton === "checkout"}
-                className="flex-1 bg-[#CC9A55] hover:bg-[#b88a45] text-white font-medium py-3 rounded-lg transition"
+                className="flex-1 bg-[#CC9A55] hover:bg-[#b88a45] text-white font-bold py-4 rounded-xl transition"
               >
                 {loadingButton === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
               </button>
@@ -414,7 +541,6 @@ console.log("🚀 Booking Data:", bookingData);
         </form>
       </div>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
