@@ -6,10 +6,11 @@ export const useEventStore = create(
   persist(
     (set, get) => ({
       event: [],
+      lastFetched: null,       // add timestamp
       isLoading: false,
       error: null,
 
-      setEvent: data => set({ event: data }),
+      setEvent: data => set({ event: data, lastFetched: Date.now() }),
 
       FetchEvent: async () => {
         set({ isLoading: true, error: null });
@@ -25,13 +26,19 @@ export const useEventStore = create(
           const json = await res.json();
           const eventData = json?.data || [];
 
-          set({ event: eventData, isLoading: false });
+          set({
+            event: eventData,
+            lastFetched: Date.now(),
+            isLoading: false
+          });
+
           return eventData;
         } catch (err) {
           set({
             isLoading: false,
             error: err.message || "Failed to fetch event"
           });
+
           return [];
         }
       }

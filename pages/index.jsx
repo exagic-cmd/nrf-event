@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Layout from "@/components/layout/Layout"
 import { TransferBenefitsSection } from "@/components/landing/transfer-benefits-section"
+import  CountdownTimer  from "@/components/landing/event-count-down"
 import { ReviewsSection } from "@/components/landing/reviews-section"
 import { Preloader } from "@/components/landing/preloader"
 import LocalizedLink from "@/components/LocalizedLink"
@@ -67,6 +68,8 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/50 to-transparent"></div>
 
         {/* Transfer Benefits Section */}
+        <CountdownTimer />
+
         <TransferBenefitsSection />
         {/* Reviews Section */}
         {/* <ReviewsSection /> */}
