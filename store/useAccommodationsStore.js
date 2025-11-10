@@ -1,6 +1,9 @@
 // stores/useAccommodationsStore.js
 import { create } from "zustand";
 
+
+let hotelRegionDebounceTimeout = null;
+
 export const useAccommodationsStore = create((set, get) => ({
   accommodations: [],
   searchResults: [],
@@ -9,6 +12,9 @@ export const useAccommodationsStore = create((set, get) => ({
   nationalities: [],
   hotels: [],
   regions: [],
+  // Store last fetched hotelQuoteId and map by hotel id when available
+  lastHotelQuoteId: null,
+  hotelQuoteMap: {},
   isLoading: false,
   error: null,
 
@@ -80,10 +86,6 @@ export const useAccommodationsStore = create((set, get) => ({
         isLoading: false,
       });
 
-      console.log("Fetched hotels and regions:", {
-        hotels: hotelsList,
-        regions: regionsList,
-      });
       return { hotels: hotelsList, regions: regionsList };
     } catch (err) {
       console.error("fetchHotelsAndRegions error:", err);
@@ -93,6 +95,57 @@ export const useAccommodationsStore = create((set, get) => ({
       });
       return { hotels: [], regions: [] };
     }
+  },
+
+  // DEBOUNCED VERSION — This is the one you call from input
+  fetchSuggestedAccommodations: (query) => {
+    // Clear previous timeout
+    if (hotelRegionDebounceTimeout) {
+      clearTimeout(hotelRegionDebounceTimeout);
+    }
+
+    // If query is empty, clear results immediately
+    if (!query?.trim()) {
+      set({ suggestedResults: [], hotels: [], regions: [], isLoading: false });
+      return;
+    }
+
+    set({ isLoading: true });
+
+    // Set new timeout
+    hotelRegionDebounceTimeout = setTimeout(async () => {
+      try {
+        const { hotels, regions } = await get().fetchHotelsAndRegions(query);
+
+        const hotelSuggestions = hotels.map((hotel) => ({
+          ...hotel,
+          type: "hotel",
+        }));
+
+        const regionSuggestions = regions.map((region) => ({
+          ...region,
+          type: "region",
+        }));
+
+        const suggestions = [...hotelSuggestions, ...regionSuggestions].slice(0, 10);
+
+        set({
+          suggestedResults: suggestions,
+          isLoading: false,
+        });
+      } catch (err) {
+        set({ suggestedResults: [], isLoading: false });
+      }
+    }, 400); // 400ms delay — feels instant but avoids spam
+  },
+
+  // Optional: Cancel pending request when component unmounts or search is cleared
+  cancelHotelRegionSearch: () => {
+    if (hotelRegionDebounceTimeout) {
+      clearTimeout(hotelRegionDebounceTimeout);
+      hotelRegionDebounceTimeout = null;
+    }
+    set({ suggestedResults: [], hotels: [], regions: [], isLoading: false });
   },
 
   // Set search parameters and trigger search immediately
@@ -109,7 +162,7 @@ export const useAccommodationsStore = create((set, get) => ({
   // Fetch accommodations search results
   fetchAccommodations: async (payload) => {
     // If no payload provided, use existing searchParams
-    const searchPayload = payload || get().searchParams;
+    const searchPayload = payload;
     
     if (!searchPayload) {
       console.error("❌ No search payload provided");
@@ -163,15 +216,48 @@ export const useAccommodationsStore = create((set, get) => ({
       // Assume API returns accommodations in data.accommodations or data.data
       const results = data?.accommodations || data?.data || data || [];
 
-      set({
-        accommodations: results,
-        searchResults: results,
-        filteredResults: results,
-        isLoading: false,
-      });
+      // Normalize and enrich each result: attach hotelQuoteId and a normalized hotelId
+      const enrichedResults = Array.isArray(results)
+        ? results.map((r) => {
+            const quote = r?.["@attributes"]?.hotelQuoteId || r?.Hotel?.["@attributes"]?.hotelQuoteId || r?.Hotel_Data?.["@attributes"]?.hotelQuoteId || r?.Hotel_stuba_id || null;
+            const hotelId = r?.Hotel_Data?.stuba_id || r?.stuba_id || r?.hotel_id || r?.Hotel?.["@attributes"]?.id || r?.Hotel_stuba_id || null;
+            return {
+              ...r,
+              hotelQuoteId: quote || null,
+              hotelId: hotelId || null,
+            };
+          })
+        : (results && typeof results === 'object'
+            ? [{
+                ...results,
+                hotelQuoteId: results?.["@attributes"]?.hotelQuoteId || results?.Hotel?.["@attributes"]?.hotelQuoteId || null,
+                hotelId: results?.Hotel_Data?.stuba_id || results?.stuba_id || results?.Hotel?.["@attributes"]?.id || null,
+              }]
+            : []);
 
-      console.log("✅ Accommodations API Response:", data);
-      return results;
+      // Build a mapping of hotelId -> hotelQuoteId for all results
+      const quoteMap = (enrichedResults || []).reduce((acc, item) => {
+        if (item?.hotelId) acc[item.hotelId] = item.hotelQuoteId || acc[item.hotelId] || null;
+        return acc;
+      }, {});
+
+      // Determine lastHotelQuoteId (prefer top-level attribute, fallback to first result)
+      const topLevelQuote = data?.["@attributes"]?.hotelQuoteId || data?.data?.[0]?.["@attributes"]?.hotelQuoteId || null;
+      const firstResultQuote = enrichedResults[0]?.hotelQuoteId || null;
+      const hotelQuoteId = topLevelQuote || firstResultQuote || null;
+
+      // Update store with enriched results and the extracted quote id(s)
+      set((state) => ({
+        accommodations: enrichedResults,
+        searchResults: enrichedResults,
+        filteredResults: enrichedResults,
+        isLoading: false,
+        lastHotelQuoteId: hotelQuoteId || state.lastHotelQuoteId,
+        hotelQuoteMap: { ...(state.hotelQuoteMap || {}), ...quoteMap },
+      }));
+
+      console.log("✅ Accommodations API Response:", data, "extracted hotelQuoteId:", hotelQuoteId, "quoteMap size:", Object.keys(quoteMap).length);
+      return enrichedResults;
     } catch (err) {
       console.error("fetchAccommodations error:", err);
       set({

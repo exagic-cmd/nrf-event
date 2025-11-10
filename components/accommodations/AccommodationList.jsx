@@ -172,11 +172,11 @@ function AccommodationList() {
           <p className="text-lg font-semibold">
             {isLoading ? "Searching..." : `Showing ${sortedAccommodations.length} Accommodations`}
           </p>
-          {searchParams.search && (
+          {/* {searchParams.search && (
             <p className="text-sm text-gray-600">
               For: {searchParams.search} • {searchParams.start_date} to {searchParams.end_date}
             </p>
-          )}
+          )} */}
         </div>
       )}
 

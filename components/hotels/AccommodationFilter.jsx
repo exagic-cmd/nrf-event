@@ -1,5 +1,5 @@
 // components/hotels/AccommodationFilter.jsx
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Search,
   X,
@@ -21,41 +21,66 @@ export default function AccommodationFilter({ onSearch }) {
   const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [rooms, setRooms] = useState([{ adult: 1, children: [] }]);
   const [nationality, setNationality] = useState("SG");
-  const [stars, setStars] = useState("0");
+  const [stars, setStars] = useState("");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const { 
-    nationalities, 
-    hotels, 
-    regions, 
-    fetchNationalities, 
+  // Debounce timer ref
+  const debounceTimeoutRef = useRef(null);
+
+  const {
+    nationalities,
+    hotels,
+    regions,
+    isLoading,
+    fetchNationalities,
     fetchHotelsAndRegions,
-    setSearchParamsAndSearch
+    setSearchParamsAndSearch,
   } = useAccommodationsStore();
 
-  // Fetch nationalities on component mount
+  // Fetch nationalities on mount
   useEffect(() => {
     fetchNationalities();
   }, [fetchNationalities]);
 
-  // Fetch hotels and regions when search changes
+  // DEBOUNCED: Fetch hotels & regions only after 400ms pause
   useEffect(() => {
-    if (search.trim()) {
-      fetchHotelsAndRegions(search);
+    // Clear previous timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
+
+    const query = search.trim();
+
+    if (!query) {
+      setShowDropdown(false);
+      return;
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchHotelsAndRegions(query);
+      setShowDropdown(true);
+    }, 400);
+
+    // Cleanup on unmount or new input
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
   }, [search, fetchHotelsAndRegions]);
 
+  // Client-side filtering of results (after API returns)
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    
-    const filteredHotels = hotels.filter(
-      (hotel) => hotel.title.toLowerCase().includes(q)
+
+    const filteredHotels = hotels.filter((hotel) =>
+      hotel.title?.toLowerCase().includes(q)
     );
-    
-    const filteredRegions = regions.filter(
-      (region) => region.region_name.toLowerCase().includes(q)
+
+    const filteredRegions = regions.filter((region) =>
+      region.region_name?.toLowerCase().includes(q)
     );
 
     return {
@@ -76,13 +101,13 @@ export default function AccommodationFilter({ onSearch }) {
 
   const updateAdult = (i, val) => {
     const newRooms = [...rooms];
-    newRooms[i].adult = Math.max(1, Math.min(4, val));
+    newRooms[i].adult = Math.max(1, Math.min(10, val));
     setRooms(newRooms);
   };
 
   const addChild = (i, age) => {
     const newRooms = [...rooms];
-    if (newRooms[i].children.length < 3) {
+    if (newRooms[i].children.length < 10) {
       newRooms[i].children.push(age);
     }
     setRooms(newRooms);
@@ -100,12 +125,10 @@ export default function AccommodationFilter({ onSearch }) {
     setRooms(newRooms);
   };
 
-  // Handle check-in date range selection
   const handleStartDateChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
     setTempEndDate(end);
-    
     if (end) {
       setEndDate(end);
       setTempEndDate(null);
@@ -116,21 +139,23 @@ export default function AccommodationFilter({ onSearch }) {
     setEndDate(date);
   };
 
-  // Handle selection from dropdown
   const handleSelection = (item, type) => {
     setSelectedItem({ ...item, type });
-    if (type === "hotel") {
-      setSearch(item.title);
-    } else if (type === "region") {
-      setSearch(item.region_name);
-    }
+    setSearch(type === "hotel" ? item.title : item.region_name);
     setShowDropdown(false);
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (!value.trim()) {
+      setSelectedItem(null);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate required fields
+
     if (!selectedItem) {
       alert("Please select a hotel or destination from the dropdown");
       return;
@@ -141,26 +166,26 @@ export default function AccommodationFilter({ onSearch }) {
       return;
     }
 
-    // Calculate nights from dates
     const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-    
-    // Format dates properly
     const formatDate = (date) => {
-      return date.toISOString().split('T')[0];
+      const d = new Date(date);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
     };
 
     const searchPayload = {
       search,
       start_date: formatDate(startDate),
       end_date: formatDate(endDate),
-      nights: nights,
+      nights,
       rooms,
-      nationality: nationality,
+      nationality,
       refund_policy: refund,
       stars,
     };
 
-    // Set region or hotel_id based on selection
     if (selectedItem.type === "hotel") {
       searchPayload.hotel_id = selectedItem.stuba_id;
       searchPayload.region = false;
@@ -169,36 +194,26 @@ export default function AccommodationFilter({ onSearch }) {
       searchPayload.hotel_id = false;
     }
 
-    console.log("🔍 Search Payload:", searchPayload);
-    
-    // Use the action that sets params AND triggers search
+    console.log("Search Payload:", searchPayload);
     await setSearchParamsAndSearch(searchPayload);
-    
-    // Call the onSearch prop if provided
-    if (onSearch) {
-      onSearch(searchPayload);
-    }
+
+    if (onSearch) onSearch(searchPayload);
   };
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow p-4 md:p-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-        {/* Search */}
+        {/* Search Input */}
         <div className="md:col-span-3 relative">
           <div className="rounded-2xl border border-gray-200 bg-white px-3 py-2 flex items-center gap-2">
             <Search className="h-5 w-5 text-gray-500" />
             <input
               type="text"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setShowDropdown(!!e.target.value.trim());
-                if (!e.target.value.trim()) {
-                  setSelectedItem(null);
-                }
-              }}
+              onChange={handleInputChange}
               placeholder="Search hotels or regions..."
               className="w-full bg-transparent outline-none text-lg"
+              autoComplete="off"
             />
             {search && (
               <button
@@ -215,53 +230,67 @@ export default function AccommodationFilter({ onSearch }) {
             )}
           </div>
 
+          {/* Dropdown with Loading */}
           {showDropdown && (
             <div className="absolute z-20 mt-2 w-full rounded-xl border bg-white shadow-lg max-h-80 overflow-auto">
-              <div className="grid grid-cols-2">
-                <div>
-                  <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
-                    Destinations
-                  </h6>
-                  {filtered.regions.map((region) => (
-                    <button
-                      key={region.id}
-                      type="button"
-                      onMouseDown={() => handleSelection(region, "region")}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
-                    >
-                      <MapPin className="h-4 w-4 text-yellow-600" />
-                      {region.region_name}
-                    </button>
-                  ))}
-                  {filtered.regions.length === 0 && (
-                    <div className="px-3 py-2 text-sm text-gray-500">No destinations found</div>
-                  )}
+              {isLoading ? (
+                <div className="px-4 py-8 text-center text-gray-500">
+                  <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-yellow-500"></div>
+                  <p className="mt-2 text-sm">Searching...</p>
                 </div>
-                <div>
-                  <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
-                    Hotels
-                  </h6>
-                  {filtered.hotels.map((hotel) => (
-                    <button
-                      key={hotel.id}
-                      type="button"
-                      onMouseDown={() => handleSelection(hotel, "hotel")}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
-                    >
-                      <Building className="h-4 w-4 text-yellow-600" />
-                      {hotel.title}
-                    </button>
-                  ))}
-                  {filtered.hotels.length === 0 && (
-                    <div className="px-3 py-2 text-sm text-gray-500">No hotels found</div>
-                  )}
+              ) : (
+                <div className="grid grid-cols-2">
+                  <div>
+                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
+                      Destinations
+                    </h6>
+                    {filtered.regions.length > 0 ? (
+                      filtered.regions.map((region) => (
+                        <button
+                          key={region.id}
+                          type="button"
+                          onMouseDown={() => handleSelection(region, "region")}
+                          className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
+                        >
+                          <MapPin className="h-4 w-4 text-yellow-600" />
+                          {region.region_name}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        No destinations found
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
+                      Hotels
+                    </h6>
+                    {filtered.hotels.length > 0 ? (
+                      filtered.hotels.map((hotel) => (
+                        <button
+                          key={hotel.id}
+                          type="button"
+                          onMouseDown={() => handleSelection(hotel, "hotel")}
+                          className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
+                        >
+                          <Building className="h-4 w-4 text-yellow-600" />
+                          {hotel.title}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        No hotels found
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Check-in with Date Range */}
+        {/* Check-in */}
         <div className="md:col-span-2 relative">
           <DatePicker
             selected={startDate}
@@ -281,7 +310,7 @@ export default function AccommodationFilter({ onSearch }) {
           </div>
         </div>
 
-        {/* Check-out - Single Date Selection */}
+        {/* Check-out */}
         <div className="md:col-span-2 relative">
           <DatePicker
             selected={endDate}
@@ -307,11 +336,13 @@ export default function AccommodationFilter({ onSearch }) {
             className="w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 text-lg flex items-center justify-between"
           >
             <span>
-              {totalGuests} Guest{totalGuests > 1 ? "s" : ""} • {rooms.length} Room{rooms.length > 1 ? "s" : ""}
+              {totalGuests} Guest{totalGuests > 1 ? "s" : ""} • {rooms.length} Room
+              {rooms.length > 1 ? "s" : ""}
             </span>
             <ChevronDown className="h-4 w-4" />
           </button>
 
+          {/* Guest Popup - unchanged */}
           {showGuestPopup && (
             <div className="absolute z-20 mt-2 w-full rounded-xl border bg-white shadow-lg p-4">
               {rooms.map((room, i) => (
@@ -328,8 +359,7 @@ export default function AccommodationFilter({ onSearch }) {
                       </button>
                     )}
                   </div>
-                  
-                  {/* Adults Counter - Compact */}
+
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-medium">Adults</span>
                     <div className="flex items-center gap-2">
@@ -338,8 +368,8 @@ export default function AccommodationFilter({ onSearch }) {
                         onClick={() => updateAdult(i, room.adult - 1)}
                         disabled={room.adult <= 1}
                         className={`w-6 h-6 rounded border flex items-center justify-center ${
-                          room.adult <= 1 
-                            ? "border-gray-200 text-gray-400 cursor-not-allowed" 
+                          room.adult <= 1
+                            ? "border-gray-200 text-gray-400 cursor-not-allowed"
                             : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
                         }`}
                       >
@@ -349,10 +379,10 @@ export default function AccommodationFilter({ onSearch }) {
                       <button
                         type="button"
                         onClick={() => updateAdult(i, room.adult + 1)}
-                        disabled={room.adult >= 4}
+                        disabled={room.adult >= 10}
                         className={`w-6 h-6 rounded border flex items-center justify-center ${
-                          room.adult >= 4 
-                            ? "border-gray-200 text-gray-400 cursor-not-allowed" 
+                          room.adult >= 10
+                            ? "border-gray-200 text-gray-400 cursor-not-allowed"
                             : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
                         }`}
                       >
@@ -361,31 +391,31 @@ export default function AccommodationFilter({ onSearch }) {
                     </div>
                   </div>
 
-                  {/* Children Section - Compact */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Children</span>
                       <span className="text-xs text-gray-500">
-                        {room.children.length}/3
+                        {room.children.length}/10
                       </span>
                     </div>
-                    
-                    {/* Selected Children - Compact Tags */}
-                    {room.children.length > 0 && (
+
+                    {room.children.length >= 1 && (
                       <div className="flex flex-wrap gap-1 mb-2">
                         {room.children.map((childAge, childIndex) => (
-                          <div 
-                            key={childIndex} 
+                          <div
+                            key={childIndex}
                             className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-full px-2 py-1"
                           >
                             <select
                               value={childAge}
-                              onChange={(e) => updateChildAge(i, childIndex, parseInt(e.target.value))}
+                              onChange={(e) =>
+                                updateChildAge(i, childIndex, parseInt(e.target.value))
+                              }
                               className="bg-transparent text-xs border-none outline-none cursor-pointer"
                             >
                               {Array.from({ length: 13 }, (_, index) => (
-                                <option key={index} value={index}>
-                                  {index}y
+                                <option key={index} value={index + 1}>
+                                  {index + 1}y
                                 </option>
                               ))}
                             </select>
@@ -400,22 +430,20 @@ export default function AccommodationFilter({ onSearch }) {
                         ))}
                       </div>
                     )}
-                    
-                    {/* Add Child Button */}
-                    {room.children.length < 3 && (
+
+                    {room.children.length < 10 && (
                       <button
                         type="button"
-                        onClick={() => addChild(i, 5)}
+                        onClick={() => addChild(i, 1)}
                         className="w-full text-xs text-blue-600 font-medium py-1 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
                       >
-                        + Add Child ({3 - room.children.length} left)
+                        + Add Child ({10 - room.children.length} left)
                       </button>
                     )}
                   </div>
                 </div>
               ))}
-              
-              {/* Add Room and Done Buttons */}
+
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"

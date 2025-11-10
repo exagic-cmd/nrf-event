@@ -51,7 +51,7 @@ export default function HomePage() {
     fetchVehicles();
   }, [resetTransferStore, fetchVehicles]);
 
-  const [event, setEvent] = useState(null);
+ const [event, setEvent] = useState(null);
 
   useEffect(() => {
     async function loadEvent() {
@@ -62,7 +62,6 @@ export default function HomePage() {
 
     loadEvent();
   }, []);
-
 
   // Tabs
   const [filterActiveTab, setFilterActiveTab] = useState(2);
@@ -135,30 +134,8 @@ export default function HomePage() {
 
     // 🏨 ACCOMMODATIONS
     if (filterActiveTab === 4) {
-      // compute nights automatically (5 by default)
-      const start_date = payload?.startDate || new Date().toISOString().split("T")[0];
-      const end_date = payload?.endDate || new Date(Date.now() + 5 * 86400000).toISOString().split("T")[0];
-      const nights = Math.ceil((new Date(end_date) - new Date(start_date)) / (1000 * 60 * 60 * 24));
-
-      // build payload
-      const searchPayload = {
-        hotel_id: payload?.hotel_id || false,
-        nationality: payload?.nationality || "SG",
-        nights,
-        refund_policy: payload?.refund_policy || "all",
-        region: payload?.region_id || payload?.region || null,
-        rooms: payload?.rooms || [{ adult: 1, children: [] }],
-        stars: payload?.stars || "0",
-        start_date,
-      };
-
-      // save in Zustand
-      setAccommodationSearchParams(searchPayload);
-
-      // navigate
-      router.push(`/listings?searched=true&type=accommodation`);
-      return;
-    }
+    router.push(`/listings?searched=true&type=accommodation`);
+  }
   };
 
   const handleUpdateStars = (value) => setStars(value);
@@ -169,13 +146,16 @@ export default function HomePage() {
     <div className="bg-background">
       <section className="relative min-h-[85vh] h-[60vh] lg:h-[50vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-0">
           {event?.event?.title}
           <div
             className="absolute inset-0 bg-cover min-w-full"
             style={{
-                              backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.banner}')`,
+              backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.banner}')`,
             }}
           />
+          <div className="absolute inset-0 bg-black/10" />
+        </div>
           <div className="absolute inset-0 bg-black/10" />
         </div>
 
