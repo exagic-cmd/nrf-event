@@ -1,7 +1,7 @@
 // pages/accommodation/booking/[id].js
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; 
 import { useRouter } from "next/router";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import Layout from "@/components/layout/Layout";

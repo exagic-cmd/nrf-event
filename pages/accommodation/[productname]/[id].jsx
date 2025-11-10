@@ -219,6 +219,8 @@ export default function AccommodationDetailPage() {
       checkIn: searchParams?.start_date,
       checkOut: searchParams?.end_date,
       guests: searchParams?.rooms?.[0]?.adult || 2,
+      // include hotelQuoteId if saved earlier
+      hotelQuoteId: sessionStorage.getItem("hotelQuoteId") || null,
       timestamp: new Date().toISOString()
     };
     
@@ -313,6 +315,24 @@ export default function AccommodationDetailPage() {
 
           if (normalizedData.lowestPriceRoom) {
             setSelectedRoom(normalizedData.lowestPriceRoom);
+          }
+
+          // Extract hotelQuoteId from common response locations and persist to sessionStorage
+          try {
+            const quoteId =
+              matched?.["@attributes"]?.hotelQuoteId ||
+              matched?.hotelQuoteId ||
+              matched?.Hotel?.["@attributes"]?.hotelQuoteId ||
+              matched?.Hotel_Data?.["@attributes"]?.hotelQuoteId ||
+              normalizedData?.hotelQuoteId ||
+              null;
+
+            if (quoteId) {
+              sessionStorage.setItem("hotelQuoteId", String(quoteId));
+              console.log("Saved hotelQuoteId to sessionStorage:", quoteId);
+            }
+          } catch (e) {
+            console.warn("Failed to write hotelQuoteId to sessionStorage", e);
           }
 
           const actualSlug = slugify(normalizedData.normalizedHotelData.title || "accommodation");
