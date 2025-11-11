@@ -168,13 +168,27 @@ function ListingsPage() {
             searchCategory === "accommodation" ||
             searchCategory === "hotels") && (
             <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-              <GoogleMap
-                center={{ lat: 1.3521, lng: 103.8198 }}
-                zoom={12}
-                width="100%"
-                height="550px"
-                className="rounded-lg shadow-lg"
-              />
+                <GoogleMap
+                  center={{ lat: 1.3521, lng: 103.8198 }}
+                  zoom={12}
+                  width="100%"
+                  height="550px"
+                  className="rounded-lg shadow-lg"
+                  // markers: prefer daytours searchResults when in daytour view, otherwise accommodations
+                  markers={
+                    (searchCategory === "daytour" || searchCategory === "day-tours")
+                      ? (searchResults || []).map((r) => ({
+                          lat: r.latitude || r.lat || r?.location?.lat,
+                          lng: r.longitude || r.lng || r?.location?.lng,
+                          title: r.title || r.name || r.location_name || r.hotel_name || "",
+                        }))
+                      : (accommodations || []).map((a) => ({
+                          lat: a?.Hotel_Data?.latitude || a?.latitude || a?.normalizedHotelData?.latitude,
+                          lng: a?.Hotel_Data?.longitude || a?.longitude || a?.normalizedHotelData?.longitude,
+                          title: a?.Hotel_Data?.title || a?.name || a?.title || a?.hotel_name || "",
+                        }))
+                  }
+                />
             </div>
           )}
 
