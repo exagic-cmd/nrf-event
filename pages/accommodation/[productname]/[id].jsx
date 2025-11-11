@@ -264,7 +264,6 @@ export default function AccommodationDetailPage() {
       setError(null);
 
       try {
-        console.log("searchParams222222222222222222222222222",searchParams);
         const payload = {
           nationality: searchParams?.nationality || "SG",
           nights: searchParams?.nights || 1,
@@ -277,7 +276,6 @@ export default function AccommodationDetailPage() {
           end_date: searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
           hotel_id: accommodationId,
         };
-      console.log("Payload for accommodation detail fetch:333333333333333333", payload);
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
           {
