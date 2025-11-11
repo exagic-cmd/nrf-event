@@ -47,7 +47,7 @@ export const useDaytoursStore = create((set, get) => ({
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_b2b_products`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,31 +91,31 @@ export const useDaytoursStore = create((set, get) => ({
   },
 
   // Suggestions for input search
-  fetchSuggestedResults: async (query) => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: query,
-            is_b2c_only: 1,
-          }),
-        }
-      );
+  // fetchSuggestedResults: async (query) => {
+  //   try {
+  //     const res = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           name: query,
+  //           is_b2c_only: 1,
+  //         }),
+  //       }
+  //     );
 
-      if (!res.ok) throw new Error("Network response was not ok");
+  //     if (!res.ok) throw new Error("Network response was not ok");
 
-      const data = await res.json();
-      const suggestions = data?.products || data?.data || [];
+  //     const data = await res.json();
+  //     const suggestions = data?.products || data?.data || [];
 
-      set({ suggestedResults: suggestions.slice(0, 5) });
-    } catch (err) {
-      console.error("fetchSuggestedResults error:", err);
-      set({ suggestedResults: [] });
-    }
-  },
+  //     set({ suggestedResults: suggestions.slice(0, 5) });
+  //   } catch (err) {
+  //     console.error("fetchSuggestedResults error:", err);
+  //     set({ suggestedResults: [] });
+  //   }
+  // },
 
   // Local filtering (no API call)
   applyClientFilter: (filterFn) => {
