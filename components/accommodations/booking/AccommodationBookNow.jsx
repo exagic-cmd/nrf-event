@@ -356,6 +356,7 @@ const AccommodationBookNow = () => {
       cancellationPolicy: bookingData.selectedRoom.cancellationPolicy,
       guestDetails: updatedBookingData.guestDetails,
       specialRequests: specialRequests || "",
+      quoteId: bookingData.selectedRoom.id,
     };
 
     useCartStore.getState().addAccommodationItem(cartItem);

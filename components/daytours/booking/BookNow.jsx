@@ -142,7 +142,7 @@ useEffect(() => {
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
     await new Promise((res) => setTimeout(res, 1200)); // simulate loading
-    router.push("/transfers");
+    router.push("/");
     setLoadingButton(null);
   };
 

@@ -260,24 +260,24 @@ export default function AccommodationDetailPage() {
   useEffect(() => {
     const fetchAccommodationDetail = async () => {
       if (!accommodationId) return;
-
       setLoading(true);
       setError(null);
 
       try {
+        console.log("searchParams222222222222222222222222222",searchParams);
         const payload = {
           nationality: searchParams?.nationality || "SG",
           nights: searchParams?.nights || 1,
           refund_policy: searchParams?.refund_policy || "all",
-          region: searchParams?.region || selectedRegion || null,
+          region: false,
           rooms: searchParams?.rooms || [{ adult: 2, children: [] }],
           stars: searchParams?.stars || "0",
-          visitor_id: searchParams?.visitor_id || "abc123",
+          visitor_id: $helpers.getVisitorId(),
           start_date: searchParams?.start_date || new Date().toISOString().split("T")[0],
           end_date: searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
-          hotel_id: false,
+          hotel_id: accommodationId,
         };
-
+      console.log("Payload for accommodation detail fetch:333333333333333333", payload);
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
           {
