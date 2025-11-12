@@ -340,8 +340,9 @@ const AccommodationBookNow = () => {
     // Build roomsDetails array (include guestDetails inside each room entry)
     const roomsDetailsArray = [
       {
-        ...(bookingData.selectedRoom || {}),
-        guestDetails: { adults: guests.adults, children: guests.children },
+      ...(bookingData.selectedRoom || {}),
+      roomTypeId: 1,
+      guestDetails: { adults: guests.adults, children: guests.children },
       },
     ];
 
@@ -410,6 +411,8 @@ const AccommodationBookNow = () => {
       hotel_info: {
         id: updatedBookingData.hotelData?.id || productId,
         roomsDetails: updatedBookingData.hotelData?.roomsDetails || [],
+        checkInDate: bookingData.checkIn || null,
+        checkOutDate: bookingData.checkOut || null,
       },
 
       // guest & extras

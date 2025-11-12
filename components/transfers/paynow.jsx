@@ -165,6 +165,7 @@ const PayNow = ({ totalPrice }) => {
           nights: item.nights || 1,
           region: item.region,
           roomsDetails: item.roomsDetails || [{
+            roomTypeId: 1,
             id: item.selectedRoom?.id,
             roomType: item.selectedRoom?.roomType,
             mealType: item.selectedRoom?.mealType,
