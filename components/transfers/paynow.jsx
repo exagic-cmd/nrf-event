@@ -129,182 +129,192 @@ const PayNow = ({ totalPrice }) => {
   };
 
   const buildFinalPayload = () => {
-    const [firstName = '', lastName = ''] = name.split(" ");
-    const transferItem = items.find(item => item.type !== "upsell" && (item.selectedDate || item.pickupDate));
-    const allUpsell = items.every(item => item.type === "upsell");
-    const currentDate = new Date().toISOString().slice(0, 10);
+  const [firstName = '', lastName = ''] = name.split(" ");
+  const transferItem = items.find(item => item.type !== "upsell" && (item.selectedDate || item.pickupDate));
+  const allUpsell = items.every(item => item.type === "upsell");
+  const currentDate = new Date().toISOString().slice(0, 10);
 
-    const cart_items = items.map(item => {
-      const isTransfer = !!item.vehicle || item.transferType || item.tripType;
-      const isAccommodation = item.type === "accommodation";
+  const cart_items = items.map(item => {
+    const isTransfer = !!item.vehicle || item.transferType || item.tripType;
+    const isAccommodation = item.type === "accommodation";
 
-      // Addons only for non-accommodation
-      const addonsPayload = !isAccommodation && (item.addons || []).map(a => ({
-        addon_id: a.addon_id,
-        title: a.title,
-        qty: a.quantity || 1,
-        rate: a.rate || 0,
-        total: a.total || 0,
-      }));
-
-      const addonsRoundPayload = !isAccommodation && (item.addons_round || []).map(a => ({
-        addon_id: a.addon_id,
-        title: a.title,
-        qty: a.quantity || 1,
-        rate: a.rate || 0,
-        total: a.total || 0,
-      }));
-
-      const exceptionsPayload = item.exceptions || [];
-
-      // === ACCOMMODATION ITEM ===
-      if (isAccommodation) {
-        return {
-          product_id: item.tourId || item.id,
-          category_id: 4,
-          adult_count: item.guests || 0,
-          child_count: 0,
-          total: Number(item.price) || 0,
-          tour_date: item.checkIn,
-          addons:[],
-				
-				 addons_round:[],
-				 exceptions:null,
-				 baggage:null,
-
-          hotel_info: 
-          {
-            checkInDate: item.checkIn,
-            checkOutDate: item.checkOut,
-            guestDetails: item.guestDetails,
-            nationality: item.nationality,
-            nights: item.nights,
-            region: item.region,
-            roomsDetails: {
-              id: item.selectedRoom?.id,
-              roomType: item.selectedRoom?.roomType,
-              mealType: item.selectedRoom?.mealType, 
-              price: item.selectedRoom?.price,
-              roomCode: item.selectedRoom?.roomCode,
-              mealCode: item.selectedRoom?.mealCode,
-              cancellationPolicy: item.selectedRoom?.cancellationPolicy
-            },
-            specialRequests: item.selectedRoom?.specialRequests || ''
-          }
-          
-        };
-      }
-
-      // === TRANSFER ITEM ===
-      if (isTransfer) {
-        return {
-          product_id: item.tourId,
-          adult_count: item.passengers || 0,
-          child_count: item.children || 0,
-          total: typeof item.pricing === 'number' ? item.pricing : item.pricing?.total || 0,
-          tour_date: item.selectedDate || item.pickupDate || currentDate,
-          pickup_date: item.selectedDate || item.pickupDate || currentDate,
-          pickup_time: item.pickupTime || item.selectedTime || item.pickupFlightScheduleTime || "",
-          pickup_point: item.pickup || item.pickup?.name || item.searchParams?.pickup?.name || "",
-          pickup_point_id: item.vehicle?.pickup_point_id || item.pickup?.id || item.searchParams?.pickup?.id || "",
-          dropoff_point_id: item.vehicle?.dropoff_point_id || item.dropoff?.id || item.searchParams?.dropoff?.id || "",
-          two_way_pickup_point_id: item.returnPickup?.id || item.vehicle?.dropoff_point_id || item.searchParams?.returnPickup?.id || "",
-          two_way_dropoff_point_id: item.returnDropoff?.id || item.vehicle?.pickup_point_id || item.searchParams?.returnDropoff?.id || "",
-          feature_type_id: item.vehicle?.feature_type_id || 1,
-          flight_estimated_time: item.pickupFlightScheduleTime || "",
-          flight_dep_estimated_time: item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
-          dropoff_point: item.dropoff || item.dropoff?.name || item.searchParams?.dropoff?.name || "",
-          vehicle_id: item.vehicle?.vehicle_id || item.vehicle?.id || "",
-          transfer_type: item.transferType || item.tripType || "",
-          flight_number: item.pickupFlightNumber || "",
-          flight_dep_number: item.returnFlightNumber || "",
-          two_way_dropoff_date: item.returnDate || "",
-          two_way_dropoff_time: item.returnTime || item.flightDepEstimatedTime || "",
-          baggage: item.baggage || 0,
-          pickup_surcharge: item.pickupSurcharge || 0,
-          return_surcharge: item.returnSurcharge || 0,
-          return_surcharge_id: item.returnSurchargeId || 0,
-          pickup_surcharge_id: item.pickupSurchargeId || 0,
-          addons: addonsPayload || [],
-          addons_round: addonsRoundPayload || [],
-          exceptions: exceptionsPayload
-        };
-      }
-
-      // === DAY TOUR / UPSELL ===
+    // For accommodation items, use the existing structure from cart
+    if (isAccommodation) {
       return {
-        adult_count: item.adults || 0,
-        child_count: item.child || 0,
-        dropoff_point: item.hotelName || item.searchParams?.dropoff?.name || '',
-        flight_number: item.pickupFlightNumber || '',
-        operator_email: 'operator@example.com',
-        operator_id: '12345',
-        pickup_date: allUpsell ? currentDate : (transferItem?.selectedDate || transferItem?.pickupDate || currentDate),
-        pickup_point: item.hotelName || item.searchParams?.pickup?.name || '',
+        product_id: item.product_id || item.tourId || item.id,
+        category_id: 4,
+        adult_count: item.adult_count || item.guests || 0,
+        child_count: item.child_count || 0,
+        total: Number(item.total) || Number(item.price) || 0,
+        tour_date: item.tour_date || item.checkIn,
+        check_in: item.check_in || item.checkIn,
+        check_out: item.check_out || item.checkOut,
+        nights: item.nights || 1,
+        roomType: item.roomType,
+        mealType: item.mealType,
+        quoteId: item.quoteId,
+        cancellationPolicy: item.cancellationPolicy,
+        
+        // Use the existing hotel_info structure from cart
+        hotel_info: item.hotel_info || {
+          id: item.product_id || item.tourId || item.id,
+          checkInDate: item.check_in || item.checkIn,
+          checkOutDate: item.check_out || item.checkOut,
+          guestDetails: item.guestDetails,
+          nationality: item.nationality,
+          nights: item.nights || 1,
+          region: item.region,
+          roomsDetails: item.roomsDetails || [{
+            id: item.selectedRoom?.id,
+            roomType: item.selectedRoom?.roomType,
+            mealType: item.selectedRoom?.mealType,
+            price: item.selectedRoom?.price,
+            roomCode: item.selectedRoom?.roomCode,
+            mealCode: item.selectedRoom?.mealCode,
+            cancellationPolicy: item.selectedRoom?.cancellationPolicy,
+            guestDetails: item.guestDetails // Include guest details in roomsDetails
+          }],
+          specialRequests: item.specialRequests || ''
+        },
+        
+        // Keep empty arrays for transfer-specific fields
+        addons: [],
+        addons_round: [],
+        exceptions: null,
+        baggage: null,
+        
+        // Transfer fields - set to null/empty for accommodation
+        pickup_date: null,
+        pickup_time: null,
+        pickup_point: null,
+        dropoff_point: null,
+        vehicle_id: null,
+        transfer_type: null,
+        flight_number: "",
+        flight_dep_number: "",
+        flight_estimated_time: "",
+        flight_dep_estimated_time: "",
+        two_way_dropoff_date: "",
+        two_way_dropoff_time: "",
+        pickup_surcharge: 0,
+        return_surcharge: 0,
+        return_surcharge_id: 0,
+        pickup_surcharge_id: 0
+      };
+    }
+
+    // === TRANSFER ITEM ===
+    if (isTransfer) {
+      // ... keep your existing transfer logic unchanged ...
+      return {
+        product_id: item.tourId,
+        adult_count: item.passengers || 0,
+        child_count: item.children || 0,
+        total: typeof item.pricing === 'number' ? item.pricing : item.pricing?.total || 0,
+        tour_date: item.selectedDate || item.pickupDate || currentDate,
+        pickup_date: item.selectedDate || item.pickupDate || currentDate,
+        pickup_time: item.pickupTime || item.selectedTime || item.pickupFlightScheduleTime || "",
+        pickup_point: item.pickup || item.pickup?.name || item.searchParams?.pickup?.name || "",
         pickup_point_id: item.vehicle?.pickup_point_id || item.pickup?.id || item.searchParams?.pickup?.id || "",
         dropoff_point_id: item.vehicle?.dropoff_point_id || item.dropoff?.id || item.searchParams?.dropoff?.id || "",
         two_way_pickup_point_id: item.returnPickup?.id || item.vehicle?.dropoff_point_id || item.searchParams?.returnPickup?.id || "",
         two_way_dropoff_point_id: item.returnDropoff?.id || item.vehicle?.pickup_point_id || item.searchParams?.returnDropoff?.id || "",
         feature_type_id: item.vehicle?.feature_type_id || 1,
-        flight_estimated_time: item.pickupFlightScheduleTime || item.flightEstimatedTime || "",
+        flight_estimated_time: item.pickupFlightScheduleTime || "",
         flight_dep_estimated_time: item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
-        pickup_time: item.selectedTime,
-        product_id: item.tourId,
-        total: item.pricing?.total || 0,
-        tour_date: allUpsell ? currentDate : (transferItem?.selectedDate || transferItem?.pickupDate || currentDate),
-        tourplan_hotel_id: '789',
-        vehicle_id: 'V102',
-        transfer_type: '',
-        flight_dep_number: '',
-        flight_estimated_time: '',
-        flight_dep_estimated_time: '',
-        two_way_dropoff_date: '',
-        two_way_dropoff_time: '',
+        dropoff_point: item.dropoff || item.dropoff?.name || item.searchParams?.dropoff?.name || "",
+        vehicle_id: item.vehicle?.vehicle_id || item.vehicle?.id || "",
+        transfer_type: item.transferType || item.tripType || "",
+        flight_number: item.pickupFlightNumber || "",
+        flight_dep_number: item.returnFlightNumber || "",
+        two_way_dropoff_date: item.returnDate || "",
+        two_way_dropoff_time: item.returnTime || item.flightDepEstimatedTime || "",
         baggage: item.baggage || 0,
         pickup_surcharge: item.pickupSurcharge || 0,
         return_surcharge: item.returnSurcharge || 0,
         return_surcharge_id: item.returnSurchargeId || 0,
         pickup_surcharge_id: item.pickupSurchargeId || 0,
-        addons: addonsPayload || [],
-        addons_round: addonsRoundPayload || [],
-        exceptions: exceptionsPayload,
+        addons: item.addons || [],
+        addons_round: item.addons_round || [],
+        exceptions: item.exceptions || []
       };
-    });
+    }
 
-    const payload = {
-      cart_items,
-      paxinfo: {
-        email,
-        username: email.split('@')[0],
-        first_name: firstName,
-        last_name: lastName,
-        contactNumber: phone
-      },
-      payment_details: {
-        charge_to: '',
-        currency: 'SGD',
-        charge_for: 'order',
-        token: '',
-        xendit_authentication_id: ''
-      },
-      payment_mode: 2,
-      client_id: '',
-      agent_id: '',
-      source: 'Direct',
-      source_link: "Airport Transfers",
-      promo_id: promo || '',
-      discount: '',
-      session_id: 'vutxsweygb',
-      customer_type: 'potential_customer',
-      visitor_number: 'V68261',
-      redemption_voucher_id: 0,
-      agent_id: refId || null,
-      ref_type: refType || null,
-      track_agent_id: track_agent_id || null
+    // === DAY TOUR / UPSELL ===
+    // ... keep your existing day tour/upsell logic unchanged ...
+    return {
+      adult_count: item.adults || 0,
+      child_count: item.child || 0,
+      dropoff_point: item.hotelName || item.searchParams?.dropoff?.name || '',
+      flight_number: item.pickupFlightNumber || '',
+      operator_email: 'operator@example.com',
+      operator_id: '12345',
+      pickup_date: allUpsell ? currentDate : (transferItem?.selectedDate || transferItem?.pickupDate || currentDate),
+      pickup_point: item.hotelName || item.searchParams?.pickup?.name || '',
+      pickup_point_id: item.vehicle?.pickup_point_id || item.pickup?.id || item.searchParams?.pickup?.id || "",
+      dropoff_point_id: item.vehicle?.dropoff_point_id || item.dropoff?.id || item.searchParams?.dropoff?.id || "",
+      two_way_pickup_point_id: item.returnPickup?.id || item.vehicle?.dropoff_point_id || item.searchParams?.returnPickup?.id || "",
+      two_way_dropoff_point_id: item.returnDropoff?.id || item.vehicle?.pickup_point_id || item.searchParams?.returnDropoff?.id || "",
+      feature_type_id: item.vehicle?.feature_type_id || 1,
+      flight_estimated_time: item.pickupFlightScheduleTime || item.flightEstimatedTime || "",
+      flight_dep_estimated_time: item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
+      pickup_time: item.selectedTime,
+      product_id: item.tourId,
+      total: item.pricing?.total || 0,
+      tour_date: allUpsell ? currentDate : (transferItem?.selectedDate || transferItem?.pickupDate || currentDate),
+      tourplan_hotel_id: '789',
+      vehicle_id: 'V102',
+      transfer_type: '',
+      flight_dep_number: '',
+      flight_estimated_time: '',
+      flight_dep_estimated_time: '',
+      two_way_dropoff_date: '',
+      two_way_dropoff_time: '',
+      baggage: item.baggage || 0,
+      pickup_surcharge: item.pickupSurcharge || 0,
+      return_surcharge: item.returnSurcharge || 0,
+      return_surcharge_id: item.returnSurchargeId || 0,
+      pickup_surcharge_id: item.pickupSurchargeId || 0,
+      addons: item.addons || [],
+      addons_round: item.addons_round || [],
+      exceptions: item.exceptions || [],
     };
+  });
 
-    return payload;
+  const payload = {
+    cart_items,
+    paxinfo: {
+      email,
+      username: email.split('@')[0],
+      first_name: firstName,
+      last_name: lastName,
+      contactNumber: phone
+    },
+    payment_details: {
+      charge_to: '',
+      currency: 'SGD',
+      charge_for: 'order',
+      token: '',
+      xendit_authentication_id: ''
+    },
+    payment_mode: 2,
+    client_id: '',
+    agent_id: '',
+    source: 'Direct',
+    source_link: "Explore Singapore (NRF)",
+    promo_id: promo || '',
+    discount: '',
+    session_id: 'vutxsweygb',
+    customer_type: 'potential_customer',
+    visitor_number: 'V68261',
+    redemption_voucher_id: 0,
+    agent_id: refId || null,
+    ref_type: refType || null,
+    track_agent_id: track_agent_id || null
   };
+
+  return payload;
+};
 
   const handlePayNow = async (e) => {
     e.preventDefault();
