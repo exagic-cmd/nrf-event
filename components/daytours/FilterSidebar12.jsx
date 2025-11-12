@@ -3,6 +3,7 @@
 
 import { useState, useMemo, useTransition } from "react";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 
 const FILTER_KEYS = [
   "suit_clusters",
@@ -10,6 +11,7 @@ const FILTER_KEYS = [
   "physical_aspect",
   "activity_intensity",
   "inclusions_exclusions_activity",
+  "amenities",
   "sgd_preference",
 ];
 
@@ -19,11 +21,13 @@ const FILTER_LABELS = {
   physical_aspect: "Physical Aspect",
   activity_intensity: "Activity Intensity",
   inclusions_exclusions_activity: "Inclusions / Exclusions",
+  amenities: "Amenities",
   sgd_preference: "SGD Preference",
 };
 
-export default function FilterSidebar() {
+export default function FilterSidebar({ mode = "daytour" }) {
   const { searchResults, applyClientFilter, resetFilters } = useDaytoursStore();
+  const { accommodations } = useAccommodationsStore();
 
   const [isPending, startTransition] = useTransition();
 
@@ -41,23 +45,40 @@ export default function FilterSidebar() {
     const uniq = (arr) => Array.from(new Set(arr)).sort();
 
     const result = {};
-    FILTER_KEYS.forEach((k) => (result[k] = []));
+    // Decide which keys to expose based on mode
+    const keys = mode === "accommodation" ? ["amenities"] : FILTER_KEYS.filter((k) => k !== "amenities");
+    keys.forEach((k) => (result[k] = []));
 
-    searchResults.forEach((item) => {
-      FILTER_KEYS.forEach((key) => {
-        const values = item[key] || [];
+    // Source: for daytour use searchResults, for accommodation use accommodations
+    const source = mode === "accommodation" ? (accommodations || []) : (searchResults || []);
+
+    source.forEach((item) => {
+      keys.forEach((key) => {
+        // Special handling for amenities (comma separated in Hotel_Data)
+        if (key === "amenities") {
+          const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
+          if (typeof raw === 'string' && raw.trim()) {
+            const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+            result[key].push(...parts);
+          } else if (Array.isArray(raw)) {
+            result[key].push(...raw.map(String));
+          }
+          return;
+        }
+
+        const values = item[key] || item[key] === 0 ? item[key] : [];
         if (Array.isArray(values)) {
           result[key].push(...values);
         }
       });
     });
 
-    FILTER_KEYS.forEach((key) => {
+    keys.forEach((key) => {
       result[key] = uniq(result[key]);
     });
 
     return result;
-  }, [searchResults]);
+  }, [searchResults, accommodations, mode]);
 
   // -----------------------------------------------------------------
   // 2. Apply filters whenever `selected` changes
@@ -72,9 +93,29 @@ export default function FilterSidebar() {
       }
 
       applyClientFilter((item) => {
-        return Object.entries(selected).every(([key, selVals]) => {
+        // Only consider the relevant keys for this mode
+        const keys = mode === "accommodation" ? ["amenities"] : FILTER_KEYS.filter((k) => k !== "amenities");
+        return Object.entries(selected)
+          .filter(([k]) => keys.includes(k))
+          .every(([key, selVals]) => {
           if (!selVals.length) return true;
-          const itemVals = (item[key] || []);
+
+          // Determine item values for the key, with special handling for amenities
+          let itemVals = [];
+          if (key === 'amenities') {
+            const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
+            if (typeof raw === 'string' && raw.trim()) {
+              itemVals = raw.split(',').map(s => s.trim()).filter(Boolean);
+            } else if (Array.isArray(raw)) {
+              itemVals = raw.map(String);
+            } else {
+              itemVals = [];
+            }
+          } else {
+            itemVals = item[key] || item[key] === 0 ? item[key] : [];
+          }
+
+          if (!Array.isArray(itemVals)) return false;
           return selVals.some((v) => itemVals.includes(v));
         });
       });
