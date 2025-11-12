@@ -181,6 +181,7 @@ export default function SearchFilterCard({
       city_id: selectedCity.id,
       name: searchQuery || "",
       is_b2c_only: 1,
+      is_active: true,
     };
 
     try {
