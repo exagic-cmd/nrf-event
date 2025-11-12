@@ -337,26 +337,87 @@ const AccommodationBookNow = () => {
       preBookingResponse: bookingResponse,
     };
 
+    // Build roomsDetails array (include guestDetails inside each room entry)
+    const roomsDetailsArray = [
+      {
+        ...(bookingData.selectedRoom || {}),
+        guestDetails: { adults: guests.adults, children: guests.children },
+      },
+    ];
+
+    // Keep hotel info minimal for downstream order creation: only id + roomsDetails
+    const hotelId = bookingData.hotelData?.id || bookingData.hotelData?.stuba_id || bookingData.hotelData?.stubaId || (bookingData.hotelData?.Hotel?.["@attributes"]?.id) || null;
+    updatedBookingData.hotelData = { id: hotelId, roomsDetails: roomsDetailsArray };
+
     sessionStorage.setItem("accommodationBookingData", JSON.stringify(updatedBookingData));
 
+    // Build a detailed cart item compatible with server-side expectations.
+    // Fill non-applicable transfer fields with null/empty values so order creation succeeds.
+    const productId = bookingData.hotelData?.id || bookingData.hotelData?.stuba_id || bookingData.hotelData?.stubaId || null;
+    const adults = bookingData.searchParams?.rooms?.[0]?.adult || 1;
+    const children = (bookingData.searchParams?.rooms?.[0]?.children || []).length || 0;
+    const nights = bookingData.nights || 1;
+    const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
+    const totalPrice = (unitPrice * (nights || 1)).toFixed(2);
+
     const cartItem = {
-      tourId: bookingData.hotelData.id,
-      productTitle: bookingData.hotelData.title,
+      // basic product identity
+      product_id: productId,
+      tourId: productId,
+      productTitle: bookingData.hotelData?.title || bookingData.hotelData?.name || "",
       productType: "accommodation",
-      price: bookingData.selectedRoom.price,
-      quantity: 1,
-      date: bookingData.searchParams.start_date,
-      guests: bookingData.searchParams.rooms?.[0]?.adult || 2,
-      nights: bookingData.nights || 1,
-      roomType: bookingData.selectedRoom.roomType,
-      mealType: bookingData.selectedRoom.mealType,
-      checkIn: bookingData.checkIn,
-      checkOut: bookingData.checkOut,
-      image: bookingData.hotelData.images?.[0]?.url || bookingData.hotelData.image,
-      cancellationPolicy: bookingData.selectedRoom.cancellationPolicy,
+
+      // passenger counts and pricing
+      adult_count: adults,
+      child_count: children,
+      price: unitPrice,
+      total: Number(totalPrice),
+      tour_date: bookingData.checkIn || bookingData.searchParams?.start_date || null,
+      check_in: bookingData.checkIn || null,
+      check_out: bookingData.checkOut || null,
+      pickup_date: null,
+      pickup_time: null,
+      pickup_point: null,
+      dropoff_point: null,
+      vehicle_id: null,
+      transfer_type: null,
+      flight_number: "",
+      flight_dep_number: "",
+      flight_estimated_time: "",
+      flight_dep_estimated_time: "",
+      two_way_dropoff_date: "",
+      two_way_dropoff_time: "",
+      baggage: null,
+      pickup_surcharge: 0,
+      return_surcharge: 0,
+      return_surcharge_id: 0,
+      pickup_surcharge_id: 0,
+
+      // addons & exceptions — keep arrays
+      addons: [],
+      addons_round: [],
+      exceptions: [],
+
+      // accommodation-specific details
+      nights: nights,
+      roomType: bookingData.selectedRoom?.roomType || bookingData.selectedRoom?.roomType || "",
+      mealType: bookingData.selectedRoom?.mealType || "",
+  // include roomsDetails array (with guestDetails nested)
+  //roomsDetails: updatedBookingData.hotelData?.roomsDetails || [bookingData.selectedRoom || {}],
+      quoteId: bookingData.selectedRoom?.id || null,
+      cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
+      // minimal hotel_info: id and roomsDetails
+      hotel_info: {
+        id: updatedBookingData.hotelData?.id || productId,
+        roomsDetails: updatedBookingData.hotelData?.roomsDetails || [],
+      },
+
+      // guest & extras
       guestDetails: updatedBookingData.guestDetails,
       specialRequests: specialRequests || "",
-      quoteId: bookingData.selectedRoom.id,
+
+      // helpful metadata
+      image: bookingData.hotelData?.images?.[0]?.url || bookingData.hotelData?.image || null,
     };
 
     useCartStore.getState().addAccommodationItem(cartItem);
