@@ -299,13 +299,12 @@ export const useAccommodationsStore = create((set, get) => ({
 
   // Local filtering (no API call)
   applyAccommodationFilter: (filterFn) => {
-    const all = get().searchResults;
-    setTimeout(() => {
-      const filtered =
-        typeof filterFn === "function" ? all.filter(filterFn) : all;
-      set({ filteredResults: filtered });
-    }, 0);
-  },
+  const all = get().searchResults;
+  setTimeout(() => {
+    const filtered = typeof filterFn === "function" ? all.filter(filterFn) : all;
+    set({ filteredResults: filtered });
+  }, 0);
+},
 
   resetAccommodationFilters: () => {
     const all = get().searchResults;

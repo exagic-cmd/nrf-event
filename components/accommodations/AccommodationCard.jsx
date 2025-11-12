@@ -16,7 +16,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   // Extract hotel data from the new API structure
   const hotelData = accommodation.Hotel_Data;
   const results = Array.isArray(accommodation.Result) ? accommodation.Result : [accommodation.Result];
-  console.log(hotelData)
+  console.log("###############",hotelData.amenities)
   // Find the lowest price from all room results
   const lowestPrice = results.reduce((min, result) => {
     const price = parseFloat(result.Room.Price["@attributes"].amt);
