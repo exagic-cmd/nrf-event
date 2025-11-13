@@ -1,63 +1,81 @@
+// components/accommodations/AccommodationList.jsx
+"use client";
+
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import AccommodationCard from "@/components/accommodations/AccommodationCard";
 import Pagination from "@/components/common/Pagination";
-import { useDaytoursStore } from "@/store/useDaytoursStore";
-import { getFullImageUrl } from "@/utils/imageService"
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { getFullImageUrl } from "@/utils/imageService";
 
 const ITEMS_PER_PAGE = 8;
 
-function AccommodationList({ searchParams }) {
-  const { t } = useTranslation('accommodation');
+function AccommodationList() {
+  const { t } = useTranslation("accommodation");
   const [currentPage, setCurrentPage] = useState(1);
-  const { searchResults, isLoading } = useDaytoursStore();
+
+  const {
+    searchParams,
+    filteredResults,     // ← THIS IS THE FILTERED LIST
+    isLoading,
+    error,
+  } = useAccommodationsStore();
 
   const accommodationSectionRef = useRef(null);
 
+  // Use filtered results (fallback to empty array)
+  const dataToUse = Array.isArray(filteredResults) ? filteredResults : [];
+
+  // Debug
+  useEffect(() => {
+    console.log("AccommodationList Render");
+    console.log("Total filteredResults:", dataToUse.length);
+    console.log("isLoading:", isLoading, "error:", error);
+  }, [dataToUse, isLoading, error]);
+
+  // Prepare UI data
   const accommodationData = useMemo(() => {
-    if (!searchResults || !Array.isArray(searchResults)) {
-      return [];
-    }
-    
-    return searchResults.map(item => {
-      const basePrice = parseFloat(item.adult_price || item.starting_price);
-      const promoPrice = parseFloat(item.final_promo_price || 0);
+    if (!dataToUse.length) return [];
+
+    return dataToUse.map((item) => {
+      const basePrice = parseFloat(item.price || item.rate || item.starting_price || 0);
+      const promoPrice = parseFloat(item.promo_price || item.discounted_price || 0);
       const usePromo = promoPrice > 0 && promoPrice < basePrice;
       const priceToShow = usePromo ? promoPrice : basePrice;
 
       return {
         ...item,
-        id: item.id,
-        name: item.product_title,
-        description: item.product_content_desc || item.short_desc,
-        image: getFullImageUrl(item.image),
+        id: item.id || item.hotel_id || item.stuba_id || Math.random().toString(36).substring(2, 9),
+        name: item.name || item.hotel_name || item.title || "Unnamed Accommodation",
+        description: item.description || item.short_desc || "",
+        image: getFullImageUrl(item.image || item.images?.[0] || item.photo),
         price: priceToShow,
         originalPrice: usePromo ? basePrice : null,
-        rating: 4.5,
-        reviews: 0,
-        location: item.location,
+        rating: item.rating || item.star_rating || 4.0,
+        reviews: item.review_count || item.reviews || 0,
+        location: item.location || item.city || item.region || "",
         features: [
           item.room_type && `Room Type: ${item.room_type}`,
-          item.amenities && item.amenities.length > 0 && `Amenities: ${item.amenities.slice(0, 2).join(', ')}`,
-          item.physical_aspect && item.physical_aspect.length > 0 && `Accessibility: ${item.physical_aspect.join(', ')}`,
+          Array.isArray(item.amenities) && item.amenities.length > 0 && `Amenities: ${item.amenities.slice(0, 2).join(", ")}`,
+          Array.isArray(item.room_features) && item.room_features.length > 0 && `Features: ${item.room_features.slice(0, 2).join(", ")}`,
         ].filter(Boolean),
-        rawData: item,
       };
     });
-  }, [searchResults]);
+  }, [dataToUse]);
 
+  // Auto-scroll
   useEffect(() => {
-    if (searchResults && searchResults.length > 0 && accommodationSectionRef.current) {
+    if (accommodationData.length > 0 && accommodationSectionRef.current && !isLoading) {
       const element = accommodationSectionRef.current;
       const yOffset = -100;
       const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: "smooth" });
     }
-  }, [searchResults]);
+  }, [accommodationData, isLoading]);
 
+  // Sorting + Pagination
   const sortedAccommodations = useMemo(() => {
-    const sortableAccommodations = [...accommodationData];
-    return sortableAccommodations.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    return [...accommodationData].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
   }, [accommodationData]);
 
   const totalPages = Math.ceil(sortedAccommodations.length / ITEMS_PER_PAGE);
@@ -66,51 +84,77 @@ function AccommodationList({ searchParams }) {
     currentPage * ITEMS_PER_PAGE
   );
 
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [dataToUse]);
+
+  // Render states
+  const renderContent = () => {
+    if (!searchParams && !isLoading && dataToUse.length === 0) {
+      return (
+        <div className="text-center py-10 text-gray-500">
+          <p className="text-lg mb-2">Ready to find your perfect stay?</p>
+          <p>Enter your search criteria above to see available accommodations.</p>
+        </div>
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-20">
+          <svg className="animate-spin h-8 w-8 text-[#CC9A55]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+          </svg>
+          <span className="ml-3 text-gray-600">Searching for accommodations...</span>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="rounded-xl py-3 px-4 bg-red-50 border border-red-200">
+          <p className="text-lg font-semibold text-red-700">Error: {error}</p>
+        </div>
+      );
+    }
+
+    if (searchParams && paginatedAccommodations.length === 0) {
+      return (
+        <div className="text-center py-10 text-gray-500">
+          <p className="text-lg mb-2">No accommodations found</p>
+          <p>Try adjusting your filters or search criteria.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {paginatedAccommodations.map((accommodation) => (
+          <AccommodationCard
+            key={accommodation.id}
+            accommodation={accommodation}
+            category="accommodation"
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div ref={accommodationSectionRef} className="space-y-6">
-      <div className="rounded-xl py-3 px-4 bg-gray-50">
-        <p className="text-lg font-semibold">
-          Showing {sortedAccommodations.length} Accommodations
-        </p>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center items-center py-20">
-          <svg
-            className="animate-spin h-8 w-8 text-[#CC9A55]"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8H4z"
-            />
-          </svg>
-        </div>
-      ) : paginatedAccommodations.length > 0 ? (
-        <div className="space-y-6">
-          {paginatedAccommodations.map((accommodation) => (
-            <AccommodationCard key={accommodation.id} accommodation={accommodation} category="accommodation" />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-10 text-gray-500">
-          {searchResults && searchResults.length > 0 
-            ? `Found ${searchResults.length} accommodations but none are active or processable` 
-            : 'No accommodations found for your search criteria.'
-          }
+      {searchParams && (
+        <div className="rounded-xl py-3 px-4 bg-gray-50">
+          <p className="text-lg font-semibold">
+            {isLoading
+              ? "Searching..."
+              : `Showing ${sortedAccommodations.length} Accommodation${sortedAccommodations.length !== 1 ? 's' : ''}`}
+          </p>
         </div>
       )}
+
+      {renderContent()}
 
       {!isLoading && totalPages > 1 && (
         <Pagination

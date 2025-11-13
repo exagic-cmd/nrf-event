@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Layout from "@/components/layout/Layout"
 import { TransferBenefitsSection } from "@/components/landing/transfer-benefits-section"
+import  CountdownTimer  from "@/components/landing/event-count-down"
 import { ReviewsSection } from "@/components/landing/reviews-section"
 import { Preloader } from "@/components/landing/preloader"
 import LocalizedLink from "@/components/LocalizedLink"
@@ -12,6 +13,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import Herosection from "@/components/landing/Herosection"
 import useUserStore from "@/store/useAuthStore"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
+import { useEventStore } from "@/store/useEventStore";
 export default function LandingPage() {
   const { t } = useTranslation("common")
   const [isLoading, setIsLoading] = useState(true)
@@ -19,6 +21,7 @@ export default function LandingPage() {
   const { token } = useUserStore()
   const [checkingAuth, setCheckingAuth] = useState(true)
     const { trackAffiliateRedirect } = useAffiliateStore();
+    const { FetchEvent } = useEventStore();
   useEffect(() => {
     if (token) {
     
@@ -33,6 +36,8 @@ export default function LandingPage() {
     if (!router.isReady) return;
 
     trackAffiliateRedirect(router);
+ 
+   
   }, [router.isReady]); 
 
   useEffect(() => {
@@ -63,6 +68,8 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/50 to-transparent"></div>
 
         {/* Transfer Benefits Section */}
+        <CountdownTimer />
+
         <TransferBenefitsSection />
         {/* Reviews Section */}
         {/* <ReviewsSection /> */}

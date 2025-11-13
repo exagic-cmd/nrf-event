@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import "@/styles/globals.css"
-import Layout from "@/components/layout/Layout"
-import TransfersList from "@/components/transfers/TransfersList"
-import DaytoursList from "@/components/daytours/DaytoursList"
-import AccommodationList from "@/components/accommodations/AccommodationList"
-import Faqs from "@/components/transfers/Faqs"
-import TransferSearchFilter from "@/components/transfers/FilterBar"
+import { useState, useEffect } from "react";
+import "@/styles/globals.css";
+import Layout from "@/components/layout/Layout";
+import TransfersList from "@/components/transfers/TransfersList";
+import DaytoursList from "@/components/daytours/DaytoursList";
+import AccommodationList from "@/components/accommodations/AccommodationList";
+import Faqs from "@/components/transfers/Faqs";
+import TransferSearchFilter from "@/components/transfers/FilterBar";
 import FilterSidebar from "@/components/daytours/FilterSidebar";
-import TransferBookingPlaceholder from "@/components/transfers/TransferBookingPlaceholder"
-import { useTranslation } from "next-i18next"
-import { serverSideTranslations } from "next-i18next/serverSideTranslations"
-import { useSearchParams } from 'next/navigation'
+import TransferBookingPlaceholder from "@/components/transfers/TransferBookingPlaceholder";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useSearchParams } from "next/navigation";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import GoogleMap from "@/components/daytours/GoogleMap";
-
 
 function ListingsPage() {
   const [hasSearched, setHasSearched] = useState(false);
@@ -23,19 +23,24 @@ function ListingsPage() {
   const [isInitialSearch, setIsInitialSearch] = useState(true);
   const [searchCategory, setSearchCategory] = useState("transfer");
   const [searchParams, setSearchParams] = useState({});
-  
   const { t } = useTranslation("common", "transfer");
   const urlSearchParams = useSearchParams();
-  // Zustand state
+
+  // Zustand stores
   const {
     searchResults,
-    filteredResults,
     isLoading,
-    currentCategory,
-    fetchSearchResults,
-    clearResults,
   } = useDaytoursStore();
 
+  const {
+    searchParams: accommodationPayload,
+    accommodations,
+    filteredResults,
+    isLoading: accommodationLoading,
+    fetchAccommodations,
+  } = useAccommodationsStore();
+
+  // Detect search via URL
   useEffect(() => {
     const searched = urlSearchParams.get("searched");
     const type = urlSearchParams.get("type");
@@ -44,15 +49,11 @@ function ListingsPage() {
     if (searched) {
       setHasSearched(true);
       setIsInitialSearch(false);
-      
-      // Determine category from URL params
       if (category) {
         setSearchCategory(category.toLowerCase());
       } else if (type) {
         setSearchCategory(type.toLowerCase());
       }
-
-      // Store all search parameters for the list components
       const params = {};
       for (const [key, value] of urlSearchParams.entries()) {
         params[key] = value;
@@ -63,24 +64,17 @@ function ListingsPage() {
     }
   }, [urlSearchParams]);
 
-  const handleSearch = (searchData) => {
-    setHasSearched(true);
-    setShowSearchModal(false);
-
-    // Set category and store search data
-    if (searchData?.category) {
-      setSearchCategory(searchData.category.toLowerCase());
+  // Fetch accommodations when payload is available
+  useEffect(() => {
+    if (
+      (searchCategory === "accommodation" || searchCategory === "hotels") &&
+      accommodationPayload
+    ) {
+      fetchAccommodations(accommodationPayload);
     }
-    
-    // Store search parameters
-    setSearchParams(searchData || {});
+  }, [searchCategory, accommodationPayload, fetchAccommodations]);
 
-    if (isInitialSearch) {
-      setIsInitialSearch(false);
-    }
-  };
-
-  // Render the appropriate list component based on category
+  // Render the correct list
   const renderListComponent = () => {
     switch (searchCategory) {
       case "transfer":
@@ -90,13 +84,18 @@ function ListingsPage() {
         return <DaytoursList searchParams={searchParams} />;
       case "accommodation":
       case "hotels":
-        return <AccommodationList searchParams={searchParams} />;
+        return (
+          <AccommodationList
+            accommodations={accommodations}
+            isLoading={accommodationLoading}
+          />
+        );
       default:
         return <TransfersList searchParams={searchParams} />;
     }
   };
 
-  // Render appropriate placeholder based on category
+  // Placeholders
   const renderPlaceholder = () => {
     switch (searchCategory) {
       case "daytour":
@@ -120,19 +119,16 @@ function ListingsPage() {
     }
   };
 
-  // Show FAQs only for transfers
-  const showFaqs = hasSearched && (searchCategory === "transfer");
+  const showFaqs = hasSearched && searchCategory === "transfer";
 
   return (
     <Layout>
       <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-black">
         <div className="flex flex-col lg:flex-row gap-6 px-6">
-          
-          {/* Left: Filter */}
-           {searchCategory === "transfer" && (
+          {searchCategory === "transfer" && (
             <div className="h-fit md:sticky top-24 self-start z-20">
               <TransferSearchFilter
-                onSearch={handleSearch}
+                onSearch={() => {}}
                 showModal={showSearchModal}
                 setShowModal={setShowSearchModal}
                 forceSearch={isInitialSearch}
@@ -140,8 +136,7 @@ function ListingsPage() {
               />
             </div>
           )}
-
-          {/* Day Tours: Filter Sidebar + List */}
+			 {/* Day Tours: Filter Sidebar + List */}
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
             <div className="h-fit md:sticky top-24 self-start z-20">
               {/* Filter Sidebar (Sticky) */}
@@ -152,28 +147,53 @@ function ListingsPage() {
               </div>
             </div>
           )}
+          { /* Accomodation: No sidebar for now */}
+          {(searchCategory === "accommodation" || searchCategory === "hotels") && (
+          <div className="h-fit md:sticky top-24 self-start z-20">
+            {/* Filter Sidebar (Sticky) */}
+            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
+              {!accommodationLoading && accommodations && accommodations.length > 0 && (
+                <FilterSidebar mode="accommodation" />
+              )}
+            </div>
+          </div>
+          )}
 
           {/* Center: Dynamic content */}
           <div className="flex-1 flex flex-col lg:flex-row gap-6">
-            {hasSearched ? (
-              renderListComponent()
-            ) : (
-              renderPlaceholder()
-            )}
+            {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
-          {/* Google Maps */}
-                  {(searchCategory === "daytour" || searchCategory === "day-tours") && (
-                  <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-                    <GoogleMap 
-                    center={{ lat: 1.3521, lng: 103.8198 }} // Singapore coordinates
-                zoom={12}
-                width="100%"
-                height="550px"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-          )}
-          {/* Right: FAQs (only for transfers) */}
+
+          {(searchCategory === "daytour" ||
+  searchCategory === "day-tours" ||
+  searchCategory === "accommodation" ||
+  searchCategory === "hotels") && (
+  <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
+    <GoogleMap
+      center={{ lat: 1.3521, lng: 103.8198 }}
+      zoom={12}
+      width="100%"
+      height="550px"
+      className="rounded-lg shadow-lg"
+      markers={
+        // Day Tours: use searchResults
+        (searchCategory === "daytour" || searchCategory === "day-tours")
+          ? (searchResults || []).map((r) => ({
+              lat: r.latitude || r.lat || r?.location?.lat,
+              lng: r.longitude || r.lng || r?.location?.lng,
+              title: r.title || r.name || r.location_name || r.hotel_name || "",
+            }))
+          : // Accommodations: use filteredResults (NOT raw accommodations)
+            (filteredResults || []).map((a) => ({
+              lat: a?.Hotel_Data?.latitude || a?.latitude || a?.normalizedHotelData?.latitude,
+              lng: a?.Hotel_Data?.longitude || a?.longitude || a?.normalizedHotelData?.longitude,
+              title: a?.Hotel_Data?.title || a?.name || a?.title || a?.hotel_name || "",
+            }))
+      }
+    />
+  </div>
+)}
+
           {searchCategory === "transfer" && (
             <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
               {showFaqs && <Faqs />}
@@ -190,7 +210,7 @@ export async function getStaticProps({ locale }) {
     props: {
       ...(await serverSideTranslations(locale, ["common", "transfer"])),
     },
-  }
+  };
 }
 
-export default ListingsPage
+export default ListingsPage;

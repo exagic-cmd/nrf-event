@@ -52,25 +52,6 @@ export function TransferBenefitsSection() {
     loadDayTours();
   }, [fetchSearchResults]);
 
-  /* ---------------------- Load Top Accommodations ---------------------- */
-  useEffect(() => {
-    const loadAccommodations = async () => {
-      setIsLoadingAcc(true);
-      try {
-        const results = await fetchSearchResults({
-          category_id: 4, // accommodations
-          is_b2c_only: 1,
-        });
-        if (results?.length) setTopAccommodations(results.slice(0, 3));
-      } catch (err) {
-        console.error("Error loading accommodations:", err);
-      } finally {
-        setIsLoadingAcc(false);
-      }
-    };
-    loadAccommodations();
-  }, [fetchSearchResults]);
-
   const handleCardClick = (tour, category) => {
     const path =
       category === "daytour"
@@ -93,7 +74,7 @@ export function TransferBenefitsSection() {
         className="absolute bottom-1/2 right-0 w-36 h-36 object-cover opacity-10 translate-y-1/2 rotate-45 hidden sm:block rounded-xl"
       />
 
-      <div className="container px-4 md:px-6 mx-auto max-w-7xl relative z-10">
+      <div className="container px-4 md:px-6 mx-auto max-w-7xl relative">
         {/* ---------------------- Day Tours ---------------------- */}
         <div className="text-center mb-6">
           <h2 className="font-bold tracking-tighter text-3xl md:text-4xl text-white">
@@ -109,43 +90,6 @@ export function TransferBenefitsSection() {
               <Card
                 key={tour.id ?? idx}
                 onClick={() => handleCardClick(tour, "daytour")}
-                className="border border-gray-200 bg-white cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all duration-300"
-              >
-                <CardHeader className="p-0">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${tour.image}` || "/placeholder.jpg"}
-                    alt={tour.product_title}
-                    className="w-full h-48 object-cover rounded-t-xl"
-                  />
-                </CardHeader>
-                <CardContent className="p-4">
-                  <CardTitle className="text-lg font-semibold mb-2">
-                    {tour.product_title}
-                  </CardTitle>
-                  <CardDescription className="text-sm text-gray-600">
-                    {tour.short_desc || "Explore amazing experiences!"}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* ---------------------- Accommodations ---------------------- */}
-        <div className="text-center mb-6 mt-12">
-          <h2 className="font-bold tracking-tighter text-3xl md:text-4xl text-white">
-            Top Accommodations
-          </h2>
-        </div>
-
-        {isLoadingAcc ? (
-          <p className="text-center text-white">Loading top accommodations…</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topAccommodations.map((tour, idx) => (
-              <Card
-                key={tour.id ?? idx}
-                onClick={() => handleCardClick(tour, "accommodation")}
                 className="border border-gray-200 bg-white cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all duration-300"
               >
                 <CardHeader className="p-0">

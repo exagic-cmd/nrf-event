@@ -1,8 +1,9 @@
 // components/daytours/FilterSidebar.tsx
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo, useEffect, useTransition } from "react";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 
 const FILTER_KEYS = [
   "suit_clusters",
@@ -20,87 +21,211 @@ const FILTER_LABELS = {
   activity_intensity: "Activity Intensity",
   inclusions_exclusions_activity: "Inclusions / Exclusions",
   sgd_preference: "SGD Preference",
+  amenities: "Amenities",
 };
 
-export default function FilterSidebar() {
+const normalizeValue = (str: string): string => {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[-–—]/g, "-")
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s*\/\s*/g, " / ");
+};
+
+const normalizeAmenities = (raw: any): string[] => {
+  if (typeof raw === "string" && raw.trim()) {
+    return raw
+      .split(',')
+      .map(s => normalizeValue(s))
+      .filter(Boolean);
+  }
+  if (Array.isArray(raw)) {
+    return raw.map(item => normalizeValue(String(item)));
+  }
+  return [];
+};
+
+const normalizeFilterOption = (value: string): string => {
+  return normalizeValue(value);
+};
+
+export default function FilterSidebar({ mode = "daytour" }) {
   const { searchResults, applyClientFilter, resetFilters } = useDaytoursStore();
+  const { accommodations, applyAccommodationFilter, resetAccommodationFilters } = useAccommodationsStore();
   const [isPending, startTransition] = useTransition();
 
-  // Selected filters: { suit_clusters: ["Solo", "Couple"], ... }
-  const [selected, setSelected] = useState(() => {
-    const init = {};
-    FILTER_KEYS.forEach((k) => (init[k] = []));
+  const ALL_KEYS = [...FILTER_KEYS, "amenities"];
+  const [selected, setSelected] = useState<Record<string, string[]>>(() => {
+    const init: Record<string, string[]> = {};
+    ALL_KEYS.forEach((k) => (init[k] = []));
     return init;
   });
 
   // -----------------------------------------------------------------
-  // 1. Build unique options for each filter
+  // 1. Build unique options (normalized for matching, original for display)
   // -----------------------------------------------------------------
   const options = useMemo(() => {
-    const uniq = (arr) => Array.from(new Set(arr)).sort();
+    const result: Record<string, string[]> = {};
 
-    const result = {};
-    FILTER_KEYS.forEach((k) => (result[k] = []));
+    const currentResults = searchResults || [];
+    const currentAccommodations = accommodations || [];
+    const effectiveMode =
+      mode === "accommodation" ||
+      (currentAccommodations.length > 0 && currentResults.length === 0)
+        ? "accommodation"
+        : "daytour";
 
-    searchResults.forEach((item) => {
-      FILTER_KEYS.forEach((key) => {
-        const values = item[key] || [];
-        if (Array.isArray(values)) {
-          result[key].push(...values);
+    const keys = effectiveMode === "accommodation" ? ["amenities"] : FILTER_KEYS;
+    keys.forEach((k) => (result[k] = []));
+
+    const source = effectiveMode === "accommodation" ? currentAccommodations : currentResults;
+
+    const seen = new Set<string>(); // to avoid duplicates
+
+    source.forEach((item) => {
+      keys.forEach((key) => {
+        if (key === "amenities") {
+          const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
+          const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+          parts.forEach(part => {
+            const norm = normalizeValue(part);
+            if (norm && !seen.has(norm)) {
+              seen.add(norm);
+              result[key].push(part); // store original for display
+            }
+          });
+        } else {
+          const values = item[key];
+          if (Array.isArray(values)) {
+            values.forEach(v => {
+              const str = String(v);
+              const norm = normalizeValue(str);
+              if (norm && !seen.has(norm)) {
+                seen.add(norm);
+                result[key].push(str);
+              }
+            });
+          } else if (values === 0 || values) {
+            const str = String(values);
+            const norm = normalizeValue(str);
+            if (norm && !seen.has(norm)) {
+              seen.add(norm);
+              result[key].push(str);
+            }
+          }
         }
       });
     });
 
-    FILTER_KEYS.forEach((key) => {
-      result[key] = uniq(result[key]);
+    // Sort alphabetically
+    Object.keys(result).forEach(k => {
+      result[k].sort((a, b) => a.localeCompare(b));
     });
 
     return result;
-  }, [searchResults]);
+  }, [searchResults, accommodations, mode]);
 
   // -----------------------------------------------------------------
-  // 2. Apply filter whenever `selected` changes
+  // 2. Apply filter in useEffect
   // -----------------------------------------------------------------
-  useMemo(() => {
+  useEffect(() => {
     startTransition(() => {
+      const currentResults = searchResults || [];
+      const currentAccommodations = accommodations || [];
+      const effectiveMode =
+        mode === "accommodation" ||
+        (currentAccommodations.length > 0 && currentResults.length === 0)
+          ? "accommodation"
+          : "daytour";
+
       const hasActive = Object.values(selected).some((arr) => arr.length > 0);
 
       if (!hasActive) {
-        resetFilters();
+        effectiveMode === "accommodation" ? resetAccommodationFilters() : resetFilters();
         return;
       }
 
-      applyClientFilter((item) => {
-        return Object.entries(selected).every(([key, selVals]) => {
-          if (!selVals.length) return true;
-          const itemVals = item[key] || [];
-          return selVals.some((v) => itemVals.includes(v));
-        });
+      const applyFn = effectiveMode === "accommodation" ? applyAccommodationFilter : applyClientFilter;
+
+      applyFn((item) => {
+        const keys = effectiveMode === "accommodation" ? ["amenities"] : FILTER_KEYS;
+
+        return Object.entries(selected)
+          .filter(([k]) => keys.includes(k))
+          .every(([key, selVals]) => {
+            if (!selVals.length) return true;
+
+            let itemVals: string[] = [];
+
+            if (key === "amenities") {
+              const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
+              itemVals = normalizeAmenities(raw);
+            } else {
+              const val = item[key];
+              itemVals = Array.isArray(val)
+                ? val.map(v => normalizeValue(String(v)))
+                : (val === 0 || val ? [normalizeValue(String(val))] : []);
+            }
+
+            // AND logic: ALL selected must match
+            return selVals.every((selectedRaw) => {
+              const selectedNorm = normalizeFilterOption(selectedRaw);
+              return itemVals.includes(selectedNorm);
+            });
+          });
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, searchResults]);
+  }, [
+    selected,
+    searchResults,
+    accommodations,
+    mode,
+    applyClientFilter,
+    applyAccommodationFilter,
+    resetFilters,
+    resetAccommodationFilters,
+  ]);
 
   // -----------------------------------------------------------------
-  // 3. Toggle a checkbox
+  // 3. Toggle
   // -----------------------------------------------------------------
-  const toggle = (key, value) => {
-    setSelected((prev) => ({
-      ...prev,
-      [key]: prev[key].includes(value)
-        ? prev[key].filter((v) => v !== value)
-        : [...prev[key], value],
-    }));
+  const toggle = (key: string, rawValue: string) => {
+    setSelected((prev) => {
+      const prevVals = Array.isArray(prev[key]) ? prev[key] : [];
+      const normalizedNew = normalizeFilterOption(rawValue);
+      const normalizedPrev = prevVals.map(normalizeFilterOption);
+
+      if (normalizedPrev.includes(normalizedNew)) {
+        return {
+          ...prev,
+          [key]: prevVals.filter((v) => normalizeFilterOption(v) !== normalizedNew),
+        };
+      } else {
+        return {
+          ...prev,
+          [key]: [...prevVals, rawValue],
+        };
+      }
+    });
   };
 
   // -----------------------------------------------------------------
-  // 4. Clear all filters
+  // 4. Clear all
   // -----------------------------------------------------------------
   const clearAll = () => {
-    const empty = {};
-    FILTER_KEYS.forEach((k) => (empty[k] = []));
+    const empty: Record<string, string[]> = {};
+    ALL_KEYS.forEach((k) => (empty[k] = []));
     setSelected(empty);
-    resetFilters();
+
+    const effectiveMode =
+      mode === "accommodation" ||
+      ((accommodations || []).length > 0 && (searchResults || []).length === 0)
+        ? "accommodation"
+        : "daytour";
+
+    effectiveMode === "accommodation" ? resetAccommodationFilters() : resetFilters();
   };
 
   // -----------------------------------------------------------------
@@ -110,26 +235,20 @@ export default function FilterSidebar() {
     <aside className="bg-white rounded-lg shadow p-5 space-y-6 w-full lg:w-80">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-lg">Filters</h3>
-        <button
-          onClick={clearAll}
-          className="text-sm text-blue-600 hover:underline"
-        >
+        <button onClick={clearAll} className="text-sm text-blue-600 hover:underline">
           Clear all
         </button>
       </div>
 
       {isPending && (
-        <p className="text-xs text-gray-500 animate-pulse">
-          Updating results…
-        </p>
+        <p className="text-xs text-gray-500 animate-pulse">Updating results…</p>
       )}
 
-      {/* Filter groups */}
       {Object.entries(options).map(([key, values]) =>
         values.length > 0 ? (
           <FilterGroup
             key={key}
-            title={FILTER_LABELS[key]}
+            title={FILTER_LABELS[key] || key}
             options={values}
             selected={selected[key] || []}
             onToggle={(v) => toggle(key, v)}
@@ -140,14 +259,21 @@ export default function FilterSidebar() {
   );
 }
 
-/* --------------------------------------------------------------
-   Reusable checkbox group (plain JS)
-   -------------------------------------------------------------- */
-function FilterGroup({ title, options, selected, onToggle }) {
+function FilterGroup({
+  title,
+  options,
+  selected,
+  onToggle,
+}: {
+  title: string;
+  options: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+}) {
   return (
     <div>
       <h4 className="font-medium text-sm mb-2">{title}</h4>
-      <div className="space-y-1 max-h-48 overflow-y-auto pr-2">
+      <div className="space-y-1 max-h-100 overflow-y-auto pr-2">
         {options.map((opt) => (
           <label
             key={opt}

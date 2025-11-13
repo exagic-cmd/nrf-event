@@ -125,7 +125,7 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
         const timeoutId = setTimeout(async () => {
           set({ isLoading: true })
           try {
-            const res = await fetch(`https://app.airporttransfers.ai/api/transfer/pickup-options?search=${query}`)
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/pickup-options?search=${query}`)
             const result = await res.json()
             set({ pickupOptions: result?.pickup_points || [], isLoading: false })
           } catch (err) {
@@ -140,7 +140,7 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
         set({ isLoading: true })
         try {
           const res = await fetch(
-            `https://app.airporttransfers.ai/api/transfer/dropoff-options?pickup_point_id=${pickupId}`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/dropoff-options?pickup_point_id=${pickupId}`,
           )
           const result = await res.json()
           set({ dropoffOptions: result?.dropoff_points || [], isLoading: false })
@@ -152,7 +152,7 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
       searchTransfers: async (payload) => {
         set({ isLoading: true })
         try {
-          const res = await fetch("https://app.airporttransfers.ai/api/transfer/search", {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/search`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -168,7 +168,7 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
         set({ isLoading: true })
 
         try {
-          const url = `https://app.airporttransfers.ai/api/product-surcharges?product_id=${productId}&pickup_time=${pickupTime}`
+          const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product-surcharges?product_id=${productId}&pickup_time=${pickupTime}`
           const res = await fetch(url)
 
           const contentType = res.headers.get("content-type")
@@ -216,7 +216,7 @@ returnFlightTime: "",
       fetchVehicles: async () => {
         set({ isLoading: true })
         try {
-          const res = await fetch("https://app.airporttransfers.ai/api/getvehicles")
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/getvehicles`)
           const result = await res.json()
           if (result.success) {
             set({ vehicles: result.data.vehicles || [], isLoading: false })
@@ -232,7 +232,7 @@ returnFlightTime: "",
   const { origin_lat, origin_lng, dest_lat, dest_lng, date, start_time } = params
   set({ isLoading: true })
   try {
-    const url = `https://app.airporttransfers.ai/api/travel-info?origin_lat=${origin_lat}&origin_lng=${origin_lng}&dest_lat=${dest_lat}&dest_lng=${dest_lng}&date=${date}&start_time=${start_time}`
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-info?origin_lat=${origin_lat}&origin_lng=${origin_lng}&dest_lat=${dest_lat}&dest_lng=${dest_lng}&date=${date}&start_time=${start_time}`
     const res = await fetch(url)
     const result = await res.json()
 
@@ -260,7 +260,7 @@ fetchProductFeature: async (payload) => {
   set({ isLoading: true });
 
   try {
-    const res = await fetch("https://app.airporttransfers.ai/api/productfeaturetype", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/productfeaturetype`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
