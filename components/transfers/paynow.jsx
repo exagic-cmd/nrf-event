@@ -175,7 +175,10 @@ const PayNow = ({ totalPrice }) => {
             cancellationPolicy: item.selectedRoom?.cancellationPolicy,
             guestDetails: item.guestDetails // Include guest details in roomsDetails
           }],
-          specialRequests: item.specialRequests || ''
+          specialRequests: item.specialRequests || '',
+           // Attach preBookingResponse and preBookingRequest when available (from pre-book step)
+           request_response: item.hotel_info?.preBookingResponse || item.preBookingResponse || null,
+           request: item.hotel_info?.preBookingRequest?.callPreBookingAPI || item.preBookingRequest?.callPreBookingAPI || item.payload || null,
         },
         
         // Keep empty arrays for transfer-specific fields
