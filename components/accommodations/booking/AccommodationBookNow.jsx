@@ -17,12 +17,13 @@ const TITLE_OPTIONS = [
 
 // LARGE & BEAUTIFUL Confirmation Modal
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
-  if (!isOpen || !bookingResponse?.data?.[0]) return null;
+  const api = bookingResponse?.apiResponse || bookingResponse;
+  if (!isOpen || !api?.data?.[0]) return null;
 
-  const item = bookingResponse.data[0];
+  const item = api.data[0];
   const room = item.Room;
   const totalPrice = (parseFloat(room.TotalSellingPrice?.["@attributes"]?.amt) || 0).toFixed(2);
-  const currency = bookingResponse.currency || "USD";
+  const currency = api.currency || "USD";
   const roomType = room.RoomType?.["@attributes"]?.text || "N/A";
   const mealType = room.MealType?.["@attributes"]?.text || "N/A";
   const hotelName = item.HotelName || "Unknown Hotel";
@@ -228,25 +229,31 @@ const AccommodationBookNow = () => {
   }
 
   const rooms = bookingData?.searchParams?.rooms || [];
-  const room = rooms[0] || {};
-  const adultsCount = room.adult || 2;
-  const childrenAges = room.children || [];
+  const nights = bookingData.nights || 1;
 
-  const initGuests = () => ({
-    adults: Array.from({ length: adultsCount }, () => ({
-      title: "Mr",
-      firstName: "",
-      lastName: "",
-    })),
-    children: childrenAges.map((age) => ({
-      title: age >= 12 ? "Mr" : "Ms",
-      firstName: "",
-      lastName: "",
-      age,
-    })),
-  });
+  // Initialize guests per room
+  const initGuestsByRoom = () => {
+    return rooms.map((room) => {
+      const adultsCount = room.adult || 2;
+      const childrenAges = room.children || [];
 
-  const [guests, setGuests] = useState(initGuests);
+      return {
+        adults: Array.from({ length: adultsCount }, () => ({
+          title: "Mr",
+          firstName: "",
+          lastName: "",
+        })),
+        children: childrenAges.map((age) => ({
+          title: age >= 12 ? "Mr" : "Ms",
+          firstName: "",
+          lastName: "",
+          age,
+        })),
+      };
+    });
+  };
+
+  const [guestsByRoom, setGuestsByRoom] = useState(initGuestsByRoom);
   const [specialRequests, setSpecialRequests] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCartOptions, setShowCartOptions] = useState(false);
@@ -255,60 +262,93 @@ const AccommodationBookNow = () => {
   const [bookingResponse, setBookingResponse] = useState(null);
 
   useEffect(() => {
-    setGuests(initGuests());
+    setGuestsByRoom(initGuestsByRoom());
   }, [rawData]);
 
-  const updateGuest = (type, idx, field, value) => {
-    setGuests((prev) => ({
-      ...prev,
-      [type]: prev[type].map((g, i) =>
-        i === idx ? { ...g, [field]: value } : g
-      ),
-    }));
+  // Update guest in specific room
+  const updateGuest = (roomIdx, type, guestIdx, field, value) => {
+    setGuestsByRoom((prev) =>
+      prev.map((room, rIdx) =>
+        rIdx === roomIdx
+          ? {
+              ...room,
+              [type]: room[type].map((g, gIdx) =>
+                gIdx === guestIdx ? { ...g, [field]: value } : g
+              ),
+            }
+          : room
+      )
+    );
   };
 
   const callPreBookingAPI = async () => {
-    const payload = {
-      region: bookingData.searchParams.region || false,
-      hotel_id: bookingData.searchParams.hotel_id || false,
-      start_date: bookingData.searchParams.start_date,
-      nights: bookingData.nights,
-      rooms: bookingData.searchParams.rooms,
-      stars: bookingData.searchParams.stars || "0",
-      quoteId: bookingData.selectedRoom.id,
-      visitor_id: $helpers.getVisitorId(),
-      adult: guests.adults.map((a) => ({
+  const flatAdults = [];
+  const flatChildren = [];
+
+  guestsByRoom.forEach((roomGuests) => {
+    // Adults
+    roomGuests.adults.forEach((a) => {
+      flatAdults.push({
         title: a.title,
         f_name: a.firstName,
         l_name: a.lastName,
         nationality: null,
-      })),
-      child: guests.children.map((c) => ({
+      });
+    });
+
+    // Children
+    roomGuests.children.forEach((c) => {
+      flatChildren.push({
         title: c.title,
         f_name: c.firstName,
         l_name: c.lastName,
-        age: c.age,
-      })),
-      confiremed: false,
-    };
+        age: String(c.age),          // API expects a string
+        nationality: null,
+      });
+    });
+  });
 
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba/booking`, {
+  const payload = {
+    region: bookingData.searchParams?.region ?? false,
+    hotel_id: bookingData.searchParams?.hotel_id ?? false,
+    start_date: bookingData.searchParams?.start_date,
+    nights: bookingData.nights,
+    rooms: bookingData.searchParams?.rooms ?? [], // original room config
+    stars: bookingData.searchParams?.stars ?? "0",
+    quoteId: bookingData.selectedRoom?.id ?? "", // <-- this is the Result.@attributes.id
+    visitor_id: $helpers.getVisitorId(),
+
+    // FLAT arrays
+    adult: flatAdults,
+    child: flatChildren,
+
+    confiremed: false,
+  };
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba/booking`,
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      });
+      }
+    );
 
-      if (!res.ok) throw new Error("Booking validation failed");
-
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      console.error(err);
-      alert("Booking validation failed. Please try again.");
-      return null;
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Booking API error:", err);
+      throw new Error("Booking validation failed");
     }
-  };
+
+    const data = await res.json();
+    return { apiResponse: data, requestPayload: payload };
+  } catch (err) {
+    console.error(err);
+    alert("Booking validation failed. Please try again.");
+    return null;
+  }
+};
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -330,110 +370,134 @@ const AccommodationBookNow = () => {
   };
 
   const confirmAndAddToCart = () => {
-    const updatedBookingData = {
-      ...bookingData,
-      guestDetails: { adults: guests.adults, children: guests.children },
-      specialRequests,
-      preBookingResponse: bookingResponse,
-    };
-
-    // Build roomsDetails array (include guestDetails inside each room entry)
-    const roomsDetailsArray = [
-      {
-      ...(bookingData.selectedRoom || {}),
-      roomTypeId: 1,
-      guestDetails: { adults: guests.adults, children: guests.children },
-      },
-    ];
-
-    // Keep hotel info minimal for downstream order creation: only id + roomsDetails
-    const hotelId = bookingData.hotelData?.id || bookingData.hotelData?.stuba_id || bookingData.hotelData?.stubaId || (bookingData.hotelData?.Hotel?.["@attributes"]?.id) || null;
-    updatedBookingData.hotelData = { id: hotelId, roomsDetails: roomsDetailsArray };
-
-    sessionStorage.setItem("accommodationBookingData", JSON.stringify(updatedBookingData));
-
-    // Build a detailed cart item compatible with server-side expectations.
-    // Fill non-applicable transfer fields with null/empty values so order creation succeeds.
-    const productId = bookingData.hotelData?.id || bookingData.hotelData?.stuba_id || bookingData.hotelData?.stubaId || null;
-    const adults = bookingData.searchParams?.rooms?.[0]?.adult || 1;
-    const children = (bookingData.searchParams?.rooms?.[0]?.children || []).length || 0;
-    const nights = bookingData.nights || 1;
-    const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (unitPrice * (nights || 1)).toFixed(2);
-
-    const cartItem = {
-      // basic product identity
-      product_id: productId,
-      tourId: productId,
-      productTitle: bookingData.hotelData?.title || bookingData.hotelData?.name || "",
-      productType: "accommodation",
-
-      // passenger counts and pricing
-      adult_count: adults,
-      child_count: children,
-      price: unitPrice,
-      total: Number(totalPrice),
-      tour_date: bookingData.checkIn || bookingData.searchParams?.start_date || null,
-      check_in: bookingData.checkIn || null,
-      check_out: bookingData.checkOut || null,
-      pickup_date: null,
-      pickup_time: null,
-      pickup_point: null,
-      dropoff_point: null,
-      vehicle_id: null,
-      transfer_type: null,
-      flight_number: "",
-      flight_dep_number: "",
-      flight_estimated_time: "",
-      flight_dep_estimated_time: "",
-      two_way_dropoff_date: "",
-      two_way_dropoff_time: "",
-      baggage: null,
-      pickup_surcharge: 0,
-      return_surcharge: 0,
-      return_surcharge_id: 0,
-      pickup_surcharge_id: 0,
-
-      // addons & exceptions — keep arrays
-      addons: [],
-      addons_round: [],
-      exceptions: [],
-
-      // accommodation-specific details
-      nights: nights,
-      roomType: bookingData.selectedRoom?.roomType || bookingData.selectedRoom?.roomType || "",
-      mealType: bookingData.selectedRoom?.mealType || "",
-  // include roomsDetails array (with guestDetails nested)
-  //roomsDetails: updatedBookingData.hotelData?.roomsDetails || [bookingData.selectedRoom || {}],
-      quoteId: bookingData.selectedRoom?.id || null,
-      cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
-      // minimal hotel_info: id and roomsDetails
-      hotel_info: {
-        id: updatedBookingData.hotelData?.id || productId,
-        roomsDetails: updatedBookingData.hotelData?.roomsDetails || [],
-        checkInDate: bookingData.checkIn || null,
-        checkOutDate: bookingData.checkOut || null,
-      },
-
-      // guest & extras
-      guestDetails: updatedBookingData.guestDetails,
-      specialRequests: specialRequests || "",
-
-      // helpful metadata
-      image: bookingData.hotelData?.images?.[0]?.url || bookingData.hotelData?.image || null,
-    };
-
-    useCartStore.getState().addAccommodationItem(cartItem);
-
-    try {
-      setJustAdded(true);
-    } catch (e) {
-      console.warn("Drawer store not available:", e);
-    }
-
-    setModalOpen(false);
-    setShowCartOptions(true);
+  const updatedBookingData = {
+    ...bookingData,
+    guestDetailsByRoom: guestsByRoom,
+    specialRequests,
+    request_response: bookingResponse?.apiResponse ?? null,
+    request: bookingResponse?.requestPayload
+      ? { callPreBookingAPI: bookingResponse.requestPayload }
+      : null,
   };
+
+  // ---- Build roomsDetailsArray (one entry per room) -----------------
+  const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
+    ...(bookingData.selectedRoom || {}),
+    roomTypeId: idx + 1,
+    guestDetails: {
+      adults: roomGuests.adults,
+      children: roomGuests.children,
+    },
+  }));
+
+  const hotelId =
+    bookingData.hotelData?.id ||
+    bookingData.hotelData?.stuba_id ||
+    bookingData.hotelData?.stubaId ||
+    null;
+
+  updatedBookingData.hotelData = {
+    id: hotelId,
+    roomsDetails: roomsDetailsArray,
+    request_response: bookingResponse?.apiResponse ?? null,
+    request: bookingResponse?.requestPayload
+      ? { callPreBookingAPI: bookingResponse.requestPayload }
+      : null,
+  };
+
+  sessionStorage.setItem(
+    "accommodationBookingData",
+    JSON.stringify(updatedBookingData)
+  );
+
+  // ---- Cart item (still ONE product, price = total for ALL nights) ----
+  const totalAdults = rooms.reduce(
+    (s, r) => s + (r.adult || 0),
+    0
+  );
+  const totalChildren = rooms.reduce(
+    (s, r) => s + (r.children?.length || 0),
+    0
+  );
+  const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
+  const totalPrice = (unitPrice * nights).toFixed(2);
+
+  const cartItem = {
+    product_id: hotelId,
+    tourId: hotelId,
+    productTitle:
+      bookingData.hotelData?.title || bookingData.hotelData?.name || "",
+    productType: "accommodation",
+
+    adult_count: totalAdults,
+    child_count: totalChildren,
+    price: unitPrice,
+    total: Number(totalPrice),
+    tour_date: bookingData.checkIn || bookingData.searchParams?.start_date,
+    check_in: bookingData.checkIn || null,
+    check_out: bookingData.checkOut || null,
+
+    // transfer fields (null)
+    pickup_date: null,
+    pickup_time: null,
+    pickup_point: null,
+    dropoff_point: null,
+    vehicle_id: null,
+    transfer_type: null,
+    flight_number: "",
+    flight_dep_number: "",
+    flight_estimated_time: "",
+    flight_dep_estimated_time: "",
+    two_way_dropoff_date: "",
+    two_way_dropoff_time: "",
+    baggage: null,
+    pickup_surcharge: 0,
+    return_surcharge: 0,
+    return_surcharge_id: 0,
+    pickup_surcharge_id: 0,
+
+    addons: [],
+    addons_round: [],
+    exceptions: [],
+
+    nights,
+    roomType: bookingData.selectedRoom?.roomType || "",
+    mealType: bookingData.selectedRoom?.mealType || "",
+    quoteId: bookingData.selectedRoom?.id || null,
+    cancellationPolicy:
+      bookingData.selectedRoom?.cancellationPolicy || null,
+
+    hotel_info: {
+      id: hotelId,
+      roomsDetails: roomsDetailsArray,
+      checkInDate: bookingData.checkIn || null,
+      checkOutDate: bookingData.checkOut || null,
+      request_response: bookingResponse?.apiResponse ?? null,
+      request: bookingResponse?.requestPayload
+        ? { callPreBookingAPI: bookingResponse.requestPayload }
+        : null,
+    },
+
+    guestDetailsByRoom: guestsByRoom,
+    specialRequests: specialRequests || "",
+
+    image:
+      bookingData.hotelData?.images?.[0]?.url ||
+      bookingData.hotelData?.image ||
+      null,
+  };
+
+  useCartStore.getState().addAccommodationItem(cartItem);
+
+  try {
+    setJustAdded(true);
+  } catch (e) {
+    console.warn("Drawer store not available:", e);
+  }
+
+  setModalOpen(false);
+  setShowCartOptions(true);
+};
 
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
@@ -453,114 +517,125 @@ const AccommodationBookNow = () => {
       <div className="bg-gray-800 rounded-lg p-6">
         <h2 className="text-2xl font-bold text-white mb-6">Guest Information</h2>
 
-        <form onSubmit={handleAddToCart} className="space-y-8">
-          {/* GUEST FIELDS – unchanged */}
-          {guests.adults.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Adults ({guests.adults.length})
-              </h3>
-              <div className="space-y-5">
-                {guests.adults.map((adult, i) => (
-                  <div key={`adult-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
-                      <select
-                        value={adult.title}
-                        onChange={(e) => updateGuest("adults", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
-                        required
-                      >
-                        {TITLE_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>{o.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">First Name *</label>
-                      <input
-                        type="text"
-                        value={adult.firstName}
-                        onChange={(e) => updateGuest("adults", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
-                        placeholder="First name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Last Name *</label>
-                      <input
-                        type="text"
-                        value={adult.lastName}
-                        onChange={(e) => updateGuest("adults", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
-                        placeholder="Last name"
-                        required
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        <form onSubmit={handleAddToCart} className="space-y-10">
+          {rooms.map((room, roomIdx) => {
+            const roomGuests = guestsByRoom[roomIdx] || { adults: [], children: [] };
+            const roomNumber = roomIdx + 1;
 
-          {guests.children.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Children ({guests.children.length})
-              </h3>
-              <div className="space-y-5">
-                {guests.children.map((child, i) => (
-                  <div key={`child-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
-                      <select
-                        value={child.title}
-                        onChange={(e) => updateGuest("children", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
-                        required
-                      >
-                        {TITLE_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>{o.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">First Name *</label>
-                      <input
-                        type="text"
-                        value={child.firstName}
-                        onChange={(e) => updateGuest("children", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
-                        placeholder="First name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Last Name *</label>
-                      <input
-                        type="text"
-                        value={child.lastName}
-                        onChange={(e) => updateGuest("children", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
-                        placeholder="Last name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Age</label>
-                      <input
-                        type="text"
-                        value={child.age}
-                        readOnly
-                        className="w-full px-3 py-2 bg-gray-500 border border-gray-600 rounded-md text-gray-300 cursor-not-allowed"
-                      />
+            return (
+              <div key={roomIdx} className="border border-gray-600 rounded-xl p-6 bg-gray-750">
+                <h3 className="text-xl font-bold text-[#CC9A55] mb-5">
+                  Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
+                  {room.children?.length > 0 && `, ${room.children.length} Child${room.children.length > 1 ? "ren" : ""}`}
+                </h3>
+
+                {/* Adults */}
+                {roomGuests.adults.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold text-white mb-4">Adults</h4>
+                    <div className="space-y-5">
+                      {roomGuests.adults.map((adult, i) => (
+                        <div key={`room${roomIdx}-adult-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
+                            <select
+                              value={adult.title}
+                              onChange={(e) => updateGuest(roomIdx, "adults", i, "title", e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                              required
+                            >
+                              {TITLE_OPTIONS.map((o) => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">First Name *</label>
+                            <input
+                              type="text"
+                              value={adult.firstName}
+                              onChange={(e) => updateGuest(roomIdx, "adults", i, "firstName", e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                              placeholder="First name"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">Last Name *</label>
+                            <input
+                              type="text"
+                              value={adult.lastName}
+                              onChange={(e) => updateGuest(roomIdx, "adults", i, "lastName", e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                              placeholder="Last name"
+                              required
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
+
+                {/* Children */}
+                {roomGuests.children.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-white mb-4">Children</h4>
+                    <div className="space-y-5">
+                      {roomGuests.children.map((child, i) => (
+                        <div key={`room${roomIdx}-child-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
+                            <select
+                              value={child.title}
+                              onChange={(e) => updateGuest(roomIdx, "children", i, "title", e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                              required
+                            >
+                              {TITLE_OPTIONS.map((o) => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">First Name *</label>
+                            <input
+                              type="text"
+                              value={child.firstName}
+                              onChange={(e) => updateGuest(roomIdx, "children", i, "firstName", e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                              placeholder="First name"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">Last Name *</label>
+                            <input
+                              type="text"
+                              value={child.lastName}
+                              onChange={(e) => updateGuest(roomIdx, "children", i, "lastName", e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                              placeholder="Last name"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-gray-300 text-sm font-medium mb-2">Age</label>
+                            <input
+                              type="text"
+                              value={child.age}
+                              readOnly
+                              className="w-full px-3 py-2 bg-gray-500 border border-gray-600 rounded-md text-gray-300 cursor-not-allowed"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })}
 
           <div>
             <label className="block text-gray-300 text-sm font-medium mb-2">
@@ -575,6 +650,7 @@ const AccommodationBookNow = () => {
             />
           </div>
 
+          {/* Submit Buttons */}
           {!showCartOptions ? (
             <button
               type="submit"

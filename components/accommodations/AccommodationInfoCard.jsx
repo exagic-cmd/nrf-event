@@ -1,172 +1,172 @@
-import { Star, Check, MapPin, Clock } from "lucide-react";
+import { Star, Check, MapPin, Clock, Bed } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const AccommodationInfoCard = ({ 
-  hotelData, 
-  startingPrice, 
-  allRooms = [], 
+const AccommodationInfoCard = ({
+  hotelData,
+  startingPrice,
+  allRooms = [],
   currency = "USD",
-  onScrollToOptions, 
+  onScrollToOptions,
   onProceedBooking,
-  selectedRoom = null // ✅ Add selectedRoom prop
+  selectedRoom = null,
+  nights = 1 // Required for accurate labeling
 }) => {
-  const [lowestPrice, setLowestPrice] = useState(startingPrice || 0);
+  const [lowestPrice, setLowestPrice] = useState(0);
   const [amenities, setAmenities] = useState([]);
 
-  // ✅ Calculate the lowest price from available rooms OR use selected room price
+  // Calculate lowest total price from all available rooms
   useEffect(() => {
     if (selectedRoom) {
-      // Use selected room price
-      setLowestPrice(selectedRoom.price || startingPrice || 0);
+      setLowestPrice(selectedRoom.price || 0);
     } else if (allRooms && allRooms.length > 0) {
-      // Use minimum price from available rooms
       const minPrice = Math.min(...allRooms.map(room => room.price || 0));
       setLowestPrice(minPrice > 0 ? minPrice : startingPrice || 0);
     } else {
       setLowestPrice(startingPrice || 0);
     }
-  }, [allRooms, startingPrice, selectedRoom]); // ✅ Add selectedRoom to dependencies
+  }, [allRooms, startingPrice, selectedRoom]);
 
-  // ✅ Extract and format amenities
+  // Extract amenities
   useEffect(() => {
-    if (hotelData?.amenities) {
-      if (typeof hotelData.amenities === 'string') {
-        setAmenities(hotelData.amenities.split(',').map(a => a.trim()).slice(0, 5));
-      } else if (Array.isArray(hotelData.amenities)) {
-        setAmenities(hotelData.amenities.slice(0, 5));
-      } else if (Array.isArray(hotelData.features)) {
-        setAmenities(hotelData.features.slice(0, 5));
+    const extractAmenities = () => {
+      if (hotelData?.amenities) {
+        if (typeof hotelData.amenities === "string") {
+          return hotelData.amenities.split(",").map(a => a.trim()).slice(0, 5);
+        }
+        if (Array.isArray(hotelData.amenities)) {
+          return hotelData.amenities.slice(0, 5);
+        }
       }
-    } else if (Array.isArray(hotelData?.features)) {
-      setAmenities(hotelData.features.slice(0, 5));
-    }
+      if (Array.isArray(hotelData?.features)) {
+        return hotelData.features.slice(0, 5);
+      }
+      return [];
+    };
+    setAmenities(extractAmenities());
   }, [hotelData]);
 
-  // ✅ Format price with currency
+  // Format price
   const formatPrice = (price) => {
-    if (!price || price === 0) return "Price not available";
-    return `${currency} ${price.toLocaleString()}`;
+    if (!price || price <= 0) return "Price on request";
+    return `${currency} ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  // ✅ Get room count text
+  // Room count text
   const getRoomCountText = () => {
     if (!allRooms || allRooms.length === 0) return "No rooms available";
-    if (allRooms.length === 1) return "1 room option available";
-    return `${allRooms.length} room options available`;
+    return allRooms.length === 1 ? "1 room option" : `${allRooms.length} room options`;
   };
 
-  // ✅ Get cancellation policy info
+  // Cancellation policy
   const hasFreeCancellation = () => {
     if (selectedRoom) {
-      // Check selected room's cancellation policy
-      return selectedRoom.cancellationPolicy && 
-             selectedRoom.cancellationPolicy.toLowerCase().includes('refundable');
+      return selectedRoom.cancellationPolicy?.toLowerCase().includes("refundable");
     }
-    if (!allRooms || allRooms.length === 0) return false;
-    return allRooms.some(room => 
-      room.cancellationPolicy && 
-      room.cancellationPolicy.toLowerCase().includes('refundable')
+    return allRooms.some(room =>
+      room.cancellationPolicy?.toLowerCase().includes("refundable")
     );
   };
 
-  // ✅ Get hotel highlights
+  // Hotel highlights
   const getHotelHighlights = () => {
     const highlights = [];
-    
-    if (hotelData?.stars) {
-      highlights.push(`${hotelData.stars}-star hotel`);
-    }
-    
-    if (hotelData?.category_name) {
-      highlights.push(hotelData.category_name);
-    }
-    
-    if (hotelData?.rating?.description) {
-      highlights.push(hotelData.rating.description);
-    }
-    
+    if (hotelData?.stars) highlights.push(`${hotelData.stars}-star`);
+    if (hotelData?.category_name) highlights.push(hotelData.category_name);
+    if (hotelData?.rating?.description) highlights.push(hotelData.rating.description);
     return highlights.slice(0, 2);
   };
 
-  // ✅ Handle scroll to room options
-  const handleScrollToOptions = () => {
-    if (onScrollToOptions) {
-      onScrollToOptions();
-    } else {
-      // Fallback: scroll to RoomTypes component
-      const roomTypesSection = document.getElementById('room-types-section');
-      if (roomTypesSection) {
-        roomTypesSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
-
   const highlights = getHotelHighlights();
-  const freeCancellationAvailable = hasFreeCancellation();
+  const freeCancellation = hasFreeCancellation();
   const roomCountText = getRoomCountText();
 
   return (
     <div className="lg:col-span-2">
-      <div className="bg-gray-900 rounded-xl p-6 sticky top-24">
+      <div className="bg-gray-900 rounded-xl p-6 sticky top-24 shadow-xl">
         {/* Price Section */}
-        <div className="mb-6">
-          <div className="text-3xl font-bold text-[#CC9A55] mb-2">
+        <div className="mb-5">
+          <div className="text-4xl font-extrabold text-[#CC9A55] mb-1">
             {formatPrice(lowestPrice)}
           </div>
-          <div className="text-gray-400 text-sm">
-            {selectedRoom ? "Selected room price" : startingPrice ? "Starting price per night" : "Contact for pricing"}
+
+          {/* Dynamic subtitle */}
+          <div className="text-gray-400 text-sm flex items-center gap-1">
+            {selectedRoom ? (
+              <>
+                <Bed className="h-3.5 w-3.5" />
+                Total for {nights} night{nights > 1 ? "s" : ""}
+                {allRooms.length > 1 && " · per room"}
+              </>
+            ) : (
+              <>
+                <Clock className="h-3.5 w-3.5" />
+                Starting from · {nights} night{nights > 1 ? "s" : ""}
+              </>
+            )}
           </div>
+
+          {/* Selected Room Badge */}
           {selectedRoom && (
-            <div className="text-green-400 text-sm mt-1">
-              ✓ Room Selected
+            <div className="mt-2 inline-flex items-center gap-1.5 bg-green-900/30 text-green-400 text-xs px-2.5 py-1 rounded-full">
+              <Check className="h-3 w-3" />
+              Room Selected
             </div>
           )}
-          {!selectedRoom && allRooms && allRooms.length > 0 && (
-            <div className="text-green-400 text-sm mt-1">
-              {roomCountText}
+
+          {/* Room Options Count */}
+          {!selectedRoom && allRooms.length > 0 && (
+            <div className="text-green-400 text-xs mt-1.5">
+              {roomCountText} available
             </div>
           )}
         </div>
 
-        {/* Selected Room Info */}
+        {/* Selected Room Details */}
         {selectedRoom && (
-          <div className="mb-4 p-3 bg-[#CC9A55]/10 border border-[#CC9A55]/30 rounded-lg">
-            <div className="text-white text-sm font-medium mb-1">
+          <div className="mb-5 p-4 bg-gradient-to-r from-[#CC9A55]/10 to-transparent border border-[#CC9A55]/30 rounded-xl">
+            <div className="text-white font-semibold text-sm mb-1">
               {selectedRoom.roomType}
             </div>
             <div className="text-gray-300 text-xs">
               {selectedRoom.mealType}
             </div>
+            {freeCancellation && (
+              <div className="text-green-400 text-xs mt-1.5 flex items-center gap-1">
+                <Check className="h-3 w-3" />
+                Free cancellation
+              </div>
+            )}
           </div>
         )}
 
         {/* Hotel Highlights */}
         {highlights.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-5">
             <div className="flex flex-wrap gap-2">
-              {highlights.map((highlight, index) => (
-                <span 
-                  key={index}
-                  className="bg-gray-800 text-white px-2 py-1 rounded-md text-xs"
+              {highlights.map((h, i) => (
+                <span
+                  key={i}
+                  className="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1"
                 >
-                  {highlight}
+                  {h.includes("star") && <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />}
+                  {h}
                 </span>
               ))}
             </div>
           </div>
         )}
 
-        {/* Top Amenities Preview */}
+        {/* Top Amenities */}
         {amenities.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-white text-sm font-medium mb-2">Top Amenities:</h4>
-            <div className="flex flex-wrap gap-1">
-              {amenities.map((amenity, index) => (
-                <span 
-                  key={index}
-                  className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs"
+            <h4 className="text-white text-sm font-medium mb-2.5">Top Amenities</h4>
+            <div className="flex flex-wrap gap-1.5">
+              {amenities.map((a, i) => (
+                <span
+                  key={i}
+                  className="bg-gray-800 text-gray-300 px-2.5 py-1.5 rounded-md text-xs"
                 >
-                  {amenity}
+                  {a}
                 </span>
               ))}
             </div>
@@ -176,21 +176,35 @@ const AccommodationInfoCard = ({
         {/* Action Buttons */}
         <div className="space-y-3">
           <button
-            onClick={handleScrollToOptions} // ✅ Use the fixed handler
+            onClick={onScrollToOptions}
             disabled={!allRooms || allRooms.length === 0}
-            className="w-full bg-[#CC9A55] text-white py-3 px-4 rounded-xl font-semibold hover:bg-[#b88a45] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#CC9A55] hover:bg-[#b88a45] text-white py-3.5 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {selectedRoom ? "Change Room" : allRooms && allRooms.length > 0 ? `Choose Room (${allRooms.length})` : 'No Rooms Available'}
+            {selectedRoom ? (
+              <>Change Room</>
+            ) : (
+              <>Choose Room ({allRooms.length})</>
+            )}
           </button>
 
           <button
             onClick={onProceedBooking}
             disabled={!selectedRoom}
-            className="w-full bg-white text-gray-900 py-3 px-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3.5 px-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {selectedRoom ? "Book Now" : "Select a Room First"}
+            {selectedRoom ? "Proceed to Book" : "Select a Room First"}
           </button>
         </div>
+
+        {/* Free Cancellation Global Badge */}
+        {!selectedRoom && freeCancellation && (
+          <div className="mt-4 text-center">
+            <span className="inline-flex items-center gap-1 text-green-400 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Free cancellation available on some rooms
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

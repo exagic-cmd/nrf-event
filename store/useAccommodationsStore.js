@@ -182,6 +182,8 @@ export const useAccommodationsStore = create((set, get) => ({
         nationality: searchPayload.nationality || "SG",
         refund_policy: searchPayload.refund_policy || "all",
         stars: searchPayload.stars || "0",
+        category_id: 4,
+        is_b2c_only: 1,
         rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
         nights:
           searchPayload.nights ||

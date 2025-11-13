@@ -41,14 +41,14 @@ const CartDrawerContent = () => {
     const isTourListPage = router.pathname === "/";
     const isTourDetailPage = router.pathname === "/";
     if (!isTourListPage && !isTourDetailPage) {
-      localizedPush("/transfers");
+      localizedPush("/");
     }
   };
 
   const handleEdit = async (item) => {
     setJustAdded(false);
     closeDrawer();
-    localizedPush(`/transfers`);
+    localizedPush(`/`);
   };
 
   const confirmDelete = () => {

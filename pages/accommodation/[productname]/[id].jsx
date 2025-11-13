@@ -62,117 +62,112 @@ export default function AccommodationDetailPage() {
 
   // Normalize accommodation data function (keep your existing implementation)
   const normalizeAccommodationData = (data) => {
-    // Your existing normalizeAccommodationData function
-    if (!data) return null;
+  if (!data) return null;
 
-    const hotelData = data.Hotel_Data || data;
-    const roomData = data.Result || data.rooms || [];
-    console.log('hotelData',hotelData)
-    
-    let images = [];
-    try {
-      if (hotelData.media) {
-        console.log(hotelData.media)
-        const mediaArray =hotelData.media;
-          console.log('mediaArray',mediaArray)
-        images = mediaArray.map(media => ({
-          url: media.image,
-          thumb: media.thumb,
-          type: media.type
-        }));
-      }
-    } catch (e) {
-      console.warn("Failed to parse media:", e);
+  const hotelData = data.Hotel_Data || data;
+  const results = data.Result || [];
+
+  // ---------- 1. Build images ----------
+  let images = [];
+  try {
+    if (Array.isArray(hotelData.media)) {
+      images = hotelData.media.map(m => ({
+        url: m.image,
+        thumb: m.thumb || m.image,
+        type: m.type || "photo"
+      }));
     }
-    console.log('images',images)
-    let address = hotelData?.address;
-    // try {
-    //   if (hotelData.address) {
-    //     address = JSON.parse(hotelData.address);
-    //   }
-    // } catch (e) {
-    //   console.warn("Failed to parse address:", e);
-    // }
+  } catch (e) {
+    console.warn("Failed to parse media:", e);
+  }
 
-    let region = {};
-    try {
-      if (hotelData.region) {
-        region = JSON.parse(hotelData.region);
-      }
-    } catch (e) {
-      console.warn("Failed to parse region:", e);
-    }
+  // ---------- 2. Parse optional JSON fields ----------
+  let address = hotelData?.address;
+  let region = {};
+  let rating = {};
 
-    let rating = {};
-    try {
-      if (hotelData.rating) {
-        rating = JSON.parse(hotelData.rating);
-      }
-    } catch (e) {
-      console.warn("Failed to parse rating:", e);
-    }
+  try { if (hotelData.address) address = JSON.parse(hotelData.address); } catch {}
+  try { if (hotelData.region) region = JSON.parse(hotelData.region); } catch {}
+  try { if (hotelData.rating) rating = JSON.parse(hotelData.rating); } catch {}
 
-    const roomsWithPrices = roomData.map(room => ({
-      ...room,
-      price: parseFloat(room.Room?.Price?.["@attributes"]?.amt || 0)
-    }));
+  // ---------- 3. Group rooms by Result.id ----------
+  const roomGroups = {};
 
-    const startingPrice = roomsWithPrices.length > 0 
-      ? Math.min(...roomsWithPrices.map(room => room.price))
-      : hotelData.price || 0;
+  results.forEach(result => {
+    const resultId = result["@attributes"]?.id;
+    if (!resultId) return;
 
-    const lowestPriceRoom = roomsWithPrices.length > 0 
-      ? roomsWithPrices.reduce((lowest, room) => 
-          room.price < lowest.price ? room : lowest
-        )
-      : null;
-    return {
-      ...data,
-      normalizedHotelData: {
-        id: hotelData.id,
-        stuba_id: hotelData.stuba_id,
-        title: hotelData.title,
-        name: hotelData.title,
-        description: hotelData.description,
-        country: hotelData.country_name,
-        city: hotelData.city_name,
-        address: address,
-        latitude: hotelData.latitude,
-        longitude: hotelData.longitude,
-        image: hotelData.image,
-        images: images,
-        type: hotelData.type,
-        stars: hotelData.stars,
-        amenities: hotelData.amenities,
-        category_name: hotelData.category_name,
-        region: region,
-        rating: rating,
-        starting_price: startingPrice,
-        price: startingPrice,
-        location: address || hotelData?.city_name || "",
-        review_count: 0,
-        features: hotelData.amenities ? hotelData.amenities.split(', ') : []
-      },
-      normalizedRoomData: roomData.map(room => ({
-        id: room["@attributes"]?.id,
-        roomType: room.Room?.RoomType?.["@attributes"]?.text || "Standard Room",
-        mealType: room.Room?.MealType?.["@attributes"]?.text || "Room Only",
-        price: parseFloat(room.Room?.Price?.["@attributes"]?.amt || 0),
-        cancellationPolicy: room.Room?.CancellationPolicyStatus || "NonRefundable",
-        roomCode: room.Room?.RoomType?.["@attributes"]?.code,
-        mealCode: room.Room?.MealType?.["@attributes"]?.code
-      })),
-      lowestPriceRoom: lowestPriceRoom ? {
-        id: lowestPriceRoom["@attributes"]?.id,
-        roomType: lowestPriceRoom.Room?.RoomType?.["@attributes"]?.text || "Standard Room",
-        mealType: lowestPriceRoom.Room?.MealType?.["@attributes"]?.text || "Room Only",
-        price: lowestPriceRoom.price,
-        cancellationPolicy: lowestPriceRoom.Room?.CancellationPolicyStatus || "NonRefundable",
-        roomCode: lowestPriceRoom.Room?.RoomType?.["@attributes"]?.code,
-        mealCode: lowestPriceRoom.Room?.MealType?.["@attributes"]?.code
-      } : null
+    const nights = Array.isArray(result.Room) ? result.Room : [result.Room].filter(Boolean);
+
+    // Extract common room type / meal from first night (they are the same for all nights)
+    const firstNight = nights[0];
+    const roomType = firstNight?.RoomType?.["@attributes"]?.text || "Standard Room";
+    const mealType = firstNight?.MealType?.["@attributes"]?.text || "Room Only";
+    const roomCode = firstNight?.RoomType?.["@attributes"]?.code;
+    const mealCode = firstNight?.MealType?.["@attributes"]?.code;
+    const cancellation = firstNight?.CancellationPolicyStatus || "NonRefundable";
+
+    // Sum all night prices
+    const totalAmt = nights.reduce((sum, night) => {
+      const amt = parseFloat(night?.Price?.["@attributes"]?.amt || 0);
+      return sum + amt;
+    }, 0);
+
+    roomGroups[resultId] = {
+      id: resultId,
+      roomType,
+      mealType,
+      price: totalAmt,
+      cancellationPolicy: cancellation,
+      roomCode,
+      mealCode,
+      rawNights: nights, // keep for debugging / future use
     };
+  });
+
+  const normalizedRooms = Object.values(roomGroups);
+
+  // ---------- 4. Find cheapest ROOM ----------
+  const startingPrice = normalizedRooms.length > 0
+    ? Math.min(...normalizedRooms.map(r => r.price))
+    : hotelData.price || 0;
+
+  const lowestPriceRoom = normalizedRooms.length > 0
+    ? normalizedRooms.reduce((low, r) => r.price < low.price ? r : low)
+    : null;
+
+  // ---------- 5. Return normalized structure ----------
+  return {
+    ...data,
+    normalizedHotelData: {
+      id: hotelData.id,
+      stuba_id: hotelData.stuba_id,
+      title: hotelData.title,
+      name: hotelData.title,
+      description: hotelData.description,
+      country: hotelData.country_name,
+      city: hotelData.city_name,
+      address,
+      latitude: hotelData.latitude,
+      longitude: hotelData.longitude,
+      image: hotelData.image,
+      images,
+      type: hotelData.type,
+      stars: hotelData.stars,
+      amenities: hotelData.amenities,
+      category_name: hotelData.category_name,
+      region,
+      rating,
+      starting_price: startingPrice,
+      price: startingPrice,
+      location: address || hotelData?.city_name || "",
+      review_count: 0,
+      features: hotelData.amenities ? hotelData.amenities.split(', ') : []
+    },
+    normalizedRoomData: normalizedRooms,
+    lowestPriceRoom,
   };
+};
 
   // Handle room selection
   const handleRoomSelect = (room) => {
@@ -211,18 +206,15 @@ export default function AccommodationDetailPage() {
     
     // Store booking data in sessionStorage for the booking page
     const bookingData = {
-      accommodationId: accommodationId,
-      hotelData: hotelData,
-      selectedRoom: selectedRoom,
-      searchParams: searchParams,
-      nights: searchParams?.nights || 1,
-      checkIn: searchParams?.start_date,
-      checkOut: searchParams?.end_date,
-      guests: searchParams?.rooms?.[0]?.adult || 2,
-      // include hotelQuoteId if saved earlier
-      hotelQuoteId: sessionStorage.getItem("hotelQuoteId") || null,
-      timestamp: new Date().toISOString()
-    };
+  accommodationId: accommodationId,
+  hotelData: hotelData,
+  selectedRoom: selectedRoom, // now contains total price + roomType + mealType
+  searchParams: searchParams,
+  nights: searchParams?.nights || 1,
+  checkIn: searchParams?.start_date,
+  checkOut: searchParams?.end_date,
+  timestamp: new Date().toISOString()
+};
     
     sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
     sessionStorage.setItem("fromAccommodationDetail", "true");
@@ -408,13 +400,13 @@ export default function AccommodationDetailPage() {
         </div>
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
-          <AccommodationRooms 
-            allRooms={roomData} 
-            currency="USD"
-            onRoomSelect={handleRoomSelect}
-            nights={nights}
-            selectedRoom={selectedRoom}
-          />
+          <AccommodationRooms
+          allRooms={roomData}
+          currency="USD"
+          onRoomSelect={handleRoomSelect}
+          nights={nights}
+          selectedRoom={selectedRoom}
+        />
           <AccommodationMap hotelData={hotelData} />
         </div>
       </div>
