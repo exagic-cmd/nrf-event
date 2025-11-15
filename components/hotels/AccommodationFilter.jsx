@@ -201,18 +201,18 @@ export default function AccommodationFilter({ onSearch }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow p-4 md:p-6">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+    <form onSubmit={handleSubmit} className="rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 ">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">
-          <div className="rounded-2xl border border-gray-200 bg-white px-3 py-2 flex items-center gap-2">
-            <Search className="h-5 w-5 text-gray-500" />
+          <div className="rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 flex items-center gap-2">
+            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 flex-shrink-0" />
             <input
               type="text"
               value={search}
               onChange={handleInputChange}
               placeholder="Search hotels or regions..."
-              className="w-full bg-transparent outline-none text-lg"
+              className="w-full bg-transparent outline-none text-base sm:text-lg"
               autoComplete="off"
             />
             {search && (
@@ -223,25 +223,25 @@ export default function AccommodationFilter({ onSearch }) {
                   setSelectedItem(null);
                   setShowDropdown(false);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
 
-          {/* Dropdown with Loading */}
+          {/* Dropdown with Loading - Mobile Full Width */}
           {showDropdown && (
-            <div className="absolute z-20 mt-2 w-full rounded-xl border bg-white shadow-lg max-h-80 overflow-auto">
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg max-h-64 sm:max-h-80 overflow-auto">
               {isLoading ? (
-                <div className="px-4 py-8 text-center text-gray-500">
-                  <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-yellow-500"></div>
-                  <p className="mt-2 text-sm">Searching...</p>
+                <div className="px-4 py-6 sm:py-8 text-center text-gray-500">
+                  <div className="inline-block animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-2 border-gray-300 border-t-yellow-500"></div>
+                  <p className="mt-2 text-xs sm:text-sm">Searching...</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2">
                   <div>
-                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
+                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
                       Destinations
                     </h6>
                     {filtered.regions.length > 0 ? (
@@ -250,10 +250,10 @@ export default function AccommodationFilter({ onSearch }) {
                           key={region.id}
                           type="button"
                           onMouseDown={() => handleSelection(region, "region")}
-                          className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
+                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                         >
-                          <MapPin className="h-4 w-4 text-yellow-600" />
-                          {region.region_name}
+                          <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                          <span className="truncate">{region.region_name}</span>
                         </button>
                       ))
                     ) : (
@@ -263,7 +263,7 @@ export default function AccommodationFilter({ onSearch }) {
                     )}
                   </div>
                   <div>
-                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50">
+                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
                       Hotels
                     </h6>
                     {filtered.hotels.length > 0 ? (
@@ -272,10 +272,10 @@ export default function AccommodationFilter({ onSearch }) {
                           key={hotel.id}
                           type="button"
                           onMouseDown={() => handleSelection(hotel, "hotel")}
-                          className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
+                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                         >
-                          <Building className="h-4 w-4 text-yellow-600" />
-                          {hotel.title}
+                          <Building className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                          <span className="truncate">{hotel.title}</span>
                         </button>
                       ))
                     ) : (
@@ -301,8 +301,8 @@ export default function AccommodationFilter({ onSearch }) {
             selectsStart
             minDate={new Date()}
             placeholderText="Check-in"
-            className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-lg outline-none"
-            monthsShown={2}
+            className="w-full rounded-xl md:rounded-2xl border border-gray-200 px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none"
+            monthsShown={window.innerWidth >= 640 ? 2 : 1}
             dateFormat="MMM d, yyyy"
           />
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
@@ -320,7 +320,7 @@ export default function AccommodationFilter({ onSearch }) {
             endDate={endDate}
             minDate={startDate || new Date()}
             placeholderText="Check-out"
-            className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-lg outline-none"
+            className="w-full rounded-xl md:rounded-2xl border border-gray-200 px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none"
             dateFormat="MMM d, yyyy"
           />
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
@@ -333,27 +333,27 @@ export default function AccommodationFilter({ onSearch }) {
           <button
             type="button"
             onClick={() => setShowGuestPopup(!showGuestPopup)}
-            className="w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 text-lg flex items-center justify-between"
+            className="w-full rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 text-base sm:text-lg flex items-center justify-between"
           >
-            <span>
+            <span className="truncate">
               {totalGuests} Guest{totalGuests > 1 ? "s" : ""} • {rooms.length} Room
               {rooms.length > 1 ? "s" : ""}
             </span>
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4 flex-shrink-0" />
           </button>
 
-          {/* Guest Popup - unchanged */}
+          {/* Guest Popup - Mobile Optimized */}
           {showGuestPopup && (
-            <div className="absolute z-20 mt-2 w-full rounded-xl border bg-white shadow-lg p-4">
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto">
               {rooms.map((room, i) => (
-                <div key={i} className="mb-4 pb-4 border-b last:border-0 last:mb-0 last:pb-0">
+                <div key={i} className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b last:border-0 last:mb-0 last:pb-0">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="font-medium text-sm">Room {i + 1}</span>
+                    <span className="font-medium text-sm sm:text-base">Room {i + 1}</span>
                     {rooms.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeRoom(i)}
-                        className="text-red-500 text-xs font-medium hover:text-red-600"
+                        className="text-red-500 text-xs sm:text-sm font-medium hover:text-red-600 active:text-red-700 px-2 py-1"
                       >
                         Remove
                       </button>
@@ -361,46 +361,46 @@ export default function AccommodationFilter({ onSearch }) {
                   </div>
 
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium">Adults</span>
-                    <div className="flex items-center gap-2">
+                    <span className="text-sm sm:text-base font-medium">Adults</span>
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <button
                         type="button"
                         onClick={() => updateAdult(i, room.adult - 1)}
                         disabled={room.adult <= 1}
-                        className={`w-6 h-6 rounded border flex items-center justify-center ${
+                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded border flex items-center justify-center touch-manipulation ${
                           room.adult <= 1
                             ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+                            : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100"
                         }`}
                       >
-                        <Minus className="h-3 w-3" />
+                        <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </button>
-                      <span className="w-6 text-center text-sm font-medium">{room.adult}</span>
+                      <span className="w-8 text-center text-sm sm:text-base font-medium">{room.adult}</span>
                       <button
                         type="button"
                         onClick={() => updateAdult(i, room.adult + 1)}
                         disabled={room.adult >= 10}
-                        className={`w-6 h-6 rounded border flex items-center justify-center ${
+                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded border flex items-center justify-center touch-manipulation ${
                           room.adult >= 10
                             ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+                            : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100"
                         }`}
                       >
-                        <Plus className="h-3 w-3" />
+                        <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Children</span>
+                      <span className="text-sm sm:text-base font-medium">Children</span>
                       <span className="text-xs text-gray-500">
                         {room.children.length}/10
                       </span>
                     </div>
 
                     {room.children.length >= 1 && (
-                      <div className="flex flex-wrap gap-1 mb-2">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2">
                         {room.children.map((childAge, childIndex) => (
                           <div
                             key={childIndex}
@@ -411,7 +411,7 @@ export default function AccommodationFilter({ onSearch }) {
                               onChange={(e) =>
                                 updateChildAge(i, childIndex, parseInt(e.target.value))
                               }
-                              className="bg-transparent text-xs border-none outline-none cursor-pointer"
+                              className="bg-transparent text-xs sm:text-sm border-none outline-none cursor-pointer min-w-0"
                             >
                               {Array.from({ length: 13 }, (_, index) => (
                                 <option key={index} value={index + 1}>
@@ -422,7 +422,7 @@ export default function AccommodationFilter({ onSearch }) {
                             <button
                               type="button"
                               onClick={() => removeChild(i, childIndex)}
-                              className="w-3 h-3 rounded-full bg-red-400 text-white flex items-center justify-center hover:bg-red-500"
+                              className="w-4 h-4 rounded-full bg-red-400 text-white flex items-center justify-center hover:bg-red-500 active:bg-red-600 touch-manipulation flex-shrink-0"
                             >
                               <X className="h-2 w-2" />
                             </button>
@@ -435,7 +435,7 @@ export default function AccommodationFilter({ onSearch }) {
                       <button
                         type="button"
                         onClick={() => addChild(i, 1)}
-                        className="w-full text-xs text-blue-600 font-medium py-1 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
+                        className="w-full text-xs sm:text-sm text-blue-600 font-medium py-2 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 active:bg-blue-100 transition-colors touch-manipulation"
                       >
                         + Add Child ({10 - room.children.length} left)
                       </button>
@@ -444,18 +444,18 @@ export default function AccommodationFilter({ onSearch }) {
                 </div>
               ))}
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 pt-2 sm:pt-3">
                 <button
                   type="button"
                   onClick={addRoom}
-                  className="flex-1 text-xs border border-yellow-400 text-yellow-600 font-medium py-2 rounded-lg hover:bg-yellow-50 transition-colors"
+                  className="flex-1 text-xs sm:text-sm border border-yellow-400 text-yellow-600 font-medium py-2 sm:py-2.5 rounded-lg hover:bg-yellow-50 active:bg-yellow-100 transition-colors touch-manipulation"
                 >
                   + Add Room
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowGuestPopup(false)}
-                  className="flex-1 bg-yellow-400 text-gray-900 text-xs font-medium py-2 rounded-lg hover:bg-yellow-500 transition-colors"
+                  className="flex-1 bg-yellow-400 text-gray-900 text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg hover:bg-yellow-500 active:bg-yellow-600 transition-colors touch-manipulation"
                 >
                   Done
                 </button>
@@ -468,7 +468,7 @@ export default function AccommodationFilter({ onSearch }) {
         <div className="md:col-span-2">
           <button
             type="submit"
-            className="w-full h-full rounded-xl bg-yellow-400 text-gray-900 font-semibold py-1.5 hover:bg-yellow-500 transition"
+            className="w-full h-full min-h-[44px] rounded-xl bg-yellow-400 text-gray-900 font-semibold text-base sm:text-lg py-2.5 md:py-1.5 hover:bg-yellow-500 active:bg-yellow-600 transition touch-manipulation"
           >
             Search
           </button>
@@ -476,14 +476,14 @@ export default function AccommodationFilter({ onSearch }) {
       </div>
 
       {/* Additional Parameters */}
-      <h6 className="mt-6 mb-3 font-medium">Additional Parameters</h6>
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <h6 className="mt-4 sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-sm sm:text-base">Additional Parameters</h6>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
         <div className="md:col-span-3">
-          <label className="block text-sm mb-1">Guest's citizenship</label>
+          <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1">Guest's citizenship</label>
           <select
             value={nationality}
             onChange={(e) => setNationality(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-lg"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 sm:py-2.5 text-base sm:text-lg touch-manipulation"
           >
             {nationalities.map((n) => (
               <option key={n.id} value={n.code}>
@@ -494,15 +494,15 @@ export default function AccommodationFilter({ onSearch }) {
         </div>
 
         <div className="md:col-span-9">
-          <label className="block text-sm mb-1">&nbsp;</label>
+          <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1 invisible md:visible">&nbsp;</label>
           <div className="flex flex-wrap gap-2 mb-3">
             {["All", "1 star", "2 star", "3 star", "4 star", "5 star"].map((label, i) => (
               <label
                 key={i}
-                className={`cursor-pointer px-3 py-2 border rounded transition-all ${
+                className={`cursor-pointer px-3 sm:px-4 py-2 sm:py-2.5 border rounded text-xs sm:text-sm transition-all touch-manipulation ${
                   stars === String(i)
-                    ? "border-red-500 text-red-500 bg-red-50"
-                    : "border-gray-300 hover:border-gray-500"
+                    ? "border-red-500 text-red-500 bg-red-50 font-medium"
+                    : "border-gray-300 hover:border-gray-500 active:bg-gray-50"
                 }`}
               >
                 <input
