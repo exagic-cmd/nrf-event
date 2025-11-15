@@ -15,13 +15,25 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
   // Extract hotel data from the new API structure
   const hotelData = accommodation.Hotel_Data;
-  const results = Array.isArray(accommodation.Result) ? accommodation.Result : [accommodation.Result];
-  console.log("###############",hotelData.amenities)
-  // Find the lowest price from all room results
-  const lowestPrice = results.reduce((min, result) => {
-    const price = parseFloat(result.Room.Price["@attributes"].amt);
-    return price < min ? price : min;
-  }, parseFloat(results[0]?.Room.Price["@attributes"].amt) || 0);
+  const results = accommodation?.Result
+    ? (Array.isArray(accommodation.Result) ? accommodation.Result : [accommodation.Result])
+    : [];
+  //console.log("###############", hotelData?.amenities);
+
+  // Find the lowest price from all room results across all Result entries.
+  const allRoomPrices = [];
+  // Filter out any falsy result entries and iterate safely
+  const validResults = results.filter(Boolean);
+  validResults.forEach((res) => {
+    const rooms = res?.Room ? (Array.isArray(res.Room) ? res.Room : [res.Room]) : [];
+    rooms.forEach((room) => {
+      // Price may be nested under Room.Price['@attributes'].amt or Room.Price. Handle defensively.
+      const amt = room?.Price?.["@attributes"]?.amt ?? room?.Price?.amt ?? room?.Price;
+      const num = amt != null ? parseFloat(amt) : NaN;
+      if (!Number.isNaN(num)) allRoomPrices.push(num);
+    });
+  });
+  const lowestPrice = allRoomPrices.length > 0 ? Math.min(...allRoomPrices) : hotelData?.starting_price || 0;
 
   // Parse address if available
   // const address = hotelData.address ? JSON.parse(hotelData.address) : {};
@@ -31,11 +43,11 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   const rating = hotelData.rating ? JSON.parse(hotelData.rating) : null;
   
   // Parse amenities and convert to array
-  const amenities = hotelData.amenities ? hotelData.amenities.split(', ').slice(0, 3) : [];
-  
+  const amenities = hotelData?.amenities ? hotelData.amenities.split(',').map(s => s.trim()).filter(Boolean).slice(0, 3) : [];
+
   // Parse media to get images
-  const media = hotelData.media ? hotelData.media : [];
-  const mainImage = hotelData.length > 0 ? media[0].url : hotelData.image;
+  const media = Array.isArray(hotelData?.media) ? hotelData.media : [];
+  const mainImage = media.length > 0 ? (media[0].image || media[0].url) : hotelData.image;
 
   const formatPrice = (value) => {
     const num = Number(value);
@@ -47,14 +59,18 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     try {
       // Check if already in cart
       const alreadyExists = items.some(
-        (item) => item.tourId === hotelData.stuba_id && item.category === "accommodation"
+      (item) => item.tourId === hotelData.stuba_id && item.category === "accommodation"
       );
 
       if (alreadyExists) {
-        setShowModal(true);
+      setShowModal(true);
       } else {
-        // Navigate to accommodation details page
-        localizedPush(`/accommodation/detail/${hotelData.stuba_id}`);
+      // Navigate to accommodation details page
+      const detailId = hotelData.link_type_id !== 9 ? hotelData?.id : hotelData.stuba_id;
+      localizedPush({
+      pathname: `/accommodation/detail/${detailId}`,
+      query: { link_type_id: hotelData.link_type_id }
+        });
       }
     } catch (err) {
       console.error("Booking failed", err);
@@ -114,7 +130,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         {/* Info Section */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h2 className="font-semibold text-lg">{hotelData.title}</h2>
+            <h2 className="font-semibold text-lg">{hotelData.title || hotelData.product_title}</h2>
             
             {/* Location and Rating */}
             <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
@@ -139,26 +155,43 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
             {/* Description */}
             <p className="text-sm text-gray-700 line-clamp-2 mt-2">
-              {hotelData.description}
+              {hotelData.description || hotelData.short_desc }
             </p>
 
             {/* Room Types Preview */}
-                  {results.length > 0 && (
+                  {validResults.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                    {results.slice(0, 2).map((result, idx) => (
-                      <span 
-                      key={idx}
-                      className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                    {validResults.slice(0, 2).map((result, idx) => {
+                      const roomsArr = result?.Room ? (Array.isArray(result.Room) ? result.Room : [result.Room]) : [];
+                      const roomTypeTexts = roomsArr
+                        .map((r) => r?.RoomType?.["@attributes"]?.text)
+                        .filter(Boolean);
+                      const displayText = roomTypeTexts.length > 0 ? roomTypeTexts[0] : "Room";
+                      return (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                        >
+                          {displayText}
+                        </span>
+                      );
+                    })}
+                    {validResults.length > 2 && (
+                      <span
+                        className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 cursor-help"
+                        title={results
+                          .slice(2)
+                          .map((result) => {
+                            const roomsArr = result?.Room ? (Array.isArray(result.Room) ? result.Room : [result.Room]) : [];
+                            return roomsArr
+                              .map((r) => r?.RoomType?.["@attributes"]?.text)
+                              .filter(Boolean)
+                              .join(', ');
+                          })
+                          .filter(Boolean)
+                          .join(', ')}
                       >
-                      {result.Room.RoomType["@attributes"].text}
-                      </span>
-                    ))}
-                    {results.length > 2 && (
-                      <span 
-                      className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 cursor-help"
-                      title={results.slice(2).map(result => result.Room.RoomType["@attributes"].text).join(', ')}
-                      >
-                      +{results.length - 2} more
+                        +{results.length - 2} more
                       </span>
                     )}
                     </div>
@@ -180,7 +213,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
               {/* Price display */}
               <div className="flex items-center gap-2">
                 <p className="text-lg font-bold text-[#CC9A55]">
-                  {formatPrice(lowestPrice)} {accommodation.currency || 'USD'}
+                  {formatPrice(lowestPrice)} {hotelData?.currency || accommodation.currency || 'USD'}
                 </p>
               </div>
               

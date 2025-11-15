@@ -182,6 +182,8 @@ export const useAccommodationsStore = create((set, get) => ({
         nationality: searchPayload.nationality || "SG",
         refund_policy: searchPayload.refund_policy || "all",
         stars: searchPayload.stars || "0",
+        category_id: 4,
+        is_b2c_only: 1,
         rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
         nights:
           searchPayload.nights ||
@@ -267,6 +269,157 @@ export const useAccommodationsStore = create((set, get) => ({
       return [];
     }
   },
+
+
+// stores/useAccommodationsStore.js
+fetchNonStubaAccommodation: async (hotelId) => {
+  set({ isLoading: true, error: null });
+
+  try {
+    const payload = { product_id: [Number(hotelId)] };
+
+    console.log("Calling /affliate/get_public_products with:", payload);
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const rawResponse = await res.json();
+    console.log("Raw non-Stuba API response:", rawResponse);
+
+    if (!res.ok) {
+      throw new Error(rawResponse.message || `HTTP ${res.status}`);
+    }
+
+    // ———————————————————————————————
+    // 1. CORRECT PATH: rawResponse.products (NOT rawResponse.data)
+    // ———————————————————————————————
+    const allProducts = Array.isArray(rawResponse?.products) ? rawResponse.products : [];
+    console.log("All products from API:", allProducts);
+
+    // ———————————————————————————————
+    // 2. FILTER: link_type_id === 3 && category_id === 4
+    // ———————————————————————————————
+    const filtered = allProducts.filter(
+      (item) =>
+        Number(item.link_type_id) === 3 && Number(item.category_id) === 4
+    );
+
+    console.log("Filtered products (link_type_id=3, category_id=4):", filtered);
+
+    if (filtered.length === 0) {
+      throw new Error("No matching non-Stuba hotel found (link_type_id=3, category_id=4)");
+    }
+
+    // ———————————————————————————————
+    // 3. Use the FIRST matching hotel
+    // ———————————————————————————————
+    const hotel = filtered[0];
+    console.log("Using first matching hotel:", hotel);
+
+    // ———————————————————————————————
+    // 4. NORMALIZE (match your UI)
+    // ———————————————————————————————
+    const normalized = {
+      normalizedHotelData: {
+        id: hotel.id,
+        stuba_id: null,
+        title: hotel.product_title || hotel.product_content_title,
+        name: hotel.product_title || hotel.product_content_title,
+        description: hotel.short_desc,
+        country: hotel.country_name || "Singapore", // fallback
+        city: hotel.city_name || "Singapore",       // fallback
+        address: hotel.address || hotel.short_desc.split('.')[0],
+        latitude: hotel.latitude || 1.3521,         // Singapore default
+        longitude: hotel.longitude || 103.8198,     // Singapore default
+        image: hotel.image,
+        images: hotel.image ? [{
+          url: hotel.image,
+          thumb: hotel.image,
+          type: "photo"
+        }] : [],
+        stars: hotel.stars || 4,                    // fallback
+        amenities: hotel.amenities || "WiFi, AC, TV",
+        features: (hotel.amenities || "WiFi, AC, TV").split(",").map(s => s.trim()),
+        starting_price: parseFloat(hotel.starting_price) || 0,
+        price: parseFloat(hotel.starting_price) || 0,
+        category_name: hotel.category_name,
+        currency: hotel.currency || "SGD"
+      },
+      normalizedRoomData: [], // No rooms in response → empty for now
+      lowestPriceRoom: null
+    };
+
+    console.log("✅ Normalized non-Stuba data:", normalized);
+
+    set({ isLoading: false });
+    return normalized;
+  } catch (err) {
+    console.error("❌ fetchNonStubaAccommodation failed:", err);
+    set({ isLoading: false, error: err.message });
+    return null;
+  }
+},
+
+// stores/useAccommodationsStore.js (add this new method)
+fetchNonStubaRooms: async (accommodationId) => {
+  set({ isLoading: true, error: null });
+
+  try {
+    const payload = { product_id: Number(accommodationId) }; // scalar, not array
+
+    console.log("Calling /affliate/get_allotments with:", payload);
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_allotments`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const rawResponse = await res.json();
+    console.log("Raw allotments response:", rawResponse);
+
+    if (!res.ok || rawResponse.status !== true) {
+      throw new Error(rawResponse.message || `HTTP ${res.status}`);
+    }
+
+    // CHANGE THIS LINE WHEN YOU SHARE RESPONSE
+    const allRooms = Array.isArray(rawResponse.allotments)
+      ? rawResponse.allotments
+      : rawResponse.data?.allotments || [];
+
+    const normalizedRooms = allRooms.map(room => ({
+      id: room.id || room.room_id || String(room.allotment_id),
+      roomType: room.room_name || room.room_type || "Standard Room",
+      mealType: room.meal_plan || "Room Only",
+      price: Number(room.total_price || room.price || 0),
+      cancellationPolicy: room.cancellation_policy || "NonRefundable",
+      roomCode: room.room_code,
+      mealCode: room.meal_code,
+      rawData: room,
+    }));
+
+    const lowestPriceRoom = normalizedRooms.length
+      ? normalizedRooms.reduce((a, b) => (a.price < b.price ? a : b))
+      : null;
+
+    console.log("Normalized rooms:", normalizedRooms);
+    set({ isLoading: false });
+    return { normalizedRoomData: normalizedRooms, lowestPriceRoom };
+  } catch (err) {
+    console.error("fetchNonStubaRooms failed:", err);
+    set({ isLoading: false, error: err.message });
+    return { normalizedRoomData: [], lowestPriceRoom: null };
+  }
+},
 
   // Suggestions for hotel/region search
   fetchSuggestedAccommodations: async (query) => {
