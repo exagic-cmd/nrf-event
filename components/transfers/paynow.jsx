@@ -138,6 +138,8 @@ const PayNow = ({ totalPrice }) => {
     const isTransfer = !!item.vehicle || item.transferType || item.tripType;
     const isAccommodation = item.type === "accommodation";
 
+    console.log("Building cart item for:", item);
+
     // For accommodation items, use the existing structure from cart
     if (isAccommodation) {
       return {
@@ -154,7 +156,12 @@ const PayNow = ({ totalPrice }) => {
         mealType: item.mealType,
         quoteId: item.quoteId,
         cancellationPolicy: item.cancellationPolicy,
-        
+        meal_plan:0,
+        check_in_time:null,
+        check_out_time:null,
+        bed_type: item?.hotel_info?.roomsDetails?.[0]?.rawData?.cat?.id || null,
+        room_type: item?.hotel_info?.roomsDetails?.[0]?.rawData?.type?.id || null,
+        hotel_ref_no:item?.product_id || item.tourId || item.id,
         // Use the existing hotel_info structure from cart
         hotel_info: item.hotel_info || {
           id: item.product_id || item.tourId || item.id,
@@ -175,7 +182,7 @@ const PayNow = ({ totalPrice }) => {
             cancellationPolicy: item.selectedRoom?.cancellationPolicy,
             guestDetails: item.guestDetails // Include guest details in roomsDetails
           }],
-          specialRequests: item.specialRequests || '',
+          special_request: item.specialRequests || '',
            // Attach preBookingResponse and preBookingRequest when available (from pre-book step)
            request_response: item.hotel_info?.preBookingResponse || item.preBookingResponse || null,
            request: item.hotel_info?.preBookingRequest?.callPreBookingAPI || item.preBookingRequest?.callPreBookingAPI || item.payload || null,
@@ -208,7 +215,7 @@ const PayNow = ({ totalPrice }) => {
     }
 
     // === TRANSFER ITEM ===
-    if (isTransfer) {
+    else if (isTransfer) {
       // ... keep your existing transfer logic unchanged ...
       return {
         product_id: item.tourId,
@@ -246,6 +253,7 @@ const PayNow = ({ totalPrice }) => {
 
     // === DAY TOUR / UPSELL ===
     // ... keep your existing day tour/upsell logic unchanged ...
+    else if(!isTransfer && !isAccommodation) {
     return {
       adult_count: item.adults || 0,
       child_count: item.child || 0,
@@ -283,8 +291,10 @@ const PayNow = ({ totalPrice }) => {
       addons_round: item.addons_round || [],
       exceptions: item.exceptions || [],
     };
-  });
-
+  }
+}
+);
+console.log("cart_items:PAYNOW #####################", cart_items);
   const payload = {
     cart_items,
     paxinfo: {

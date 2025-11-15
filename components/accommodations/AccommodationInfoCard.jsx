@@ -1,3 +1,4 @@
+// components/accommodations/AccommodationInfoCard.jsx
 import { Star, Check, MapPin, Clock, Bed } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -9,26 +10,24 @@ const AccommodationInfoCard = ({
   onScrollToOptions,
   onProceedBooking,
   selectedRoom = null,
-  nights = 1 // Required for accurate labeling
+  nights = 1,
 }) => {
   const [lowestPrice, setLowestPrice] = useState(0);
   const [amenities, setAmenities] = useState([]);
 
-  // Calculate lowest total price from all available rooms
   useEffect(() => {
     if (selectedRoom) {
       setLowestPrice(selectedRoom.price || 0);
-    } else if (allRooms && allRooms.length > 0) {
-      const minPrice = Math.min(...allRooms.map(room => room.price || 0));
-      setLowestPrice(minPrice > 0 ? minPrice : startingPrice || 0);
+    } else if (allRooms.length > 0) {
+      const min = Math.min(...allRooms.map(r => r.price || 0));
+      setLowestPrice(min > 0 ? min : startingPrice || 0);
     } else {
       setLowestPrice(startingPrice || 0);
     }
   }, [allRooms, startingPrice, selectedRoom]);
 
-  // Extract amenities
   useEffect(() => {
-    const extractAmenities = () => {
+    const extract = () => {
       if (hotelData?.amenities) {
         if (typeof hotelData.amenities === "string") {
           return hotelData.amenities.split(",").map(a => a.trim()).slice(0, 5);
@@ -37,59 +36,42 @@ const AccommodationInfoCard = ({
           return hotelData.amenities.slice(0, 5);
         }
       }
-      if (Array.isArray(hotelData?.features)) {
-        return hotelData.features.slice(0, 5);
-      }
-      return [];
+      return hotelData?.features?.slice(0, 5) || [];
     };
-    setAmenities(extractAmenities());
+    setAmenities(extract());
   }, [hotelData]);
 
-  // Format price
   const formatPrice = (price) => {
     if (!price || price <= 0) return "Price on request";
     return `${currency} ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  // Room count text
   const getRoomCountText = () => {
-    if (!allRooms || allRooms.length === 0) return "No rooms available";
+    if (!allRooms.length) return "No rooms available";
     return allRooms.length === 1 ? "1 room option" : `${allRooms.length} room options`;
   };
 
-  // Cancellation policy
   const hasFreeCancellation = () => {
-    if (selectedRoom) {
-      return selectedRoom.cancellationPolicy?.toLowerCase().includes("refundable");
-    }
-    return allRooms.some(room =>
-      room.cancellationPolicy?.toLowerCase().includes("refundable")
-    );
+    if (selectedRoom) return selectedRoom.cancellationPolicy?.toLowerCase().includes("refundable");
+    return allRooms.some(r => r.cancellationPolicy?.toLowerCase().includes("refundable"));
   };
 
-  // Hotel highlights
-  const getHotelHighlights = () => {
-    const highlights = [];
-    if (hotelData?.stars) highlights.push(`${hotelData.stars}-star`);
-    if (hotelData?.category_name) highlights.push(hotelData.category_name);
-    if (hotelData?.rating?.description) highlights.push(hotelData.rating.description);
-    return highlights.slice(0, 2);
-  };
+  const highlights = [];
+  if (hotelData?.stars) highlights.push(`${hotelData.stars}-star`);
+  if (hotelData?.category_name) highlights.push(hotelData.category_name);
+  if (hotelData?.rating?.description) highlights.push(hotelData.rating.description);
 
-  const highlights = getHotelHighlights();
   const freeCancellation = hasFreeCancellation();
   const roomCountText = getRoomCountText();
 
   return (
     <div className="lg:col-span-2">
       <div className="bg-gray-900 rounded-xl p-6 sticky top-24 shadow-xl">
-        {/* Price Section */}
+        {/* Price */}
         <div className="mb-5">
           <div className="text-4xl font-extrabold text-[#CC9A55] mb-1">
             {formatPrice(lowestPrice)}
           </div>
-
-          {/* Dynamic subtitle */}
           <div className="text-gray-400 text-sm flex items-center gap-1">
             {selectedRoom ? (
               <>
@@ -105,7 +87,6 @@ const AccommodationInfoCard = ({
             )}
           </div>
 
-          {/* Selected Room Badge */}
           {selectedRoom && (
             <div className="mt-2 inline-flex items-center gap-1.5 bg-green-900/30 text-green-400 text-xs px-2.5 py-1 rounded-full">
               <Check className="h-3 w-3" />
@@ -113,7 +94,6 @@ const AccommodationInfoCard = ({
             </div>
           )}
 
-          {/* Room Options Count */}
           {!selectedRoom && allRooms.length > 0 && (
             <div className="text-green-400 text-xs mt-1.5">
               {roomCountText} available
@@ -121,7 +101,7 @@ const AccommodationInfoCard = ({
           )}
         </div>
 
-        {/* Selected Room Details */}
+        {/* Selected Room */}
         {selectedRoom && (
           <div className="mb-5 p-4 bg-gradient-to-r from-[#CC9A55]/10 to-transparent border border-[#CC9A55]/30 rounded-xl">
             <div className="text-white font-semibold text-sm mb-1">
@@ -139,11 +119,11 @@ const AccommodationInfoCard = ({
           </div>
         )}
 
-        {/* Hotel Highlights */}
+        {/* Highlights */}
         {highlights.length > 0 && (
           <div className="mb-5">
             <div className="flex flex-wrap gap-2">
-              {highlights.map((h, i) => (
+              {highlights.slice(0, 2).map((h, i) => (
                 <span
                   key={i}
                   className="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1"
@@ -156,16 +136,13 @@ const AccommodationInfoCard = ({
           </div>
         )}
 
-        {/* Top Amenities */}
+        {/* Amenities */}
         {amenities.length > 0 && (
           <div className="mb-6">
             <h4 className="text-white text-sm font-medium mb-2.5">Top Amenities</h4>
             <div className="flex flex-wrap gap-1.5">
               {amenities.map((a, i) => (
-                <span
-                  key={i}
-                  className="bg-gray-800 text-gray-300 px-2.5 py-1.5 rounded-md text-xs"
-                >
+                <span key={i} className="bg-gray-800 text-gray-300 px-2.5 py-1.5 rounded-md text-xs">
                   {a}
                 </span>
               ))}
@@ -173,18 +150,14 @@ const AccommodationInfoCard = ({
           </div>
         )}
 
-        {/* Action Buttons */}
+        {/* Buttons */}
         <div className="space-y-3">
           <button
             onClick={onScrollToOptions}
-            disabled={!allRooms || allRooms.length === 0}
+            disabled={!allRooms.length}
             className="w-full bg-[#CC9A55] hover:bg-[#b88a45] text-white py-3.5 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {selectedRoom ? (
-              <>Change Room</>
-            ) : (
-              <>Choose Room ({allRooms.length})</>
-            )}
+            {selectedRoom ? "Change Room" : `Choose Room (${allRooms.length})`}
           </button>
 
           <button
@@ -196,7 +169,6 @@ const AccommodationInfoCard = ({
           </button>
         </div>
 
-        {/* Free Cancellation Global Badge */}
         {!selectedRoom && freeCancellation && (
           <div className="mt-4 text-center">
             <span className="inline-flex items-center gap-1 text-green-400 text-xs">
