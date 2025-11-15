@@ -33,7 +33,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       if (!Number.isNaN(num)) allRoomPrices.push(num);
     });
   });
-  const lowestPrice = allRoomPrices.length > 0 ? Math.min(...allRoomPrices) : 0;
+  const lowestPrice = allRoomPrices.length > 0 ? Math.min(...allRoomPrices) : hotelData?.starting_price || 0;
 
   // Parse address if available
   // const address = hotelData.address ? JSON.parse(hotelData.address) : {};
@@ -59,14 +59,18 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     try {
       // Check if already in cart
       const alreadyExists = items.some(
-        (item) => item.tourId === hotelData.stuba_id && item.category === "accommodation"
+      (item) => item.tourId === hotelData.stuba_id && item.category === "accommodation"
       );
 
       if (alreadyExists) {
-        setShowModal(true);
+      setShowModal(true);
       } else {
-        // Navigate to accommodation details page
-        localizedPush(`/accommodation/detail/${hotelData.stuba_id}`);
+      // Navigate to accommodation details page
+      const detailId = hotelData.link_type_id !== 9 ? hotelData?.id : hotelData.stuba_id;
+      localizedPush({
+      pathname: `/accommodation/detail/${detailId}`,
+      query: { link_type_id: hotelData.link_type_id }
+        });
       }
     } catch (err) {
       console.error("Booking failed", err);
@@ -151,7 +155,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
             {/* Description */}
             <p className="text-sm text-gray-700 line-clamp-2 mt-2">
-              {hotelData.description}
+              {hotelData.description || hotelData.short_desc }
             </p>
 
             {/* Room Types Preview */}

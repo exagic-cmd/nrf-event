@@ -31,6 +31,7 @@ export default function AccommodationDetailPage() {
   const router = useRouter();
   const { id: accommodationId, productname } = router.query;
   const { localizedReplace, localizedPush } = useLocalizedRouter();
+  const [isNonStuba, setIsNonStuba] = useState(false);
 
   const {
     selectedRegion,
@@ -187,41 +188,36 @@ export default function AccommodationDetailPage() {
 
   // Handle proceed to booking with cart validation
   const handleProceedBooking = () => {
-    if (!selectedRoom) {
-      alert("Please select a room first");
-      return;
-    }
-    
-    // Check if this accommodation is already in cart
-    const exists = items.some(item => 
-      item.tourId === accommodationId && item.type === 'accommodation'
-    );
-    
-    if (exists) {
-      setAlreadyModal(true);
-      return;
-    }
-    
-    console.log("🚀 Proceeding to booking with room:", selectedRoom);
-    
-    // Store booking data in sessionStorage for the booking page
-    const bookingData = {
-  accommodationId: accommodationId,
-  hotelData: hotelData,
-  selectedRoom: selectedRoom, // now contains total price + roomType + mealType
-  searchParams: searchParams,
-  nights: searchParams?.nights || 1,
-  checkIn: searchParams?.start_date,
-  checkOut: searchParams?.end_date,
-  timestamp: new Date().toISOString()
-};
-    
-    sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
-    sessionStorage.setItem("fromAccommodationDetail", "true");
-    
-    // Navigate to booking page
-    localizedPush(`/accommodation/booking/${accommodationId}`);
+  if (!selectedRoom) {
+    alert("Please select a room first");
+    return;
+  }
+
+  const exists = items.some(item => 
+    item.tourId === accommodationId && item.type === 'accommodation'
+  );
+
+  if (exists) {
+    setAlreadyModal(true);
+    return;
+  }
+
+  const bookingData = {
+    accommodationId,
+    hotelData: accommodation.normalizedHotelData, // ← fixed
+    selectedRoom,
+    searchParams,
+    nights: searchParams?.nights || 1,
+    checkIn: searchParams?.start_date,
+    checkOut: searchParams?.end_date,
+    isNonStuba, // optional
+    timestamp: new Date().toISOString()
   };
+
+  sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
+  sessionStorage.setItem("fromAccommodationDetail", "true");
+  localizedPush(`/accommodation/booking/${accommodationId}`);
+};
 
   // Handle modal update (remove existing and proceed)
   const handleModalUpdate = async () => {
@@ -248,101 +244,145 @@ export default function AccommodationDetailPage() {
     openDrawer();
   };
 
-  // Fetch accommodation data (keep your existing useEffect)
-  useEffect(() => {
-    const fetchAccommodationDetail = async () => {
-      if (!accommodationId) return;
-      setLoading(true);
-      setError(null);
+useEffect(() => {
+  const fetchAccommodationDetail = async () => {
+    if (!router.isReady || !accommodationId) return;
 
-      try {
-        const payload = {
-          nationality: searchParams?.nationality || "SG",
-          nights: searchParams?.nights || 1,
-          refund_policy: searchParams?.refund_policy || "all",
-          region: false,
-          rooms: searchParams?.rooms || [{ adult: 2, children: [] }],
-          stars: searchParams?.stars || "0",
-          visitor_id: $helpers.getVisitorId(),
-          start_date: searchParams?.start_date || new Date().toISOString().split("T")[0],
-          end_date: searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
-          hotel_id: accommodationId,
+    setLoading(true);
+    setError(null);
+
+    try {
+      const urlLinkTypeId = router.query.link_type_id
+        ? Number(router.query.link_type_id)
+        : null;
+
+      console.log("URL link_type_id:", urlLinkTypeId, "ID:", accommodationId);
+
+      // ——————————————————— NON-STUBA ———————————————————
+      if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
+        console.log("Non-Stuba flow");
+
+        // 1. Fetch hotel
+        const hotelData = await useAccommodationsStore
+          .getState()
+          .fetchNonStubaAccommodation(accommodationId);
+
+        if (!hotelData) throw new Error("Hotel not found");
+
+        // 2. Fetch rooms
+        let roomsData = null;
+        try {
+          roomsData = await useAccommodationsStore.getState().fetchNonStubaRooms(accommodationId);
+          console.log("Non-Stuba rooms response:", roomsData);
+        } catch (err) {
+          console.warn("Failed to fetch non-Stuba rooms:", err);
+          roomsData = null;
+        }
+
+        // 3. Merge: prefer normalized structure from roomsData if available
+        const fullData = {
+          ...hotelData,
+          normalizedRoomData: (roomsData && Array.isArray(roomsData.normalizedRoomData)) ? roomsData.normalizedRoomData : (hotelData.normalizedRoomData || []),
+          lowestPriceRoom: (roomsData && roomsData.lowestPriceRoom) ? roomsData.lowestPriceRoom : (hotelData.lowestPriceRoom || null),
         };
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
 
-        if (!res.ok) throw new Error("Network response was not ok");
-        const data = await res.json();
+        setAccommodation(fullData);
+        setIsNonStuba(true);
 
-        let allResults = [];
-        if (Array.isArray(data?.accommodations)) {
-          allResults = data.accommodations;
-        } else if (Array.isArray(data?.data)) {
-          allResults = data.data;
-        } else if (Array.isArray(data)) {
-          allResults = data;
-        } else if (typeof data === "object" && data !== null) {
-          allResults = Object.values(data);
+        if (fullData.lowestPriceRoom) {
+          setSelectedRoom(fullData.lowestPriceRoom);
         }
 
-        const matched = allResults.find((item) => {
-          const id = item?.Hotel_Data?.stuba_id || item?.stuba_id || item?.hotel_id || item?.Hotel?.["@attributes"]?.id;
-          return String(id) === String(accommodationId);
-        });
-
-        if (!matched) {
-          setError("Accommodation not found");
-          setAccommodation(null);
-        } else {
-          const normalizedData = normalizeAccommodationData(matched);
-          setAccommodation(normalizedData);
-
-          if (normalizedData.lowestPriceRoom) {
-            setSelectedRoom(normalizedData.lowestPriceRoom);
-          }
-
-          // Extract hotelQuoteId from common response locations and persist to sessionStorage
-          try {
-            const quoteId =
-              matched?.["@attributes"]?.hotelQuoteId ||
-              matched?.hotelQuoteId ||
-              matched?.Hotel?.["@attributes"]?.hotelQuoteId ||
-              matched?.Hotel_Data?.["@attributes"]?.hotelQuoteId ||
-              normalizedData?.hotelQuoteId ||
-              null;
-
-            if (quoteId) {
-              sessionStorage.setItem("hotelQuoteId", String(quoteId));
-              console.log("Saved hotelQuoteId to sessionStorage:", quoteId);
-            }
-          } catch (e) {
-            console.warn("Failed to write hotelQuoteId to sessionStorage", e);
-          }
-
-          const actualSlug = slugify(normalizedData.normalizedHotelData.title || "accommodation");
-          if (productname !== actualSlug) {
-            const newAs = `/accommodation/${actualSlug}/${accommodationId}`;
-            localizedReplace(`/accommodation/[productname]/[id]`, newAs);
-          }
+        // Slug correction
+        const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
+        if (productname !== actualSlug) {
+          localizedReplace(
+            { pathname: "/accommodation/[productname]/[id]", query: { link_type_id: urlLinkTypeId } },
+            { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } }
+          );
         }
-      } catch (err) {
-        console.error("❌ fetchAccommodationDetail error:", err);
-        setError("Failed to fetch accommodation details");
-      } finally {
-        setLoading(false);
+
+        return; // EXIT EARLY
       }
-    };
 
-    if (router.isReady) {
-      fetchAccommodationDetail();
+      // ——————————————————— STUBA ———————————————————
+      console.log("Stuba flow");
+
+      const payload = {
+        nationality: searchParams?.nationality || "SG",
+        nights: searchParams?.nights || 1,
+        refund_policy: searchParams?.refund_policy || "all",
+        region: false,
+        rooms: searchParams?.rooms || [{ adult: 2, children: [] }],
+        stars: searchParams?.stars || "0",
+        visitor_id: $helpers.getVisitorId(),
+        start_date: searchParams?.start_date || new Date().toISOString().split("T")[0],
+        end_date: searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
+        hotel_id: accommodationId,
+      };
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!res.ok) throw new Error("Network error");
+      const data = await res.json();
+
+      // ... find matched hotel, normalize ...
+      const results = data?.accommodations || data?.data || data || [];
+      let matched = null;
+      if (Array.isArray(results) && results.length > 0) {
+        matched = results.find((r) => {
+          const candidateId = r?.Hotel_Data?.id || r?.Hotel?.["@attributes"]?.id || r?.stuba_id || r?.hotel_id || null;
+          return candidateId && String(candidateId) === String(accommodationId);
+        }) || results[0];
+      } else if (results && typeof results === 'object') {
+        matched = results;
+      }
+
+      if (!matched) throw new Error("Not found");
+
+      const normalizedData = normalizeAccommodationData(matched);
+      setAccommodation(normalizedData);
+      setIsNonStuba(false);
+
+      if (normalizedData.lowestPriceRoom) {
+        setSelectedRoom(normalizedData.lowestPriceRoom);
+      }
+
+  // Save quote ID (if present on matched result)
+  const quoteId = matched?.["@attributes"]?.hotelQuoteId || matched?.Hotel_Data?.["@attributes"]?.hotelQuoteId || matched?.hotelQuoteId || null;
+  if (quoteId) sessionStorage.setItem("hotelQuoteId", String(quoteId));
+
+      // Slug (no link_type_id)
+      const actualSlug = slugify(normalizedData.normalizedHotelData.title || "accommodation");
+      if (productname !== actualSlug) {
+        localizedReplace(
+          { pathname: "/accommodation/[productname]/[id]", query: {} },
+          { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: {} }
+        );
+      }
+    } catch (err) {
+      console.error("fetch error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [router.isReady, accommodationId, searchParams, selectedRegion]);
+  };
+
+  fetchAccommodationDetail();
+}, [
+  router.isReady,
+  accommodationId,
+  router.query.link_type_id,
+  searchParams,
+  selectedRegion
+]);
 
   if (loading) {
     return (
