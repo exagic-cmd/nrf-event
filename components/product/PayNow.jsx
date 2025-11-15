@@ -178,7 +178,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
           </button>
         </div>
         <div className='p-5'>
-          <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
+          <h2 className="text-xl font-semibold mb-4">Personal Information1</h2>
           <form onSubmit={handlePayNow}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div>

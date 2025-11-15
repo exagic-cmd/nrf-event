@@ -238,16 +238,17 @@ export default function SearchFilterCard({
 
   const Pill = ({ tab }) => (
     <button
-      type="button"
-      onClick={() => onSetTab?.(tab.id)}
-      className={`px-4 py-2 rounded-2xl text-md font-semibold transition ${
-        filterActiveTab === tab.id
-          ? "bg-yellow-300 text-gray-900 py-3.5"
-          : "bg-yellow-100 text-gray-700 hover:bg-yellow-200"
-      }`}
-    >
-      {tab.name}
-    </button>
+  type="button"
+  onClick={() => onSetTab?.(tab.id)}
+  className={`p-2 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-md font-semibold transition ${
+    filterActiveTab === tab.id
+      ? "bg-yellow-300 text-gray-900 sm:py-3.5"
+      : "bg-yellow-100 text-gray-700 hover:bg-yellow-200"
+  }`}
+>
+  {tab.name}
+</button>
+
   );
 
   return (
@@ -286,7 +287,7 @@ export default function SearchFilterCard({
                       <input
                         type="text"
                         value={pickupQuery}
-                        placeholder="Dubai Airport, DXB • Dubai"
+                        placeholder="Singapore Changi Airport"
                         onChange={(e) => onPickupChange(e.target.value)}
                         className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none"
                       />
@@ -330,7 +331,7 @@ export default function SearchFilterCard({
                         type="text"
                         value={dropoffQuery}
                         onChange={(e) => onDropoffChange(e.target.value)}
-                        placeholder="Airport, hotel, or address"
+                        placeholder="Hotel, or Address"
                         disabled={!selectedPickup}
                         className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none disabled:text-gray-400"
                       />
@@ -368,12 +369,14 @@ export default function SearchFilterCard({
 
             <div className="md:col-span-2 mt-1 flex items-stretch">
               <button
-                type="submit"
-                className="w-full self-end h-[52px] md:h-auto rounded-xl bg-yellow-300 text-gray-900 font-semibold py-3.5 hover:bg-yellow-400 transition shadow"
-                disabled={isLoading}
-              >
-                {isLoading ? "Searching..." : "Search"}
-              </button>
+  type="submit"
+  className="w-full self-end h-auto md:h-[52px] rounded-xl bg-yellow-300 text-gray-900 font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-yellow-400 transition shadow"
+  disabled={isLoading}
+>
+  {isLoading ? "Searching..." : "Search"}
+</button>
+
+
             </div>
           </div>
         </form>
@@ -561,7 +564,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="w-full h-[52px] md:h-auto rounded-xl bg-yellow-300 text-gray-900 font-semibold py-3.5 hover:bg-yellow-400 transition shadow"
+                className="w-full self-end h-auto md:h-[52px] rounded-xl bg-yellow-300 text-gray-900 font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-yellow-400 transition shadow"
                 disabled={isLoading}
               >
                 {isLoading ? "Searching..." : "Search"}

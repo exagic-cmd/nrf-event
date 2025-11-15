@@ -135,7 +135,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
     try {
       return format(new Date(dateStr), "dd MMM");
     } catch {
-      return dateStr || "N/A";
+      return dateStr || "";
     }
   };
 

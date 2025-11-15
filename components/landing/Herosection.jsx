@@ -160,7 +160,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-black/10" />
         </div>
 
-        <div className="relative z-10 w-full px-4 lg:px-8">
+        <div className="relative z-10 w-full px-4 lg:px-8 mt-[13rem] lg:mt-0">
           {/* Set favicon to event banner when available */}
           {event?.event?.banner && (
             <Head>
@@ -171,7 +171,7 @@ export default function HomePage() {
             </Head>
           )}
           <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 lg:items-start max-w-full">
-            <div className="flex w-full mx-4 lg:mx-0 justify-center lg:justify-end">
+            <div className="flex w-full lg:mx-0 justify-center lg:justify-end">
               <Card className="w-full max-w-full p-0 bg-transparent border-0 shadow-none">
                 <SearchFilterCard
                   filterActiveTab={filterActiveTab}

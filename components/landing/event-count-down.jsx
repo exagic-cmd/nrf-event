@@ -45,8 +45,8 @@ export default function CountdownTimer({ className = "" }) {
 
   if (!timeLeft) {
     return (
-      <section className="w-full py-12 md:py-24 lg:py-24 bg-black relative overflow-hidden">
-        <div className="text-white text-center animate-pulse">
+      <section className="w-full py-8 sm:py-12 md:py-24 bg-black relative overflow-hidden">
+        <div className="text-white text-center animate-pulse text-base sm:text-lg">
           Loading countdown...
         </div>
       </section>
@@ -55,10 +55,10 @@ export default function CountdownTimer({ className = "" }) {
 
   return (
     <section
-      className={`w-full py-12 md:py-24 lg:py-24 bg-black relative overflow-hidden ${className}`}
+      className={`w-full py-8 sm:py-12 md:py-24 bg-black relative overflow-hidden ${className}`}
     >
-      <div className="container px-4 md:px-6 mx-auto max-w-7xl flex justify-center">
-        <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 flex items-center justify-center gap-6">
+      <div className="container px-4 sm:px-6 mx-auto max-w-7xl flex justify-center">
+        <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 flex flex-wrap sm:flex-nowrap items-center justify-center gap-4 sm:gap-6">
           <TimeBox label="Days" value={timeLeft.days} />
           <TimeBox label="Hours" value={timeLeft.hours} />
           <TimeBox label="Minutes" value={timeLeft.minutes} />
@@ -71,11 +71,12 @@ export default function CountdownTimer({ className = "" }) {
 
 function TimeBox({ label, value }) {
   return (
-    <div className="flex flex-col items-center bg-gray-900 px-6 py-5 rounded-xl min-w-[90px]">
-      <span className="text-4xl font-bold tracking-wide text-white">
+    <div className="flex flex-col items-center bg-gray-900 px-3 py-3 sm:px-4 sm:py-4 rounded-xl min-w-[60px] sm:min-w-[90px]">
+      <span className="text-2xl sm:text-4xl font-bold tracking-wide text-white">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-sm uppercase text-gray-400 mt-1">{label}</span>
+      <span className="text-xs sm:text-sm uppercase text-gray-400 mt-1">{label}</span>
     </div>
   );
 }
+
