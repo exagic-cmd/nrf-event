@@ -384,10 +384,10 @@ const AccommodationBookNow = () => {
   const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
     ...(bookingData.selectedRoom || {}),
     roomTypeId: idx + 1,
-    guestDetails: {
-      adults: roomGuests.adults,
-      children: roomGuests.children,
-    },
+    // guestDetails: {
+    //   adults: roomGuests.adults,
+    //   children: roomGuests.children,
+    // },
   }));
 
   const hotelId =
