@@ -115,17 +115,17 @@ export default function HomePage() {
     if (filterActiveTab === 3) {
       const { country, city, search } = payload;
 
-      if (!country || !city) {
-        alert("Please select both country and city");
-        return;
-      }
+      // if (!country || !city) {
+      //   alert("Please select both country and city");
+      //   return;
+      // }
 
       const params = new URLSearchParams({
         searched: "true",
         type: "daytour",
         category_id: String(filterActiveTab),
-        country_id: String(country?.id),
-        city_id: String(city?.id),
+        country_id: String(country?.id) || 1,
+        city_id: String(city?.id) || 1,
       });
       if (search) params.append("name", search);
 

@@ -275,7 +275,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
   set({ isLoading: true, error: null });
 
   try {
-    const payload = { product_id: [Number(hotelId)] };
+    const payload = { ids: [Number(hotelId)] };
 
     console.log("Calling /affliate/get_public_products with:", payload);
 
