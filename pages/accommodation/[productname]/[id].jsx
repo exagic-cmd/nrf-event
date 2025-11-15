@@ -211,6 +211,7 @@ export default function AccommodationDetailPage() {
     checkIn: searchParams?.start_date,
     checkOut: searchParams?.end_date,
     isNonStuba, // optional
+    isNonStuba: isNonStuba,
     timestamp: new Date().toISOString()
   };
 
@@ -260,50 +261,40 @@ useEffect(() => {
 
       // ——————————————————— NON-STUBA ———————————————————
       if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
-        console.log("Non-Stuba flow");
+  console.log("Non-Stuba flow");
 
-        // 1. Fetch hotel
-        const hotelData = await useAccommodationsStore
-          .getState()
-          .fetchNonStubaAccommodation(accommodationId);
+  const hotelData = await useAccommodationsStore.getState().fetchNonStubaAccommodation(accommodationId);
+  if (!hotelData) throw new Error("Hotel not found");
 
-        if (!hotelData) throw new Error("Hotel not found");
+  // 1. First call: get categories + types
+  const roomsData = await useAccommodationsStore.getState().fetchNonStubaRooms(accommodationId);
+  if (!roomsData || roomsData.room_categories.length === 0) {
+    throw new Error("No room options");
+  }
 
-        // 2. Fetch rooms
-        let roomsData = null;
-        try {
-          roomsData = await useAccommodationsStore.getState().fetchNonStubaRooms(accommodationId);
-          console.log("Non-Stuba rooms response:", roomsData);
-        } catch (err) {
-          console.warn("Failed to fetch non-Stuba rooms:", err);
-          roomsData = null;
-        }
+  const fullData = {
+    ...hotelData,
+    room_categories: roomsData.room_categories,
+    room_types: roomsData.room_types,
+    allotments: roomsData.allotments,
+    normalizedRoomData: [], // will be filled after pricing
+    lowestPriceRoom: null,
+  };
 
-        // 3. Merge: prefer normalized structure from roomsData if available
-        const fullData = {
-          ...hotelData,
-          normalizedRoomData: (roomsData && Array.isArray(roomsData.normalizedRoomData)) ? roomsData.normalizedRoomData : (hotelData.normalizedRoomData || []),
-          lowestPriceRoom: (roomsData && roomsData.lowestPriceRoom) ? roomsData.lowestPriceRoom : (hotelData.lowestPriceRoom || null),
-        };
+  setAccommodation(fullData);
+  setIsNonStuba(true);
 
-        setAccommodation(fullData);
-        setIsNonStuba(true);
+  // Slug
+  const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
+  if (productname !== actualSlug) {
+    localizedReplace(
+      { pathname: "/accommodation/[productname]/[id]", query: { link_type_id: urlLinkTypeId } },
+      { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } }
+    );
+  }
 
-        if (fullData.lowestPriceRoom) {
-          setSelectedRoom(fullData.lowestPriceRoom);
-        }
-
-        // Slug correction
-        const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
-        if (productname !== actualSlug) {
-          localizedReplace(
-            { pathname: "/accommodation/[productname]/[id]", query: { link_type_id: urlLinkTypeId } },
-            { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } }
-          );
-        }
-
-        return; // EXIT EARLY
-      }
+  return;
+}
 
       // ——————————————————— STUBA ———————————————————
       console.log("Stuba flow");
@@ -427,26 +418,30 @@ useEffect(() => {
           <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8 mt-6">
             <AccommodationGallery hotelData={hotelData} />
             <AccommodationInfoCard
-              hotelData={hotelData}
-              startingPrice={hotelData.starting_price}
-              allRooms={roomData}
-              selectedRoom={selectedRoom}
-              currency="USD"
-              onScrollToOptions={handleScrollToOptions}
-              onProceedBooking={handleProceedBooking}
-              nights={nights}
-            />
+  hotelData={hotelData}
+  startingPrice={hotelData.starting_price}
+  allRooms={accommodation.normalizedRoomData}
+  selectedRoom={selectedRoom}
+  currency="USD"
+  onScrollToOptions={handleScrollToOptions}
+  onProceedBooking={handleProceedBooking}
+  nights={nights}
+/>
           </div>
         </div>
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <AccommodationRooms
-          allRooms={roomData}
-          currency="USD"
-          onRoomSelect={handleRoomSelect}
-          nights={nights}
-          selectedRoom={selectedRoom}
-        />
+  isNonStuba={isNonStuba}
+  allRooms={accommodation.normalizedRoomData}
+  room_categories={accommodation.room_categories}
+  room_types={accommodation.room_types}
+  productId={accommodationId}
+  currency="USD"
+  onRoomSelect={handleRoomSelect}
+  nights={nights}
+  selectedRoom={selectedRoom}
+/>
           <AccommodationMap hotelData={hotelData} />
         </div>
       </div>

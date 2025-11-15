@@ -1,7 +1,7 @@
 // pages/accommodation/booking/[id].js
 "use client";
 
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import Layout from "@/components/layout/Layout";
@@ -15,6 +15,7 @@ export default function AccommodationBookingPage() {
 
   const [allowed, setAllowed] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
+  const [isNonStuba, setIsNonStuba] = useState(false);
 
   const slugify = (text) => {
     if (!text) return "";
@@ -30,22 +31,43 @@ export default function AccommodationBookingPage() {
 
   useEffect(() => {
     const stored = sessionStorage.getItem("accommodationBookingData");
-    if (stored) {
-      setAllowed(true);
-    } else {
+    if (!stored) {
+      setAllowed(false);
+      setIsNonStuba(false);
+      setCheckingAccess(false);
+      return;
+    }
+
+    try {
+      const data = JSON.parse(stored);
+      const nonStuba = data.isNonStuba === true;
+
+      setIsNonStuba(nonStuba);
+
+      if (nonStuba) {
+        // NON-STUBA: Allow access without validation
+        setAllowed(true);
+      } else {
+        // STUBA: Require proper flow
+        setAllowed(!!data.hotelData && !!data.selectedRoom);
+      }
+    } catch (err) {
+      console.error("Invalid booking data:", err);
       setAllowed(false);
     }
+
     setCheckingAccess(false);
   }, []);
 
+  // Redirect only for Stuba if not allowed
   useEffect(() => {
-    if (!allowed && !checkingAccess) {
+    if (!allowed && !checkingAccess && !isNonStuba) {
       const timer = setTimeout(() => {
         localizedReplace("/accommodation");
       }, 1200);
       return () => clearTimeout(timer);
     }
-  }, [allowed, checkingAccess, localizedReplace]);
+  }, [allowed, checkingAccess, isNonStuba, localizedReplace]);
 
   if (checkingAccess) {
     return (
@@ -67,18 +89,24 @@ export default function AccommodationBookingPage() {
     );
   }
 
+  // Parse booking data
   const bookingData = JSON.parse(sessionStorage.getItem("accommodationBookingData") || "{}");
-  const hotel = bookingData.hotelData;
+  const hotel = bookingData.hotelData || {};
+  const selectedRoom = bookingData.selectedRoom || {};
 
   return (
     <Layout>
       <div className="min-h-screen bg-black text-white pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8">Book {hotel?.title}</h1>
+          <h1 className="text-3xl font-bold mb-8">Book {hotel?.title || "Hotel"}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Booking Form */}
             <div className="lg:col-span-2">
-              <AccommodationBookNow />
+              <AccommodationBookNow 
+  isNonStuba={isNonStuba}
+  bookingData={bookingData}
+/>
             </div>
 
             {/* Summary Sidebar */}
@@ -87,15 +115,20 @@ export default function AccommodationBookingPage() {
                 <h3 className="text-xl font-semibold mb-4">Booking Summary</h3>
                 <div className="space-y-3 text-sm">
                   <div><strong>Hotel:</strong> {hotel?.title}</div>
-                  <div><strong>Room:</strong> {bookingData.selectedRoom?.roomType}</div>
-                  <div><strong>Meal:</strong> {bookingData.selectedRoom?.mealType}</div>
-                  <div><strong>Dates:</strong> {bookingData.checkIn} → {bookingData.checkOut}</div>
+                  <div><strong>Room:</strong> {selectedRoom.roomType || "Not selected"}</div>
+                  <div><strong>Meal:</strong> {selectedRoom.mealType || "Room Only"}</div>
+                  <div><strong>Dates:</strong> {bookingData.checkIn} to {bookingData.checkOut}</div>
                   <div><strong>Nights:</strong> {bookingData.nights}</div>
+                  {/* {isNonStuba && (
+                    <div className="text-xs text-green-400 mt-2">
+                      Direct booking (no validation)
+                    </div>
+                  )} */}
                   <div className="pt-3 border-t border-gray-700">
                     <div className="flex justify-between">
                       <span>Total</span>
                       <span className="text-2xl font-bold text-[#CC9A55]">
-                        USD {bookingData.selectedRoom?.price }
+                        USD {Number(selectedRoom.price || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

@@ -167,18 +167,18 @@ export default function SearchFilterCard({
   }, [selectedCountry, cityQuery]);
 
   const handleCategorySearch = async () => {
-    if (!selectedCountry || !selectedCity) {
-      alert("Please select both country and city");
-      return;
-    }
+    // if (!selectedCountry || !selectedCity) {
+    //   alert("Please select both country and city");
+    //   return;
+    // }
 
     const categoryId = filterActiveTab === 3 ? 3 : 4;
     const categoryType = filterActiveTab === 3 ? 'daytour' : 'accommodation';
 
     const payload = {
       category_id: categoryId,
-      country_id: selectedCountry.id,
-      city_id: selectedCity.id,
+      country_id: selectedCountry?.id || 1,
+      city_id: selectedCity?.id || 1,
       name: searchQuery || "",
       is_b2c_only: 1,
       is_active: true,
@@ -238,16 +238,17 @@ export default function SearchFilterCard({
 
   const Pill = ({ tab }) => (
     <button
-      type="button"
-      onClick={() => onSetTab?.(tab.id)}
-      className={`px-4 py-2 rounded-2xl text-md font-semibold transition ${
-        filterActiveTab === tab.id
-          ? "bg-yellow-300 text-gray-900 py-3.5"
-          : "bg-yellow-100 text-gray-700 hover:bg-yellow-200"
-      }`}
-    >
-      {tab.name}
-    </button>
+  type="button"
+  onClick={() => onSetTab?.(tab.id)}
+  className={`p-2 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-md font-semibold transition ${
+    filterActiveTab === tab.id
+      ? "bg-yellow-300 text-gray-900 sm:py-3.5"
+      : "bg-yellow-100 text-gray-700 hover:bg-yellow-200"
+  }`}
+>
+  {tab.name}
+</button>
+
   );
 
   return (
@@ -286,7 +287,7 @@ export default function SearchFilterCard({
                       <input
                         type="text"
                         value={pickupQuery}
-                        placeholder="Dubai Airport, DXB • Dubai"
+                        placeholder="Singapore Changi Airport"
                         onChange={(e) => onPickupChange(e.target.value)}
                         className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none"
                       />
@@ -330,7 +331,7 @@ export default function SearchFilterCard({
                         type="text"
                         value={dropoffQuery}
                         onChange={(e) => onDropoffChange(e.target.value)}
-                        placeholder="Airport, hotel, or address"
+                        placeholder="Hotel, or Address"
                         disabled={!selectedPickup}
                         className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none disabled:text-gray-400"
                       />
@@ -368,12 +369,14 @@ export default function SearchFilterCard({
 
             <div className="md:col-span-2 mt-1 flex items-stretch">
               <button
-                type="submit"
-                className="w-full self-end h-[52px] md:h-auto rounded-xl bg-yellow-300 text-gray-900 font-semibold py-3.5 hover:bg-yellow-400 transition shadow"
-                disabled={isLoading}
-              >
-                {isLoading ? "Searching..." : "Search"}
-              </button>
+  type="submit"
+  className="w-full self-end h-auto md:h-[52px] rounded-xl bg-yellow-300 text-gray-900 font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-yellow-400 transition shadow"
+  disabled={isLoading}
+>
+  {isLoading ? "Searching..." : "Search"}
+</button>
+
+
             </div>
           </div>
         </form>
@@ -385,7 +388,7 @@ export default function SearchFilterCard({
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
 
             {/* COUNTRY */}
-            <div className="md:col-span-3 relative">
+            {/* <div className="md:col-span-3 relative">
               <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">Country</label>
               <div className="rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-gray-500" />
@@ -444,10 +447,10 @@ export default function SearchFilterCard({
                   {daytoursLoading && <div className="px-3 py-2 text-center text-gray-400">Loading…</div>}
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* CITY */}
-            <div className="md:col-span-3 relative">
+            {/* <div className="md:col-span-3 relative">
               <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">City</label>
               <div className="rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex items-center gap-2">
                 <Building className="h-5 w-5 text-gray-500" />
@@ -508,10 +511,10 @@ export default function SearchFilterCard({
                   {daytoursLoading && <div className="px-3 py-2 text-center text-gray-400">Loading…</div>}
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* SEARCH INPUT */}
-            <div className="md:col-span-4 relative rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex flex-col">
+            <div className="md:col-span-10 relative rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex flex-col">
               <div className="flex items-center">
                 <Search className="h-5 w-5 text-gray-500 mr-2" />
                 <input
@@ -542,14 +545,14 @@ export default function SearchFilterCard({
                       key={sug.id}
                       type="button"
                       onMouseDown={() => {
-                        setSearchQuery(sug.title || sug.name);
+                        setSearchQuery(sug.product_title || sug.name);
                         setSuggestedResults([]);
                       }}
                       className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
                     >
                       <Search className="h-4 w-4 text-yellow-600" />
                       <span className="text-sm text-gray-800">
-                        {sug.title || sug.name}
+                        {sug.product_title || sug.name}
                       </span>
                     </button>
                   ))}
@@ -561,7 +564,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="w-full h-[52px] md:h-auto rounded-xl bg-yellow-300 text-gray-900 font-semibold py-3.5 hover:bg-yellow-400 transition shadow"
+                className="w-full self-end h-auto md:h-[52px] rounded-xl bg-yellow-300 text-gray-900 font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-yellow-400 transition shadow"
                 disabled={isLoading}
               >
                 {isLoading ? "Searching..." : "Search"}

@@ -183,7 +183,6 @@ export const useAccommodationsStore = create((set, get) => ({
         refund_policy: searchPayload.refund_policy || "all",
         stars: searchPayload.stars || "0",
         category_id: 4,
-        is_b2c_only: 1,
         rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
         nights:
           searchPayload.nights ||
@@ -276,7 +275,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
   set({ isLoading: true, error: null });
 
   try {
-    const payload = { product_id: [Number(hotelId)] };
+    const payload = { ids: [Number(hotelId)] };
 
     console.log("Calling /affliate/get_public_products with:", payload);
 
@@ -366,14 +365,25 @@ fetchNonStubaAccommodation: async (hotelId) => {
   }
 },
 
-// stores/useAccommodationsStore.js (add this new method)
 fetchNonStubaRooms: async (accommodationId) => {
   set({ isLoading: true, error: null });
 
   try {
-    const payload = { product_id: Number(accommodationId) }; // scalar, not array
+    const searchParams = get().searchParams || {};
+    const fromDate = searchParams.start_date || new Date().toISOString().split("T")[0];
+    const toDate = searchParams.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
-    console.log("Calling /affliate/get_allotments with:", payload);
+    const payload = {
+      product_id: Number(accommodationId),
+      is_b2c_only: 1,
+      is_b2b_only: 0,
+      from_date: fromDate,
+      to_date: toDate,
+      room_cat: null,  // ← NULL
+      room_type: null,      // ← NULL
+    };
+
+    console.log("First call: get_allotments (no IDs):", payload);
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_allotments`,
@@ -385,42 +395,70 @@ fetchNonStubaRooms: async (accommodationId) => {
     );
 
     const rawResponse = await res.json();
-    console.log("Raw allotments response:", rawResponse);
+    console.log("First response:", rawResponse);
 
     if (!res.ok || rawResponse.status !== true) {
-      throw new Error(rawResponse.message || `HTTP ${res.status}`);
+      throw new Error(rawResponse.message || "Failed");
     }
 
-    // CHANGE THIS LINE WHEN YOU SHARE RESPONSE
-    const allRooms = Array.isArray(rawResponse.allotments)
-      ? rawResponse.allotments
-      : rawResponse.data?.allotments || [];
-
-    const normalizedRooms = allRooms.map(room => ({
-      id: room.id || room.room_id || String(room.allotment_id),
-      roomType: room.room_name || room.room_type || "Standard Room",
-      mealType: room.meal_plan || "Room Only",
-      price: Number(room.total_price || room.price || 0),
-      cancellationPolicy: room.cancellation_policy || "NonRefundable",
-      roomCode: room.room_code,
-      mealCode: room.meal_code,
-      rawData: room,
-    }));
-
-    const lowestPriceRoom = normalizedRooms.length
-      ? normalizedRooms.reduce((a, b) => (a.price < b.price ? a : b))
-      : null;
-
-    console.log("Normalized rooms:", normalizedRooms);
-    set({ isLoading: false });
-    return { normalizedRoomData: normalizedRooms, lowestPriceRoom };
+    return {
+      rawResponse,
+      room_categories: rawResponse.data?.room_categories || [],
+      room_types: rawResponse.data?.room_types || [],
+      allotments: rawResponse.data?.allotments || [],
+    };
   } catch (err) {
     console.error("fetchNonStubaRooms failed:", err);
     set({ isLoading: false, error: err.message });
-    return { normalizedRoomData: [], lowestPriceRoom: null };
+    return { rawResponse: null, room_categories: [], room_types: [], allotments: [] };
+  } finally {
+    set({ isLoading: false });
   }
 },
+// stores/useAccommodationsStore.js
+fetchNonStubaPricing: async (productId, fromDate, toDate, roomCategoryId, roomTypeId) => {
+  set({ isLoading: true, error: null });
 
+  try {
+    const payload = {
+      product_id: Number(productId),
+      is_b2c_only: 1,
+      is_b2b_only: 0,
+      from_date: fromDate,
+      to_date: toDate,
+      room_cat: roomCategoryId,
+      room_type: roomTypeId,
+    };
+
+    console.log("Second call: get_allotments (with IDs):", payload);
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_allotments`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await res.json();
+    console.log("Pricing response:", data);
+
+    if (!res.ok || data.status !== true) {
+      throw new Error(data.message || "Pricing failed");
+    }
+
+    return {
+      tiered_pricing: data.data?.tiered_pricing || [],
+    };
+  } catch (err) {
+    console.error("fetchNonStubaPricing failed:", err);
+    set({ isLoading: false, error: err.message });
+    return { tiered_pricing: [] };
+  } finally {
+    set({ isLoading: false });
+  }
+},
   // Suggestions for hotel/region search
   fetchSuggestedAccommodations: async (query) => {
     try {
