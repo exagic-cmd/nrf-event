@@ -292,6 +292,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
         roomsDetails: roomsDetailsArray,
         checkInDate: bookingData.checkIn,
         checkOutDate: bookingData.checkOut,
+        Guests: guestsByRoom,
+
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: "sajid32" || "",
@@ -364,6 +366,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
         checkInDate: bookingData.checkIn,
         checkOutDate: bookingData.checkOut,
         request_response: bookingResponse?.apiResponse ?? null,
+        guestDetailsByRoom: guestsByRoom,
         request: bookingResponse?.requestPayload ? { callPreBookingAPI: bookingResponse.requestPayload } : null,
       },
       guestDetailsByRoom: guestsByRoom,
