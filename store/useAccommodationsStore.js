@@ -163,7 +163,7 @@ export const useAccommodationsStore = create((set, get) => ({
   fetchAccommodations: async (payload) => {
     // If no payload provided, use existing searchParams
     const searchPayload = payload;
-    
+    console.log("🛎️ fetchAccommodations called with payload:", searchPayload);
     if (!searchPayload) {
       console.error("❌ No search payload provided");
       set({ isLoading: false, error: "No search criteria provided" });
@@ -171,7 +171,7 @@ export const useAccommodationsStore = create((set, get) => ({
     }
 
     set({ isLoading: true, error: null });
-
+    console.log("🔍 Fetching accommodations with payload:", searchPayload);
     try {
       const apiPayload = {
         hotel_id:
@@ -193,10 +193,11 @@ export const useAccommodationsStore = create((set, get) => ({
               )
             : 1),
         start_date:
-          searchPayload.start_date || new Date().toISOString().split("T")[0],
+        searchPayload.start_date || new Date().toISOString().split("T")[0],
         end_date: searchPayload.end_date || null,
         search: searchPayload.search || "",
         visitor_id: searchPayload.visitor_id || $helpers.getVisitorId(),
+        ids: searchPayload.ids || '',
       };
 
       console.log("🧾 Final API Payload:", apiPayload);
@@ -206,13 +207,17 @@ export const useAccommodationsStore = create((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiPayload),
       });
-
       if (!res.ok) {
         const txt = await res.text().catch(() => null);
         throw new Error(`Network response was not ok: ${res.status} ${res.statusText} ${txt || ''}`);
       }
 
       const data = await res.json();
+      if (!data.status){
+        alert(data.msg || "Failed to fetch accommodations");
+          throw new Error(data.msg || "Failed to fetch accommodations");
+        return;
+      }
 
       // Assume API returns accommodations in data.accommodations or data.data
       const results = data?.accommodations || data?.data || data || [];
