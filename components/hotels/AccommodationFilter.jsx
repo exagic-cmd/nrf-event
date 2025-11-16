@@ -140,6 +140,7 @@ export default function AccommodationFilter({ onSearch }) {
   };
 
   const handleSelection = (item, type) => {
+    console.log("Selected Item:", item, "Type:", type);
     setSelectedItem({ ...item, type });
     setSearch(type === "hotel" ? item.title : item.region_name);
     setShowDropdown(false);
@@ -184,11 +185,15 @@ export default function AccommodationFilter({ onSearch }) {
       nationality,
       refund_policy: refund,
       stars,
+      ids:''
     };
-
+      console.log("Selected Item before payload:", selectedItem);
+  
     if (selectedItem.type === "hotel") {
       searchPayload.hotel_id = selectedItem.stuba_id;
       searchPayload.region = false;
+      if (selectedItem?.link_type_id!=9)
+        searchPayload.ids = [selectedItem?.id];
     } else if (selectedItem.type === "region") {
       searchPayload.region = selectedItem.region_id;
       searchPayload.hotel_id = false;
