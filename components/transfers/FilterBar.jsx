@@ -7,7 +7,6 @@ import debounce from "lodash.debounce"
 import { MapPin, Search, X, ArrowLeftRight, ArrowUpDown, Building2, Plane, Ship, Train } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import RouteSummary from "./detail/RouteSummary"
-
 const TransferSearchFilter = ({ onSearch, showModal: showModalProp, setShowModal: setShowModalProp, forceSearch }) => {
   const { t } = useTranslation("transfer","common")
   const router = useRouter()
@@ -189,7 +188,7 @@ useEffect(() => {
 
   const filteredDropoffOptions = useMemo(() => {
     if (!dropoffQuery) {
-      return dropoffOptions.slice(0, 20)
+      return dropoffOptions
     }
     return dropoffOptions
       .filter((opt) => opt.name.toLowerCase().includes(dropoffQuery.toLowerCase()))
@@ -199,6 +198,8 @@ useEffect(() => {
   const getIconForCategory = (categoryId) => {
     switch (categoryId) {
       case "hotel":
+        return <Building2 size={20} style={{ color: "#1a1a1a" }} />
+         case "Hotel":
         return <Building2 size={20} style={{ color: "#1a1a1a" }} />
       case "airport":
         return <Plane size={20} style={{ color: "#cc9955" }} />
@@ -222,10 +223,11 @@ useEffect(() => {
             SearchClicked={() => setShowModalProp(true)}
             tripType={tripType}
         />
+        
 
       {showModalProp && (
   <div className="fixed inset-0 z-50 bg-black/90 flex justify-center items-center">
-    <div className="bg-white lg:rounded-lg w-full h-full lg:h-auto lg:max-w-3xl p-6 relative lg:max-h-[90vh]">
+    <div className="bg-white lg:rounded-lg w-full h-full lg:h-auto lg:max-w-3xl p-6 relative lg:max-h-[90vh] overflow-y-auto">
       {!forceSearch && (
         <button
           className="absolute top-4 md:mt-0 mt-12 right-4 text-gray-500  hover:bg-gray-200 z-10"
@@ -394,7 +396,7 @@ function PickupDropoffInputs({
             {showPickupSuggestions && (
   <div className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg z-50">
     <div className="p-3 text-center text-xs text-gray-500 bg-gray-50 rounded-lg">
-    {t("search_hint")}
+    {t("searchHint")}
     </div>
   </div>
 )}

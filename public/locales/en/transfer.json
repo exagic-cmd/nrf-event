@@ -104,6 +104,10 @@
     "railway": {
       "name": "Railway Stations",
       "subtitle": "Train station transfers"
+    },
+    "Hotel": {
+      "name": "Hotel",
+      "subtitle": "Find transfers to hotels"
     }
   },
   "types": {
@@ -111,7 +115,9 @@
     "airport": "Airport",
     "ferry": "Ferry",
     "railway": "Railway",
-    "default": "Location"
+    "Hotel": "Hotel",
+    "Airport": "Airport",
+     "default": "Location"
   },
   "validation": {
     "completeAllSelections": "Please complete all selections before searching."
@@ -171,7 +177,9 @@
     "bookNow": "Book Now",
     "moreFeatures": "+{{count}} more features",
     "upToPassengers": "Up to {{count}} passengers",
-    "suitcases": "{{count}} Suitcase"
+    "suitcases": "{{count}} Suitcase",
+    "oneWay": "One-way ",
+    "roundTrip": "Round-trip "
   },
   "common": {
     "close": "Close"
@@ -187,6 +195,7 @@
   "booking": {
     "trackMyFlight": "Track my flight",
     "track": "Track",
+    "check": "Check Details",
     "specifyPickupTime": "Specify pickup time",
     "specifyReturnTime": "Specify return time",
     "pickupOption": "Pickup Option",
@@ -221,6 +230,7 @@
   "returnDepartureFlightNumber": "Return Flight Number",
   "returnFlightTime":" Return Flight Time",
   "pickupFlightTime":"Pickup Flight Time",
+  "returnPickupTime":"Return Pickup Time",
   "flightPlaceholder": "e.g. SQ318",
   "or": "or",
   "transferInCart": "This transfer is already in your cart",
@@ -269,7 +279,15 @@
   "proceedToCheckout": "Proceed to Checkout",
   "continueShopping": "Continue Shopping",
   "pleaseWait": "Please wait...",
-  "goBack": "Go Back"
-
-
+  "goBack": "Go Back",
+  "searchHint": "Try searching by putting in the name of a hotel, airport, attraction, or ferry terminal.",
+  "returnTransfer": {
+    "addReturnTransfer": "Add a Return Transfer?",
+    "savingsMessage": "Save by booking a return transfer now!",
+    "priceComparison": "Two separate transfers: ${oneWayTotal} vs Round-trip: ${twoWayTotal}",
+    "noThanks": "No thanks",
+    "yesPlease": "Yes, add return transfer",
+    "returnDetails": "Return Transfer Details",
+    "fillReturnDetails": "Please fill in the details for your return journey"
+  }
 }

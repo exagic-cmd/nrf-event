@@ -163,31 +163,42 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
           set({ isLoading: false, error: err.message || "Search failed" })
         }
       },
-      fetchProductSurcharge: async ({ productId, pickupTime, leg }) => {
-        if (!productId || !pickupTime) return
-        set({ isLoading: true })
+     fetchProductSurcharge: async ({ productId, pickupTime, leg, reset = false }) => {
+  if (reset) {
+    if (leg === "pickup") {
+      set({ surchargePickup: null });
+    } else if (leg === "return") {
+      set({ surchargeReturn: null });
+    }
+    set({ surchargeDetails: null });
+    return; 
+  }
+  if (!productId || !pickupTime) return;
 
-        try {
-          const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product-surcharges?product_id=${productId}&pickup_time=${pickupTime}`
-          const res = await fetch(url)
+  set({ isLoading: true });
 
-          const contentType = res.headers.get("content-type")
-          if (!res.ok || !contentType?.includes("application/json")) {
-            const text = await res.text()
-            throw new Error("Invalid response from server: " + text)
-          }
+  try {
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product-surcharges?product_id=${productId}&pickup_time=${pickupTime}`;
+    const res = await fetch(url);
+    const contentType = res.headers.get("content-type");
+    if (!res.ok || !contentType?.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response from server: " + text);
+    }
 
-          const result = await res.json()
-          if (leg === "pickup") {
-            set({ surchargePickup: result })
-          } else if (leg === "return") {
-            set({ surchargeReturn: result })
-          }
-          set({ surchargeDetails: result, isLoading: false })
-        } catch (err) {
-          set({ isLoading: false, error: err.message || "Failed to fetch surcharge" })
-        }
-      },
+    const result = await res.json();
+
+    if (leg === "pickup") {
+      set({ surchargePickup: result });
+    } else if (leg === "return") {
+      set({ surchargeReturn: result });
+    }
+    set({ surchargeDetails: result, isLoading: false });
+  } catch (err) {
+    set({ isLoading: false, error: err.message || "Failed to fetch surcharge" });
+  }
+},
+
 
       setSelectedPickup: (pickup) => set({ selectedPickup: pickup }),
       setSelectedDropoff: (dropoff) => set({ selectedDropoff: dropoff }),
@@ -371,7 +382,7 @@ addons: [],
         userBookingDetails: state.userBookingDetails,
         searchParams: state.searchParams,
         tripType: state.tripType,
-        vehicles: state.vehicles,
+      //  vehicles: state.vehicles,
          addons: state.addons, 
          productFeature: state.productFeature,
 selectedFeatureResponse: state.selectedFeatureResponse,

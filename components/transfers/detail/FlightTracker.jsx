@@ -36,7 +36,7 @@ export default function FlightTracker({
 
       try {
         const res = await fetch(
-          `https://app.airporttransfers.ai/api/get-flight-data?flight_number=${encodeURIComponent(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
             flightNumberTrimmed
           )}&pickup_id=${encodeURIComponent(pickupId)}`
         );
@@ -69,13 +69,6 @@ export default function FlightTracker({
             schedule = `${hh}:${mm}:${ss}`;
           }
 
-        
-          if (!schedule) {
-            setInfoMessage(
-              "We couldn’t find flight details right now. Once your booking is confirmed and payment completed, we’ll update your pickup time automatically."
-            );
-          }
-
           setFlightData({ ...result, schedule_time: schedule, original_schedule_time: original_schedule_time });
           setIsDetailsVisible(true);
 
@@ -87,14 +80,14 @@ export default function FlightTracker({
             original_schedule_time: original_schedule_time,
           });
         } else {
-          const msg = result?.error || "Something went wrong while tracking your flight.";
+          const msg = "We couldn’t find the flight details in our Database, we will check it manually";
           setError(msg);
           setFlightData(null);
           onTrackFail?.(msg);
         }
       } catch (err) {
         if (cancelled) return;
-        const msg = err?.message || "Something went wrong while tracking your flight.";
+        const msg = "We couldn’t find the flight details in our Database, we will check it manually";
         setError(msg);
         onTrackFail?.(msg);
       } finally {
@@ -137,7 +130,7 @@ export default function FlightTracker({
     );
 
 
-  if (error) return <p className="text-red-500 text-sm mt-3">{error}</p>;
+  if (error) return <p className="text-[#CC9A55] text-sm mt-3">{error}</p>;
 
   if (infoMessage)
     return (
