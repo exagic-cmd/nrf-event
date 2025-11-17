@@ -135,6 +135,16 @@ export default function AccommodationFilter({ onSearch }) {
     }
   };
 
+  // When the calendar opens again, reset any previously selected range so the user
+  // can start a fresh selection. Only clear if there was an existing selection.
+  const handleCalendarOpen = () => {
+    if (startDate || endDate || tempEndDate) {
+      setStartDate(null);
+      setEndDate(null);
+      setTempEndDate(null);
+    }
+  };
+
   const handleEndDateChange = (date) => {
     setEndDate(date);
   };
@@ -294,9 +304,48 @@ export default function AccommodationFilter({ onSearch }) {
             </div>
           )}
         </div>
-
+          {/* Date Range Picker - SINGLE */}
+<div className="md:col-span-4 relative">
+  <DatePicker
+    selected={startDate}
+    onChange={handleStartDateChange}
+    startDate={startDate}
+    endDate={endDate}
+    selectsRange
+    minDate={new Date()}
+    placeholderText="Check-in - Check-out"
+    className="w-full rounded-xl md:rounded-2xl border border-gray-200 px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none cursor-pointer"
+    wrapperClassName="w-full"
+    dateFormat="MMM d, yyyy"
+    monthsShown={window.innerWidth >= 768 ? 2 : 1}
+    showPopperArrow={false}
+    onCalendarOpen={handleCalendarOpen}
+    customInput={
+      <div className="flex items-center justify-between pr-8">
+        <span className="truncate font-medium">
+          {startDate ? (
+            <>
+              {startDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+              {endDate ? (
+                <> → {endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</>
+              ) : (
+                " → Add checkout"
+              )}
+            </>
+          ) : (
+            "Check-in - Check-out"
+          )}
+        </span>
+        <ChevronDown className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+      </div>
+    }
+  />
+</div>
         {/* Check-in */}
-        <div className="md:col-span-2 relative">
+        {/* <div className="md:col-span-2 relative">
           <DatePicker
             selected={startDate}
             onChange={handleStartDateChange}
@@ -313,10 +362,10 @@ export default function AccommodationFilter({ onSearch }) {
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
             <ChevronDown className="h-4 w-4 text-gray-400" />
           </div>
-        </div>
+        </div> */}
 
         {/* Check-out */}
-        <div className="md:col-span-2 relative">
+        {/* <div className="md:col-span-2 relative">
           <DatePicker
             selected={endDate}
             onChange={handleEndDateChange}
@@ -331,7 +380,7 @@ export default function AccommodationFilter({ onSearch }) {
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
             <ChevronDown className="h-4 w-4 text-gray-400" />
           </div>
-        </div>
+        </div> */}
 
         {/* Guests */}
         <div className="md:col-span-3 relative">
