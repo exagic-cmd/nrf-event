@@ -255,6 +255,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      Guests: roomGuests,
     }));
 
     const hotelId = bookingData.hotelData?.id || null;
@@ -296,10 +297,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
       },
       guestDetailsByRoom: guestsByRoom,
-      special_request: "sajid32" || "",
+      special_request: specialRequests || "",
       meal_plan:0,
-      check_in_time:null,
-      check_out_time:null,
+      check_in_time:"15:00",
+      check_out_time:"11:00",
       bed_type: bookingData.selectedRoom?.rawData?.cat?.id || null,
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
       hotel_ref_no:hotelId,
@@ -325,6 +326,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      Guests: roomGuests,
     }));
 
     const hotelId = bookingData.hotelData?.id || null;
