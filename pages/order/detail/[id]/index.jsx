@@ -309,14 +309,20 @@ const confirmCancel = (id, reason) => {
     {it.hotel_info.rooms.map((room, roomIdx) => (
       <div
         key={roomIdx}
-        className="bg-white rounded-xl shadow-sm p-4 border border-gray-200"
+        className="bg-white relative rounded-xl shadow-sm p-1 border border-gray-200"
       >
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex absolute right-2 top-1 items-center gap-3">
+          <Hotel className="w-4 h-4 text-[#CC9A55]" />
+          <h4 className="text-xs md:text-sm font-semibold text-black">
+            {t("room", "Room")} {roomIdx + 1}
+          </h4>
+        </div>
+        <div className="flex flex-col md:flex-row gap-6 mt-4 md:mt-6">
 
          
           <div className="flex-grow space-y-4">
 
-           <div className="flex-col space-y-4">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             <div>
               <p className="text-sm md:text-md font-semibold text-black">
