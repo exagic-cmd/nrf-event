@@ -34,7 +34,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 sm:mb-6 transition-colors"
         >
           <ArrowLeft size={20} />
-          <span className="text-sm sm:text-base">{t("backToTrips")}</span>
+          <span className="text-sm sm:text-base">{t("back")}</span>
         </button>
 
         <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">

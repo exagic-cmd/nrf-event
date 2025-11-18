@@ -19,12 +19,13 @@ export const parseTime = (timeStr) => {
   return now;
 };
 
-export const formatDate = (dateObj) => {
-  if (!dateObj) return "";
-  const y = dateObj.getFullYear();
-  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-  const d = String(dateObj.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+export const formatDateForDisplay = (dateStr) => {
+  if (!dateStr) return "";
+  const dateObj = new Date(dateStr);
+  const month = dateObj.toLocaleString('default', { month: 'short' });
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${day} ${month} ${year}`;
 };
 
 export const formatTime = (dateObj) => {

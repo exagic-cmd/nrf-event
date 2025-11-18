@@ -212,8 +212,8 @@ const TravelInfoPage = () => {
     >
       <div className="flex gap-4 pb-4">
         {accommodations.map((acc) => (
-          <div key={acc.id} className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-            <AccommodationCard data={acc} />
+          <div key={acc.id} className="w-full ">
+            <AccommodationCard data={acc} goToDetail={handleViewDetails} />
           </div>
         ))}
       </div>
