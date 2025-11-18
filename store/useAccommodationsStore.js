@@ -413,6 +413,54 @@ fetchNonStubaRooms: async (accommodationId) => {
   }
 },
 
+// Add this inside your store (keep everything else exactly as is)
+checkNonStubaAvailability: async (productId, startDate, endDate) => {
+  if (!productId || !startDate || !endDate) return { isFullyAvailable: true };
+
+  const dates = [];
+  let cur = new Date(startDate);
+  const end = new Date(endDate);
+  while (cur < end) {
+    dates.push(cur.toISOString().split('T')[0]);
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/check-dates-availability`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product_id: Number(productId),
+        adults: 1,
+        children: 0,
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed");
+
+    const data = await res.json();
+    if (data.status !== "success" || !Array.isArray(data.availability)) {
+      return { isFullyAvailable: false };
+    }
+
+    const isFullyAvailable = dates.every(date => {
+      const entry = data.availability.find(a => a.date === date);
+      return entry && entry.available === true && entry.available_qty >= 1;
+    });
+
+    return { 
+      isFullyAvailable,
+      allotments: data.availability.map(a => ({
+        date: a.date,
+        value: a.available_qty,
+        available: a.available
+      }))
+    };
+  } catch (err) {
+    console.warn("Availability check failed:", err);
+    return { isFullyAvailable: true, allotments: [] }; // safe fallback
+  }
+},
   // Suggestions for hotel/region search
   fetchSuggestedAccommodations: async (query) => {
     try {
