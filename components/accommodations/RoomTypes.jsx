@@ -1,5 +1,5 @@
 // components/accommodations/RoomTypes.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import {
   Check, X, Utensils, Calendar, Shield, Bed, Loader2,
@@ -40,8 +40,18 @@ const StubaRoomList = ({
   }, {});
 
   const handleRoomSelect = (room) => {
+    // Call external handler first. It should return true to confirm selection is allowed.
+    try {
+      const allowed = onRoomSelect ? onRoomSelect(room) : true;
+      // If the handler returns false explicitly, do not mark as selected.
+      if (allowed === false) return;
+    } catch (e) {
+      // If handler throws, avoid selecting and re-throw
+      console.error('onRoomSelect handler threw:', e);
+      return;
+    }
+
     setInternalSelectedRoom(room.id);
-    onRoomSelect?.(room);
   };
 
   const formatPrice = (price) => {
@@ -66,10 +76,10 @@ const StubaRoomList = ({
 
   const getMealDisplay = (mealType) => {
     const m = (mealType || "").toLowerCase();
-    if (m.includes("breakfast")) return { text: "Breakfast", icon: "Egg Fried" };
-    if (m.includes("all inclusive")) return { text: "All Inclusive", icon: "Utensils" };
-    if (m.includes("half board")) return { text: "Half Board", icon: "Utensils" };
-    if (m.includes("full board")) return { text: "Full Board", icon: "Utensils" };
+    // if (m.includes("breakfast")) return { text: "Breakfast", icon: "Egg Fried" };
+    // if (m.includes("all inclusive")) return { text: "All Inclusive", icon: "Utensils" };
+    // if (m.includes("half board")) return { text: "Half Board", icon: "Utensils" };
+    // if (m.includes("full board")) return { text: "Full Board", icon: "Utensils" };
     return { text: mealType || "Room Only", icon: "Bed" };
   };
 
@@ -189,238 +199,102 @@ const StubaRoomList = ({
   );
 };
 
-// === NON-STUBA VERSION: Dropdowns + Dynamic Pricing ===
 
-const NonStubaRoomSelector = ({
-  room_categories = [],
-  room_types = [],
-  productId,
-  currency = "USD",
-  onRoomSelect,
+// MAIN COMPONENT – now super simple
+const RoomTypes = ({
+  isNonStuba,
+  allRooms = [],
+  normalizedRoomData = [],
+  allotments = [],
+  currency = "SGD",
   nights = 1,
-  selectedRoom = null,
+  onRoomSelect,
+  selectedRoom,
 }) => {
-  const [selectedCat, setSelectedCat] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [priceData, setPriceData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
 
-  const { fetchNonStubaPricing, searchParams } = useAccommodationsStore();
+  const { searchParams } = useAccommodationsStore();
 
-  const fromDate = searchParams?.start_date || new Date().toISOString().split("T")[0];
-  const toDate = searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  const totalGuests = useMemo(() => {
+    if (!searchParams?.rooms) return 1;
+    return searchParams.rooms.reduce((sum, r) => 
+      sum + (Number(r.adult) || 0) + (r.children?.length || 0), 0) || 1;
+  }, [searchParams?.rooms]);
 
-  useEffect(() => {
-    setSelectedCat("");
-    setSelectedType("");
-    setPriceData(null);
-    setError("");
-  }, [productId]);
+  const totalRoomsRequested = (searchParams?.rooms || []).length || 1;
 
-  useEffect(() => {
-    if (!selectedCat || !selectedType || !productId) {
-      setPriceData(null);
-      setError("");
-      return;
+  const stayDates = useMemo(() => {
+    const from = searchParams?.start_date;
+    const to = searchParams?.end_date;
+    if (!from || !to) return [];
+    const dates = [];
+    let cur = new Date(from);
+    const end = new Date(to);
+    while (cur < end) {
+      dates.push(cur.toISOString().split('T')[0]);
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }, [searchParams?.start_date, searchParams?.end_date]);
+
+  const validateAndSelect = (room) => {
+    if (!isNonStuba) {
+      onRoomSelect?.(room);
+      return true;
     }
 
-    const fetchPrice = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const data = await fetchNonStubaPricing(
-          productId,
-          fromDate,
-          toDate,
-          Number(selectedCat),
-          Number(selectedType)
-        );
+    // 1. Date availability check (pre-check flag on room)
+    if (!room.isHotelAvailable) {
+      alert("This hotel is sold out for one or more nights in your stay.");
+      return false;
+    }
 
-        const pricing = data.tiered_pricing?.[0];
-        if (pricing) {
-          setPriceData(pricing);
-        } else {
-          setError("No price available for selected dates");
-        }
-      } catch (err) {
-        setError("Failed to load price");
-      } finally {
-        setLoading(false);
+    // 2. Detailed allotment check per date
+    for (const date of stayDates) {
+      const entry = allotments.find(a => String(a.date) === String(date));
+      if (!entry) {
+        alert(`No availability info for ${date}. Please change dates.`);
+        return false;
       }
-    };
+      if (entry.available === false) {
+        alert(`Room unavailable on ${date}.`);
+        return false;
+      }
+      const availQty = Number(entry.value ?? entry.available_qty ?? 0);
+      if (availQty < totalRoomsRequested) {
+        alert(`Not enough rooms available on ${date}. Only ${availQty} left for that date.`);
+        return false;
+      }
+    }
 
-    fetchPrice();
-  }, [selectedCat, selectedType, productId, fromDate, toDate]);
+    // 3. Pax check
+    if (!room.canAccommodate) {
+      alert(room.paxMessage || `This room is too small for ${totalGuests} guests.`);
+      return false;
+    }
 
-  const handleSelect = () => {
-    if (!priceData) return;
-
-    const cat = room_categories.find(c => c.id === Number(selectedCat));
-    const type = room_types.find(t => t.id === Number(selectedType));
-
-    if (!cat || !type) return;
-
-    // Use adult_promo_price if available, else adult_price
-    const basePrice = priceData.adult_promo_price && parseFloat(priceData.adult_promo_price) > 0
-      ? parseFloat(priceData.adult_promo_price)
-      : parseFloat(priceData.adult_price);
-
-    const totalPrice = basePrice * nights;
-
-    const room = {
-      id: `nonstuba-${selectedCat}-${selectedType}`,
-      roomType: `${cat.name} (${type.name})`,
-      mealType: cat.name.toLowerCase().includes("breakfast") ? "Breakfast" : "Room Only",
-      price: totalPrice,
-      cancellationPolicy: "NonRefundable", // You can enhance later
-      roomCode: `CAT${selectedCat}`,
-      mealCode: cat.name.includes("Breakfast") ? "BB" : "RO",
-      rawData: { priceData, cat, type },
-    };
-
+    // All checks passed — call parent's handler and signal allowed
     onRoomSelect?.(room);
+    return true;
   };
 
-  const formatPrice = (price) => {
-    return `${currency} ${Number(price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-  };
-
-  // Get current price for display
-  const getDisplayPrice = () => {
-    if (!priceData) return null;
-    const base = priceData.adult_promo_price && parseFloat(priceData.adult_promo_price) > 0
-      ? parseFloat(priceData.adult_promo_price)
-      : parseFloat(priceData.adult_price);
-    return base * nights;
-  };
-
-  if (room_categories.length === 0 || room_types.length === 0) {
+  if (!roomsToDisplay || roomsToDisplay.length === 0) {
     return (
-      <div className="px-4 sm:px-6 lg:px-12 py-8">
-        <div className="text-center py-12 bg-gray-800 rounded-xl">
-          <p className="text-gray-400">No room options available</p>
-        </div>
+      <div className="px-4 sm:px-6 lg:px-12 py-16 text-center">
+        <p className="text-xl text-gray-400">No rooms available for selected dates</p>
       </div>
     );
   }
 
   return (
-    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-1">Select Room</h2>
-          <p className="text-gray-400">Choose your room category and type</p>
-        </div>
-
-        <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Room Category</label>
-              <select
-                value={selectedCat}
-                onChange={(e) => {
-                  setSelectedCat(e.target.value);
-                  setSelectedType("");
-                  setPriceData(null);
-                }}
-                className="w-full p-3 rounded-lg bg-gray-900 text-white border border-gray-700 focus:border-[#CC9A55] focus:outline-none"
-              >
-                <option value="">Select Category</option>
-                {room_categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Room Type</label>
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                disabled={!selectedCat}
-                className="w-full p-3 rounded-lg bg-gray-900 text-white border border-gray-700 focus:border-[#CC9A55] focus:outline-none disabled:opacity-50"
-              >
-                <option value="">Select Type</option>
-                {room_types.map(type => (
-                  <option key={type.id} value={type.id}>{type.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {loading && (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-[#CC9A55]" />
-              <span className="ml-2 text-gray-400">Loading price...</span>
-            </div>
-          )}
-
-          {error && <div className="text-red-400 text-center py-4">{error}</div>}
-
-          {priceData && !loading && (
-            <div className="bg-gradient-to-r from-[#CC9A55]/10 to-transparent p-6 rounded-xl border border-[#CC9A55]/30">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div>
-                  <div className="text-white font-semibold">
-                    {room_categories.find(c => c.id === Number(selectedCat))?.name}
-                  </div>
-                  <div className="text-sm text-gray-300">
-                    {room_types.find(t => t.id === Number(selectedType))?.name}
-                  </div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    {priceData.adult_promo_price ? "Promo Rate" : "Standard Rate"}
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[#CC9A55]">
-                    {formatPrice(getDisplayPrice())}
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    Total for {nights} night{nights > 1 ? "s" : ""}
-                  </div>
-                  {nights > 1 && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      {currency} {(getDisplayPrice() / nights).toFixed(2)} per night
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-center md:justify-end">
-                  <button
-                    onClick={handleSelect}
-                    disabled={selectedRoom?.id === `nonstuba-${selectedCat}-${selectedType}`}
-                    className="px-8 py-3 bg-[#CC9A55] hover:bg-[#b88a45] text-white rounded-xl font-bold transition-all disabled:bg-green-600 disabled:cursor-default flex items-center gap-2 min-w-[160px] justify-center"
-                  >
-                    {selectedRoom?.id === `nonstuba-${selectedCat}-${selectedType}` ? (
-                      <>
-                        <Check className="w-5 h-5" />
-                        Selected
-                      </>
-                    ) : (
-                      "Select Room"
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <StubaRoomList
+      allRooms={roomsToDisplay}
+      currency={currency}
+      nights={nights}
+      onRoomSelect={validateAndSelect}
+      selectedRoom={selectedRoom}
+    />
   );
-};
-
-// === MAIN COMPONENT: SWITCHES BASED ON isNonStuba ===
-const RoomTypes = (props) => {
-  const { isNonStuba } = props;
-
-  if (isNonStuba) {
-    return <NonStubaRoomSelector {...props} />;
-  }
-
-  return <StubaRoomList {...props} />;
 };
 
 export default RoomTypes;

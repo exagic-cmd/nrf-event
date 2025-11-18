@@ -260,39 +260,103 @@ useEffect(() => {
       console.log("URL link_type_id:", urlLinkTypeId, "ID:", accommodationId);
 
       // ——————————————————— NON-STUBA ———————————————————
-      if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
+if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   console.log("Non-Stuba flow");
 
   const hotelData = await useAccommodationsStore.getState().fetchNonStubaAccommodation(accommodationId);
   if (!hotelData) throw new Error("Hotel not found");
 
-  // 1. First call: get categories + types
   const roomsData = await useAccommodationsStore.getState().fetchNonStubaRooms(accommodationId);
-  if (!roomsData || roomsData.room_categories.length === 0) {
-    throw new Error("No room options");
+  if (!roomsData?.product_pricing || roomsData.product_pricing.length === 0) {
+    throw new Error("No room pricing available");
   }
+
+  const nights = searchParams?.nights || 1;
+  const fromDate = searchParams?.start_date;
+  const toDate = searchParams?.end_date;
+
+  // Total guests & rooms requested
+  const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => 
+    sum + (Number(r.adult) || 0) + (r.children?.length || 0), 0) || 1;
+  const totalRoomsRequested = (searchParams?.rooms || []).length || 1;
+
+  // 1. Check full date range availability ONCE
+  let allotments = [];
+  let isHotelAvailable = true;
+  if (fromDate && toDate) {
+    const avail = await useAccommodationsStore.getState().checkNonStubaAvailability(
+      accommodationId, fromDate, toDate
+    );
+    isHotelAvailable = avail.isFullyAvailable;
+    allotments = avail.allotments || [];
+  }
+
+  // 2. Build rooms with availability flags
+  const normalizedRooms = roomsData.product_pricing.map(p => {
+    const category = roomsData.room_categories.find(c => c.id === Number(p.room_category_id)) || {};
+    const type = roomsData.room_types.find(t => t.id === Number(p.room_type_id)) || {};
+
+    const basePrice = p.adult_promo_price && parseFloat(p.adult_promo_price) > 0
+      ? parseFloat(p.adult_promo_price)
+      : parseFloat(p.adult_price);
+
+    const maxPax = type.max_pax || p.max_pax || 1;
+    const canAccommodate = maxPax >= totalGuests;
+
+    return {
+      id: `nonstuba-${p.room_category_id}-${p.room_type_id}`,
+      roomType: category.name || p.room_category || "Room",
+      mealType: category.name?.toLowerCase().includes("breakfast") ? "Breakfast Included" : "Room Only",
+      price: basePrice * nights,
+      cancellationPolicy: "NonRefundable",
+      maxPax,
+      canAccommodate,
+      isHotelAvailable,
+      isAvailable: isHotelAvailable && canAccommodate,
+      paxMessage: !canAccommodate ? `Max ${maxPax} guest${maxPax > 1 ? 's' : ''} (you have ${totalGuests})` : null,
+      rawPricing: p,
+    };
+  });
+
+  if (normalizedRooms.length === 0 || (!isHotelAvailable && allotments.length === 0)) {
+    throw new Error("No rooms available for your dates");
+  }
+
+  const availableRooms = normalizedRooms.filter(r => r.isAvailable);
+  const lowestPriceRoom = availableRooms.length > 0 ? availableRooms[0] : normalizedRooms[0];
 
   const fullData = {
     ...hotelData,
-    room_categories: roomsData.room_categories,
-    room_types: roomsData.room_types,
-    allotments: roomsData.allotments,
-    normalizedRoomData: [], // will be filled after pricing
-    lowestPriceRoom: null,
+    normalizedHotelData: {
+      ...hotelData.normalizedHotelData,
+      starting_price: lowestPriceRoom.price,
+      price: lowestPriceRoom.price,
+      currency: hotelData.normalizedHotelData.currency || "SGD"
+    },
+    normalizedRoomData: normalizedRooms,
+    lowestPriceRoom,
+    allotments, // ← pass to RoomTypes
+    totalGuests,
+    totalRoomsRequested,
   };
 
   setAccommodation(fullData);
   setIsNonStuba(true);
+  if (lowestPriceRoom?.isAvailable) {
+    setSelectedRoom(lowestPriceRoom);
+  }
 
-  // Slug
+  // Slug fix
   const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
   if (productname !== actualSlug) {
     localizedReplace(
       { pathname: "/accommodation/[productname]/[id]", query: { link_type_id: urlLinkTypeId } },
-      { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } }
+      { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } },
+      { shallow: true }
     );
   }
 
+  setLoading(false);
   return;
 }
 
@@ -418,30 +482,32 @@ useEffect(() => {
           <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8 mt-6">
             <AccommodationGallery hotelData={hotelData} />
             <AccommodationInfoCard
-  hotelData={hotelData}
-  startingPrice={hotelData.starting_price}
-  allRooms={accommodation.normalizedRoomData}
-  selectedRoom={selectedRoom}
-  currency="USD"
-  onScrollToOptions={handleScrollToOptions}
-  onProceedBooking={handleProceedBooking}
-  nights={nights}
-/>
+              hotelData={hotelData}
+              startingPrice={hotelData.starting_price}
+              allRooms={accommodation.normalizedRoomData}
+              selectedRoom={selectedRoom}
+              currency={hotelData.currency} // Pass currency from hotelData
+              onScrollToOptions={handleScrollToOptions}
+              onProceedBooking={handleProceedBooking}
+              nights={nights}
+            />
           </div>
         </div>
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <AccommodationRooms
-  isNonStuba={isNonStuba}
-  allRooms={accommodation.normalizedRoomData}
-  room_categories={accommodation.room_categories}
-  room_types={accommodation.room_types}
-  productId={accommodationId}
-  currency="USD"
-  onRoomSelect={handleRoomSelect}
-  nights={nights}
-  selectedRoom={selectedRoom}
-/>
+            isNonStuba={isNonStuba}
+            allRooms={accommodation.normalizedRoomData}
+            normalizedRoomData={accommodation.normalizedRoomData}
+            room_categories={accommodation.room_categories}
+            room_types={accommodation.room_types}
+            productId={accommodationId}
+            currency={hotelData.currency} // Pass currency from hotelData
+            onRoomSelect={handleRoomSelect}
+            nights={nights}
+            allotments={accommodation.allotments}
+            selectedRoom={selectedRoom}
+          />
           <AccommodationMap hotelData={hotelData} />
         </div>
       </div>

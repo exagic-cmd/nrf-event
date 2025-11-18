@@ -260,7 +260,7 @@ export default function SearchFilterCard({
             <Pill key={t.id} tab={t} />
           ))}
       </div>
-
+<div className="min-h-[200px] transition-all duration-500 ease-in-out">
      {/* ====== TRANSFERS ====== */}
       {filterActiveTab === 2 && (
         <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
@@ -579,9 +579,9 @@ export default function SearchFilterCard({
       {filterActiveTab === 4 && (
         <AccommodationFilter onSearch={handleAccommodationSearch} />
       )}
-
+</div>
       {/* ====== COMING SOON ====== */}
-      {![2, 3, 4].includes(filterActiveTab) && (
+      {![4, 2, 3].includes(filterActiveTab) && (
         <div className="rounded-2xl bg-white shadow p-8 text-center text-gray-500">
           Coming Soon...
         </div>

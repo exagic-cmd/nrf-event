@@ -59,11 +59,12 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
               <Home className="h-7 w-7" />
               {hotelName}
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-5 text-sm">
               <div className="flex items-center gap-3"><Calendar className="h-5 w-5" /><div><p className="opacity-90">Check-in</p><p className="font-bold text-lg">{checkIn}</p></div></div>
               <div className="flex items-center gap-3"><Calendar className="h-5 w-5" /><div><p className="opacity-90">Nights</p><p className="font-bold text-lg">{nights}</p></div></div>
               <div className="flex items-center gap-3"><Bed className="h-5 w-5" /><div><p className="opacity-90">Room</p><p className="font-bold">{roomType}</p></div></div>
               <div className="flex items-center gap-3"><Utensils className="h-5 w-5" /><div><p className="opacity-90">Meal</p><p className="font-bold">{mealType}</p></div></div>
+              <div className="flex items-center gap-3"><AlertCircle className="h-5 w-5" /><div><p className="opacity-90">Cancellation Policy</p><p className="font-bold">{cancellationStatus}</p></div></div>
             </div>
           </div>
 
@@ -72,6 +73,27 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
               <DollarSign className="h-6 w-6 text-[#CC9A55]" />
               Price Details
             </h4>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-6 md:grid-cols-7 gap-3">
+  {(Array.isArray(nightCosts) && nightCosts.length > 0
+    ? nightCosts
+    : Array.from({ length: nights }, (_, i) => ({
+        SellingPrice: { "@attributes": { amt: perNightPrice } },
+        Date: null,
+      }))
+  ).map((nc, idx) => {
+    const amt = parseFloat(nc?.SellingPrice?.["@attributes"]?.amt) || parseFloat(perNightPrice);
+    const label = nc?.Date || nc?.["@attributes"]?.date || `Night ${idx + 1}`;
+    return (
+      <div key={idx} className="bg-white rounded-xl shadow p-1 flex flex-col items-center justify-center text-center border border-gray-500/50">
+        <div className="text-sm text-gray-600 mb-2">{label}</div>
+        <div className="text-lg font-semibold text-gray-800">{amt.toFixed(2)} {currency}</div>
+      </div>
+    );
+  })}
+</div>
+
+            </div>
             <div className="flex justify-between items-center pt-5 border-t-4 border-double border-gray-300">
               <span className="text-1xl font-bold text-gray-800">Total Amount</span>
               <span className="text-2xl font-extrabold text-[#CC9A55]">
@@ -80,7 +102,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
             </div>
           </div>
 
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <h5 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
               <AlertCircle className={`h-6 w-6 ${cancellationStatus === "NonRefundable" ? "text-red-600" : "text-green-600"}`} />
               Cancellation Policy
@@ -94,7 +116,59 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
                 ? "Non-Refundable – 100% charge on cancellation"
                 : "Refundable – Free cancellation available"}
             </div>
+          </div> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <Info className="h-5 w-5 text-blue-600" />
+              <h5 className="text-lg font-semibold text-gray-800">General Messages</h5>
+              <span className="ml-auto text-sm text-gray-500">{(generalMessages?.length || 0)} found</span>
+            </div>
+
+            {generalMessages && generalMessages.length > 0 ? (
+              <div className="space-y-3">
+  {generalMessages.map((m, i) => {
+    const rawText =
+      m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
+
+    return (
+      <div
+        key={i}
+        className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700"
+        dangerouslySetInnerHTML={{ __html: rawText || "No message text available" }}
+      />
+    );
+  })}
+</div>
+
+            ) : (
+              <div className="text-sm text-gray-500">No general messages provided.</div>
+            )}
           </div>
+
+          <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <Info className="h-5 w-5 text-yellow-600" />
+              <h5 className="text-lg font-semibold text-gray-800">Internal Notes</h5>
+              <span className="ml-auto text-sm text-gray-500">{(internalNotes?.length || 0)} found</span>
+            </div>
+
+            {internalNotes && internalNotes.length > 0 ? (
+              <div className="space-y-3">
+                {internalNotes.map((m, i) => {
+                  const text = m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
+                  return (
+                    <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700">
+                      {text || "No note text available"}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500">No internal notes available.</div>
+            )}
+          </div>
+        </div>
 
           <div className="flex gap-5 mt-10">
             <button onClick={onClose} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-5 rounded-2xl transition text-xl shadow-md">
@@ -212,6 +286,15 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
       if (!res.ok) throw new Error("Booking validation failed");
       const data = await res.json();
+      // If API responds with a validation status=false, show the server message
+      // to the user and return null so the flow can be corrected by the user.
+      if (data && data.status === false) {
+        const serverMsg = data.msg || "Booking validation failed.";
+        // Show server-provided validation message instead of throwing
+        alert(serverMsg);
+        return null;
+      }
+
       return { apiResponse: data, requestPayload: payload };
     } catch (err) {
       alert("Booking validation failed. Please try again.");
@@ -255,6 +338,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      Guests: roomGuests,
     }));
 
     const hotelId = bookingData.hotelData?.id || null;
@@ -296,10 +380,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
       },
       guestDetailsByRoom: guestsByRoom,
-      special_request: "sajid32" || "",
+      special_request: specialRequests || "",
       meal_plan:0,
-      check_in_time:null,
-      check_out_time:null,
+      check_in_time:"15:00",
+      check_out_time:"11:00",
       bed_type: bookingData.selectedRoom?.rawData?.cat?.id || null,
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
       hotel_ref_no:hotelId,
@@ -325,6 +409,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      Guests: roomGuests,
     }));
 
     const hotelId = bookingData.hotelData?.id || null;
