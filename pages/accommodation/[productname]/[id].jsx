@@ -418,30 +418,31 @@ useEffect(() => {
           <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8 mt-6">
             <AccommodationGallery hotelData={hotelData} />
             <AccommodationInfoCard
-  hotelData={hotelData}
-  startingPrice={hotelData.starting_price}
-  allRooms={accommodation.normalizedRoomData}
-  selectedRoom={selectedRoom}
-  currency="USD"
-  onScrollToOptions={handleScrollToOptions}
-  onProceedBooking={handleProceedBooking}
-  nights={nights}
-/>
+              hotelData={hotelData}
+              startingPrice={hotelData.starting_price}
+              allRooms={accommodation.normalizedRoomData}
+              selectedRoom={selectedRoom}
+              currency={hotelData.currency} // Pass currency from hotelData
+              onScrollToOptions={handleScrollToOptions}
+              onProceedBooking={handleProceedBooking}
+              nights={nights}
+            />
           </div>
         </div>
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <AccommodationRooms
-  isNonStuba={isNonStuba}
-  allRooms={accommodation.normalizedRoomData}
-  room_categories={accommodation.room_categories}
-  room_types={accommodation.room_types}
-  productId={accommodationId}
-  currency="USD"
-  onRoomSelect={handleRoomSelect}
-  nights={nights}
-  selectedRoom={selectedRoom}
-/>
+            isNonStuba={isNonStuba}
+            allRooms={accommodation.normalizedRoomData}
+            room_categories={accommodation.room_categories}
+            room_types={accommodation.room_types}
+            productId={accommodationId}
+            currency={hotelData.currency} // Pass currency from hotelData
+            onRoomSelect={handleRoomSelect}
+            nights={nights}
+            allotments={accommodation.allotments}
+            selectedRoom={selectedRoom}
+          />
           <AccommodationMap hotelData={hotelData} />
         </div>
       </div>

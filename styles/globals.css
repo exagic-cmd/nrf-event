@@ -121,3 +121,14 @@ body {
     @apply bg-background text-foreground;
   }
 }
+.react-datepicker__month-container{
+  width: 100%;
+}
+.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
+    color: #000;
+    display: inline-block;
+    width: 3rem !important;
+    line-height: 1.7rem;
+    text-align: center;
+    margin: 0.166rem;
+}

@@ -65,12 +65,13 @@ export default function HomePage() {
   }, []);
 
   // Tabs
-  const [filterActiveTab, setFilterActiveTab] = useState(2);
+  const [filterActiveTab, setFilterActiveTab] = useState(4);
   const filterTabs = [
-    { id: 1, label: "coming-soon", name: "Coming Soon" },
-    { id: 2, label: "transfer", name: "Transfers" },
-    { id: 3, label: "day-tours", name: "DayTours" },
+    
     { id: 4, label: "hotels", name: "Accommodations" },
+    { id: 3, label: "day-tours", name: "DayTours" },
+    { id: 2, label: "transfer", name: "Transfers" },
+    { id: 1, label: "coming-soon", name: "Coming Soon" },
     { id: 5, label: "search", name: "Search Text" },
     { id: 8, label: "packages", name: "Package Tours" },
   ];
@@ -145,7 +146,7 @@ export default function HomePage() {
 
   return (
     <div className="bg-background">
-      <section className="relative min-h-[85vh] h-[60vh] lg:h-[50vh] flex items-center justify-center">
+      <section className="relative min-h-[85vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 z-0">
           {event?.event?.title}
@@ -160,7 +161,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-black/10" />
         </div>
 
-        <div className="relative z-10 w-full px-4 lg:px-8 mt-[13rem] lg:mt-0">
+        <div className="relative z-10 w-full px-4 lg:px-8 mt-[5rem] mb-[1rem] lg:mt-0">
           {/* Set favicon to event banner when available */}
           {event?.event?.banner && (
             <Head>
