@@ -135,8 +135,6 @@ export default function AccommodationFilter({ onSearch }) {
     }
   };
 
-  // When the calendar opens again, reset any previously selected range so the user
-  // can start a fresh selection. Only clear if there was an existing selection.
   const handleCalendarOpen = () => {
     if (startDate || endDate || tempEndDate) {
       setStartDate(null);

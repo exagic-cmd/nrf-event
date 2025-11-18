@@ -1,5 +1,5 @@
 // components/accommodations/RoomTypes.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import {
   Check, X, Utensils, Calendar, Shield, Bed, Loader2,
@@ -189,8 +189,6 @@ const StubaRoomList = ({
   );
 };
 
-// === NON-STUBA VERSION: Dropdowns + Dynamic Pricing ===
-
 const NonStubaRoomSelector = ({
   room_categories = [],
   room_types = [],
@@ -199,6 +197,7 @@ const NonStubaRoomSelector = ({
   onRoomSelect,
   nights = 1,
   selectedRoom = null,
+  allotments = [],
 }) => {
   const [selectedCat, setSelectedCat] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -208,16 +207,65 @@ const NonStubaRoomSelector = ({
 
   const { fetchNonStubaPricing, searchParams } = useAccommodationsStore();
 
-  const fromDate = searchParams?.start_date || new Date().toISOString().split("T")[0];
-  const toDate = searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  const fromDate = searchParams?.start_date;
+  const toDate = searchParams?.end_date;
 
+  // TOTAL GUESTS – BULLETPROOF CALCULATION (this was the real bug!)
+  const totalGuests = useMemo(() => {
+    if (!searchParams?.rooms || !Array.isArray(searchParams.rooms) || searchParams.rooms.length === 0) {
+      return 1; // fallback: assume at least 1 adult
+    }
+
+    const sum = searchParams.rooms.reduce((acc, room) => {
+      const adults = Number(room.adult) || 0;
+      const children = Array.isArray(room.children) ? room.children.length : 0;
+      return acc + adults + children;
+    }, 0);
+
+    return sum > 0 ? sum : 1; // never return 0
+  }, [searchParams?.rooms]);
+
+  // Stay dates
+  const stayDates = useMemo(() => {
+    if (!fromDate || !toDate) return [];
+    const dates = [];
+    let cur = new Date(fromDate);
+    const end = new Date(toDate);
+    while (cur < end) {
+      dates.push(cur.toISOString().split("T")[0]);
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }, [fromDate, toDate]);
+
+  // Allotment check: available ≥ total guests
+  const hasSufficientAllotment = useMemo(() => {
+    if (!allotments?.length || !stayDates.length) return false;
+    return stayDates.every(date => {
+      const entry = allotments.find(a => a.date === date);
+      return entry && entry.value >= totalGuests;
+    });
+  }, [allotments, stayDates, totalGuests]);
+
+  // Max pax check
+  const selectedRoomType = room_types.find(t => t.id === Number(selectedType));
+  console.log("Selected Room Type for max pax check:", selectedRoomType);
+  const supportsMaxPax = selectedRoomType ? totalGuests <= selectedRoomType.max_pax : false;
+  // Final availability
+  const canSelectRoom = priceData && hasSufficientAllotment && supportsMaxPax;
+  const currentRoomId = selectedCat && selectedType ? `nonstuba-${selectedCat}-${selectedType}` : null;
+  const isCurrentlySelected = selectedRoom?.id === currentRoomId;
+
+  // Reset on hotel change
   useEffect(() => {
     setSelectedCat("");
     setSelectedType("");
     setPriceData(null);
     setError("");
-  }, [productId]);
+    onRoomSelect(null);
+  }, [productId, onRoomSelect]);
 
+  // Fetch pricing
   useEffect(() => {
     if (!selectedCat || !selectedType || !productId) {
       setPriceData(null);
@@ -229,20 +277,14 @@ const NonStubaRoomSelector = ({
       setLoading(true);
       setError("");
       try {
-        const data = await fetchNonStubaPricing(
-          productId,
-          fromDate,
-          toDate,
-          Number(selectedCat),
-          Number(selectedType)
-        );
+        const data = await fetchNonStubaPricing(productId, fromDate, toDate, Number(selectedCat), Number(selectedType));
 
-        const pricing = data.tiered_pricing?.[0];
-        if (pricing) {
-          setPriceData(pricing);
-        } else {
-          setError("No price available for selected dates");
-        }
+        let pricing = null;
+        if (data?.tiered_pricing?.[0]) pricing = data.tiered_pricing[0];
+        else if (data?.adult_price || data?.adult_promo_price) pricing = data;
+
+        if (pricing) setPriceData(pricing);
+        else setError("No pricing available");
       } catch (err) {
         setError("Failed to load price");
       } finally {
@@ -251,62 +293,50 @@ const NonStubaRoomSelector = ({
     };
 
     fetchPrice();
-  }, [selectedCat, selectedType, productId, fromDate, toDate]);
+  }, [selectedCat, selectedType, productId, fromDate, toDate, fetchNonStubaPricing]);
 
   const handleSelect = () => {
-    if (!priceData) return;
+    if (!canSelectRoom || !priceData) return;
 
     const cat = room_categories.find(c => c.id === Number(selectedCat));
     const type = room_types.find(t => t.id === Number(selectedType));
-
     if (!cat || !type) return;
 
-    // Use adult_promo_price if available, else adult_price
     const basePrice = priceData.adult_promo_price && parseFloat(priceData.adult_promo_price) > 0
       ? parseFloat(priceData.adult_promo_price)
-      : parseFloat(priceData.adult_price);
+      : parseFloat(priceData.adult_price || 0);
 
-    const totalPrice = basePrice * nights;
+    if (basePrice <= 0) return;
 
     const room = {
-      id: `nonstuba-${selectedCat}-${selectedType}`,
-      roomType: `${cat.name} (${type.name})`,
-      mealType: cat.name.toLowerCase().includes("breakfast") ? "Breakfast" : "Room Only",
-      price: totalPrice,
-      cancellationPolicy: "NonRefundable", // You can enhance later
+      id: currentRoomId,
+      roomType: `${cat.name} - ${type.name}`,
+      mealType: cat.name.toLowerCase().includes("breakfast") ? "Breakfast Included" : "Room Only",
+      price: basePrice * nights,
+      cancellationPolicy: "NonRefundable",
       roomCode: `CAT${selectedCat}`,
       mealCode: cat.name.includes("Breakfast") ? "BB" : "RO",
+      maxPax: type.max_pax,
+      requiredGuests: totalGuests,
+      available: hasSufficientAllotment,
       rawData: { priceData, cat, type },
     };
 
-    onRoomSelect?.(room);
+    onRoomSelect(room);
   };
 
-  const formatPrice = (price) => {
-    return `${currency} ${Number(price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-  };
-
-  // Get current price for display
   const getDisplayPrice = () => {
-    if (!priceData) return null;
+    if (!priceData) return 0;
     const base = priceData.adult_promo_price && parseFloat(priceData.adult_promo_price) > 0
       ? parseFloat(priceData.adult_promo_price)
-      : parseFloat(priceData.adult_price);
+      : parseFloat(priceData.adult_price || 0);
     return base * nights;
   };
 
-  if (room_categories.length === 0 || room_types.length === 0) {
-    return (
-      <div className="px-4 sm:px-6 lg:px-12 py-8">
-        <div className="text-center py-12 bg-gray-800 rounded-xl">
-          <p className="text-gray-400">No room options available</p>
-        </div>
-      </div>
-    );
-  }
+  const formatPrice = (p) => `${currency} ${Number(p).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 
   return (
-    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-8">
+    <div className="px-4 sm:px-6 lg:px-12 py-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-1">Select Room</h2>
@@ -314,7 +344,8 @@ const NonStubaRoomSelector = ({
         </div>
 
         <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Dropdowns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Room Category</label>
               <select
@@ -323,6 +354,8 @@ const NonStubaRoomSelector = ({
                   setSelectedCat(e.target.value);
                   setSelectedType("");
                   setPriceData(null);
+                  setError("");
+                  onRoomSelect(null);
                 }}
                 className="w-full p-3 rounded-lg bg-gray-900 text-white border border-gray-700 focus:border-[#CC9A55] focus:outline-none"
               >
@@ -337,71 +370,93 @@ const NonStubaRoomSelector = ({
               <label className="block text-sm font-medium text-gray-300 mb-2">Room Type</label>
               <select
                 value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
+                onChange={(e) => {
+                  setSelectedType(e.target.value);
+                  setPriceData(null);
+                  setError("");
+                  onRoomSelect(null);
+                }}
                 disabled={!selectedCat}
                 className="w-full p-3 rounded-lg bg-gray-900 text-white border border-gray-700 focus:border-[#CC9A55] focus:outline-none disabled:opacity-50"
               >
                 <option value="">Select Type</option>
                 {room_types.map(type => (
-                  <option key={type.id} value={type.id}>{type.name}</option>
+                  <option key={type.id} value={type.id}>
+                    {type.name} (Max {type.max_pax} guest{type.max_pax !== 1 ? "s" : ""})
+                  </option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Loading */}
           {loading && (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-[#CC9A55]" />
-              <span className="ml-2 text-gray-400">Loading price...</span>
+            <div className="text-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-[#CC9A55] mx-auto" />
+              <p className="text-gray-400 mt-4">Checking availability for {totalGuests} guest{totalGuests > 1 ? "s" : ""}...</p>
             </div>
           )}
 
-          {error && <div className="text-red-400 text-center py-4">{error}</div>}
+          {/* Error */}
+          {error && !loading && (
+            <div className="text-red-400 text-center py-6 bg-red-900/20 rounded-xl border border-red-500/30">
+              {error}
+            </div>
+          )}
 
+          {/* Result Card */}
           {priceData && !loading && (
-            <div className="bg-gradient-to-r from-[#CC9A55]/10 to-transparent p-6 rounded-xl border border-[#CC9A55]/30">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            <div className={`p-8 rounded-2xl border-2 transition-all ${
+              canSelectRoom
+                ? "bg-gradient-to-r from-[#CC9A55]/10 to-transparent border-[#CC9A55]/40 shadow-xl"
+                : "bg-red-900/30 border-red-500/50"
+            }`}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 <div>
-                  <div className="text-white font-semibold">
+                  <div className="text-xl font-bold text-white">
                     {room_categories.find(c => c.id === Number(selectedCat))?.name}
                   </div>
-                  <div className="text-sm text-gray-300">
-                    {room_types.find(t => t.id === Number(selectedType))?.name}
+                  <div className="text-lg text-gray-300 mt-1">
+                    {selectedRoomType?.name}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    {priceData.adult_promo_price ? "Promo Rate" : "Standard Rate"}
+                  <div className="text-sm text-gray-400 mt-3 space-y-1">
+                    <div>• Booking for: <strong>{totalGuests} guest{totalGuests > 1 ? "s" : ""}</strong></div>
+                    <div>• Room capacity: <strong>{selectedRoomType?.max_pax} guest{selectedRoomType?.max_pax > 1 ? "s" : ""}</strong></div>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-[#CC9A55]">
+                  <div className="text-4xl font-extrabold text-[#CC9A55]">
                     {formatPrice(getDisplayPrice())}
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-gray-400 mt-2">
                     Total for {nights} night{nights > 1 ? "s" : ""}
                   </div>
-                  {nights > 1 && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      {currency} {(getDisplayPrice() / nights).toFixed(2)} per night
-                    </div>
-                  )}
                 </div>
 
-                <div className="flex justify-center md:justify-end">
+                <div className="flex flex-col items-center md:items-end gap-4">
                   <button
                     onClick={handleSelect}
-                    disabled={selectedRoom?.id === `nonstuba-${selectedCat}-${selectedType}`}
-                    className="px-8 py-3 bg-[#CC9A55] hover:bg-[#b88a45] text-white rounded-xl font-bold transition-all disabled:bg-green-600 disabled:cursor-default flex items-center gap-2 min-w-[160px] justify-center"
+                    disabled={!canSelectRoom || isCurrentlySelected}
+                    className={`px-10 py-4 rounded-xl font-bold text-lg min-w-[200px] transition-all flex items-center justify-center gap-3 ${
+                      isCurrentlySelected
+                        ? "bg-green-600 text-white"
+                        : canSelectRoom
+                        ? "bg-[#CC9A55] hover:bg-[#b88a45] text-white shadow-lg"
+                        : "bg-gray-700 text-gray-400 cursor-not-allowed"
+                    }`}
                   >
-                    {selectedRoom?.id === `nonstuba-${selectedCat}-${selectedType}` ? (
-                      <>
-                        <Check className="w-5 h-5" />
-                        Selected
-                      </>
-                    ) : (
-                      "Select Room"
-                    )}
+                    {isCurrentlySelected ? "Selected" : canSelectRoom ? "Select Room" : "Unavailable"}
                   </button>
+
+                  {!hasSufficientAllotment && (
+                    <div className="text-red-400 text-sm">Not enough rooms available</div>
+                  )}
+                  {!supportsMaxPax && (
+                    <div className="text-orange-400 text-sm">
+                      Room too small for {totalGuests} guest{totalGuests > 1 ? "s" : ""}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
