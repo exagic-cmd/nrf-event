@@ -94,6 +94,10 @@
       "name": "ホテル",
       "subtitle": "ホテルへの送迎を検索"
     },
+    "Hotel": {
+      "name": "ホテル",
+      "subtitle": "ホテルへの送迎を検索"
+    },
     "airport": {
       "name": "空港",
       "subtitle": "空港送迎サービス"
@@ -109,6 +113,7 @@
   },
   "types": {
     "hotel": "ホテル",
+    "Hotel": "ホテル",
     "airport": "空港",
     "ferry": "フェリー",
     "railway": "鉄道",
@@ -169,7 +174,9 @@
     "bookNow": "今すぐ予約",
     "moreFeatures": "+{{count}} の機能",
     "upToPassengers": "最大 {{count}} 名",
-    "suitcases": "{{count}} 個のスーツケース"
+    "suitcases": "{{count}} 個のスーツケース",
+   "oneWay": "片道",
+    "roundTrip": "往復"
   },
   "common": {
     "close": "閉じる"
@@ -184,6 +191,7 @@
   },
   "booking": {
       "track": "トラック",
+       "check": "詳細を確認",
       "trackMyFlight": "フライトを追跡",
     "specifyPickupTime": "ピックアップ時間を指定",
     "specifyReturnTime": "リターン時間を指定",
@@ -218,6 +226,7 @@
     "returnArrivalFlightNumber": "リターン到着便番号",
     "returnDepartureFlightNumber": "リターン出発便番号",
     "returnFlightTime": "帰りのフライト時間",
+     "returnPickupTime":"リターンピックアップ時間",
   "pickupFlightTime": "出発のフライト時間",
     "flightPlaceholder": "例: SQ318",
     "or": "または",
@@ -264,5 +273,15 @@
   "proceedToCheckout": "チェックアウトへ進む",
   "continueShopping": "買い物を続ける",
   "pleaseWait": "お待ちください…",
-  "goBack": "戻る"
+  "goBack": "戻る",
+  "searchHint": "ホテル、空港、観光名所、またはフェリーターミナルの名前を入力して検索してみてください。",
+"returnTransfer": {
+    "addReturnTransfer": "リターンを追加しますか？",
+    "savingsMessage": "今すぐリターンを予約すると、${savings}を節約できます！",
+    "priceComparison": "2つの別々の送迎: ${oneWayTotal} vs 往復: ${twoWayTotal}",
+    "noThanks": "いいえ、結構です",
+    "yesPlease": "はい、リターンを追加します",
+    "returnDetails": "リターンの詳細",
+    "fillReturnDetails": "リターンの詳細を入力してください"
+  }
 }

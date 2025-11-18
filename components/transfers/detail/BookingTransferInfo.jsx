@@ -118,6 +118,7 @@ const TimePickerField = ({
   </FormField>
 );
 
+
 const FlightNumberField = ({
   label,
   value,
@@ -129,16 +130,45 @@ const FlightNumberField = ({
   orangeColor,
   t,
 }) => {
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && onTrack) {
       e.preventDefault();
-      onTrack();
+      handleTrack();
     }
+  };
+
+  const handleTrack = async () => {
+    if (!onTrack || !value) return;
+
+    setShowSuggestions(false);
+    setSuggestions([]);
+
+    try {
+      const result = await onTrack(); // 🔥 your onTrack runs and may return similar_flights
+
+      // if API returns similar flights, show them in dropdown
+      if (result?.similar_flights?.length > 0) {
+        setSuggestions(result.similar_flights);
+        setShowSuggestions(true);
+      }
+    } catch (err) {
+      console.error("Error tracking flight:", err);
+    }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    onChange(suggestion); // update field
+    setShowSuggestions(false); // close dropdown
+    // do NOT re-track automatically — wait for user to click “Check”
   };
 
   return (
     <FormField label={label} required icon={Hash} orangeColor={orangeColor}>
       <div className="relative">
+        {/* Input Field */}
         <input
           type="text"
           value={value || ""}
@@ -147,6 +177,7 @@ const FlightNumberField = ({
               .toUpperCase()
               .replace(/[^A-Z0-9]/g, "");
             onChange(sanitized);
+            setShowSuggestions(false);
           }}
           onKeyDown={handleKeyDown}
           placeholder={t("booking.flightPlaceholder")}
@@ -158,9 +189,10 @@ const FlightNumberField = ({
           disabled={disabled}
         />
 
+        {/* Check Button */}
         <button
           type="button"
-          onClick={onTrack}
+          onClick={handleTrack}
           disabled={disabled || !value || tracking}
           className={`absolute right-2 top-1/2 -translate-y-1/2 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors flex items-center justify-center gap-1 ${
             disabled || !value
@@ -168,14 +200,30 @@ const FlightNumberField = ({
               : "bg-[#CC9A55] hover:bg-[#b07c3d]"
           }`}
         >
-         { t("booking.track") || "Track"}
+          {tracking ? "Checking..." : t("booking.check") || "Check"}
         </button>
+
+        {/* Dropdown for similar flights */}
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="absolute z-30 mt-2 w-full bg-white border border-[#CC9A55] rounded-md shadow-lg max-h-48 overflow-auto">
+            {suggestions.map((flight, idx) => (
+              <li
+                key={idx}
+                onClick={() => handleSelectSuggestion(flight)}
+                className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-sm text-gray-800 border-b last:border-none"
+              >
+                ✈️ {flight}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {error && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
     </FormField>
   );
 };
+
 
 
 
@@ -301,16 +349,15 @@ const [returnTracking, setReturnTracking] = useState(false);
     const updates = (typeof field === 'object' && field !== null && !Array.isArray(field)) 
                     ? field 
                     : { [field]: value };
+if (updates.pickupOption || updates.returnOption) {
+  fetchProductSurcharge({
+    productId,
+    pickupTime: null,
+    leg: updates.pickupOption ? "pickup" : "return",
+    reset: true,
+  });
+}
 
-    if (updates.pickupOption) {
-      updates.pickupFlightNumber = undefined;
-      updates.pickupTime = undefined;
-    }
-
-    if (updates.returnOption) {
-      updates.returnFlightNumber = undefined;
-      updates.returnTime = undefined;
-    }
 
     setUserBookingDetails(updates);
 
@@ -323,29 +370,72 @@ const [returnTracking, setReturnTracking] = useState(false);
       }
     }
 
-    if ((updates.pickupTime || updates.returnTime) && productId) {
-      const time = new Date(updates.pickupTime || updates.returnTime).toTimeString().substring(0, 5);
-      fetchProductSurcharge({
-        productId,
-        pickupTime: time,
-        leg: updates.pickupTime ? "pickup" : "return",
-      });
+    if ((updates.pickupTime || updates.returnTime || updates.returnPickupTime) && productId) {
+      const timeValue = updates.pickupTime || updates.returnTime || updates.returnPickupTime;
+      if (timeValue) {
+        const time = new Date(timeValue).toTimeString().substring(0, 5);
+        fetchProductSurcharge({
+          productId,
+          pickupTime: time,
+          leg: (updates.returnTime || updates.returnPickupTime) ? "return" : "pickup",
+        });
+      }
     }
   };
 
-  const handlePickupTrack = () => {
-    if (userBookingDetails.pickupFlightNumber) {
-      setPickupTracking(true);
+const handlePickupTrack = async () => {
+  if (!userBookingDetails.pickupFlightNumber) return;
+
+  setPickupTracking(true);
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
+        userBookingDetails.pickupFlightNumber
+      )}&pickup_id=${encodeURIComponent(selectedTransfer?.pickup_point_id)}`
+    );
+
+    const data = await res.json();
+
+    if (res.ok && !data.error) {
       setPickupTrigger((prev) => prev + 1);
+      return data;
+    } else {
+      return data;
     }
-  };
+  } catch (e) {
+    console.error("Pickup track error", e);
+  } finally {
+    setPickupTracking(false);
+  }
+};
 
-  const handleReturnTrack = () => {
-    if (userBookingDetails.returnFlightNumber) {
-      setReturnTracking(true);
+
+const handleReturnTrack = async () => {
+  if (!userBookingDetails.returnFlightNumber) return;
+
+  setReturnTracking(true);
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
+        userBookingDetails.returnFlightNumber
+      )}&pickup_id=${encodeURIComponent(selectedTransfer?.pickup_point_id)}`
+    );
+
+    const data = await res.json();
+
+    if (res.ok && !data.error) {
       setReturnTrigger((prev) => prev + 1);
+      return data; 
+    } else {
+      return data; 
     }
-  };
+  } catch (e) {
+    console.error("Return track error", e);
+  } finally {
+    setReturnTracking(false);
+  }
+};
+
 
   if (!selectedTransfer) {
     return (
@@ -364,7 +454,7 @@ const [returnTracking, setReturnTracking] = useState(false);
           {t("booking.pickupDetails")}
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        <div id="pickupDate" className="grid grid-cols-1 md:grid-cols-1 gap-6">
           <DatePickerField
             label={t("booking.pickupDate")}
             value={userBookingDetails.pickupDate}
@@ -388,7 +478,7 @@ const [returnTracking, setReturnTracking] = useState(false);
 
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           {userBookingDetails.pickupOption === "flight" ? (
-            <>
+            <div id="pickupFlightNumber">
               <FlightNumberField
                 label={t("booking.pickupFlightNumber")}
                 value={userBookingDetails.pickupFlightNumber}
@@ -401,38 +491,57 @@ const [returnTracking, setReturnTracking] = useState(false);
                 t={t}
               />
 
-              <FlightTracker
-                pickupId={selectedTransfer?.pickup_point_id}
-                flightNumber={userBookingDetails.pickupFlightNumber}
-                trigger={pickupTrigger}
-                onTrackSuccess={(result) => {
-                  onPickupTracked?.(true);
-                  setPickupTracking?.(false);
-                  const scheduleTime =
-                    result?.schedule_time ||
-                    result?.scheduledTime ||
-                    result?.scheduled_time ||
-                    null;
+<div className="mt-3">
+  <TimePickerField
+  label={t("booking.pickupTime")}
+  value={
+    userBookingDetails.pickupFlightScheduleTime
+      ? new Date(`1970-01-01T${userBookingDetails.pickupFlightScheduleTime}`)
+      : null
+  }
+  onChange={(date) =>
+    handleChange({
+      pickupFlightScheduleTime: date
+        ? date.toTimeString().substring(0, 5)
+        : null,
+    })
+  }
+  error={errors?.pickupFlightScheduleTime}
+  disabled={disabled}
+  orangeColor={orangeColor}
+  t={t}
+/>
 
-           
-                  const updates = {
-                    pickupFlightNumber:
-                      result?.flight_number ||
-                      result?.flightNumber ||
-                      userBookingDetails.pickupFlightNumber,
-                    pickupFlightScheduleTime: scheduleTime || undefined,
-                    pickupTime: undefined,
-                  };
+</div>
 
-                  handleChange(updates);
-                }}
-                onTrackFail={() => {
-                  onPickupTracked?.(false);
-                  setPickupTracking?.(false);
-                }}
-              />
-            </>
+
+   <FlightTracker
+  pickupId={selectedTransfer?.pickup_point_id}
+  flightNumber={userBookingDetails.pickupFlightNumber}
+  trigger={pickupTrigger}
+  onTrackSuccess={(result) => {
+    setPickupTracking(false);
+
+    const flightTime = result?.schedule_time || result?.scheduled_time;
+    if (flightTime) {
+      handleChange({
+        pickupFlightScheduleTime: flightTime, 
+        pickupTime: new Date(`1970-01-01T${flightTime}`),
+      });
+    }
+
+    onPickupTracked?.(true);
+  }}
+  onTrackFail={() => {
+    setPickupTracking(false);
+    onPickupTracked?.(false);
+  }}
+/>
+
+
+            </div>
           ) : (
+            <div id="pickupTime">
             <TimePickerField
               label={t("booking.pickupTime")}
               value={userBookingDetails.pickupTime}
@@ -443,18 +552,20 @@ const [returnTracking, setReturnTracking] = useState(false);
               t={t}
               surchargeDetails={surchargeDetails}
             />
+            </div>
           )}
         </div>
 
         {/* --- Return Section --- */}
         {tripType === "round-trip" && (
           <>
+          <div id="return-section"></div>
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 pt-6 border-t border-gray-200">
               <Plane size={20} className="rotate-180" color={orangeColor} />
               {t("booking.returnDetails")}
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div id="returnDate" className="grid grid-cols-1 md:grid-cols-1 gap-6">
               <DatePickerField
                 label={t("booking.returnDate")}
                 value={userBookingDetails.returnDate}
@@ -478,49 +589,73 @@ const [returnTracking, setReturnTracking] = useState(false);
             />
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-              {userBookingDetails.returnOption === "flight" ? (
-                <>
-                  <FlightNumberField
-                    label={t("booking.returnFlightNumber")}
-                    value={userBookingDetails.returnFlightNumber}
-                    onChange={(val) => handleChange("returnFlightNumber", val)}
-                    onTrack={handleReturnTrack}
-                    error={errors?.returnFlightNumber}
-                    disabled={disabled}
-                    orangeColor={orangeColor}
-                    tracking={returnTracking}
-                    t={t}
-                  />
+             {userBookingDetails.returnOption === "flight" ? (
+  <div id="returnFlightNumber">
+    {/* Flight Number Input with tracking */}
+    <FlightNumberField
+      label={t("booking.returnFlightNumber")}
+      value={userBookingDetails.returnFlightNumber}
+      onChange={(val) => handleChange("returnFlightNumber", val)}
+      onTrack={handleReturnTrack}
+      error={errors?.returnFlightNumber}
+      disabled={disabled}
+      orangeColor={orangeColor}
+      tracking={returnTracking}
+      t={t}
+    />
 
-               <FlightTracker
-                  pickupId={selectedTransfer?.pickup_point_id}
-                  flightNumber={userBookingDetails.returnFlightNumber}
-                  trigger={returnTrigger}
-                  onTrackSuccess={(result) => {
-                    onReturnTracked?.(true);
-                    setReturnTracking(false);
-                    const scheduleTime =
-                      result?.schedule_time ||
-                      result?.scheduledTime ||
-                      result?.scheduled_time ||
-                      null;
+    {/* Time Picker Field (same style as pickup) */}
+    <div className="mt-3">
+      <TimePickerField
+  label={t("booking.returnPickupTime")}
+  value={
+    userBookingDetails.returnFlightScheduleTime
+      ? new Date(`1970-01-01T${userBookingDetails.returnFlightScheduleTime}`)
+      : null
+  }
+  onChange={(date) =>
+    handleChange({
+      returnFlightScheduleTime: date
+        ? date.toTimeString().substring(0, 5)
+        : null,
+    })
+  }
+  error={errors?.returnFlightScheduleTime}
+  disabled={disabled}
+  orangeColor={orangeColor}
+  t={t}
+/>
 
-                   
-                    const updates = {
-                      returnFlightNumber: result.flight_number,
-                      returnFlightScheduleTime: scheduleTime || undefined,
-                      returnTime: undefined, 
-                    };
+    </div>
 
-                    handleChange(updates);
-                  }}
-                  onTrackFail={() => {
-                    onReturnTracked?.(false);
-                    setReturnTracking(false);
-                  }}
-                />
-                </>
-              ) : (
+    {/* Flight Tracker (auto triggers when valid flight found) */}
+    <FlightTracker
+  pickupId={selectedTransfer?.pickup_point_id}
+  flightNumber={userBookingDetails.returnFlightNumber}
+  trigger={returnTrigger}
+  onTrackSuccess={(result) => {
+    setReturnTracking(false);
+
+    const flightTime = result?.schedule_time || result?.scheduled_time;
+    if (flightTime) {
+      handleChange({
+        returnFlightScheduleTime: flightTime,
+        returnPickupTime: new Date(`1970-01-01T${flightTime}`),
+      });
+    }
+
+    onReturnTracked?.(true);
+  }}
+  onTrackFail={() => {
+    setReturnTracking(false);
+    onReturnTracked?.(false);
+  }}
+/>
+
+  </div>
+
+) : (
+                <div id="returnTime">
                 <TimePickerField
                   label={t("booking.returnTime")}
                   value={userBookingDetails.returnTime}
@@ -531,8 +666,10 @@ const [returnTracking, setReturnTracking] = useState(false);
                   t={t}
                   surchargeDetails={surchargeDetails}
                 />
+                </div>
               )}
             </div>
+
           </>
         )}
       </div>

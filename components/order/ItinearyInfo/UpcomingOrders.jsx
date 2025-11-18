@@ -8,7 +8,7 @@ import { useTranslation } from "next-i18next"
 
 const UpcomingOrders = ({ onViewDetails }) => {
   const { t } = useTranslation("order")
-  const { upcomingBookings } = useOrderStore()
+  const { upcomingBookings ,accommodations} = useOrderStore()
 
   const formatDate = (dateString) => {
     if (!dateString) return "-"
@@ -52,7 +52,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
     }))
   )
 
-  if (!allItineraryItems || allItineraryItems.length === 0) {
+  if (!allItineraryItems || allItineraryItems.length === 0 && accommodations?.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-xl">
         <Calendar className="w-16 h-16 text-[#CC9A55] mx-auto mb-4" />

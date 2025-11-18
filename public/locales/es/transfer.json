@@ -95,6 +95,10 @@
       "name": "Hotel",
       "subtitle": "Buscar traslados a hoteles"
     },
+    "Hotel": {
+      "name": "Hotel",
+      "subtitle": "Buscar traslados a hoteles"
+    },
     "airport": {
       "name": "Aeropuerto",
       "subtitle": "Servicios de traslado al aeropuerto"
@@ -110,6 +114,7 @@
   },
   "types": {
     "hotel": "Hotel",
+     "Hotel": "Hotel",
     "airport": "Aeropuerto",
     "ferry": "Ferry",
     "railway": "Ferrocarril",
@@ -170,7 +175,9 @@
     "bookNow": "Reservar ahora",
     "moreFeatures": "+{{count}} más características",
     "upToPassengers": "Hasta {{count}} pasajeros",
-    "suitcases": "{{count}} maleta(s)"
+    "suitcases": "{{count}} maleta(s)",
+    "oneWay": "solo ida",
+    "roundTrip": "ida y vuelta"
   },
   "common": {
     "close": "Cerrar"
@@ -185,6 +192,7 @@
   },
   "booking": {
     "track": "Rastrear",
+      "check": "Verificar detalles",
       "trackMyFlight": "Rastrear mi vuelo",
     "specifyPickupTime": "Especificar hora de recogida",
     "specifyReturnTime": "Especificar hora de regreso",
@@ -193,6 +201,7 @@
    "timeAutoFromFlight": "Automático desde la hora del vuelo",
     "pickupFlightNumber": "Número de vuelo de recogida",
     "returnFlightNumber": "Número de vuelo de regreso",
+     "returnPickupTime":"Hora de recogida de regreso",
     "specificTime": "Hora específica",
     "FlightNumber": "Número de vuelo",
     "noTransferSelected": "No se ha seleccionado un traslado. Por favor, vuelva atrás y seleccione un vehículo primero.",
@@ -265,5 +274,15 @@
   "proceedToCheckout": "Proceder al pago",
   "continueShopping": "Continuar comprando",
   "pleaseWait": "Por favor espera...",
-  "goBack": "Volver"
+  "goBack": "Volver",
+  "searchHint": "Intenta buscar poniendo el nombre de un hotel, aeropuerto, atracción o terminal de ferry.",
+  "returnTransfer": {
+    "addReturnTransfer": "¿Agregar un traslado de regreso?",
+    "savingsMessage": "Ahorra ${savings} al reservar un traslado de regreso ahora mismo.",
+    "priceComparison": "Dos traslados por separado: ${oneWayTotal} vs Ida y vuelta: ${twoWayTotal}",
+    "noThanks": "No gracias",
+    "yesPlease": "Sí, agregar traslado de regreso",
+    "returnDetails": "Detalles del traslado de regreso",
+    "fillReturnDetails": "Por favor, complete los detalles de su viaje de regreso"
+  }
 }

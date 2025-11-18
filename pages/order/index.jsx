@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation"
-import { MapPin, Clock, Cloud ,BotMessageSquare} from "lucide-react"
+import { MapPin, Clock, Cloud, BotMessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import PastBookings from "@/components/order/ItinearyInfo/PastBookings"
 import Recommended from "@/components/order/RecommentedProducts"
 import UpcomingOrders from "@/components/order/ItinearyInfo/UpcomingOrders"
@@ -12,7 +12,7 @@ import ProtectedRoute from "@/components/order/ProtectedRoute"
 import LoadingSvg2 from "@/components/common/Loader2Svg"
 import { useTranslation } from "next-i18next"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-
+import AccommodationCard from '@/components/order/ItinearyInfo/AccommodationCard';
 const TravelInfoPage = () => {
   const { t } = useTranslation("order")
   const router = useRouter()
@@ -28,10 +28,36 @@ const TravelInfoPage = () => {
     clearError,
     weatherInfo,
     fetchWeatherInfo,
+    accommodations
   } = useOrderStore()
 
   const { token, user, qrCode } = useUserStore()
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollContainerRef = useRef(null);
+ const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setScrollPosition(scrollLeft);
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
 
+  const scroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 400;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleScroll();
+  }, []);
   useEffect(() => {
     if (token) {
       fetchUpcomingBookings(token)
@@ -156,6 +182,45 @@ const TravelInfoPage = () => {
           ) : (
             <LoadingSvg2 />
           )}
+
+{accommodations?.length > 0 && (
+  <div className="relative text-white">
+    <div className="flex justify-between items-center px-4 mb-4">
+      <h2 className="text-xl font-semibold">Accommodations</h2>
+      <div className="flex space-x-2">
+        <button 
+          onClick={() => scroll('left')}
+          type="button" 
+          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#CC9A55] text-white shadow transition-colors duration-200"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button 
+          onClick={() => scroll('right')}
+          type="button" 
+          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#CC9A55] text-white shadow transition-colors duration-200"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
+    </div>
+
+    <div 
+      ref={scrollContainerRef}
+      onScroll={handleScroll}
+      className="overflow-x-auto px-4 scrollbar-hide"
+    >
+      <div className="flex gap-4 pb-4">
+        {accommodations.map((acc) => (
+          <div key={acc.id} className="w-full ">
+            <AccommodationCard data={acc} goToDetail={handleViewDetails} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
 
          {loading ? (
   <LoadingSvg2 />

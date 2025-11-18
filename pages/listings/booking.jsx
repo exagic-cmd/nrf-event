@@ -18,6 +18,7 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import TransferAddonsSection from "@/components/transfers/detail/TransferAddonsSection";
 import UpsellProducts from "@/components/transfers/detail/UpsellBooking";
 import BookingPolicySection from "@/components/transfers/detail/BookingPolicySection";
+import ReturnTransferModal from "@/components/transfers/detail/ReturnTransferModal";
 const TransferBookingPage = () => {
   const { t } = useTranslation("transfer","common");
   const { localizedPush, back } = useLocalizedRouter();
@@ -36,6 +37,17 @@ const { surchargePickup, surchargeReturn,resetTransferStore  } = useTransferStor
   const [errors, setErrors] = useState({});
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [finalTotalPrice, setFinalTotalPrice] = useState(0);
+  const [basePrice, setBasePrice] = useState(0);
+
+  useEffect(() => {
+    if (selectedTransfer) {
+      if (tripType === "round-trip") {
+        setBasePrice(selectedTransfer.two_way_promo_price || selectedTransfer.two_way_price);
+      } else {
+        setBasePrice(selectedTransfer.price);
+      }
+    }
+  }, [selectedTransfer, tripType]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [alreadyModalOpen, setAlreadyModalOpen] = useState(false);
@@ -47,6 +59,9 @@ const [selectedAddons, setSelectedAddons] = useState({ pickup: [], return: [] })
 const [selectedPolicies, setSelectedPolicies] = useState([]);
 const [policyErrors, setPolicyErrors] = useState(null); 
 const [availablePolicyIds, setAvailablePolicyIds] = useState([]); 
+const [priceDifference, setPriceDifference] = useState(0);
+const [showReturnOffer, setShowReturnOffer] = useState(false);
+const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
 
   useEffect(() => {
   async function loadFeature() {
@@ -59,24 +74,10 @@ const [availablePolicyIds, setAvailablePolicyIds] = useState([]);
     };
 
     try {
-      console.log('Fetching product feature with payload:', payload);
-      if (typeof fetchProductFeature !== 'function') {
-        console.warn('fetchProductFeature is not a function on the store');
-        return;
-      }
-      // call the action; some store implementations return the fetched data, others update store state
       const result = await fetchProductFeature(payload);
-      console.log('fetchProductFeature returned:', result);
-
-      // read latest value from the store in case fetchProductFeature updates state instead of returning
-      try {
-        const latest = useTransferStore.getState().productFeature;
-        console.log('productFeature from store state:', latest);
-      } catch (e) {
-        // non-fatal
-      }
+      console.log("Fetched Product Feature:", result);
     } catch (error) {
-      console.error('Error fetching product feature:', error);
+      console.error("Error fetching product feature:", error);
     }
   }
   loadFeature();
@@ -109,7 +110,7 @@ setIsLoading(true)
   const handleContinueShopping = () => {
     setIsLoading(true)
     resetFormData();
-    localizedPush("/");
+    localizedPush("/transfers");
     resetTransferStore();
   };
 const handleGoToCart = async () => {
@@ -119,7 +120,7 @@ const handleGoToCart = async () => {
     openDrawer()
   }
 // Handle booking
-const handleBookTransfer = () => {
+const executeBookTransfer = () => {
     setIsAddingToCart(true); 
     setTimeout(() => {
   const newErrors = {};
@@ -135,8 +136,8 @@ const handleBookTransfer = () => {
      } else if (pickupOption === "flight") {
        if (!userBookingDetails.pickupFlightNumber) {
         newErrors.pickupFlightNumber = "booking.pickupFlightRequired";
-       } else if (!userBookingDetails.pickupFlightScheduleTime) {
-        newErrors.pickupFlightNumber = "Please track and verify your pickup flight before checkout.";
+       //} else if (!userBookingDetails.pickupFlightScheduleTime) {
+       // newErrors.pickupFlightNumber = "Please track and verify your pickup flight before checkout.";
        }
      }
 
@@ -151,8 +152,8 @@ const handleBookTransfer = () => {
       } else if (returnOption === "flight") {
         if (!userBookingDetails.returnFlightNumber) {
           newErrors.returnFlightNumber = "booking.returnFlightRequired";
-        } else if (!userBookingDetails.returnFlightScheduleTime) {
-          newErrors.returnFlightNumber = "Please track and verify your return flight before checkout.";
+       // } else if (!userBookingDetails.returnFlightScheduleTime) {
+       //   newErrors.returnFlightNumber = "Please track and verify your return flight before checkout.";
         }
       }
     }
@@ -163,6 +164,17 @@ const handleBookTransfer = () => {
     }
   setErrors(newErrors);
   if (Object.keys(newErrors).length) {
+    const firstErrorKey = Object.keys(newErrors)[0];
+    const errorElements = document.querySelectorAll(`#${firstErrorKey}`);
+    const visibleErrorElement = Array.from(errorElements).find(
+      (el) => el.offsetParent !== null
+    );
+    if (visibleErrorElement) {
+      visibleErrorElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
     setIsAddingToCart(false);
     return;
   }
@@ -225,6 +237,55 @@ setIsLocked(true);
   }
 }, 1000);
 };
+const validateBooking = () => {
+  const newErrors = {};
+  const pickupOption = userBookingDetails.pickupOption || "time";
+  if (!userBookingDetails.pickupDate) {
+    newErrors.pickupDate = "booking.pickupDateRequired";
+  }
+  if (pickupOption === "time") {
+    if (!userBookingDetails.pickupTime) newErrors.pickupTime = "booking.pickupTimeRequired";
+  } else if (pickupOption === "flight") {
+    if (!userBookingDetails.pickupFlightNumber) {
+      newErrors.pickupFlightNumber = "booking.pickupFlightRequired";
+    }
+  }
+
+  if (!selectedPolicies.includes("terms_conditions")) {
+    newErrors.policy = "booking_section.error_required";
+  }
+
+  setErrors(newErrors);
+
+  if (Object.keys(newErrors).length) {
+    const firstErrorKey = Object.keys(newErrors)[0];
+    const errorElements = document.querySelectorAll(`#${firstErrorKey}`);
+    const visibleErrorElement = Array.from(errorElements).find(
+      (el) => el.offsetParent !== null
+    );
+    if (visibleErrorElement) {
+      visibleErrorElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+    return false;
+  }
+
+  return true;
+};
+const handleBookTransfer = () => {
+  // validate first
+  const isValid = validateBooking();
+  if (!isValid) return;
+
+  // only if validation passed, proceed to show modal or execute booking
+  if (tripType === "one-way" && selectedTransfer) {
+    setIsReturnModalOpen(true);
+  } else {
+    executeBookTransfer();
+  }
+};
 
 const handleUpdate = () => {
   if (!itemToUpdate) return;
@@ -286,6 +347,28 @@ const handleUpdate = () => {
   useDrawerStore.getState().setJustAdded(true);
 };
 
+const handleReturnModalClose = () => {
+  setIsReturnModalOpen(false);
+  executeBookTransfer();
+};
+
+const handleReturnModalConfirm = () => {
+
+  setIsReturnModalOpen(false);
+  const setTripType = useTransferStore.getState().setTripType;
+  setTripType("round-trip");
+  if (selectedTransfer?.two_way_promo_price || selectedTransfer?.two_way_price) {
+    const twoWayPrice = parseFloat(selectedTransfer.two_way_promo_price || selectedTransfer.two_way_price);
+    setBasePrice(twoWayPrice);
+  }
+  setTimeout(() => {
+    const returnSections = document.querySelectorAll('#return-section');
+    const visibleReturnSection = Array.from(returnSections).find(el => el.offsetParent !== null);
+    if (visibleReturnSection) {
+      visibleReturnSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+};
 
   if (isLoading) {
     return (
@@ -421,23 +504,23 @@ const handleUpdate = () => {
 />
 
 {tripType === "round-trip" && (
+  // <div id="return-section">
   <TransferAddonsSection
     paxtotL={userBookingDetails.passengers}
     onAddonsChange={handleReturnAddonsChange}
     tripPart="return"
      disabled={isLocked}
   />
-  
-)}
-            <div className="order-4">
-              <VehicleSummary
-                onPriceChange={setFinalTotalPrice}
-                vehicleInfo={selectedTransfer}
-                pricing={{ total: selectedTransfer.price }}
-                pickupLocation={searchParams?.pickup}
-              />
-            </div>
 
+)}
+                         <div className="order-4">
+                           <VehicleSummary
+                             onPriceChange={setFinalTotalPrice}
+                             vehicleInfo={selectedTransfer}
+                             pricing={{ total: basePrice }}
+                             pickupLocation={searchParams?.pickup}
+                           />
+                         </div>
 
             <div className="bg-white rounded-lg p-2 md:p-6 shadow-sm order-5">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 md:mb-4 gap-4">
@@ -598,12 +681,14 @@ const handleUpdate = () => {
 />
 
 {tripType === "round-trip" && (
+  <div id="return-section">
   <TransferAddonsSection
     paxtotL={userBookingDetails.passengers}
     onAddonsChange={handleReturnAddonsChange}
     tripPart="return"
      disabled={isLocked}
   />
+  </div>
 )}
             <div className="bg-white rounded-lg p-6 shadow-sm">
               {/* <h2 className="text-xl font-bold mb-4">{t("booking.bookTransferTitle")}</h2> */}
@@ -714,7 +799,7 @@ const handleUpdate = () => {
               <VehicleSummary
                 onPriceChange={setFinalTotalPrice}
                 vehicleInfo={selectedTransfer}
-                pricing={{ total: selectedTransfer.price }}
+                pricing={{ total: basePrice }}
                 pickupLocation={searchParams?.pickup}
               />
             </div>
@@ -730,7 +815,17 @@ const handleUpdate = () => {
     onGoToCart={handleGoToCart}
   />
 )}
-
+{isReturnModalOpen && (
+        <ReturnTransferModal
+          isOpen={isReturnModalOpen}
+          onClose={handleReturnModalClose}
+          onConfirm={handleReturnModalConfirm}
+          selectedTransfer={selectedTransfer}
+          userBookingDetails={userBookingDetails}
+          setUserBookingDetails={setUserBookingDetails}
+          handleConfirmReturnAndBook={executeBookTransfer}
+        />
+      )}
     </Layout>
   );
 };
