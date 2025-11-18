@@ -261,20 +261,38 @@ useEffect(() => {
 
       // ——————————————————— NON-STUBA ———————————————————
 if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
-  console.log("Non-Stuba flow - Fetching hotel and rooms");
+  console.log("Non-Stuba flow");
 
   const hotelData = await useAccommodationsStore.getState().fetchNonStubaAccommodation(accommodationId);
   if (!hotelData) throw new Error("Hotel not found");
 
   const roomsData = await useAccommodationsStore.getState().fetchNonStubaRooms(accommodationId);
-
   if (!roomsData?.product_pricing || roomsData.product_pricing.length === 0) {
     throw new Error("No room pricing available");
   }
 
   const nights = searchParams?.nights || 1;
+  const fromDate = searchParams?.start_date;
+  const toDate = searchParams?.end_date;
 
-  const normalizedRooms = roomsData.product_pricing.map((p) => {
+  // Total guests & rooms requested
+  const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => 
+    sum + (Number(r.adult) || 0) + (r.children?.length || 0), 0) || 1;
+  const totalRoomsRequested = (searchParams?.rooms || []).length || 1;
+
+  // 1. Check full date range availability ONCE
+  let allotments = [];
+  let isHotelAvailable = true;
+  if (fromDate && toDate) {
+    const avail = await useAccommodationsStore.getState().checkNonStubaAvailability(
+      accommodationId, fromDate, toDate
+    );
+    isHotelAvailable = avail.isFullyAvailable;
+    allotments = avail.allotments || [];
+  }
+
+  // 2. Build rooms with availability flags
+  const normalizedRooms = roomsData.product_pricing.map(p => {
     const category = roomsData.room_categories.find(c => c.id === Number(p.room_category_id)) || {};
     const type = roomsData.room_types.find(t => t.id === Number(p.room_type_id)) || {};
 
@@ -282,20 +300,30 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       ? parseFloat(p.adult_promo_price)
       : parseFloat(p.adult_price);
 
+    const maxPax = type.max_pax || p.max_pax || 1;
+    const canAccommodate = maxPax >= totalGuests;
+
     return {
       id: `nonstuba-${p.room_category_id}-${p.room_type_id}`,
       roomType: category.name || p.room_category || "Room",
       mealType: category.name?.toLowerCase().includes("breakfast") ? "Breakfast Included" : "Room Only",
       price: basePrice * nights,
       cancellationPolicy: "NonRefundable",
-      roomCode: `CAT${p.room_category_id}`,
-      mealCode: category.name?.toLowerCase().includes("breakfast") ? "BB" : "RO",
-      maxPax: type.max_pax || p.max_pax || 1,
+      maxPax,
+      canAccommodate,
+      isHotelAvailable,
+      isAvailable: isHotelAvailable && canAccommodate,
+      paxMessage: !canAccommodate ? `Max ${maxPax} guest${maxPax > 1 ? 's' : ''} (you have ${totalGuests})` : null,
       rawPricing: p,
     };
   });
 
-  const lowestPriceRoom = normalizedRooms[0]; // just pick first or sort by price
+  if (normalizedRooms.length === 0 || (!isHotelAvailable && allotments.length === 0)) {
+    throw new Error("No rooms available for your dates");
+  }
+
+  const availableRooms = normalizedRooms.filter(r => r.isAvailable);
+  const lowestPriceRoom = availableRooms.length > 0 ? availableRooms[0] : normalizedRooms[0];
 
   const fullData = {
     ...hotelData,
@@ -305,17 +333,20 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       price: lowestPriceRoom.price,
       currency: hotelData.normalizedHotelData.currency || "SGD"
     },
-    normalizedRoomData: normalizedRooms,        // ← THIS IS CRITICAL
-    lowestPriceRoom: lowestPriceRoom,
-    room_categories: roomsData.room_categories,
-    room_types: roomsData.room_types,
+    normalizedRoomData: normalizedRooms,
+    lowestPriceRoom,
+    allotments, // ← pass to RoomTypes
+    totalGuests,
+    totalRoomsRequested,
   };
 
   setAccommodation(fullData);
   setIsNonStuba(true);
-  setSelectedRoom(lowestPriceRoom); // auto select
+  if (lowestPriceRoom?.isAvailable) {
+    setSelectedRoom(lowestPriceRoom);
+  }
 
-  // Slug correction
+  // Slug fix
   const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
   if (productname !== actualSlug) {
     localizedReplace(
