@@ -40,8 +40,18 @@ const StubaRoomList = ({
   }, {});
 
   const handleRoomSelect = (room) => {
+    // Call external handler first. It should return true to confirm selection is allowed.
+    try {
+      const allowed = onRoomSelect ? onRoomSelect(room) : true;
+      // If the handler returns false explicitly, do not mark as selected.
+      if (allowed === false) return;
+    } catch (e) {
+      // If handler throws, avoid selecting and re-throw
+      console.error('onRoomSelect handler threw:', e);
+      return;
+    }
+
     setInternalSelectedRoom(room.id);
-    onRoomSelect?.(room);
   };
 
   const formatPrice = (price) => {
@@ -189,126 +199,85 @@ const StubaRoomList = ({
   );
 };
 
-const NonStubaRoomList = ({
-  allRooms = [],
-  currency = "SGD",
-  onRoomSelect,
-  nights = 1,
-  selectedRoom = null,
-}) => {
-  const [internalSelected, setInternalSelected] = useState(null);
-
-  useEffect(() => {
-    setInternalSelected(selectedRoom?.id || null);
-  }, [selectedRoom]);
-
-  const handleSelect = (room) => {
-    setInternalSelected(room.id);
-    onRoomSelect(room);
-  };
-
-  const formatPrice = (price) => Number(price).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-console.log("################",allRooms);
-  // SHOW ALL ROOMS — NO FILTERING
-  if (!allRooms || allRooms.length === 0) {
-    return (
-      <div className="text-center py-16 text-gray-400">
-        <p className="text-xl">No rooms available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-1">Available Rooms</h2>
-            <p className="text-gray-400">
-              {allRooms.length} room option{allRooms.length > 1 ? "s" : ""}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400 bg-gray-800 px-4 py-2 rounded-full">
-            <Calendar className="w-4 h-4" />
-            <span>{nights} night{nights > 1 ? "s" : ""}</span>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {allRooms.map((room) => {
-            const isSelected = internalSelected === room.id;
-
-            return (
-              <div
-                key={room.id}
-                className={`bg-gray-800 rounded-2xl p-6 border-2 transition-all duration-200 ${
-                  isSelected
-                    ? "border-[#CC9A55] bg-[#CC9A55]/5 shadow-xl"
-                    : "border-gray-700 hover:border-gray-600"
-                }`}
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="space-y-3">
-                    <h3 className="text-xl font-bold text-white">{room.roomType}</h3>
-                    <p className="text-sm text-gray-400">{room.mealType}</p>
-                    <div className="flex items-center gap-2 text-red-400 text-sm">
-                      <X className="w-4 h-4" />
-                      <span>Non-Refundable</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col justify-center text-center lg:text-left">
-                    <div className="text-3xl font-bold text-[#CC9A55]">
-                      {currency} {formatPrice(room.price)}
-                    </div>
-                    <div className="text-sm text-gray-400 mt-1">
-                      Total for {nights} night{nights > 1 ? "s" : ""}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center lg:justify-end">
-                    <button
-                      onClick={() => handleSelect(room)}
-                      className={`px-8 py-3 rounded-xl font-bold text-lg transition-all flex items-center gap-2 ${
-                        isSelected
-                          ? "bg-green-600 hover:bg-green-700"
-                          : "bg-[#CC9A55] hover:bg-[#b88a45]"
-                      } text-white`}
-                    >
-                      {isSelected ? (
-                        <>✓ Selected</>
-                      ) : (
-                        "Select Room"
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 // MAIN COMPONENT – now super simple
 const RoomTypes = ({
   isNonStuba,
-  allRooms = [],              // ← Stuba uses this
-  normalizedRoomData = [],     // ← Non-Stuba uses this
+  allRooms = [],
+  normalizedRoomData = [],
+  allotments = [],
   currency = "SGD",
   nights = 1,
   onRoomSelect,
   selectedRoom,
 }) => {
-  // Decide which array to show
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
 
-  // If no rooms at all
+  const { searchParams } = useAccommodationsStore();
+
+  const totalGuests = useMemo(() => {
+    if (!searchParams?.rooms) return 1;
+    return searchParams.rooms.reduce((sum, r) => 
+      sum + (Number(r.adult) || 0) + (r.children?.length || 0), 0) || 1;
+  }, [searchParams?.rooms]);
+
+  const totalRoomsRequested = (searchParams?.rooms || []).length || 1;
+
+  const stayDates = useMemo(() => {
+    const from = searchParams?.start_date;
+    const to = searchParams?.end_date;
+    if (!from || !to) return [];
+    const dates = [];
+    let cur = new Date(from);
+    const end = new Date(to);
+    while (cur < end) {
+      dates.push(cur.toISOString().split('T')[0]);
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }, [searchParams?.start_date, searchParams?.end_date]);
+
+  const validateAndSelect = (room) => {
+    if (!isNonStuba) {
+      onRoomSelect?.(room);
+      return true;
+    }
+
+    // 1. Date availability check (pre-check flag on room)
+    if (!room.isHotelAvailable) {
+      alert("This hotel is sold out for one or more nights in your stay.");
+      return false;
+    }
+
+    // 2. Detailed allotment check per date
+    for (const date of stayDates) {
+      const entry = allotments.find(a => String(a.date) === String(date));
+      if (!entry) {
+        alert(`No availability info for ${date}. Please change dates.`);
+        return false;
+      }
+      if (entry.available === false) {
+        alert(`Room unavailable on ${date}.`);
+        return false;
+      }
+      const availQty = Number(entry.value ?? entry.available_qty ?? 0);
+      if (availQty < totalRoomsRequested) {
+        alert(`Not enough rooms available on ${date}. Only ${availQty} left for that date.`);
+        return false;
+      }
+    }
+
+    // 3. Pax check
+    if (!room.canAccommodate) {
+      alert(room.paxMessage || `This room is too small for ${totalGuests} guests.`);
+      return false;
+    }
+
+    // All checks passed — call parent's handler and signal allowed
+    onRoomSelect?.(room);
+    return true;
+  };
+
   if (!roomsToDisplay || roomsToDisplay.length === 0) {
     return (
       <div className="px-4 sm:px-6 lg:px-12 py-16 text-center">
@@ -317,14 +286,15 @@ const RoomTypes = ({
     );
   }
 
-  // Re-use StubaRoomList style for both (clean & consistent)
-  return <StubaRoomList 
-    allRooms={roomsToDisplay}
-    currency={currency}
-    nights={nights}
-    onRoomSelect={onRoomSelect}
-    selectedRoom={selectedRoom}
-  />;
+  return (
+    <StubaRoomList
+      allRooms={roomsToDisplay}
+      currency={currency}
+      nights={nights}
+      onRoomSelect={validateAndSelect}
+      selectedRoom={selectedRoom}
+    />
+  );
 };
 
 export default RoomTypes;
