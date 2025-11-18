@@ -260,39 +260,72 @@ useEffect(() => {
       console.log("URL link_type_id:", urlLinkTypeId, "ID:", accommodationId);
 
       // ——————————————————— NON-STUBA ———————————————————
-      if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
-  console.log("Non-Stuba flow");
+if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
+  console.log("Non-Stuba flow - Fetching hotel and rooms");
 
   const hotelData = await useAccommodationsStore.getState().fetchNonStubaAccommodation(accommodationId);
   if (!hotelData) throw new Error("Hotel not found");
 
-  // 1. First call: get categories + types
   const roomsData = await useAccommodationsStore.getState().fetchNonStubaRooms(accommodationId);
-  if (!roomsData || roomsData.room_categories.length === 0) {
-    throw new Error("No room options");
+
+  if (!roomsData?.product_pricing || roomsData.product_pricing.length === 0) {
+    throw new Error("No room pricing available");
   }
+
+  const nights = searchParams?.nights || 1;
+
+  const normalizedRooms = roomsData.product_pricing.map((p) => {
+    const category = roomsData.room_categories.find(c => c.id === Number(p.room_category_id)) || {};
+    const type = roomsData.room_types.find(t => t.id === Number(p.room_type_id)) || {};
+
+    const basePrice = p.adult_promo_price && parseFloat(p.adult_promo_price) > 0
+      ? parseFloat(p.adult_promo_price)
+      : parseFloat(p.adult_price);
+
+    return {
+      id: `nonstuba-${p.room_category_id}-${p.room_type_id}`,
+      roomType: category.name || p.room_category || "Room",
+      mealType: category.name?.toLowerCase().includes("breakfast") ? "Breakfast Included" : "Room Only",
+      price: basePrice * nights,
+      cancellationPolicy: "NonRefundable",
+      roomCode: `CAT${p.room_category_id}`,
+      mealCode: category.name?.toLowerCase().includes("breakfast") ? "BB" : "RO",
+      maxPax: type.max_pax || p.max_pax || 1,
+      rawPricing: p,
+    };
+  });
+
+  const lowestPriceRoom = normalizedRooms[0]; // just pick first or sort by price
 
   const fullData = {
     ...hotelData,
+    normalizedHotelData: {
+      ...hotelData.normalizedHotelData,
+      starting_price: lowestPriceRoom.price,
+      price: lowestPriceRoom.price,
+      currency: hotelData.normalizedHotelData.currency || "SGD"
+    },
+    normalizedRoomData: normalizedRooms,        // ← THIS IS CRITICAL
+    lowestPriceRoom: lowestPriceRoom,
     room_categories: roomsData.room_categories,
     room_types: roomsData.room_types,
-    allotments: roomsData.allotments,
-    normalizedRoomData: [], // will be filled after pricing
-    lowestPriceRoom: null,
   };
 
   setAccommodation(fullData);
   setIsNonStuba(true);
+  setSelectedRoom(lowestPriceRoom); // auto select
 
-  // Slug
+  // Slug correction
   const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
   if (productname !== actualSlug) {
     localizedReplace(
       { pathname: "/accommodation/[productname]/[id]", query: { link_type_id: urlLinkTypeId } },
-      { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } }
+      { pathname: `/accommodation/${actualSlug}/${accommodationId}`, query: { link_type_id: urlLinkTypeId } },
+      { shallow: true }
     );
   }
 
+  setLoading(false);
   return;
 }
 
@@ -434,6 +467,7 @@ useEffect(() => {
           <AccommodationRooms
             isNonStuba={isNonStuba}
             allRooms={accommodation.normalizedRoomData}
+            normalizedRoomData={accommodation.normalizedRoomData}
             room_categories={accommodation.room_categories}
             room_types={accommodation.room_types}
             productId={accommodationId}
