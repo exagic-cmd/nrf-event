@@ -274,6 +274,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   const nights = searchParams?.nights || 1;
   const fromDate = searchParams?.start_date;
   const toDate = searchParams?.end_date;
+  const rooms = searchParams?.rooms || 1;
 
   // Total guests & rooms requested
   const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => 
@@ -310,9 +311,9 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       id: `nonstuba-${p.room_category_id}-${p.room_type_id}`,
       roomType: p.room_category || "Room",
       roomCat: p.room_type_name || "Room",
-      mealType: p.room_category,
+      mealType: p.room_type_name,
       price: basePrice * nights,
-      cancellationPolicy: "NonRefundable",
+     // cancellationPolicy: "NonRefundable",
       maxPax,
       canAccommodate,
       isHotelAvailable,
@@ -511,8 +512,10 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
             currency={hotelData.currency} // Pass currency from hotelData
             onRoomSelect={handleRoomSelect}
             nights={nights}
+            onProceedBooking={handleProceedBooking}
             allotments={accommodation.allotments}
             selectedRoom={selectedRoom}
+            rooms={searchParams?.rooms || 1}
           />
           <AccommodationMap hotelData={hotelData} />
         </div>

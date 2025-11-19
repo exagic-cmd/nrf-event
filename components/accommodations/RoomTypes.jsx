@@ -11,7 +11,10 @@ const StubaRoomList = ({
   allRooms = [],
   currency = "USD",
   onRoomSelect,
+  onProceedBooking,
   nights = 1,
+  totalRooms = 1,
+  totalRoomsRequested = 1,
   selectedRoom = null,
 }) => {
   const [internalSelectedRoom, setInternalSelectedRoom] = useState(null);
@@ -51,13 +54,22 @@ const StubaRoomList = ({
 
       if (!normalized.ok) {
         // show inline message under this room's button
-        setRoomMessages(prev => ({ ...prev, [room.id]: normalized.message || 'Selection not allowed' }));
+        setRoomMessages(prev => ({ ...prev, [room.id]: normalized.message || 'This room is not available on your selected dates' }));
         // clear message after 5s
         setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[room.id]; return c; }), 5000);
         return;
       }
 
       setInternalSelectedRoom(room.id);
+
+      // If parent provided a proceed handler (info card), call it to continue to booking
+      try {
+        if (typeof onProceedBooking === 'function') {
+          onProceedBooking();
+        }
+      } catch (err) {
+        console.error('onProceedBooking threw:', err);
+      }
     } catch (e) {
       console.error('onRoomSelect handler threw:', e);
     }
@@ -114,12 +126,12 @@ const StubaRoomList = ({
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   <Bed className="w-5 h-5 text-[#CC9A55]" />
-                  {roomType}
+                 {totalRoomsRequested} x {roomType}
                 </h3>
-                <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
+                {/* <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
                   <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Flexible check-in</div>
                   <div className="flex items-center gap-2"><Utensils className="w-4 h-4" /> Meal options available</div>
-                </div>
+                </div> */}
               </div>
 
               <div className="space-y-5">
@@ -146,28 +158,25 @@ const StubaRoomList = ({
                               {/* <div className="text-xs text-gray-400">Meal Plan</div> */}
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          {/* <div className="flex items-center gap-3">
                             <div className={cancellation.color}>{cancellation.icon}</div>
                             <div>
                               <div className={`font-medium ${cancellation.color}`}>{cancellation.text}</div>
                               <div className="text-xs text-gray-400">{cancellation.desc}</div>
                             </div>
-                          </div>
+                          </div> */}
                         </div>
 
-                        <div className="flex flex-col justify-center text-center lg:text-left">
-                          <div className="text-3xl font-bold text-[#CC9A55]">
-                            {currency} {formatPrice(room.price)}
-                          </div>
-                          <div className="text-sm text-gray-400 mt-1">
-                            Total for {nights} night{nights > 1 ? "s" : ""}
-                          </div>
-                          {nights > 1 && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              {currency} {getPricePerNight(room.price)} per night
-                            </div>
-                          )}
-                        </div>
+                       <div className="flex justify-between items-center text-center lg:text-left w-full">
+  <div className="text-3xl font-bold text-[#CC9A55]">
+    {currency} {formatPrice(room.price)}
+  </div>
+  {nights > 1 && (
+    <div className="text-xs text-gray-500">
+      ({currency} {getPricePerNight(room.price)} per night)
+    </div>
+  )}
+</div>
 
                         <div className="flex flex-col items-center lg:items-end">
   <button
@@ -223,6 +232,8 @@ const RoomTypes = ({
   currency = "SGD",
   nights = 1,
   onRoomSelect,
+  onProceedBooking,
+  roomsSearched,
   selectedRoom,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
@@ -237,6 +248,8 @@ const RoomTypes = ({
 
   const totalRoomsRequested = (searchParams?.rooms || []).length || 1;
 
+  // Normalize the `rooms` prop passed from parent into a simple count
+  const roomsCount = typeof totalRoomsRequested === 'number' ? Number(totalRoomsRequested) : (Array.isArray(totalRoomsRequested) ? totalRoomsRequested.length : (Number(totalRoomsRequested) || 1));
   const stayDates = useMemo(() => {
     const from = searchParams?.start_date;
     const to = searchParams?.end_date;
@@ -259,7 +272,7 @@ const RoomTypes = ({
 
     // 1. Date availability check (pre-check flag on room)
     if (!room.isHotelAvailable) {
-      alert("This hotel is sold out for one or more nights in your stay.");
+      //alert("This hotel is sold out for one or more nights in your stay.");
       return false;
     }
 
@@ -302,6 +315,9 @@ const RoomTypes = ({
       currency={currency}
       nights={nights}
       onRoomSelect={validateAndSelect}
+      onProceedBooking={onProceedBooking}
+      totalRooms={roomsCount}
+      totalRoomsRequested={totalRoomsRequested}
       selectedRoom={selectedRoom}
     />
   );
