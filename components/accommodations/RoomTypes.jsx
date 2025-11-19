@@ -15,6 +15,7 @@ const StubaRoomList = ({
   selectedRoom = null,
 }) => {
   const [internalSelectedRoom, setInternalSelectedRoom] = useState(null);
+  const [roomMessages, setRoomMessages] = useState({});
 
   useEffect(() => {
     setInternalSelectedRoom(selectedRoom?.id || null);
@@ -40,18 +41,26 @@ const StubaRoomList = ({
   }, {});
 
   const handleRoomSelect = (room) => {
-    // Call external handler first. It should return true to confirm selection is allowed.
     try {
-      const allowed = onRoomSelect ? onRoomSelect(room) : true;
-      // If the handler returns false explicitly, do not mark as selected.
-      if (allowed === false) return;
-    } catch (e) {
-      // If handler throws, avoid selecting and re-throw
-      console.error('onRoomSelect handler threw:', e);
-      return;
-    }
+      const result = onRoomSelect ? onRoomSelect(room) : { ok: true };
 
-    setInternalSelectedRoom(room.id);
+      // Accept multiple return forms for compatibility
+      const normalized = (result === true || result === undefined)
+        ? { ok: true }
+        : (typeof result === 'boolean' ? { ok: result } : result);
+
+      if (!normalized.ok) {
+        // show inline message under this room's button
+        setRoomMessages(prev => ({ ...prev, [room.id]: normalized.message || 'Selection not allowed' }));
+        // clear message after 5s
+        setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[room.id]; return c; }), 5000);
+        return;
+      }
+
+      setInternalSelectedRoom(room.id);
+    } catch (e) {
+      console.error('onRoomSelect handler threw:', e);
+    }
   };
 
   const formatPrice = (price) => {
@@ -131,10 +140,10 @@ const StubaRoomList = ({
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="space-y-4">
                           <div className="flex items-center gap-3">
-                            <div className="text-2xl">{meal.icon}</div>
+                            {/* <div className="text-2xl">{meal.icon}</div> */}
                             <div>
                               <div className="font-medium text-white">{meal.text}</div>
-                              <div className="text-xs text-gray-400">Meal Plan</div>
+                              {/* <div className="text-xs text-gray-400">Meal Plan</div> */}
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
@@ -160,26 +169,31 @@ const StubaRoomList = ({
                           )}
                         </div>
 
-                        <div className="flex items-center justify-center lg:justify-end">
-                          <button
-                            onClick={() => handleRoomSelect(room)}
-                            className={`px-8 py-3 rounded-xl font-bold text-lg transition-all min-w-[160px] flex items-center justify-center gap-2 ${
-                              isSelected
-                                ? "bg-green-600 hover:bg-green-700 text-white"
-                                : "bg-[#CC9A55] hover:bg-[#b88a45] text-white"
-                            }`}
-                          >
-                            {isSelected ? (
-                              <>
-                                <Check className="w-5 h-5" />
-                                Selected
-                              </>
-                            ) : (
-                              "Select Room"
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                        <div className="flex flex-col items-center lg:items-end">
+  <button
+    onClick={() => handleRoomSelect(room)}
+    className={`px-8 py-3 rounded-xl font-bold text-lg transition-all min-w-[160px] gap-2 ${
+      isSelected
+        ? "bg-green-600 hover:bg-green-700 text-white"
+        : "bg-[#CC9A55] hover:bg-[#b88a45] text-white"
+    }`}
+  >
+    {isSelected ? (
+      <>
+        <Check className="w-5 h-5 inline-block mr-2" />
+        Selected
+      </>
+    ) : (
+      "Select Room"
+    )}
+  </button>
+  {roomMessages[room.id] && (
+    <div className="text-red-400 text-sm mt-2 text-center w-full">
+      {roomMessages[room.id]}
+    </div>
+  )}
+</div>
+</div>
 
                       {(room.roomCode || room.mealCode) && (
                         <div className="mt-4 pt-4 border-t border-gray-700 flex flex-wrap gap-4 text-xs text-gray-500">
@@ -253,29 +267,25 @@ const RoomTypes = ({
     for (const date of stayDates) {
       const entry = allotments.find(a => String(a.date) === String(date));
       if (!entry) {
-        alert(`No availability info for ${date}. Please change dates.`);
-        return false;
+        return { ok: false, message: `No availability info for ${date}. Please change dates.` };
       }
       if (entry.available === false) {
-        alert(`Room unavailable on ${date}.`);
-        return false;
+        return { ok: false, message: `Room unavailable on ${date}.` };
       }
       const availQty = Number(entry.value ?? entry.available_qty ?? 0);
       if (availQty < totalRoomsRequested) {
-        alert(`Not enough rooms available on ${date}. Only ${availQty} left for that date.`);
-        return false;
+        return { ok: false, message: `Not enough rooms available on ${date}. Only ${availQty} left for that date.` };
       }
     }
 
     // 3. Pax check
     if (!room.canAccommodate) {
-      alert(room.paxMessage || `This room is too small for ${totalGuests} guests.`);
-      return false;
+      return { ok: false, message: room.paxMessage || `This room is too small for ${totalGuests} guests.` };
     }
 
     // All checks passed — call parent's handler and signal allowed
     onRoomSelect?.(room);
-    return true;
+    return { ok: true };
   };
 
   if (!roomsToDisplay || roomsToDisplay.length === 0) {

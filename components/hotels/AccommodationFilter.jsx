@@ -163,55 +163,78 @@ export default function AccommodationFilter({ onSearch }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!selectedItem) {
-      alert("Please select a hotel or destination from the dropdown");
-      return;
-    }
+  if (!selectedItem) {
+    alert("Please select a hotel or destination from the dropdown");
+    return;
+  }
 
-    if (!startDate || !endDate) {
-      alert("Please select both check-in and check-out dates");
-      return;
-    }
+  if (!startDate || !endDate) {
+    alert("Please select both check-in and check-out dates");
+    return;
+  }
 
-    const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-    const formatDate = (date) => {
-      const d = new Date(date);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    };
-
-    const searchPayload = {
-      search,
-      start_date: formatDate(startDate),
-      end_date: formatDate(endDate),
-      nights,
-      rooms,
-      nationality,
-      refund_policy: refund,
-      stars,
-      ids:''
-    };
-      console.log("Selected Item before payload:", selectedItem);
-  
-    if (selectedItem.type === "hotel") {
-      searchPayload.hotel_id = selectedItem.stuba_id;
-      searchPayload.region = false;
-      if (selectedItem?.link_type_id!=9)
-        searchPayload.ids = [selectedItem?.id];
-    } else if (selectedItem.type === "region") {
-      searchPayload.region = selectedItem.region_id;
-      searchPayload.hotel_id = false;
-    }
-
-    console.log("Search Payload:", searchPayload);
-    await setSearchParamsAndSearch(searchPayload);
-
-    if (onSearch) onSearch(searchPayload);
+  const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   };
+
+  const searchPayload = {
+    search,
+    start_date: formatDate(startDate),
+    end_date: formatDate(endDate),
+    nights,
+    rooms,
+    nationality,
+    refund_policy: refund,
+    stars,
+    ids: ''
+  };
+
+  if (selectedItem.type === "hotel") {
+    searchPayload.hotel_id = selectedItem.stuba_id || false;
+    searchPayload.region = false;
+    if (selectedItem?.link_type_id != 9) {
+      searchPayload.ids = [selectedItem?.id];
+    }
+  } else if (selectedItem.type === "region") {
+    searchPayload.region = selectedItem.region_id;
+    searchPayload.hotel_id = false;
+  }
+
+  console.log("Search Payload:", searchPayload);
+
+  try {
+    // This will now return [] if !data.status
+    const results = await setSearchParamsAndSearch(searchPayload);
+
+    // Critical: Check if API returned error (status false)
+    if (!results || results.length === 0) {
+      // You can customize this message based on context
+      //alert("No hotels found for your search criteria. Try different dates or destination.");
+      return;
+    }
+
+    // Optional: Extra safety — if store has error state
+    const { error } = useAccommodationsStore.getState();
+    if (error) {
+      alert(error);
+      return;
+    }
+
+    // Success — trigger parent callback
+    if (onSearch) onSearch(searchPayload);
+
+  } catch (err) {
+    console.error("Search failed:", err);
+    alert("An error occurred while searching. Please try again.");
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 ">
