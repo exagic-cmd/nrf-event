@@ -22,7 +22,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-black text-white py-5 px-4 sm:px-12">
-      <div className="max-w-7xl mx-auto">
+      <hr />
+      <div className="max-w-7xl mx-auto mt-4">
         {/* Top Section - Brand and Social */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8 mb-8">
           <div className="flex-1">
@@ -36,14 +37,14 @@ const Footer = () => {
            {/* Logo */}
       <div className="text-lg font-semibold text-gray-800 ">
          <img
-          src={`https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.logo}`}
+          src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763540173/External%20Links/NRF_Logo.png"
           alt="Logo"
-          className="h-8 md:12 w-auto object-contain -ml-4"
+          className="h-8 md:12 w-auto object-contain "
         />
       </div>
-            <div className="text-gray-300 text-sm leading-relaxed max-w-md">
+            <div className="text-gray-300 mt-3 text-sm leading-relaxed max-w-md">
                <div className="text-left">
-              <h4 className="font-semibold text-white mb-3 text-md">{event?.event?.company_name}</h4>
+              {/* <h4 className="font-semibold text-white mb-3 text-md">{event?.event?.company_name}</h4> */}
               <div className="space-y-2 text-sm text-gray-300">
                 <p className="flex items-center justify-start">
                   <PhoneCall size={14} className="mr-2 text-[#CC9A55]" /> 
@@ -91,7 +92,7 @@ const Footer = () => {
                 </LocalizedLink>
               </div>
             </div> */}
-             <div className="flex space-x-3">
+             <div className="flex space-x-3 mx-0 lg:mx-12">
               {event?.event?.short_desc}
             </div>
           </div>
