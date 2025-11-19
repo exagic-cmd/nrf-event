@@ -161,13 +161,13 @@ const AccommodationInfoCard = ({
             {selectedRoom ? "Change Room" : `Choose Room (${allRooms.length})`}
           </button>
 
-          <button
+          {/* <button
             onClick={onProceedBooking}
             disabled={!selectedRoom}
             className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3.5 px-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Proceed to Book" : "Select a Room First"}
-          </button>
+          </button> */}
         </div>
 
         {!selectedRoom && freeCancellation && (
