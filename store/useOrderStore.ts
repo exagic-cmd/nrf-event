@@ -11,6 +11,7 @@ export const useOrderStore = create(
       selectedTrip: null,
        weatherInfo: null,
       reviewQuestions: [],
+      accommodations: [],
       categoryId: null,
       loading: false,
       error: null,
@@ -35,7 +36,7 @@ fetchWeatherInfo: async ( userId) => {
   }
 },
 
-     fetchUpcomingBookings: async (token) => {
+fetchUpcomingBookings: async (token) => {
   set({ loading: true, error: null });
   try {
     const res = await apiRequest({
@@ -43,6 +44,10 @@ fetchWeatherInfo: async ( userId) => {
       method: "POST",
       data: { access_token: token },
     });
+
+    // Save accommodations separately
+    const accommodations = res?.data?.accommodations || [];
+    set({ accommodations });  // ✅ Add this line
 
     const bookings = (res?.data?.orders || []).map((order) => {
       const itineraries = order.itineraries || [];
@@ -61,6 +66,7 @@ fetchWeatherInfo: async ( userId) => {
     });
 
     set({ upcomingBookings: bookings, loading: false });
+
     if (bookings.length > 0 && bookings[0].itineraries?.length > 0) {
       const firstOrder = bookings[0];
       const firstItinerary = firstOrder.itineraries[0];
@@ -81,8 +87,8 @@ fetchWeatherInfo: async ( userId) => {
     }
   } catch (err) {
     set({
-      error: err.message || "Failed to fetch upcoming bookings",
       loading: false,
+      error: err.message || "Failed to fetch upcoming bookings",
     });
   }
 },

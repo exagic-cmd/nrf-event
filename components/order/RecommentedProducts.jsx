@@ -91,7 +91,7 @@ export default function RecommendedProducts() {
   };
 
   return (
-    <section className="relative w-full py-8 md:py-16 bg-black">
+    <section className="relative w-full py-2 md:py-4 bg-black">
       {/* Loader Overlay */}
       {loading && (
         <div className="absolute inset-0 z-50 flex justify-center items-center bg-black/60 pointer-events-none">
