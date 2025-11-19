@@ -171,9 +171,9 @@ export default function HomePage() {
               />
             </Head>
           )}
-          <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 lg:items-start max-w-full">
-            <div className="flex w-full lg:mx-0 justify-center lg:justify-end">
-              <Card className="w-full max-w-full p-0 bg-transparent border-0 shadow-none">
+          <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 max-w-full ">
+            <div className="flex w-full lg:mx-0 justify-center">
+              <Card className="w-full max-w-7xl flex justify-center items-center p-0 bg-transparent border-0 shadow-none">
                 <SearchFilterCard
                   filterActiveTab={filterActiveTab}
                   filterTabs={filterTabs}

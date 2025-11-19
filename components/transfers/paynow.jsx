@@ -20,6 +20,7 @@ import { redirectToAirwallexCheckout } from '@/utils/airwallex';
 import CheckoutRedirect from "@/components/stripe/CheckoutRedirect";
 import BookingPreviewSlider from "@/components/transfers/BookingPreviewSlider";
 import useUserStore from '@/store/useAuthStore';
+import { useEventStore } from "@/store/useEventStore";
 
 const PayNow = ({ totalPrice }) => {
   const { t } = useTranslation("daytour");
@@ -34,7 +35,7 @@ const PayNow = ({ totalPrice }) => {
   const getPromoExist = useBookingStore(state => state.getPromoExist);
   const { refId, refType, track_agent_id } = useAffiliateStore();
   const { user } = useUserStore.getState();
-
+  const { event } = useEventStore();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [paymentOptions, setPaymentOptions] = useState([]);
   const [showPromoField, setShowPromoField] = useState(false);
@@ -322,7 +323,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     customer_type: 'potential_customer',
     visitor_number: 'V68261',
     redemption_voucher_id: 0,
-    agent_id: refId || null,
+    agent_id: event?.event?.user_id || null,
     ref_type: refType || null,
     track_agent_id: track_agent_id || null
   };
@@ -338,7 +339,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     try {
       const finalPayload = buildFinalPayload();
       console.log("Final Booking Payload:", finalPayload);
-
+      return 0;
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
 
