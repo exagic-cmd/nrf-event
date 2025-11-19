@@ -11,6 +11,7 @@ const AccommodationInfoCard = ({
   onProceedBooking,
   selectedRoom = null,
   nights = 1,
+  totalGuests = 1,
 }) => {
   const [lowestPrice, setLowestPrice] = useState(0);
   const [amenities, setAmenities] = useState([]);
@@ -76,8 +77,8 @@ const AccommodationInfoCard = ({
             {selectedRoom ? (
               <>
                 <Bed className="h-3.5 w-3.5" />
-                Total for {nights} night{nights > 1 ? "s" : ""}
-                {allRooms.length > 1 && " · per room"}
+                Total for {nights} night{nights > 1 ? "s " : ""}
+               for { totalGuests +" Guests"}
               </>
             ) : (
               <>

@@ -300,20 +300,24 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       ? parseFloat(p.adult_promo_price)
       : parseFloat(p.adult_price);
 
-    const maxPax = type.max_pax || p.max_pax || 1;
-    const canAccommodate = maxPax >= totalGuests;
+    const maxPax = Number(type.max_pax || p.max_pax || 1);
+    // Determine guests needed per room when booking multiple rooms.
+    const perRoomNeeded = totalRoomsRequested > 0 ? Math.ceil(totalGuests / totalRoomsRequested) : totalGuests;
+    // Allow using the same room type across requested rooms: each room must support perRoomNeeded guests
+    const canAccommodate = maxPax >= perRoomNeeded;
 
     return {
       id: `nonstuba-${p.room_category_id}-${p.room_type_id}`,
-      roomType: category.name || p.room_category || "Room",
-      mealType: category.name?.toLowerCase().includes("breakfast") ? "Breakfast Included" : "Room Only",
+      roomType: p.room_category || "Room",
+      roomCat: p.room_type_name || "Room",
+      mealType: p.room_category,
       price: basePrice * nights,
       cancellationPolicy: "NonRefundable",
       maxPax,
       canAccommodate,
       isHotelAvailable,
       isAvailable: isHotelAvailable && canAccommodate,
-      paxMessage: !canAccommodate ? `Max ${maxPax} guest${maxPax > 1 ? 's' : ''} (you have ${totalGuests})` : null,
+      paxMessage: !canAccommodate ? `Each room must support ${perRoomNeeded} guest(s); this room supports ${maxPax}.` : null,
       rawPricing: p,
     };
   });
@@ -466,6 +470,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   const hotelData = accommodation.normalizedHotelData;
   const roomData = accommodation.normalizedRoomData;
   const nights = searchParams?.nights || 1;
+  const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => sum + (Number(r.adult) || 0) + (Array.isArray(r.children) ? r.children.length : 0), 0) || 1;
 
   return (
     <Layout>
@@ -490,6 +495,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
               onScrollToOptions={handleScrollToOptions}
               onProceedBooking={handleProceedBooking}
               nights={nights}
+              totalGuests={totalGuests}
             />
           </div>
         </div>

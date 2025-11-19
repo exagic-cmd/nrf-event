@@ -68,7 +68,7 @@ export const useAccommodationsStore = create((set, get) => ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             term: searchTerm,
-            local: false,
+            local: true,
             caterogry_id: 4,
           }),
         }
@@ -150,14 +150,26 @@ export const useAccommodationsStore = create((set, get) => ({
 
   // Set search parameters and trigger search immediately
   setSearchParamsAndSearch: async (payload) => {
-    console.log("🚀 Setting search params and triggering search:", payload);
+  console.log("Setting search params and triggering search:", payload);
+  
+  set({ searchParams: payload, isLoading: true, error: null });
+
+  try {
+    const results = await get().fetchAccommodations(payload);
     
-    // First, set the search params in store
-    set({ searchParams: payload, isLoading: true, error: null });
-    
-    // Then immediately trigger the search
-    await get().fetchAccommodations(payload);
-  },
+    // If no results (likely due to !data.status), return null
+    if (!results || results.length === 0) {
+      set({ isLoading: false });
+      return null;
+    }
+
+    set({ isLoading: false });
+    return results;
+  } catch (err) {
+    set({ isLoading: false, error: err.message || "Search failed" });
+    return null;
+  }
+},
 
   // Fetch accommodations search results
   fetchAccommodations: async (payload) => {
@@ -214,10 +226,10 @@ export const useAccommodationsStore = create((set, get) => ({
 
       const data = await res.json();
       if (!data.status){
-        alert(data.msg || "Failed to fetch accommodations");
-          throw new Error(data.msg || "Failed to fetch accommodations");
-        return;
-      }
+  alert(data.msg);
+  set({ isLoading: false, error: data.msg || "No results" });
+  return null; // ← Change from [] to null
+}
 
       // Assume API returns accommodations in data.accommodations or data.data
       const results = data?.accommodations || data?.data || data || [];
