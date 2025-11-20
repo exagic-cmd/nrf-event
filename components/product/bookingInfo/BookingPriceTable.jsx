@@ -42,23 +42,23 @@ const BookingPriceTable = ({ id }) => {
     <div className="mb-6">
       <div className="mx-0">
         <div className="text-lg my-4 md:text-xl font-semibold text-gray-800 flex items-center gap-2">
-          <Tag className="w-5 h-5 text-[#CC9A55]" />
+          <Tag className="w-5 h-5 text-[#D3202D]" />
           {t("bookingInformation")}
         </div>
 
         <div
-          className="mt-4 mb-4 p-4 bg-gradient-to-r from-[#CC9A55] to-gray-50 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+          className="mt-4 mb-4 p-4 bg-gradient-to-r from-[#ce6269] to-gray-50 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
             <div className="flex items-center gap-2 text-black font-semibold">
-              <ChevronUp className={`w-5 h-5 text-[#CC9A55] transition-transform duration-300 ${!isOpen ? "rotate-180" : ""}`} />
+              <ChevronUp className={`w-5 h-5 text-white transition-transform duration-300 ${!isOpen ? "rotate-180" : ""}`} />
               <span className="font-medium">
                 {t("tiersAvailable", { count: pricingList.length })}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-gray-700">
-              <Users className="w-4 h-4 text-[#CC9A55]" />
+            <div className="flex items-center gap-2 text-black">
+              <Users className="w-4 h-4 text-[#D3202D]" />
               <span className="font-medium">
                 {t("groupSize", {
                   min: Math.min(...pricingList.map((p) => p.min_pax)),
@@ -78,13 +78,13 @@ const BookingPriceTable = ({ id }) => {
                     <th className="py-4 px-4 text-left font-semibold text-sm text-gray-700 whitespace-nowrap">#</th>
                     <th className="py-4 px-4 text-left font-semibold text-sm text-gray-700 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-[#CC9A55]" />
+                        <Users className="w-4 h-4 text-[#D3202D]" />
                         {t("minPax")}
                       </div>
                     </th>
                     <th className="py-4 px-4 text-left font-semibold text-sm text-gray-700 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-[#CC9A55]" />
+                        <Users className="w-4 h-4 text-[#D3202D]" />
                         {t("maxPax")}
                       </div>
                     </th>

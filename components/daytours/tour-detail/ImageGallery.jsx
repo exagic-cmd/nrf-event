@@ -17,7 +17,7 @@ const ImageGallery = ({ apiData, currentImageIndex, setCurrentImageIndex }) => {
   return (
     <div className="lg:col-span-4">
       <div className="relative group">
-        <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden border border-[#CC9A55] border-solid">
+        <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden border border-[#D3202D] border-solid">
           <img
             src={allImages[currentImageIndex] || "/placeholder.svg?height=400&width=600"}
             alt={tourName}
@@ -49,7 +49,7 @@ const ImageGallery = ({ apiData, currentImageIndex, setCurrentImageIndex }) => {
               onClick={() => setCurrentImageIndex(i)}
               className={`flex-shrink-0 w-16 h-12 sm:w-20 sm:h-16 rounded-lg overflow-hidden transition-all duration-300 ${
                 currentImageIndex === i
-                  ? "ring-2 sm:ring-3 ring-[#CC9A55] ring-offset-1 sm:ring-offset-2 scale-105"
+                  ? "ring-2 sm:ring-3 ring-[#D3202D] ring-offset-1 sm:ring-offset-2 scale-105"
                   : "opacity-70 hover:opacity-100"
               }`}
             >

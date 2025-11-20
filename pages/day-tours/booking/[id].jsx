@@ -118,10 +118,10 @@ const DayTourBookingPage = () => {
   if (!allowed) {
     return (
       <Layout>
-        <div className="flex items-center bg-black justify-center pb-12 min-h-screen text-center px-4">
+        <div className="flex items-center bg-[#D0E9FF] justify-center pb-12 min-h-screen text-center px-4">
           <div>
-             <h2 className="text-xl font-semibold text-white mb-2">{t("redirecting")}</h2>
-            <p className="text-gray-50">{t("redirectingMessage")}</p>
+             <h2 className="text-xl font-semibold text-black mb-2">{t("redirecting")}</h2>
+            <p className="text-black">{t("redirectingMessage")}</p>
           </div>
         </div>
       </Layout>
@@ -139,7 +139,7 @@ const DayTourBookingPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black pb-12 pt-12 md:pt-20">
+      <div className="min-h-screen bg-[#D0E9FF] pb-12 pt-12 md:pt-20">
         <div className="max-w-7xl mx-auto px-1 md:px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
@@ -176,9 +176,9 @@ const DayTourBookingPage = () => {
                       {/* Details Section */}
                       <div className="space-y-3">
                        
-                        <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <Tag className="w-4 h-4 text-green-600" />
+                        <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <Tag className="w-4 h-4 text-[#2176FF]" />
                           </div>
                           <div>
      <p className="text-xs text-gray-500 uppercase tracking-wide">{t("price")}</p>

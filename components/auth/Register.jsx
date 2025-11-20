@@ -179,7 +179,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#CC9A55] text-white  p-3 rounded-md transition-colors ${
+              className={`w-full bg-[#D3202D] text-white  p-3 rounded-md transition-colors ${
                 loading
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-[#cb913f]"
@@ -194,7 +194,7 @@ export default function RegisterPage() {
             <span className="text-black">{t("alreadyHaveAccount")} </span>
             <a
               href="/login"
-              className="text-[#CC9A55] hover:underline"
+              className="text-[#D3202D] hover:underline"
             >
               {t("signIn")}
             </a>

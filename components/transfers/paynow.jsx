@@ -21,7 +21,6 @@ import CheckoutRedirect from "@/components/stripe/CheckoutRedirect";
 import BookingPreviewSlider from "@/components/transfers/BookingPreviewSlider";
 import useUserStore from '@/store/useAuthStore';
 import { useEventStore } from "@/store/useEventStore";
-
 const PayNow = ({ totalPrice }) => {
   const { t } = useTranslation("daytour");
   const { languageId, currentLocale } = useLanguageStore.getState();
@@ -40,7 +39,9 @@ const PayNow = ({ totalPrice }) => {
   const [paymentOptions, setPaymentOptions] = useState([]);
   const [showPromoField, setShowPromoField] = useState(false);
   const [stripeOrderId, setStripeOrderId] = useState(null);
-
+  const [flywireTotal, setFlywireTotal] = useState(null);
+  const [showFlywire, setShowFlywire] = useState(false);
+  const [returnOrderId, setReturnOrderId] = useState(null);
   // Form fields
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -149,7 +150,7 @@ const PayNow = ({ totalPrice }) => {
         adult_count: item.adult_count || item.guests || 0,
         child_count: item.child_count || 0,
         total: Number(item.total) || Number(item.price) || 0,
-        tour_date: item.tour_date || item.checkIn,
+        tour_date: item.tour_date || item.checkIn||"20-11-2025",
         check_in: item.check_in || item.checkIn,
         check_out: item.check_out || item.checkOut,
         nights: item.nights || 1,
@@ -323,7 +324,8 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     customer_type: 'potential_customer',
     visitor_number: 'V68261',
     redemption_voucher_id: 0,
-    agent_id: event?.event?.user_id || null,
+    // event is stored as object in useEventStore; read user_id directly
+    agent_id: event?.user_id || null,
     ref_type: refType || null,
     track_agent_id: track_agent_id || null
   };
@@ -340,21 +342,26 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       const finalPayload = buildFinalPayload();
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
+      console.log('submitBooking response:', response, 'orderId:', orderId, 'selected paymentOption:', paymentOption);
 
       const creditCardOption = paymentOptions.find(opt => opt.name === "Credit Card" || opt.id === 2);
 
-      if (paymentOption == creditCardOption?.id) {
-        localStorage.setItem("pendingPaymentOrderId", orderId);
-        setStripeOrderId(orderId);
-      } else {
+    if (paymentOption == creditCardOption?.id) {
+        setReturnOrderId(orderId);
+    setFlywireTotal(totalPrice);
+          setShowFlywire(true); 
+           useCartStore.getState().clearCart();
+       alert("Order ID: " + orderId);
+        } else {
+    
         setIsPopupVisible(true);
+       }
+      } catch (error) {
+        alert("Booking failed: " + error.message);
+      } finally {
+        setIsSubmitting(false);
       }
-    } catch (error) {
-      alert("Booking failed: " + error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    };
 
   const closePopup = () => {
     localizedPush('/');
@@ -498,6 +505,25 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       </div>
 
       {isPopupVisible && <PopupMsg closePopup={closePopup} />}
+      
+        {/* Flywire Modal */}
+        {showFlywire && returnOrderId && (
+          <PayNowFlywire
+            returnOrderId={returnOrderId}
+            name={name}
+            email={email}
+            totalPrice={flywireTotal}
+            branchId={2}
+            onSuccess={() => {
+              setShowFlywire(false);
+              setIsPopupVisible(true);
+            }}
+            onFailure={(reason) => {
+              alert(`${t("paymentFailed")} ${reason}`);
+              setShowFlywire(false);
+            }}
+          />
+        )}
     </>
   );
 };

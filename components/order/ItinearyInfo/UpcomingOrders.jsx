@@ -55,7 +55,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
   if (!allItineraryItems || allItineraryItems.length === 0 && accommodations?.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-xl">
-        <Calendar className="w-16 h-16 text-[#CC9A55] mx-auto mb-4" />
+        <Calendar className="w-16 h-16 text-[#D3202D] mx-auto mb-4" />
         <p className="text-black text-lg font-medium">
           {t("noUpcomingBookingsFound")}
         </p>
@@ -69,7 +69,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl md:text-3xl font-bold text-black">
+        <h2 className="text-xl font-semibold text-[#D3202D]">
           {t("upcomingOrders")}
         </h2>
         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -95,7 +95,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
                 className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${
                   item.booking_status?.toLowerCase() === "confirmed"
                     ? "bg-gray-800 text-white font-semibold"
-                    : "bg-[#CC9A55] text-white font-semibold"
+                    : "bg-[#D3202D] text-white font-semibold"
                 }`}
               >
                 {item.booking_status}
@@ -132,7 +132,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
                         itinerary_id: item.id,
                       })
                     }
-                    className="flex-1 bg-[#CC9A55] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#cb913f] transition-colors text-sm"
+                    className="flex-1 bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#cb913f] transition-colors text-sm"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     <span>{t("details")}</span>

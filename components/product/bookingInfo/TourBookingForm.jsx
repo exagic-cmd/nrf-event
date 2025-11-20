@@ -204,7 +204,7 @@ setForm({
 
   const CustomInput = React.forwardRef(({ value, onClick, className, placeholder }, ref) => (
     <div
-      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring--[#CC9A55] focus:border-orange-300 text-left bg-white hover:border--[#CC9A55] transition-colors h-12`}
+      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring--[#D3202D] focus:border-orange-300 text-left bg-white hover:border--[#D3202D] transition-colors h-12`}
       onClick={onClick}
       ref={ref}
     >
@@ -222,12 +222,12 @@ setForm({
           {/* Passenger Count */}
           <div className="space-y-3">
             <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#CC9A55]" />
+              <Users className="w-4 h-4 text-[#D3202D]" />
               {t("bookingForm.totalPax")} <span className="text-red-500">*</span>
             </label>
             <button
               type="button"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:bg-[#fff4e6] hover:border--[#CC9A55] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring--[#CC9A55]"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:bg-[#fff4e6] hover:border--[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring--[#D3202D]"
               onClick={handleOpenPassengerModal}
             >
               <span className="flex items-center gap-2">
@@ -237,7 +237,7 @@ setForm({
                   {form.child || 0} {form.child === 1 ? t("bookingForm.child") : t("bookingForm.child_plural")}
                 </span>
               </span>
-              <Badge variant="secondary" className="bg-[#CC9A55] text-white">
+              <Badge variant="secondary" className="bg-[#D3202D] text-white">
                 {totalPax} {t("bookingForm.total")}
               </Badge>
             </button>
@@ -260,7 +260,7 @@ setForm({
           {/* Hotel */}
           <div className="space-y-3 ">
             <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-              <Hotel className="w-4 h-4 text-[#CC9A55]" />
+              <Hotel className="w-4 h-4 text-[#D3202D]" />
               {t("bookingForm.selectHotel")} <span className="text-red-500">*</span>
             </label>
             <SelectField
@@ -281,7 +281,7 @@ setForm({
           {/* Date */}
           <div className="space-y-3">
             <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-[#CC9A55]" />
+              <CalendarDays className="w-4 h-4 text-[#D3202D]" />
               {t("bookingForm.selectDate")} <span className="text-red-500">*</span>
             </label>
             <DatePicker
@@ -301,14 +301,14 @@ setForm({
                   String(date.getMonth() + 1).padStart(2, "0") +
                   "-" +
                   String(date.getDate()).padStart(2, "0")
-                return availableDateStrings.has(localDateStr) ? "bg-orange-100 text-gray-700 hover:bg--[#CC9A55]" : ""
+                return availableDateStrings.has(localDateStr) ? "bg-orange-100 text-gray-700 hover:bg--[#D3202D]" : ""
               }}
               customInput={React.createElement(CustomInput, { className: "w-full" })}
               wrapperClassName="w-full"
             />
             {loadingDates && (
-              <div className="text-sm text-[#CC9A55] mt-1 flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border--[#CC9A55] border-t-[#CC9A55] rounded-full animate-spin"></div>
+              <div className="text-sm text-[#D3202D] mt-1 flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border--[#D3202D] border-t-[#D3202D] rounded-full animate-spin"></div>
                 {t("bookingForm.loadingDates")}
               </div>
             )}
@@ -320,7 +320,7 @@ setForm({
          {/* Time */}
 <div className="space-y-3">
   <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-    <Clock className="w-4 h-4 text-[#CC9A55]" />
+    <Clock className="w-4 h-4 text-[#D3202D]" />
     {t("bookingForm.time")} <span className="text-red-500">*</span>
   </label>
   {form.date ? (
@@ -421,8 +421,8 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
   return (
     <div>
       {loading ? (
-        <div className="text-sm text-[#CC9A55] flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border--[#CC9A55] border-t-[#CC9A55] rounded-full animate-spin"></div>
+        <div className="text-sm text-[#D3202D] flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border--[#D3202D] border-t-[#D3202D] rounded-full animate-spin"></div>
           {t("bookingForm.loadingHotels")}
         </div>
       ) : error ? (

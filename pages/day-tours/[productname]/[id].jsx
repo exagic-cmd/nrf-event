@@ -309,7 +309,7 @@ const startingPrice = apiData.starting_price || ""
   if (isNavigating) {
     return (
       <Layout>
-        <div className="flex bg-black items-center justify-center min-h-screen">
+        <div className="flex bg-[#D0E9FF] items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -319,7 +319,7 @@ const startingPrice = apiData.starting_price || ""
   if (!showContent || isLanguageLoading) {
     return (
       <Layout>
-        <div className="flex bg-black items-center justify-center min-h-screen">
+        <div className="flex bg-[#D0E9FF] items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -401,7 +401,7 @@ const handleVariantSelect = async (variant) => {
     <Layout>
     <TourDetailHead basicInfo={apiData} productname={productname} productid={productid} />
 
-      <div className="min-h-screen bg-black text-white w-full pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-[#D0E9FF] text-black w-full pt-[80px] md:pt-10 pb-12">
         <div className="relative overflow-hidden">
           <div className="px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-8">
             <TourHeader apiData={apiData} />
@@ -425,12 +425,12 @@ const handleVariantSelect = async (variant) => {
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
        
-            <TourRoute
+            {/* <TourRoute
               prod_id={productid}
               lang_id={2}
               colortext="#222"
               colorheading="#ffff"
-            />
+            /> */}
           <TourAccordion apiData={apiData} />
         </div>
 
@@ -438,7 +438,7 @@ const handleVariantSelect = async (variant) => {
           <TourVariants ref={tourOptionsRef} groupProducts={groupProducts} onVariantSelect={handleVariantSelect} />
         )}
 
-       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-orange-50 to-orange-100 p-2 border-t border-orange-200 shadow-t-lg z-50">
+       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-blue-50 p-2 border-t border-[#D3202D] shadow-t-lg z-50">
         <div className="flex justify-between items-center max-w-screen-xl mx-auto px-4">
           <div>
             <div className="text-sm text-gray-600">{t("starting_from", "Starting From")}</div>
@@ -447,7 +447,7 @@ const handleVariantSelect = async (variant) => {
           {apiData?.is_group ? (
             <button
               onClick={onScrollToOptions}
-              className="bg-[#CC9A55] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="bg-[#D3202D] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("choose_tour_type", "Choose your Type")}
               <ChevronDown size={20} />
@@ -455,7 +455,7 @@ const handleVariantSelect = async (variant) => {
           ) : (
             <button
               onClick={handleProceedBooking}
-              className="bg-[#CC9A55] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="bg-[#D3202D] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("proceed_booking", "Proceed Booking")}
               <ChevronRight size={20} />

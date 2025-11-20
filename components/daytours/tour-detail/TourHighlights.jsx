@@ -22,7 +22,7 @@ const TourHighlights = ({ apiData }) => {
   return (
     <div className="mb-6  ">
       {/* <h3 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <Star className="text-[#CC9A55]" size={20} />
+        <Star className="text-[#D3202D]" size={20} />
         {t("tourHighlights")}
       </h3> */}
       <div
@@ -39,7 +39,7 @@ const TourHighlights = ({ apiData }) => {
               flex-shrink-0 min-w-[250px]
             "
           >
-            <Award className="text-[#CC9A55] flex-shrink-0" size={18} />
+            <Award className="text-[#D3202D] flex-shrink-0" size={18} />
             <span className="text-gray-700 text-sm font-medium whitespace-nowrap">
               {highlight}
             </span>

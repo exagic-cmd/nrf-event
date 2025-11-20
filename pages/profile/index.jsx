@@ -151,7 +151,7 @@ const UserProfileScreen = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 {/* Profile Header */}
-                <div className="bg-gradient-to-br from-[#CC9A55] to-[#eca94c] px-6 pt-2 text-white relative">
+                <div className="bg-gradient-to-br from-[#D3202D] to-[#eca94c] px-6 pt-2 text-white relative">
                   <div className="relative flex flex-col items-center">
                     <div className="relative">
                       <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl font-bold mb-4">
@@ -270,7 +270,7 @@ const UserProfileScreen = () => {
                     </button>
                     <button
                       onClick={handleSave}
-                      className="px-4 py-2 bg-[#CC9A55] text-white rounded"
+                      className="px-4 py-2 bg-[#D3202D] text-white rounded"
                     >
                       {t("save")}
                     </button>

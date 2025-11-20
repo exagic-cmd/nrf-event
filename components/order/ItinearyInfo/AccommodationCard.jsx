@@ -54,7 +54,7 @@ export default function AccommodationCard({ data }) {
         {/* Payment Status Badge */}
         <div className={`absolute top-2 right-2 text-xs font-semibold px-3 py-1 rounded-full ${
           accommodation?.payment_status === 'Paid' 
-            ? 'bg-[#CC9A55] text-white' 
+            ? 'bg-[#D3202D] text-white' 
             : 'bg-gray-700 text-white'
         }`}>
           {accommodation?.payment_status || 'Unpaid'}
@@ -72,7 +72,7 @@ export default function AccommodationCard({ data }) {
 
           {/* Nights Badge on Right */}
           {nights && (
-            <span className="text-xs font-semibold bg-gray-100 text-[#CC9A55] px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+            <span className="text-xs font-semibold bg-gray-100 text-[#D3202D] px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
               {nights} Nights
             </span>
           )}
@@ -80,7 +80,7 @@ export default function AccommodationCard({ data }) {
 
         {/* Address */}
         <div className="flex items-start gap-2">
-          <MapPin className="w-4 h-4 text-black mt-0.5 flex-shrink-0" />
+          <MapPin className="w-4 h-4 text-[#33A1FD] mt-0.5 flex-shrink-0" />
           <p className="text-xs text-gray-800 line-clamp-2">
             {accommodation?.hotel_address || 'Address not available'}
           </p>
@@ -89,8 +89,8 @@ export default function AccommodationCard({ data }) {
         {/* Meal Plan — Badge line */}
         {accommodation?.meal_plan && accommodation?.meal_plan !== 'Not Included' && (
           <div className="flex items-center gap-2">
-            <UtensilsCrossed className="w-4 h-4 text-black flex-shrink-0" />
-            <span className="text-xs bg-gray-100 text-black  px-2 py-0.5 rounded-full">
+            <UtensilsCrossed className="w-4 h-4 text-[#33A1FD] flex-shrink-0" />
+            <span className="text-xs bg-gray-100 text-[#33A1FD]  px-2 py-0.5 rounded-full">
               {accommodation?.meal_plan}
             </span>
           </div>
@@ -98,9 +98,9 @@ export default function AccommodationCard({ data }) {
 
         {/* Check-in / Check-out */}
         <div className="space-y-2  border-t border-gray-200">
-          <div className='flex items-center justify-between bg-[#e6dfd5] p-1 rounded gap-2'>
+          <div className='flex items-center justify-between bg-blue-50 p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-black" />
+              <Calendar className="w-4 h-4 text-[#33A1FD]" />
               <p className="text-xs font-semibold text-gray-900  tracking-wide">
                 Check-in
               </p>
@@ -113,9 +113,9 @@ export default function AccommodationCard({ data }) {
             </div>
           </div>
 
-          <div className='flex items-center justify-between bg-[#e6dfd5] p-1 rounded gap-2'>
+          <div className='flex items-center justify-between bg-blue-50 p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-black" />
+              <Calendar className="w-4 h-4 text-[#33A1FD]" />
               <p className="text-xs font-semibold text-gray-900  tracking-wide">
                 Check-out
               </p>
@@ -132,7 +132,7 @@ export default function AccommodationCard({ data }) {
         {/* Action Button */}
       <button
           onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
-          className="w-full bg-[#CC9A55] hover:bg-[#b8885c] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
+          className="w-full bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
           disabled={isLoading}
         >
           {isLoading ? (
