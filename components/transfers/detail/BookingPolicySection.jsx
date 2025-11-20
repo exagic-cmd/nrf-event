@@ -72,7 +72,7 @@ function BookingPolicySection({
             className={`flex items-center justify-center w-5 h-5 border-2 rounded-sm transition-all duration-200 
             ${
               isSelected
-                ? "bg-[#CC9A55] border-[#CC9A55]"
+                ? "bg-[#D3202D] border-[#D3202D]"
                 : "border-gray-300 bg-white"
             }`}
           >
@@ -92,7 +92,7 @@ function BookingPolicySection({
               e.preventDefault();
               setOpenModal(true);
             }}
-            className="text-[#CC9A55] underline"
+            className="text-[#D3202D] underline"
           >
             {t("terms_conditions.title")}
           </a>{" "}
@@ -126,7 +126,7 @@ function BookingPolicySection({
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setOpenModal(false)}
-                className="bg-[#CC9A55] text-white px-4 py-2 rounded-md text-sm"
+                className="bg-[#D3202D] text-white px-4 py-2 rounded-md text-sm"
               >
                 Close
               </button>

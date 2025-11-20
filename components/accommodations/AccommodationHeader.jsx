@@ -60,7 +60,7 @@ const AccommodationHeader = ({ hotelData }) => {
         
         {/* Hotel Type Badge */}
         {hotelData?.category_name && (
-          <span className="bg-gray-600 text-white px-2 py-1 rounded-md text-sm">
+          <span className="bg-[#4D4D4F] text-white px-2 py-1 rounded-md text-sm">
             {hotelData.category_name}
           </span>
         )}
@@ -74,12 +74,12 @@ const AccommodationHeader = ({ hotelData }) => {
       </div>
       
       {/* Hotel Title */}
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+      <h1 className="text-xl md:text-3xl font-bold text-black mb-4">
         {hotelData?.title || hotelData?.name || "Accommodation"}
       </h1>
       
       {/* Location and Additional Info */}
-      <div className="flex flex-wrap items-center gap-4 text-gray-300">
+      <div className="flex flex-wrap items-center gap-4 text-[#2176FF]">
         {/* Location */}
         {locationText && (
           <div className="flex items-center gap-1">

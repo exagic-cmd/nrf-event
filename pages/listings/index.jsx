@@ -123,7 +123,7 @@ function ListingsPage() {
 
   return (
     <Layout>
-      <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-black">
+      <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#D0E9FF]">
         <div className="flex flex-col lg:flex-row gap-6 px-6">
           {searchCategory === "transfer" && (
             <div className="h-fit md:sticky top-24 self-start z-20">

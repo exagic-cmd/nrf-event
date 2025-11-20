@@ -385,7 +385,7 @@ const handleReturnModalConfirm = () => {
       <Layout>
          <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="text-[#CC9A55] text-xl mb-4">⚠️</div>
+          <div className="text-[#D3202D] text-xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-white mb-2">
             {t("booking.noTransferSelected")}
           </h2>
@@ -394,7 +394,7 @@ const handleReturnModalConfirm = () => {
               resetTransferStore();
               back();
             }}
-            className="bg-[#CC9A55] text-white px-4 py-2 rounded-lg"
+            className="bg-[#D3202D] text-white px-4 py-2 rounded-lg"
           >
             {t("goBack")}
           </button>
@@ -455,7 +455,7 @@ const handleReturnModalConfirm = () => {
                 disabled={isLocked}
               />
    <div className="mb-6 mt-6 bg-white rounded-md p-2 pl-6 ">
-  <label className="block text-lg font-medium font-semibold text-[#CC9A55] mb-2">
+  <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
     {t("specialRequests.title")}
   </label>
   <p className="text-sm text-gray-700 my-4 pl-2">
@@ -548,7 +548,7 @@ const handleReturnModalConfirm = () => {
   // Spinner replaces button
   <div className="flex justify-center items-center w-full sm:w-auto min-h-[48px]">
     <svg
-      className="animate-spin h-8 w-8 text-[#CC9A55]"
+      className="animate-spin h-8 w-8 text-[#D3202D]"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -572,7 +572,7 @@ const handleReturnModalConfirm = () => {
   <>
      <div className="flex">
       <Check className="w-6 h-6 mr-2" />
-      <span className="font-medium text-[#CC9A55]">{t("booking.cartUpdated") || "Added to cart"}</span>
+      <span className="font-medium text-[#D3202D]">{t("booking.cartUpdated") || "Added to cart"}</span>
      
      </div>
 
@@ -585,7 +585,7 @@ const handleReturnModalConfirm = () => {
       </button>
       <button
         onClick={handleProceedToCheckout}
-        className="bg-[#CC9A55] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+        className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
         {t("proceedToCheckout")}
       </button>
@@ -595,7 +595,7 @@ const handleReturnModalConfirm = () => {
 
   <button
     onClick={handleBookTransfer}
-    className="bg-[#CC9A55] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+    className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
   >
     {t("booking.addToCart")}
   </button>
@@ -634,7 +634,7 @@ const handleReturnModalConfirm = () => {
   disabled={isLocked}
 />
  <div className="mb-6 mt-6 bg-white rounded-md p-2 pl-6 ">
-  <label className="block text-lg font-medium font-semibold text-[#CC9A55] mb-2">
+  <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
     {t("specialRequests.title")}
   </label>
   <p className="text-sm text-gray-700 my-4 pl-2">
@@ -705,7 +705,7 @@ const handleReturnModalConfirm = () => {
   // Spinner replaces button
   <div className="flex justify-center items-center w-full sm:w-auto min-h-[48px]">
     <svg
-      className="animate-spin h-8 w-8 text-[#CC9A55]"
+      className="animate-spin h-8 w-8 text-[#D3202D]"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -731,8 +731,8 @@ const handleReturnModalConfirm = () => {
 
     <div className="flex justify-between gap-3 w-full mt-2">
        <div className="flex items-center mt-0">
-          <Check className="w-6 h-6 mr-2 text-[#CC9A55]" />
-          <span className="font-medium text-[#CC9A55]">{t("booking.cartUpdated") || "Added to cart"}</span>
+          <Check className="w-6 h-6 mr-2 text-[#D3202D]" />
+          <span className="font-medium text-[#D3202D]">{t("booking.cartUpdated") || "Added to cart"}</span>
         </div>
     <div>
         <button
@@ -743,7 +743,7 @@ const handleReturnModalConfirm = () => {
       </button>
       <button
         onClick={handleProceedToCheckout}
-        className="bg-[#CC9A55] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+        className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
         {t("proceedToCheckout")}
       </button>
@@ -765,7 +765,7 @@ const handleReturnModalConfirm = () => {
  <div>
    <button
     onClick={handleBookTransfer}
-    className="bg-[#CC9A55] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+    className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
   >
     {t("booking.addToCart")}
   </button>

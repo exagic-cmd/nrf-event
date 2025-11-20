@@ -98,7 +98,7 @@ function TransfersCard({ car, category = "transfer" }) {
 
       {/* Card */}
       <div
-        className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
+        className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-2 flex flex-col md:flex-row gap-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
         role="button"
         tabIndex={0}
         onClick={handleBookNow}
@@ -118,11 +118,11 @@ function TransfersCard({ car, category = "transfer" }) {
           <img
             src={car.image}
             alt={car.name}
-            className="object-cover h-[120px] w-full md:w-[180px] rounded-lg"
+            className="object-contain h-[120px] w-full md:w-[180px] rounded-lg"
           />
 
           {car.feature_type_id === 1 && (
-            <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white rounded-md bg-black">
+            <span className="absolute top-1 left-0 flex items-center gap-1 px-1 py-1 text-xs font-semibold text-white rounded-md bg-black">
               <Crown size={12} />
               <span>Premium</span>
             </span>
@@ -132,7 +132,7 @@ function TransfersCard({ car, category = "transfer" }) {
         {/* Info Section */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h2 className="font-semibold text-lg">{car.name}</h2>
+            <h2 className="font-bold text-sm lg:text-md">{car.name}</h2>
             {car.subtitle && (
               <p className="text-sm text-gray-600 mb-1">{car.subtitle}</p>
             )}
@@ -167,7 +167,7 @@ function TransfersCard({ car, category = "transfer" }) {
                   {formatPrice(car.originalPrice)} SGD
                 </p>
               )}
-              <p className="text-lg font-bold text-[#CC9A55]">
+              <p className="text-lg font-bold text-[#D3202D]">
                 {formatPrice(car.price)} SGD
               </p>
             </div>

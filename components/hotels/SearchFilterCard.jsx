@@ -242,8 +242,8 @@ export default function SearchFilterCard({
   onClick={() => onSetTab?.(tab.id)}
   className={`p-2 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-md font-semibold transition ${
     filterActiveTab === tab.id
-      ? "bg-yellow-300 text-gray-900 sm:py-3.5"
-      : "bg-yellow-100 text-gray-700 hover:bg-yellow-200"
+      ? "bg-[#D3202D] text-white sm:py-3.5"
+      : "bg-[#D0E9FF] text-black "
   }`}
 >
   {tab.name}
@@ -266,11 +266,11 @@ export default function SearchFilterCard({
         <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
           <div className="flex items-center gap-6 px-2 pt-1">
             <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("one-way")}>
-              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "one-way" ? "ring-yellow-400 bg-yellow-400" : "ring-gray-300 bg-white"}`} />
+              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "one-way" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
               One way
             </label>
             <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("round-trip")}>
-              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "round-trip" ? "ring-yellow-400 bg-yellow-400" : "ring-gray-300 bg-white"}`} />
+              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "round-trip" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
               Round trip
             </label>
           </div>
@@ -283,7 +283,7 @@ export default function SearchFilterCard({
                   <div className="md:col-span-5 relative">
                     <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">Pick-up point</label>
                     <div className="flex items-center gap-2 pt-2">
-                      <MapPin className="h-5 w-5 text-gray-500" />
+                      <MapPin className="h-5 w-5 text-[#D3202D]" />
                       <input
                         type="text"
                         value={pickupQuery}
@@ -307,8 +307,8 @@ export default function SearchFilterCard({
                             onMouseDown={() => onPickupSelect(p)}
                             className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
                           >
-                            <MapPin className="h-4 w-4 text-yellow-600" />
-                            <span className="text-sm text-gray-800">{p.name || p.title}</span>
+                            <MapPin className="h-4 w-4 text-[#D3202D]" />
+                            <span className="text-sm text-black">{p.name || p.title}</span>
                           </button>
                         ))}
                         {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
@@ -326,13 +326,13 @@ export default function SearchFilterCard({
                   <div className="md:col-span-6 relative">
                     <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">To</label>
                     <div className="flex items-center gap-2 pt-2">
-                      <Building className="h-5 w-5 text-gray-500" />
+                      <Building className="h-5 w-5 text-[#D3202D]" />
                       <input
                         type="text"
                         value={dropoffQuery}
                         onChange={(e) => onDropoffChange(e.target.value)}
                         placeholder="Hotel, or Address"
-                        disabled={!selectedPickup}
+                        disabled={!selectedPickup}       
                         className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none disabled:text-gray-400"
                       />
                       {dropoffQuery && (
@@ -355,8 +355,8 @@ export default function SearchFilterCard({
                             }}
                             className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
                           >
-                            <Building className="h-4 w-4 text-yellow-600" />
-                            <span className="text-sm text-gray-800">{d.name || d.title}</span>
+                            <Building className="h-4 w-4 text-[#D3202D]" />
+                            <span className="text-sm text-black">{d.name || d.title}</span>
                           </button>
                         ))}
                         {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
@@ -370,7 +370,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 mt-1 flex items-stretch">
               <button
   type="submit"
-  className="w-full self-end h-auto md:h-[52px] rounded-xl bg-yellow-300 text-gray-900 font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-yellow-400 transition shadow"
+  className="w-full self-end h-auto md:h-[52px] rounded-xl bg-[#D3202D] text-white font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-[#D3202D] transition shadow"
   disabled={isLoading}
 >
   {isLoading ? "Searching..." : "Search"}
@@ -384,7 +384,7 @@ export default function SearchFilterCard({
 
       {/* ====== DAY TOURS ====== */}
       {filterActiveTab === 3 && (
-        <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+        <form onSubmit={handleSubmit} className="rounded-2xl bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
 
             {/* COUNTRY */}
@@ -439,8 +439,8 @@ export default function SearchFilterCard({
                         }}
                         className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
                       >
-                        <MapPin className="h-4 w-4 text-yellow-600" />
-                        <span className="text-sm text-gray-800">{c.name}</span>
+                        <MapPin className="h-4 w-4 text-[#D3202D]" />
+                        <span className="text-sm text-white">{c.name}</span>
                       </button>
                     ))
                   )}
@@ -501,8 +501,8 @@ export default function SearchFilterCard({
                         }}
                         className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
                       >
-                        <Building className="h-4 w-4 text-yellow-600" />
-                        <span className="text-sm text-gray-800">
+                        <Building className="h-4 w-4 text-[#D3202D]" />
+                        <span className="text-sm text-white">
                           {ct.title || ct.city_name || ct.name}
                         </span>
                       </button>
@@ -516,7 +516,7 @@ export default function SearchFilterCard({
             {/* SEARCH INPUT */}
             <div className="md:col-span-10 relative rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex flex-col">
               <div className="flex items-center">
-                <Search className="h-5 w-5 text-gray-500 mr-2" />
+                <Search className="h-5 w-5 text-[#D3202D] mr-2" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -550,8 +550,8 @@ export default function SearchFilterCard({
                       }}
                       className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
                     >
-                      <Search className="h-4 w-4 text-yellow-600" />
-                      <span className="text-sm text-gray-800">
+                      <Search className="h-4 w-4 text-[#D3202D]" />
+                      <span className="text-sm text-black">
                         {sug.product_title || sug.name}
                       </span>
                     </button>
@@ -564,7 +564,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="w-full self-end h-auto md:h-[52px] rounded-xl bg-yellow-300 text-gray-900 font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-yellow-400 transition shadow"
+                className="w-full self-end h-auto md:h-[52px] rounded-xl bg-[#D3202D] text-white font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-[#D3202D] transition shadow"
                 disabled={isLoading}
               >
                 {isLoading ? "Searching..." : "Search"}

@@ -161,7 +161,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-black/10" />
         </div>
 
-        <div className="relative z-10 w-full px-4 lg:px-8 mt-[5rem] mb-[1rem] lg:mt-0">
+        <div className="relative z-10 w-full px-4 lg:px-8 mt-[4rem] mb-[1rem] lg:mt-0">
           {/* Set favicon to event banner when available */}
           {event?.event?.banner && (
             <Head>

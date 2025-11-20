@@ -22,7 +22,7 @@ const alreadyModal = ({ isOpen, onClose, onUpdate, onGoToCart }) => {
           </button>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold text-[#CC9A55]">
+        <h3 className="text-lg sm:text-xl font-bold text-[#D3202D]">
           {t("booking.transferInCart")}
         </h3>
         <p className="text-gray-700 text-sm">
@@ -31,7 +31,7 @@ const alreadyModal = ({ isOpen, onClose, onUpdate, onGoToCart }) => {
 
         <div className="space-y-3 mt-6">
           <button
-            className="w-full py-3 bg-[#CC9A55] text-white rounded-md hover:bg-[#cb913f] font-semibold flex items-center justify-center gap-2 transition"
+            className="w-full py-3 bg-[#D3202D] text-white rounded-md font-semibold flex items-center justify-center gap-2 transition"
             onClick={onUpdate}
           >
             <RefreshCw size={18} />
