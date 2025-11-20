@@ -68,7 +68,7 @@ export const useAccommodationsStore = create((set, get) => ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             term: searchTerm,
-            local: true,
+            local: false,
             caterogry_id: 4,
           }),
         }
