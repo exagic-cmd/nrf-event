@@ -151,7 +151,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
   return (
     <aside className="bg-white rounded-lg shadow p-5 space-y-6 w-full lg:w-80">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg">Filters</h3>
+        <h3 className="font-semibold text-[#D3202D] text-lg">Filter</h3>
         <button
           onClick={clearAll}
           className="text-sm text-blue-600 hover:underline"
@@ -188,7 +188,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
 function FilterGroup({ title, options, selected, onToggle }) {
   return (
     <div>
-      <h4 className="font-medium text-sm mb-2">{title}</h4>
+      <h4 className="font-medium text-[#D3202D] text-sm mb-2">{title}</h4>
       <div className="space-y-1 max-h-48 overflow-y-auto pr-2">
         {options.map((opt) => (
           <label

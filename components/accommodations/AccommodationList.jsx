@@ -93,7 +93,7 @@ function AccommodationList() {
   const renderContent = () => {
     if (!searchParams && !isLoading && dataToUse.length === 0) {
       return (
-        <div className="text-center py-10 text-gray-500">
+        <div className="text-center py-10 text-gray-900">
           <p className="text-lg mb-2">Ready to find your perfect stay?</p>
           <p>Enter your search criteria above to see available accommodations.</p>
         </div>
@@ -103,7 +103,7 @@ function AccommodationList() {
     if (isLoading) {
       return (
         <div className="flex justify-center items-center py-20">
-          <svg className="animate-spin h-8 w-8 text-[#CC9A55]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin h-8 w-8 text-[#D3202D]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
@@ -122,7 +122,7 @@ function AccommodationList() {
 
     if (searchParams && paginatedAccommodations.length === 0) {
       return (
-        <div className="text-center py-10 text-gray-500">
+        <div className="text-center py-10 text-gray-900">
           <p className="text-lg mb-2">No accommodations found</p>
           <p>Try adjusting your filters or search criteria.</p>
         </div>

@@ -163,55 +163,70 @@ export default function AccommodationFilter({ onSearch }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!selectedItem) {
-      alert("Please select a hotel or destination from the dropdown");
-      return;
-    }
+  if (!selectedItem) {
+    alert("Please select a hotel or destination from the dropdown");
+    return;
+  }
 
-    if (!startDate || !endDate) {
-      alert("Please select both check-in and check-out dates");
-      return;
-    }
+  if (!startDate || !endDate) {
+    alert("Please select both check-in and check-out dates");
+    return;
+  }
 
-    const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-    const formatDate = (date) => {
-      const d = new Date(date);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    };
-
-    const searchPayload = {
-      search,
-      start_date: formatDate(startDate),
-      end_date: formatDate(endDate),
-      nights,
-      rooms,
-      nationality,
-      refund_policy: refund,
-      stars,
-      ids:''
-    };
-      console.log("Selected Item before payload:", selectedItem);
-  
-    if (selectedItem.type === "hotel") {
-      searchPayload.hotel_id = selectedItem.stuba_id;
-      searchPayload.region = false;
-      if (selectedItem?.link_type_id!=9)
-        searchPayload.ids = [selectedItem?.id];
-    } else if (selectedItem.type === "region") {
-      searchPayload.region = selectedItem.region_id;
-      searchPayload.hotel_id = false;
-    }
-
-    console.log("Search Payload:", searchPayload);
-    await setSearchParamsAndSearch(searchPayload);
-
-    if (onSearch) onSearch(searchPayload);
+  const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   };
+
+  const searchPayload = {
+    search,
+    start_date: formatDate(startDate),
+    end_date: formatDate(endDate),
+    nights,
+    rooms,
+    nationality,
+    refund_policy: refund,
+    stars,
+    ids: ''
+  };
+
+  if (selectedItem.type === "hotel") {
+    searchPayload.hotel_id = selectedItem.stuba_id || false;
+    searchPayload.region = false;
+    //if (selectedItem?.link_type_id != 9) {
+      searchPayload.ids = [selectedItem?.id];
+   // }
+  } else if (selectedItem.type === "region") {
+    searchPayload.region = selectedItem.region_id;
+    searchPayload.hotel_id = false;
+  }
+
+  console.log("Search Payload:", searchPayload);
+
+  try {
+    // This will now return [] if !data.status
+    const results = await setSearchParamsAndSearch(searchPayload);
+  if (!results || results.length === 0) {
+      return;
+    }
+    const { error } = useAccommodationsStore.getState();
+    if (error) {
+      alert(error);
+      return;
+    }
+    if (onSearch) onSearch(searchPayload);
+
+  } catch (err) {
+    console.error("Search failed:", err);
+    alert("An error occurred while searching. Please try again.");
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 ">
@@ -219,7 +234,7 @@ export default function AccommodationFilter({ onSearch }) {
         {/* Search Input */}
         <div className="md:col-span-3 relative">
           <div className="rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 flex items-center gap-2">
-            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 flex-shrink-0" />
+            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-[#D3202D] flex-shrink-0" />
             <input
               type="text"
               value={search}
@@ -262,10 +277,13 @@ export default function AccommodationFilter({ onSearch }) {
                         <button
                           key={region.id}
                           type="button"
-                          onMouseDown={() => handleSelection(region, "region")}
+                          onMouseDown={(e) => {
+                              e.preventDefault();     // ❗ prevents input blur
+                              handleSelection(region, "region");
+                            }}
                           className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                         >
-                          <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-yellow-500 flex-shrink-0" />
                           <span className="truncate">{region.region_name}</span>
                         </button>
                       ))
@@ -284,10 +302,13 @@ export default function AccommodationFilter({ onSearch }) {
                         <button
                           key={hotel.id}
                           type="button"
-                          onMouseDown={() => handleSelection(hotel, "hotel")}
+                          onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSelection(hotel, "hotel");
+                            }}
                           className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                         >
-                          <Building className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                          <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
                           <span className="truncate">{hotel.title}</span>
                         </button>
                       ))
@@ -500,14 +521,14 @@ export default function AccommodationFilter({ onSearch }) {
                 <button
                   type="button"
                   onClick={addRoom}
-                  className="flex-1 text-xs sm:text-sm border border-yellow-400 text-yellow-600 font-medium py-2 sm:py-2.5 rounded-lg hover:bg-yellow-50 active:bg-yellow-100 transition-colors touch-manipulation"
+                  className="flex-1 text-xs sm:text-sm border border-[#D3202D] text-[#D3202D] font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
                 >
                   + Add Room
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowGuestPopup(false)}
-                  className="flex-1 bg-yellow-400 text-gray-900 text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg hover:bg-yellow-500 active:bg-yellow-600 transition-colors touch-manipulation"
+                  className="flex-1 bg-[#D3202D] text-white text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
                 >
                   Done
                 </button>
@@ -517,18 +538,18 @@ export default function AccommodationFilter({ onSearch }) {
         </div>
 
         {/* Search Button */}
-        <div className="md:col-span-2">
+        {/* <div className="md:flex hidden">
           <button
             type="submit"
-            className="w-full h-full min-h-[44px] rounded-xl bg-yellow-400 text-gray-900 font-semibold text-base sm:text-lg py-2.5 md:py-1.5 hover:bg-yellow-500 active:bg-yellow-600 transition touch-manipulation"
+            className="w-full h-full min-h-[44px] rounded-xl bg-yellow-500 text-gray-900 font-semibold text-base sm:text-lg py-2.5 md:py-1.5 hover:bg-yellow-500 active:bg-yellow-500 transition touch-manipulation"
           >
             Search
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Additional Parameters */}
-      <h6 className="mt-4 sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-sm sm:text-base">Additional Parameters</h6>
+      <h6 className="mt-4 relative sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-[#D3202D text-sm sm:text-base">Additional Parameters</h6>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
         <div className="md:col-span-3">
           <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1">Guest's citizenship</label>
@@ -553,7 +574,7 @@ export default function AccommodationFilter({ onSearch }) {
                 key={i}
                 className={`cursor-pointer px-3 sm:px-4 py-2 sm:py-2.5 border rounded text-xs sm:text-sm transition-all touch-manipulation ${
                   stars === String(i)
-                    ? "border-red-500 text-red-500 bg-red-50 font-medium"
+                    ? "border-black bg-gray-200 font-medium"
                     : "border-gray-300 hover:border-gray-500 active:bg-gray-50"
                 }`}
               >
@@ -570,7 +591,16 @@ export default function AccommodationFilter({ onSearch }) {
             ))}
           </div>
         </div>
+        
       </div>
+      <div className="flex justify-end">
+          <button
+            type="submit"
+            className="w-1/2 md:w-1/5 md:absolute md:bottom-9 rounded-xl bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2  active:bg-[#D3202D] transition touch-manipulation"
+          >
+            Search
+          </button>
+        </div>
     </form>
   );
 }

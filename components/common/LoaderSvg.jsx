@@ -1,7 +1,7 @@
 // components/common/SvgLoader.jsx
 import React from "react";
 
-export default function SvgLoader({ size = 20, color = "#CC9A55" }) {
+export default function SvgLoader({ size = 20, color = "#ffff" }) {
   return (
     <svg
       className="animate-spin"

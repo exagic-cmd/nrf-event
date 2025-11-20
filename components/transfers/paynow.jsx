@@ -20,6 +20,7 @@ import { redirectToAirwallexCheckout } from '@/utils/airwallex';
 import CheckoutRedirect from "@/components/stripe/CheckoutRedirect";
 import BookingPreviewSlider from "@/components/transfers/BookingPreviewSlider";
 import useUserStore from '@/store/useAuthStore';
+import { useEventStore } from "@/store/useEventStore";
 
 const PayNow = ({ totalPrice }) => {
   const { t } = useTranslation("daytour");
@@ -34,7 +35,7 @@ const PayNow = ({ totalPrice }) => {
   const getPromoExist = useBookingStore(state => state.getPromoExist);
   const { refId, refType, track_agent_id } = useAffiliateStore();
   const { user } = useUserStore.getState();
-
+  const { event } = useEventStore();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [paymentOptions, setPaymentOptions] = useState([]);
   const [showPromoField, setShowPromoField] = useState(false);
@@ -322,7 +323,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     customer_type: 'potential_customer',
     visitor_number: 'V68261',
     redemption_voucher_id: 0,
-    agent_id: refId || null,
+    agent_id: event?.event?.user_id || null,
     ref_type: refType || null,
     track_agent_id: track_agent_id || null
   };
@@ -337,8 +338,6 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     setIsSubmitting(true);
     try {
       const finalPayload = buildFinalPayload();
-      console.log("Final Booking Payload:", finalPayload);
-
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
 
@@ -372,13 +371,13 @@ console.log("cart_items:PAYNOW #####################", cart_items);
           {/* Left: Form */}
           <div className="w-full lg:w-2/3 bg-white rounded-xl p-2 shadow-md">
             <div className="md:p-4 p-2">
-              <h2 className="md:text-lg text-md font-semibold mb-4">{t("personalInfo")}</h2>
+              <h2 className="md:text-lg text-md text-[#D3202D] font-semibold mb-4">{t("personalInfo")}</h2>
               <form onSubmit={handlePayNow}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Name */}
                   <div>
                     <label className="text-sm text-gray-500 flex items-center gap-3">
-                      <User className="w-4 h-4 text-gray-400" />
+                      <User className="w-4 h-4 text-[#D3202D]" />
                       {t("fullName")} <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -397,7 +396,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   {/* Email */}
                   <div>
                     <label className="text-sm text-gray-500 flex items-center gap-3">
-                      <Mail className="w-4 h-4 text-gray-400" />
+                      <Mail className="w-4 h-4 text-[#D3202D]" />
                       {t("email")} <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -416,7 +415,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   {/* Phone */}
                   <div>
                     <label className="text-sm text-gray-500 flex items-center gap-3">
-                      <Phone className="w-4 h-4 text-gray-400" />
+                      <Phone className="w-4 h-4 text-[#D3202D]" />
                       {t("phoneNumber")} <span className="text-red-500">*</span>
                     </label>
                     <PhoneInput
@@ -454,10 +453,10 @@ console.log("cart_items:PAYNOW #####################", cart_items);
         </div>
 
         {/* Pay Now Button - Desktop */}
-        <div className="hidden lg:flex mt-8 bg-black py-2 p-2 justify-end">
+        <div className="hidden lg:flex mt-8 bg-[#D0E9FF] py-2 p-2 justify-end">
           <button
             type="button"
-            className="bg-[#CC9A55] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
+            className="bg-[#D3202D] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
             disabled={isSubmitting}
             onClick={handlePayNow}
           >
@@ -476,10 +475,10 @@ console.log("cart_items:PAYNOW #####################", cart_items);
         </div>
 
         {/* Pay Now Button - Mobile */}
-        <div className="lg:hidden mt-0 md:mt-4 bg-black py-2 p-2 flex justify-end">
+        <div className="lg:hidden mt-0 md:mt-4 bg-[#D0E9FF] py-2 p-2 flex justify-end">
           <button
             type="button"
-            className="bg-[#CC9A55] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
+            className="bg-[#D3202D] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
             disabled={isSubmitting}
             onClick={handlePayNow}
           >

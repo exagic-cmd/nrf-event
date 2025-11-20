@@ -197,7 +197,7 @@ const FlightNumberField = ({
           className={`absolute right-2 top-1/2 -translate-y-1/2 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors flex items-center justify-center gap-1 ${
             disabled || !value
               ? "bg-gray-300 cursor-not-allowed"
-              : "bg-[#CC9A55] hover:bg-[#b07c3d]"
+              : "bg-[#D3202D] "
           }`}
         >
           {tracking ? "Checking..." : t("booking.check") || "Check"}
@@ -205,7 +205,7 @@ const FlightNumberField = ({
 
         {/* Dropdown for similar flights */}
         {showSuggestions && suggestions.length > 0 && (
-          <ul className="absolute z-30 mt-2 w-full bg-white border border-[#CC9A55] rounded-md shadow-lg max-h-48 overflow-auto">
+          <ul className="absolute z-30 mt-2 w-full bg-white border border-[#D3202D] rounded-md shadow-lg max-h-48 overflow-auto">
             {suggestions.map((flight, idx) => (
               <li
                 key={idx}
@@ -298,7 +298,7 @@ export default function BookingTransferInfo({
     setSelectedDates,
   } = useTransferStore();
 
-  const orangeColor = "#CC9A55";
+  const orangeColor = "#D3202D";
   const { fetchAvailableDatesTR } = useBookingStore();
   const [availableDates, setAvailableDates] = useState([]);
 const [pickupTrigger, setPickupTrigger] = useState(0);

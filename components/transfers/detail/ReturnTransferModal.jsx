@@ -21,7 +21,7 @@ const ReturnTransferModal = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
       <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-        <h2 className="text-xl font-bold mb-4 text-[#CC9A55]">
+        <h2 className="text-xl font-bold mb-4 text-[#D3202D]">
           {t('returnTransfer.addReturnTransfer')}
         </h2>
         
@@ -43,7 +43,7 @@ const ReturnTransferModal = ({
           </button>
           <button 
             onClick={onConfirm}
-            className="px-6 py-2 rounded-md bg-[#CC9A55] text-white hover:bg-[#B88A45] transition-colors"
+            className="px-6 py-2 rounded-md bg-[#D3202D] text-white transition-colors"
           >
             {t('returnTransfer.yesPlease')}
           </button>

@@ -213,10 +213,11 @@ useEffect(() => {
   }
 
   return (
-    <div className="relative py-0 md:py-2 mt-6 md:mt-0 w-full md:w-80">
+    <div className="relative py-0 md:py-2 mt-6 md:mt-0 w-full">
      
       <div className="relative z-10 w-full">
-        <RouteSummary 
+       <div className="w-full">
+         <RouteSummary 
             pickup={selectedPickup}
             dropoff={selectedDropoff}
             t={t}
@@ -224,6 +225,7 @@ useEffect(() => {
             tripType={tripType}
         />
         
+       </div>
 
       {showModalProp && (
   <div className="fixed inset-0 z-50 bg-black/90 flex justify-center items-center">
@@ -299,7 +301,7 @@ useEffect(() => {
       <div className="flex justify-end mt-6 w-full">
         <button
         onClick={handleSearch}
-        className="bg-[#CC9A55] text-white w-1/2 py-3 mt-6 rounded-lg font-medium transition-colors"
+        className="bg-[#D3202D] text-white w-1/2 py-3 mt-6 rounded-lg font-medium transition-colors"
       >
         {t("buttons.searchTransfer")}
       </button>

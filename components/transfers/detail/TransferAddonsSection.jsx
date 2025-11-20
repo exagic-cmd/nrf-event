@@ -133,7 +133,7 @@ const formatDate = (dateString) => {
       <div
         key={addon.id}
         className={`relative rounded-xl overflow-hidden shadow-md transition-all duration-300 bg-white
-          ${isSelected ? "ring-2 ring-[#CC9A55] shadow-lg" : "hover:shadow-lg"}
+          ${isSelected ? "ring-2 ring-[#D3202D] shadow-lg" : "hover:shadow-lg"}
           ${disabled ? "opacity-70 cursor-not-allowed" : ""}`}
       >
         {/* --- Mobile --- */}
@@ -152,7 +152,7 @@ const formatDate = (dateString) => {
               </div>
             )}
             {isSelected && (
-              <div className="absolute top-1 left-1 bg-[#CC9A55] text-white p-1 rounded-full">
+              <div className="absolute top-1 left-1 bg-[#D3202D] text-white p-1 rounded-full">
                 <Check size={12} strokeWidth={3} />
               </div>
             )}
@@ -171,7 +171,7 @@ const formatDate = (dateString) => {
             </div>
 
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-bold text-[#CC9A55]">
+              <span className="text-sm font-bold text-[#D3202D]">
                 {displayPrice} SGD
               </span>
 
@@ -182,7 +182,7 @@ const formatDate = (dateString) => {
                     toggleAddon(addon);
                   }}
                   disabled={disabled}
-                  className="px-4 py-1.5 bg-[#CC9A55] hover:bg-[#B88A45] text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
+                  className="px-4 py-1.5 bg-[#D3202D] hover:bg-[#B88A45] text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
                   {t("add")}
                 </button>
@@ -248,7 +248,7 @@ const formatDate = (dateString) => {
             </div>
 
             {isSelected && (
-              <div className="absolute top-3 left-3 bg-[#CC9A55] text-white p-2 rounded-full shadow-lg">
+              <div className="absolute top-3 left-3 bg-[#D3202D] text-white p-2 rounded-full shadow-lg">
                 <Check size={16} strokeWidth={3} />
               </div>
             )}
@@ -272,7 +272,7 @@ const formatDate = (dateString) => {
                   toggleAddon(addon);
                 }}
                 disabled={disabled}
-                className="w-full bg-[#CC9A55] hover:bg-[#B88A45] text-white py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="w-full bg-[#D3202D] hover:bg-[#B88A45] text-white py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
               >
                 {t("add", "Add")}
               </button>
@@ -329,7 +329,7 @@ const formatDate = (dateString) => {
             : t("return_addons", "Return Addons")}
         </h2>
         <span className="text-sm text-gray-500 flex items-center gap-1">
-          <Calendar size={16} className="text-[#CC9A55]" />
+          <Calendar size={16} className="text-[#D3202D]" />
           {dateToShow || t("no_date_selected", "No date selected")}
         </span>
       </div>
@@ -342,7 +342,7 @@ const formatDate = (dateString) => {
         <div className="flex justify-center mt-6">
           <button
             onClick={() => setShowAll((prev) => !prev)}
-            className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-gray-50 text-[#CC9A55] font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+            className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-gray-50 text-[#D3202D] font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300"
           >
             {showAll ? (
               <>

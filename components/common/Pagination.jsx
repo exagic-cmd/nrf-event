@@ -54,7 +54,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
             currentPage === 1
               ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-              : "bg-white text-gray-700 hover:bg-[#FE6F4F] hover:text-white border-gray-300 hover:border-[#FE6F4F]"
+              : "bg-white text-gray-700 hover:bg-[#D3202D] hover:text-white border-gray-300"
           }`}
         >
           Previous
@@ -69,8 +69,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
               onClick={() => onPageChange(page)}
               className={`px-3 py-2 border rounded-md text-sm font-medium transition-colors ${
                 page === currentPage
-                  ? "bg-[#FE6F4F] text-white border-[#FE6F4F]"
-                  : "bg-white text-gray-700 hover:bg-[#FE6F4F] hover:text-white border-gray-300 hover:border-[#FE6F4F]"
+                  ? "bg-[#D3202D] text-white "
+                  : "bg-white text-gray-700 hover:bg-[#D3202D] hover:text-white border-gray-300 "
               }`}
             >
               {page}
@@ -84,7 +84,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
             currentPage === totalPages
               ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-              : "bg-white text-gray-700 hover:bg-[#FE6F4F] hover:text-white border-gray-300 hover:border-[#FE6F4F]"
+              : "bg-white text-gray-700 hover:bg-[#D3202D] hover:text-white border-gray-300 hover:bg-[#D3202D]"
           }`}
         >
           Next

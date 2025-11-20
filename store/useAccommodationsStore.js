@@ -150,14 +150,26 @@ export const useAccommodationsStore = create((set, get) => ({
 
   // Set search parameters and trigger search immediately
   setSearchParamsAndSearch: async (payload) => {
-    console.log("🚀 Setting search params and triggering search:", payload);
+  console.log("Setting search params and triggering search:", payload);
+  
+  set({ searchParams: payload, isLoading: true, error: null });
+
+  try {
+    const results = await get().fetchAccommodations(payload);
     
-    // First, set the search params in store
-    set({ searchParams: payload, isLoading: true, error: null });
-    
-    // Then immediately trigger the search
-    await get().fetchAccommodations(payload);
-  },
+    // If no results (likely due to !data.status), return null
+    if (!results || results.length === 0) {
+      set({ isLoading: false });
+      return null;
+    }
+
+    set({ isLoading: false });
+    return results;
+  } catch (err) {
+    set({ isLoading: false, error: err.message || "Search failed" });
+    return null;
+  }
+},
 
   // Fetch accommodations search results
   fetchAccommodations: async (payload) => {
@@ -214,10 +226,10 @@ export const useAccommodationsStore = create((set, get) => ({
 
       const data = await res.json();
       if (!data.status){
-        alert(data.msg || "Failed to fetch accommodations");
-          throw new Error(data.msg || "Failed to fetch accommodations");
-        return;
-      }
+  alert(data.msg);
+  set({ isLoading: false, error: data.msg || "No results" });
+  return null; // ← Change from [] to null
+}
 
       // Assume API returns accommodations in data.accommodations or data.data
       const results = data?.accommodations || data?.data || data || [];
@@ -306,25 +318,14 @@ fetchNonStubaAccommodation: async (hotelId) => {
     const allProducts = Array.isArray(rawResponse?.products) ? rawResponse.products : [];
     console.log("All products from API:", allProducts);
 
-    // ———————————————————————————————
-    // 2. FILTER: link_type_id === 3 && category_id === 4
-    // ———————————————————————————————
-    const filtered = allProducts.filter(
-      (item) =>
-        Number(item.link_type_id) === 3 && Number(item.category_id) === 4
-    );
-
-    console.log("Filtered products (link_type_id=3, category_id=4):", filtered);
-
-    if (filtered.length === 0) {
-      throw new Error("No matching non-Stuba hotel found (link_type_id=3, category_id=4)");
+    // Choose a product from the returned products without filtering by link_type_id/category_id.
+    // Prefer the product that matches the requested hotelId (if present), otherwise fall back to the first product.
+    if (allProducts.length === 0) {
+      throw new Error("No non-Stuba products returned from API");
     }
 
-    // ———————————————————————————————
-    // 3. Use the FIRST matching hotel
-    // ———————————————————————————————
-    const hotel = filtered[0];
-    console.log("Using first matching hotel:", hotel);
+    const hotel = allProducts.find(item => Number(item.id) === Number(hotelId)) || allProducts[0];
+    console.log("Selected non-Stuba hotel product:", hotel);
 
     // ———————————————————————————————
     // 4. NORMALIZE (match your UI)

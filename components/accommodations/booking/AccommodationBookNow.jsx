@@ -54,7 +54,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
             </button>
           </div>
 
-          <div className="bg-gradient-to-r from-[#CC9A55] to-[#b88a45] text-white rounded-2xl p-6 mb-8">
+          <div className="bg-gradient-to-r from-[#D3202D] to-[#b88a45] text-white rounded-2xl p-6 mb-8">
             <h4 className="text-1xl font-bold flex items-center gap-3">
               <Home className="h-7 w-7" />
               {hotelName}
@@ -70,7 +70,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
 
           <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-8 border border-gray-200">
             <h4 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
-              <DollarSign className="h-6 w-6 text-[#CC9A55]" />
+              <DollarSign className="h-6 w-6 text-[#D3202D]" />
               Price Details
             </h4>
             <div className="space-y-4">
@@ -96,7 +96,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
             </div>
             <div className="flex justify-between items-center pt-5 border-t-4 border-double border-gray-300">
               <span className="text-1xl font-bold text-gray-800">Total Amount</span>
-              <span className="text-2xl font-extrabold text-[#CC9A55]">
+              <span className="text-2xl font-extrabold text-[#D3202D]">
                 {totalPrice} {currency}
               </span>
             </div>
@@ -174,7 +174,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
             <button onClick={onClose} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-5 rounded-2xl transition text-xl shadow-md">
               Cancel
             </button>
-            <button onClick={onConfirm} className="flex-1 bg-[#CC9A55] hover:bg-[#b88a45] text-white font-bold py-5 rounded-2xl transition text-xl shadow-xl">
+            <button onClick={onConfirm} className="flex-1 bg-[#D3202D] hover:bg-[#b88a45] text-white font-bold py-5 rounded-2xl transition text-xl shadow-xl">
               Confirm & Add to Cart
             </button>
           </div>
@@ -486,52 +486,52 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
   return (
     <>
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Guest Information</h2>
+      <div className="bg-white rounded-lg p-6">
+        <h2 className="text-md lg:text-xl font-bold text-black mb-6">Guest Information</h2>
 
-        <form onSubmit={handleAddToCart} className="space-y-10">
+        <form onSubmit={handleAddToCart} className="space-y-5">
           {rooms.map((room, roomIdx) => {
             const roomGuests = guestsByRoom[roomIdx] || { adults: [], children: [] };
             const roomNumber = roomIdx + 1;
 
             return (
               <div key={roomIdx} className="border border-gray-600 rounded-xl p-6 bg-gray-750">
-                <h3 className="text-xl font-bold text-[#CC9A55] mb-5">
+                <h3 className="text-xl font-bold text-black mb-5">
                   Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
                   {room.children?.length > 0 && `, ${room.children.length} Child${room.children.length > 1 ? "ren" : ""}`}
                 </h3>
 
                 {/* Adults */}
                 {roomGuests.adults.map((adult, i) => (
-                  <div key={`adult-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div key={`adult-${i}`} className="bg-[#D0E9FF] rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
+                      <label className="block text-black text-sm font-medium mb-2">Title *</label>
                       <select
                         value={adult.title}
                         onChange={(e) => updateGuest(roomIdx, "adults", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       >
                         {TITLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">First Name *</label>
+                      <label className="block text-black text-sm font-medium mb-2">First Name *</label>
                       <input
                         type="text"
                         value={adult.firstName}
                         onChange={(e) => updateGuest(roomIdx, "adults", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Last Name *</label>
+                      <label className="block text-black text-sm font-medium mb-2">Last Name *</label>
                       <input
                         type="text"
                         value={adult.lastName}
                         onChange={(e) => updateGuest(roomIdx, "adults", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       />
                     </div>
@@ -542,43 +542,43 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                 {roomGuests.children.map((child, i) => (
                   <div key={`child-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Title *</label>
+                      <label className="block text-black text-sm font-medium mb-2">Title *</label>
                       <select
                         value={child.title}
                         onChange={(e) => updateGuest(roomIdx, "children", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       >
                         {TITLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">First Name *</label>
+                      <label className="block text-back text-sm font-medium mb-2">First Name *</label>
                       <input
                         type="text"
                         value={child.firstName}
                         onChange={(e) => updateGuest(roomIdx, "children", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Last Name *</label>
+                      <label className="block text-black text-sm font-medium mb-2">Last Name *</label>
                       <input
                         type="text"
                         value={child.lastName}
                         onChange={(e) => updateGuest(roomIdx, "children", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Age</label>
+                      <label className="block text-black text-sm font-medium mb-2">Age</label>
                       <input
                         type="text"
                         value={child.age}
                         readOnly
-                        className="w-full px-3 py-2 bg-gray-500 border border-gray-600 rounded-md text-gray-300 cursor-not-allowed"
+                        className="w-full px-3 py-2 bg-gray-500 border border-gray-600 rounded-md text-black cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -588,14 +588,14 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
           })}
 
           <div>
-            <label className="block text-gray-300 text-sm font-medium mb-2">
+            <label className="block text-blacktext-sm font-medium mb-2">
               Special Requests (Optional)
             </label>
             <textarea
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CC9A55]"
+              className="w-full px-3 py-2 bg-white text-black border border-gray-600 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 "
               placeholder="Late check-in, extra bed, dietary needs, etc..."
             />
           </div>
@@ -605,7 +605,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#CC9A55] hover:bg-[#b88a45] text-white font-bold py-4 rounded-xl transition text-xl disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-[#D3202D] text-white font-bold py-4 rounded-xl transition text-xl disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -630,7 +630,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                 type="button"
                 onClick={handleViewCart}
                 disabled={loadingButton === "checkout"}
-                className="flex-1 bg-[#CC9A55] hover:bg-[#b88a45] text-white font-bold py-4 rounded-xl transition"
+                className="flex-1 bg-[#D3202D] text-white font-bold py-4 rounded-xl transition"
               >
                 {loadingButton === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
               </button>

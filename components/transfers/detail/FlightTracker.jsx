@@ -106,7 +106,7 @@ export default function FlightTracker({
     return (
       <div className="flex items-center gap-2 text-sm text-gray-600 mt-3">
         <svg
-          className="animate-spin h-4 w-4 text-[#CC9A55]"
+          className="animate-spin h-4 w-4 text-[#D3202D]"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -130,7 +130,7 @@ export default function FlightTracker({
     );
 
 
-  if (error) return <p className="text-[#CC9A55] text-sm mt-3">{error}</p>;
+  if (error) return <p className="text-[#D3202D] text-sm mt-3">{error}</p>;
 
   if (infoMessage)
     return (
@@ -170,7 +170,7 @@ export default function FlightTracker({
     <div className="mt-1 border border-gray-200 rounded-xl shadow-sm bg-white overflow-hidden">
       <button
         onClick={toggleDetails}
-        className="w-full flex justify-between items-center bg-orange-50 px-4 py-2 font-semibold text-[#CC9A55] border-b border-orange-100"
+        className="w-full flex justify-between items-center bg-blue-50 px-4 py-2 font-semibold text-[#D3202D] border-b border-orange-100"
       >
         <span>Flight Details</span>
         {isDetailsVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}

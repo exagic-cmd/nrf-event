@@ -24,13 +24,13 @@ function BaggagePassengerSelector({
             {t("maxPassengersAre")}: {maxPassengers}
           </div>
           <div
-            className={`border border-orange-200 rounded-md p-4 ${
-              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-[#e7d8c5]"
+            className={`border border-[#D3202D] rounded-md p-4 ${
+              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-blue-100"
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <User className="w-4 h-4 text-gray-800 mr-2" />
+                <User className="w-4 h-4 text-[#D3202D] mr-2" />
                 <span className="text-sm md:text-base font-medium">{t("totalPassengers")}</span>
               </div>
               <div className="flex items-center">
@@ -63,8 +63,8 @@ function BaggagePassengerSelector({
             {t("maxLuggageCapacity")}: {maxBaggage}
           </div>
           <div
-            className={`border border-orange-200 rounded-md p-4 ${
-              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-[#e7d8c5]"
+            className={`border border-[#D3202D] rounded-md p-4 ${
+              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-blue-100"
             }`}
           >
             <div className="flex items-center justify-between">

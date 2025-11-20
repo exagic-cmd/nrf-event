@@ -2,9 +2,14 @@ import { MapPin, UtensilsCrossed, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { getFullImageUrl } from "@/utils/imageService"
 import { useRouter } from "next/navigation"
+import { useState } from 'react'; 
+import LoaderSvg from '@/components/common/LoaderSvg'; 
+
 export default function AccommodationCard({ data }) {
   const accommodation = data;
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false); 
+
   const formatDate = (date) => {
     if (!date) return '-';
     return new Date(date).toLocaleDateString('en-US', {
@@ -26,12 +31,14 @@ export default function AccommodationCard({ data }) {
   const nights = calculateNights();
   const hotelImage = accommodation?.pictures?.[0]?.image || '/placeholder.svg';
   const goToDetail = (order_id ,itinerary_id) => {
+    setIsLoading(true); // Set loading to true
     if (itinerary_id) {
-      router.push(`/order/detail/${order_id}?itineraryId=${itinerary_id}`)
+      router.push(`/order/detail/${order_id}?itineraryId=${itinerary_id}`);
     } else {
-      router.push(`/order/detail/${order_id}`)
+      router.push(`/order/detail/${order_id}`);
     }
-  }
+    // Note: isLoading will reset when the component unmounts during navigation.
+  };
 
   return (
     <div className="bg-white w-[280px] rounded-xl shadow-lg overflow-hidden border border-gray-100 h-full flex flex-col">
@@ -123,8 +130,16 @@ export default function AccommodationCard({ data }) {
         </div>
 
         {/* Action Button */}
-      <button onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)} className="w-full bg-[#CC9A55] hover:bg-[#b8885c] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors">
-          View Details
+      <button
+          onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
+          className="w-full bg-[#CC9A55] hover:bg-[#b8885c] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <LoaderSvg className="animate-spin h-5 w-5 text-white" />
+          ) : (
+            'View Details'
+          )}
         </button>
 
       </div>

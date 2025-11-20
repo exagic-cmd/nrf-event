@@ -11,6 +11,7 @@ const AccommodationInfoCard = ({
   onProceedBooking,
   selectedRoom = null,
   nights = 1,
+  totalGuests = 1,
 }) => {
   const [lowestPrice, setLowestPrice] = useState(0);
   const [amenities, setAmenities] = useState([]);
@@ -66,36 +67,38 @@ const AccommodationInfoCard = ({
 
   return (
     <div className="lg:col-span-2">
-      <div className="bg-gray-900 rounded-xl p-6 sticky top-24 shadow-xl">
+      <div className="bg-white rounded-xl p-6 sticky top-24 shadow-xl">
         {/* Price */}
         <div className="mb-5">
-          <div className="text-4xl font-extrabold text-[#CC9A55] mb-1">
+          <div className="text-lg lg:text-xl font-bold text-[#D3202D] mb-1">
             {formatPrice(lowestPrice)}
           </div>
-          <div className="text-gray-400 text-sm flex items-center gap-1">
+          <div className="text-black text-sm flex items-center gap-1">
             {selectedRoom ? (
               <>
                 <Bed className="h-3.5 w-3.5" />
-                Total for {nights} night{nights > 1 ? "s" : ""}
-                {allRooms.length > 1 && " · per room"}
+                Total for {nights} night{nights > 1 ? "s " : ""}
+               for { totalGuests +" Guests"}
               </>
             ) : (
               <>
-                <Clock className="h-3.5 w-3.5" />
-                Starting from · {nights} night{nights > 1 ? "s" : ""}
+                <Check className="h-3.5 w-3.5" />
+                {/* Starting from · {nights} night{nights > 1 ? "s" : ""} */}
+                Total for {nights} night{nights > 1 ? "s " : ""}
+               for { totalGuests +" Guests"}
               </>
             )}
           </div>
 
-          {selectedRoom && (
-            <div className="mt-2 inline-flex items-center gap-1.5 bg-green-900/30 text-green-400 text-xs px-2.5 py-1 rounded-full">
+          {/* {selectedRoom && (
+            <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 text-[#233BA0] text-xs px-2 py-1 rounded-full">
               <Check className="h-3 w-3" />
               Room Selected
             </div>
-          )}
+          )} */}
 
           {!selectedRoom && allRooms.length > 0 && (
-            <div className="text-green-400 text-xs mt-1.5">
+            <div className="text-[#233BA0] text-xs mt-1.5">
               {roomCountText} available
             </div>
           )}
@@ -103,15 +106,15 @@ const AccommodationInfoCard = ({
 
         {/* Selected Room */}
         {selectedRoom && (
-          <div className="mb-5 p-4 bg-gradient-to-r from-[#CC9A55]/10 to-transparent border border-[#CC9A55]/30 rounded-xl">
-            <div className="text-white font-semibold text-sm mb-1">
+          <div className="mb-5 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-[#D3202D]/30 rounded-xl">
+            <div className="text-[#233BA0] font-semibold text-sm mb-1">
               {selectedRoom.roomType}
             </div>
-            <div className="text-gray-300 text-xs">
+            <div className="text-black text-xs">
               {selectedRoom.mealType}
             </div>
             {freeCancellation && (
-              <div className="text-green-400 text-xs mt-1.5 flex items-center gap-1">
+              <div className="text-[#233BA0] text-xs mt-1.5 flex items-center gap-1">
                 <Check className="h-3 w-3" />
                 Free cancellation
               </div>
@@ -139,10 +142,10 @@ const AccommodationInfoCard = ({
         {/* Amenities */}
         {amenities.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-white text-sm font-medium mb-2.5">Top Amenities</h4>
+            <h4 className="text-[#D3202D] text-sm font-medium mb-2.5">Top Amenities</h4>
             <div className="flex flex-wrap gap-1.5">
               {amenities.map((a, i) => (
-                <span key={i} className="bg-gray-800 text-gray-300 px-2.5 py-1.5 rounded-md text-xs">
+                <span key={i} className="bg-blue-50 text-[#233BA0] px-2.5 py-1.5 rounded-md text-xs">
                   {a}
                 </span>
               ))}
@@ -155,18 +158,18 @@ const AccommodationInfoCard = ({
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-[#CC9A55] hover:bg-[#b88a45] text-white py-3.5 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-[#D3202D] text-sm lg:text-lg text-white lg:py-2 py-3 px-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {selectedRoom ? "Change Room" : `Choose Room (${allRooms.length})`}
+            {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>
 
-          <button
+          {/* <button
             onClick={onProceedBooking}
             disabled={!selectedRoom}
             className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3.5 px-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Proceed to Book" : "Select a Room First"}
-          </button>
+          </button> */}
         </div>
 
         {!selectedRoom && freeCancellation && (

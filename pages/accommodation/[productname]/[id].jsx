@@ -187,38 +187,47 @@ export default function AccommodationDetailPage() {
   };
 
   // Handle proceed to booking with cart validation
-  const handleProceedBooking = () => {
-  if (!selectedRoom) {
-    alert("Please select a room first");
-    return;
-  }
+  // Accept an optional `roomArg` so callers (e.g. RoomTypes) can pass the room directly
+  const handleProceedBooking = (roomArg = null) => {
+    const roomToUse = roomArg || selectedRoom;
+    if (!roomToUse) {
+      alert("Please select a room first");
+      return;
+    }
 
-  const exists = items.some(item => 
-    item.tourId === accommodationId && item.type === 'accommodation'
-  );
+    // Ensure local selectedRoom state reflects the room being booked
+    if (!roomArg) {
+      // nothing to do, selectedRoom already set
+    } else {
+      setSelectedRoom(roomToUse);
+    }
 
-  if (exists) {
-    setAlreadyModal(true);
-    return;
-  }
+    const exists = items.some(item => 
+      item.tourId === accommodationId && item.type === 'accommodation'
+    );
 
-  const bookingData = {
-    accommodationId,
-    hotelData: accommodation.normalizedHotelData, // ← fixed
-    selectedRoom,
-    searchParams,
-    nights: searchParams?.nights || 1,
-    checkIn: searchParams?.start_date,
-    checkOut: searchParams?.end_date,
-    isNonStuba, // optional
-    isNonStuba: isNonStuba,
-    timestamp: new Date().toISOString()
+    if (exists) {
+      setAlreadyModal(true);
+      return;
+    }
+
+    const bookingData = {
+      accommodationId,
+      hotelData: accommodation.normalizedHotelData, // ← fixed
+      selectedRoom: roomToUse,
+      searchParams,
+      nights: searchParams?.nights || 1,
+      checkIn: searchParams?.start_date,
+      checkOut: searchParams?.end_date,
+      isNonStuba, // optional
+      isNonStuba: isNonStuba,
+      timestamp: new Date().toISOString()
+    };
+
+    sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
+    sessionStorage.setItem("fromAccommodationDetail", "true");
+    localizedPush(`/accommodation/booking/${accommodationId}`);
   };
-
-  sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
-  sessionStorage.setItem("fromAccommodationDetail", "true");
-  localizedPush(`/accommodation/booking/${accommodationId}`);
-};
 
   // Handle modal update (remove existing and proceed)
   const handleModalUpdate = async () => {
@@ -274,6 +283,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   const nights = searchParams?.nights || 1;
   const fromDate = searchParams?.start_date;
   const toDate = searchParams?.end_date;
+  const rooms = searchParams?.rooms || 1;
 
   // Total guests & rooms requested
   const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => 
@@ -300,20 +310,24 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       ? parseFloat(p.adult_promo_price)
       : parseFloat(p.adult_price);
 
-    const maxPax = type.max_pax || p.max_pax || 1;
-    const canAccommodate = maxPax >= totalGuests;
+    const maxPax = Number(type.max_pax || p.max_pax || 1);
+    // Determine guests needed per room when booking multiple rooms.
+    const perRoomNeeded = totalRoomsRequested > 0 ? Math.ceil(totalGuests / totalRoomsRequested) : totalGuests;
+    // Allow using the same room type across requested rooms: each room must support perRoomNeeded guests
+    const canAccommodate = maxPax >= perRoomNeeded;
 
     return {
       id: `nonstuba-${p.room_category_id}-${p.room_type_id}`,
-      roomType: category.name || p.room_category || "Room",
-      mealType: category.name?.toLowerCase().includes("breakfast") ? "Breakfast Included" : "Room Only",
+      roomType: p.room_category || "Room",
+      roomCat: p.room_type_name || "Room",
+      mealType: p.room_type_name,
       price: basePrice * nights,
-      cancellationPolicy: "NonRefundable",
+     // cancellationPolicy: "NonRefundable",
       maxPax,
       canAccommodate,
       isHotelAvailable,
       isAvailable: isHotelAvailable && canAccommodate,
-      paxMessage: !canAccommodate ? `Max ${maxPax} guest${maxPax > 1 ? 's' : ''} (you have ${totalGuests})` : null,
+      paxMessage: !canAccommodate ? `Each room must support ${perRoomNeeded} guest(s); this room supports ${maxPax}.` : null,
       rawPricing: p,
     };
   });
@@ -342,9 +356,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
 
   setAccommodation(fullData);
   setIsNonStuba(true);
-  if (lowestPriceRoom?.isAvailable) {
-    setSelectedRoom(lowestPriceRoom);
-  }
+  // Do not auto-select the lowest price room; require explicit user selection
 
   // Slug fix
   const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
@@ -406,9 +418,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       setAccommodation(normalizedData);
       setIsNonStuba(false);
 
-      if (normalizedData.lowestPriceRoom) {
-        setSelectedRoom(normalizedData.lowestPriceRoom);
-      }
+      // Do not auto-select the lowest price room for Stuba flow; require explicit user selection
 
   // Save quote ID (if present on matched result)
   const quoteId = matched?.["@attributes"]?.hotelQuoteId || matched?.Hotel_Data?.["@attributes"]?.hotelQuoteId || matched?.hotelQuoteId || null;
@@ -466,6 +476,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   const hotelData = accommodation.normalizedHotelData;
   const roomData = accommodation.normalizedRoomData;
   const nights = searchParams?.nights || 1;
+  const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => sum + (Number(r.adult) || 0) + (Array.isArray(r.children) ? r.children.length : 0), 0) || 1;
 
   return (
     <Layout>
@@ -475,7 +486,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
         </title>
       </Head>
 
-      <div className="min-h-screen bg-black text-white pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-[#D0E9FF] text-black pt-[80px] md:pt-10 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <AccommodationHeader hotelData={hotelData} />
 
@@ -490,6 +501,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
               onScrollToOptions={handleScrollToOptions}
               onProceedBooking={handleProceedBooking}
               nights={nights}
+              totalGuests={totalGuests}
             />
           </div>
         </div>
@@ -505,8 +517,10 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
             currency={hotelData.currency} // Pass currency from hotelData
             onRoomSelect={handleRoomSelect}
             nights={nights}
+            onProceedBooking={handleProceedBooking}
             allotments={accommodation.allotments}
             selectedRoom={selectedRoom}
+            rooms={searchParams?.rooms || 1}
           />
           <AccommodationMap hotelData={hotelData} />
         </div>

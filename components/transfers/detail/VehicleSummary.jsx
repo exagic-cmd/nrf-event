@@ -61,8 +61,8 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
             {/* Arrival Features */}
             {activeFeatures.some((f) => f.service_flag === "Arrival") && (
               <div>
-                <h4 className="flex items-center font-semibold text-[#CC9A55] mb-2">
-                  <PlaneLanding className="w-4 h-4 mr-2 text-[#CC9A55]" /> {t("arrival")}
+                <h4 className="flex items-center font-semibold text-[#D3202D] mb-2">
+                  <PlaneLanding className="w-4 h-4 mr-2 text-[#D3202D]" /> {t("arrival")}
                 </h4>
                 <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
                   {activeFeatures
@@ -82,8 +82,8 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
             {/* Departure Features */}
             {activeFeatures.some((f) => f.service_flag === "Departure") && (
               <div>
-                <h4 className="flex items-center font-semibold text-[#CC9A55] mb-2">
-                  <PlaneTakeoff className="w-4 h-4 mr-2 text-[#CC9A55]" /> {t("departure")}
+                <h4 className="flex items-center font-semibold text-[#D3202D] mb-2">
+                  <PlaneTakeoff className="w-4 h-4 mr-2 text-[#D3202D]" /> {t("departure")}
                 </h4>
                 <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
                   {activeFeatures

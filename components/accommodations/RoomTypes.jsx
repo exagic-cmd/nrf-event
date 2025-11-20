@@ -11,10 +11,14 @@ const StubaRoomList = ({
   allRooms = [],
   currency = "USD",
   onRoomSelect,
+  onProceedBooking,
   nights = 1,
+  totalRooms = 1,
+  totalRoomsRequested = 1,
   selectedRoom = null,
 }) => {
   const [internalSelectedRoom, setInternalSelectedRoom] = useState(null);
+  const [roomMessages, setRoomMessages] = useState({});
 
   useEffect(() => {
     setInternalSelectedRoom(selectedRoom?.id || null);
@@ -23,7 +27,7 @@ const StubaRoomList = ({
   if (!allRooms.length) {
     return (
       <div className="px-4 sm:px-6 lg:px-12 py-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Available Rooms</h2>
+        <h2 className="text-2xl font-bold text-black mb-6">Available Rooms</h2>
         <div className="text-gray-400 text-center py-12 bg-gray-800 rounded-xl border border-gray-700">
           <div className="text-lg mb-2">No rooms available</div>
           <div className="text-sm">Try different dates or check back later</div>
@@ -40,18 +44,35 @@ const StubaRoomList = ({
   }, {});
 
   const handleRoomSelect = (room) => {
-    // Call external handler first. It should return true to confirm selection is allowed.
     try {
-      const allowed = onRoomSelect ? onRoomSelect(room) : true;
-      // If the handler returns false explicitly, do not mark as selected.
-      if (allowed === false) return;
-    } catch (e) {
-      // If handler throws, avoid selecting and re-throw
-      console.error('onRoomSelect handler threw:', e);
-      return;
-    }
+      const result = onRoomSelect ? onRoomSelect(room) : { ok: true };
 
-    setInternalSelectedRoom(room.id);
+      // Accept multiple return forms for compatibility
+      const normalized = (result === true || result === undefined)
+        ? { ok: true }
+        : (typeof result === 'boolean' ? { ok: result } : result);
+
+      if (!normalized.ok) {
+        // show inline message under this room's button
+        setRoomMessages(prev => ({ ...prev, [room.id]: normalized.message || 'This room is not available on your selected dates' }));
+        // clear message after 5s
+        setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[room.id]; return c; }), 5000);
+        return;
+      }
+
+      setInternalSelectedRoom(room.id);
+
+      // If parent provided a proceed handler (info card), call it to continue to booking
+      try {
+        if (typeof onProceedBooking === 'function') {
+          onProceedBooking(room);
+        }
+      } catch (err) {
+        console.error('onProceedBooking threw:', err);
+      }
+    } catch (e) {
+      console.error('onRoomSelect handler threw:', e);
+    }
   };
 
   const formatPrice = (price) => {
@@ -84,16 +105,16 @@ const StubaRoomList = ({
   };
 
   return (
-    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-8">
+    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-2">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">Available Rooms</h2>
-            <p className="text-gray-400">
+            <h2 className="text-2xl font-bold text-[#233BA0] mb-1">Available Rooms</h2>
+            <p className="text-black ">
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
             </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400 bg-gray-800 px-4 py-2 rounded-full">
+          <div className="flex items-center gap-2 text-sm text-white bg-gray-800 px-4 py-2 rounded-full">
             <Calendar className="w-4 h-4" />
             <span>{nights} night{nights > 1 ? "s" : ""}</span>
           </div>
@@ -101,16 +122,16 @@ const StubaRoomList = ({
 
         <div className="space-y-8">
           {Object.entries(groupedRooms).map(([roomType, rooms]) => (
-            <div key={roomType} className="bg-gray-800 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 transition-all">
+            <div key={roomType} className="bg-white rounded-2xl p-3 border border-gray-700 hover:border-gray-600 transition-all">
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Bed className="w-5 h-5 text-[#CC9A55]" />
-                  {roomType}
+                <h3 className="text-md md:text-lg font-bold text-black flex items-center gap-2">
+                  <Bed className="w-5 h-5 text-[#D3202D]" />
+                 {totalRoomsRequested} x {roomType}
                 </h3>
-                <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
+                {/* <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
                   <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Flexible check-in</div>
                   <div className="flex items-center gap-2"><Utensils className="w-4 h-4" /> Meal options available</div>
-                </div>
+                </div> */}
               </div>
 
               <div className="space-y-5">
@@ -122,64 +143,66 @@ const StubaRoomList = ({
                   return (
                     <div
                       key={room.id}
-                      className={`bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border-2 transition-all duration-200 ${
+                      className={`bg-white backdrop-blur-sm p-3 rounded-xl border-2 transition-all duration-200 ${
                         isSelected
-                          ? "border-[#CC9A55] bg-[#CC9A55]/5 shadow-lg shadow-[#CC9A55]/10"
+                          ? "border-[#D3202D] bg-[#D3202D]/5 shadow-lg shadow-[#D3202D]/10"
                           : "border-gray-700 hover:border-gray-600"
                       }`}
                     >
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                         <div className="space-y-4">
                           <div className="flex items-center gap-3">
-                            <div className="text-2xl">{meal.icon}</div>
+                            {/* <div className="text-2xl">{meal.icon}</div> */}
                             <div>
-                              <div className="font-medium text-white">{meal.text}</div>
-                              <div className="text-xs text-gray-400">Meal Plan</div>
+                              <div className="font-medium text-black">{meal.text} Bed</div>
+                              {/* <div className="text-xs text-gray-400">Meal Plan</div> */}
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          {/* <div className="flex items-center gap-3">
                             <div className={cancellation.color}>{cancellation.icon}</div>
                             <div>
                               <div className={`font-medium ${cancellation.color}`}>{cancellation.text}</div>
                               <div className="text-xs text-gray-400">{cancellation.desc}</div>
                             </div>
-                          </div>
+                          </div> */}
                         </div>
 
-                        <div className="flex flex-col justify-center text-center lg:text-left">
-                          <div className="text-3xl font-bold text-[#CC9A55]">
-                            {currency} {formatPrice(room.price)}
-                          </div>
-                          <div className="text-sm text-gray-400 mt-1">
-                            Total for {nights} night{nights > 1 ? "s" : ""}
-                          </div>
-                          {nights > 1 && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              {currency} {getPricePerNight(room.price)} per night
-                            </div>
-                          )}
-                        </div>
+                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-center lg:text-left w-full">
+  <div className="text-md md:text-lg font-bold text-[#D3202D]">
+    {currency} {formatPrice(room.price)}
+  </div>
+  {nights > 1 && (
+    <div className="text-xs text-gray-500 sm:ml-2">
+      ({currency} {getPricePerNight(room.price)} per night)
+    </div>
+  )}
+</div>
 
-                        <div className="flex items-center justify-center lg:justify-end">
-                          <button
-                            onClick={() => handleRoomSelect(room)}
-                            className={`px-8 py-3 rounded-xl font-bold text-lg transition-all min-w-[160px] flex items-center justify-center gap-2 ${
-                              isSelected
-                                ? "bg-green-600 hover:bg-green-700 text-white"
-                                : "bg-[#CC9A55] hover:bg-[#b88a45] text-white"
-                            }`}
-                          >
-                            {isSelected ? (
-                              <>
-                                <Check className="w-5 h-5" />
-                                Selected
-                              </>
-                            ) : (
-                              "Select Room"
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                        <div className="flex flex-col items-center lg:items-end">
+  <button
+    onClick={() => handleRoomSelect(room)}
+    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all w-full md:w-auto ${
+      isSelected
+        ? "bg-[#D3202D]  text-white"
+        : "bg-[#D0E9FF]  text-black"
+    }`}
+  >
+    {isSelected ? (
+      <>
+        <Check className="w-5 h-5 inline-block mr-2" />
+        Selected
+      </>
+    ) : (
+      "Select Room"
+    )}
+  </button>
+  {roomMessages[room.id] && (
+    <div className="text-red-400 text-sm mt-2 text-center w-full">
+      {roomMessages[room.id]}
+    </div>
+  )}
+</div>
+</div>
 
                       {(room.roomCode || room.mealCode) && (
                         <div className="mt-4 pt-4 border-t border-gray-700 flex flex-wrap gap-4 text-xs text-gray-500">
@@ -209,6 +232,8 @@ const RoomTypes = ({
   currency = "SGD",
   nights = 1,
   onRoomSelect,
+  onProceedBooking,
+  roomsSearched,
   selectedRoom,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
@@ -223,6 +248,8 @@ const RoomTypes = ({
 
   const totalRoomsRequested = (searchParams?.rooms || []).length || 1;
 
+  // Normalize the `rooms` prop passed from parent into a simple count
+  const roomsCount = typeof totalRoomsRequested === 'number' ? Number(totalRoomsRequested) : (Array.isArray(totalRoomsRequested) ? totalRoomsRequested.length : (Number(totalRoomsRequested) || 1));
   const stayDates = useMemo(() => {
     const from = searchParams?.start_date;
     const to = searchParams?.end_date;
@@ -245,7 +272,7 @@ const RoomTypes = ({
 
     // 1. Date availability check (pre-check flag on room)
     if (!room.isHotelAvailable) {
-      alert("This hotel is sold out for one or more nights in your stay.");
+      //alert("This hotel is sold out for one or more nights in your stay.");
       return false;
     }
 
@@ -253,29 +280,25 @@ const RoomTypes = ({
     for (const date of stayDates) {
       const entry = allotments.find(a => String(a.date) === String(date));
       if (!entry) {
-        alert(`No availability info for ${date}. Please change dates.`);
-        return false;
+        return { ok: false, message: `No availability info for ${date}. Please change dates.` };
       }
       if (entry.available === false) {
-        alert(`Room unavailable on ${date}.`);
-        return false;
+        return { ok: false, message: `Room unavailable on ${date}.` };
       }
       const availQty = Number(entry.value ?? entry.available_qty ?? 0);
       if (availQty < totalRoomsRequested) {
-        alert(`Not enough rooms available on ${date}. Only ${availQty} left for that date.`);
-        return false;
+        return { ok: false, message: `Not enough rooms available on ${date}. Only ${availQty} left for that date.` };
       }
     }
 
     // 3. Pax check
     if (!room.canAccommodate) {
-      alert(room.paxMessage || `This room is too small for ${totalGuests} guests.`);
-      return false;
+      return { ok: false, message: room.paxMessage || `This room is too small for ${totalGuests} guests.` };
     }
 
     // All checks passed — call parent's handler and signal allowed
     onRoomSelect?.(room);
-    return true;
+    return { ok: true };
   };
 
   if (!roomsToDisplay || roomsToDisplay.length === 0) {
@@ -292,6 +315,9 @@ const RoomTypes = ({
       currency={currency}
       nights={nights}
       onRoomSelect={validateAndSelect}
+      onProceedBooking={onProceedBooking}
+      totalRooms={roomsCount}
+      totalRoomsRequested={totalRoomsRequested}
       selectedRoom={selectedRoom}
     />
   );

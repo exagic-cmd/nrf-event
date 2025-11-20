@@ -14,6 +14,7 @@ import Herosection from "@/components/landing/Herosection"
 import useUserStore from "@/store/useAuthStore"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
 import { useEventStore } from "@/store/useEventStore";
+import ImageSlider from "@/components/landing/ImageSlider";
 export default function LandingPage() {
   const { t } = useTranslation("common")
   const [isLoading, setIsLoading] = useState(true)
@@ -61,14 +62,17 @@ export default function LandingPage() {
     )
   }
   return (
-    <Layout>
+    <Layout className=" ">
+      <div className="bg-[#D0E9FF] pt-20">
+        <ImageSlider />
+      </div>
  < Herosection/>
 
-        {/* Bottom Gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/50 to-transparent"></div>
+        {/* ottom Gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-32"></div>
 
         {/* Transfer Benefits Section */}
-        <CountdownTimer />
+        {/* <CountdownTimer /> */}
 
         <TransferBenefitsSection />
         {/* Reviews Section */}
