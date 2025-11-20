@@ -211,8 +211,15 @@ export default function AccommodationFilter({ onSearch }) {
 
   try {
     // This will now return [] if !data.status
-    const results = await setSearchParamsAndSearch(searchPayload);
-
+    const results = await setSearchParamsAndSearch(searchPayload);;
+  if (!results || results.length === 0) {
+      return;
+    }
+    const { error } = useAccommodationsStore.getState();
+    if (error) {
+      alert(error);
+      return;
+    }
     if (onSearch) onSearch(searchPayload);
 
   } catch (err) {
@@ -227,7 +234,7 @@ export default function AccommodationFilter({ onSearch }) {
         {/* Search Input */}
         <div className="md:col-span-3 relative">
           <div className="rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 flex items-center gap-2">
-            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
+            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-[#D3202D] flex-shrink-0" />
             <input
               type="text"
               value={search}
@@ -508,14 +515,14 @@ export default function AccommodationFilter({ onSearch }) {
                 <button
                   type="button"
                   onClick={addRoom}
-                  className="flex-1 text-xs sm:text-sm border border-yellow-500 text-yellow-500 font-medium py-2 sm:py-2.5 rounded-lg hover:bg-yellow-50 active:bg-yellow-100 transition-colors touch-manipulation"
+                  className="flex-1 text-xs sm:text-sm border border-[#D3202D] text-[#D3202D] font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
                 >
                   + Add Room
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowGuestPopup(false)}
-                  className="flex-1 bg-yellow-500 text-gray-900 text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg hover:bg-yellow-500 active:bg-yellow-500 transition-colors touch-manipulation"
+                  className="flex-1 bg-[#D3202D] text-white text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
                 >
                   Done
                 </button>
@@ -583,7 +590,7 @@ export default function AccommodationFilter({ onSearch }) {
       <div className="flex justify-end">
           <button
             type="submit"
-            className="w-1/2 md:w-1/5 md:absolute md:bottom-9 rounded-xl bg-yellow-400 text-gray-900 font-semibold text-base sm:text-lg py-3 md:py-2 hover:bg-yellow-500 active:bg-yellow-500 transition touch-manipulation"
+            className="w-1/2 md:w-1/5 md:absolute md:bottom-9 rounded-xl bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2  active:bg-[#D3202D] transition touch-manipulation"
           >
             Search
           </button>
