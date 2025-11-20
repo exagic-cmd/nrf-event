@@ -71,7 +71,7 @@ export default function Header() {
         onClick={() => setUserMenuOpen(!userMenuOpen)}
         className={`p-2 rounded-full hover:bg-white/20`}
       >
-        <User className={`${isMobile ? "w-5 h-5 sm:w-6 sm:h-6" : "w-6 h-6"} text-white`} />
+        <User className={`${isMobile ? "w-5 h-5 sm:w-6 sm:h-6" : "w-6 h-6"} text-black`} />
       </button>
       {userMenuOpen && (
         <div
@@ -141,15 +141,24 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-0 bg-white shadow-md z-40">
       {/* Logo */}
-      <div className="flex items-center">
-        <LocalizedLink href="/">
-          <img
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642543/External%20Links/Desktop_red.png"
-            alt="Logo"
-            className="h-8 md:h-20 w-56 object-contain"
-          />
-        </LocalizedLink>
-      </div>
+    <div className="flex items-center">
+  <LocalizedLink href="/">
+    {/* Mobile + Tablet Logo */}
+    <img
+      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763551460/External%20Links/Mobile.png"
+      alt="Mobile Logo"
+      className="h-14 w-auto object-contain lg:hidden"
+    />
+
+    {/* Desktop Logo */}
+    <img
+      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642543/External%20Links/Desktop_red.png"
+      alt="Desktop Logo"
+      className="hidden lg:block h-16 w-auto object-contain"
+    />
+  </LocalizedLink>
+</div>
+
 
       {/* RIGHT SIDE: LANGUAGE → LOGIN / USER */}
       <div className="ml-auto flex items-center gap-2 sm:gap-4" ref={dropdownRef}>
