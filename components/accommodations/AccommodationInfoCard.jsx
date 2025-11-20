@@ -82,8 +82,10 @@ const AccommodationInfoCard = ({
               </>
             ) : (
               <>
-                <Clock className="h-3.5 w-3.5" />
-                Starting from · {nights} night{nights > 1 ? "s" : ""}
+                <Check className="h-3.5 w-3.5" />
+                {/* Starting from · {nights} night{nights > 1 ? "s" : ""} */}
+                Total for {nights} night{nights > 1 ? "s " : ""}
+               for { totalGuests +" Guests"}
               </>
             )}
           </div>
