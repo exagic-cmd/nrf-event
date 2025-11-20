@@ -72,7 +72,7 @@ const handleApply = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-        <h2 className="text-lg font-semibold text-[#CC9A55] mb-4">{t('selectParticipants')}</h2>
+        <h2 className="text-lg font-semibold text-[#D3202D] mb-4">{t('selectParticipants')}</h2>
         
         <div className="text-xs flex items-center gap-1 text-gray-700 mb-4">
           {t('pax')} ({t('min')} {minPax} <MinusIcon size={12} /> {t('max')} {maxPax})
@@ -90,7 +90,7 @@ disabled={localAdults <= 1}
             >-</button>
             <span className="w-6 text-center font-medium">{localAdults}</span>
             <button
-              className="w-9 h-9 rounded-full bg-[#CC9A55] text-white text-xl font-bold flex items-center justify-center transition"
+              className="w-9 h-9 rounded-full bg-[#D3202D] text-white text-xl font-bold flex items-center justify-center transition"
               onClick={() => handleInc("adults")}
               disabled={localAdults + localChild >= maxPax}
               type="button"
@@ -110,7 +110,7 @@ disabled={localAdults <= 1}
             >-</button>
             <span className="w-6 text-center font-medium">{localChild}</span>
             <button
-              className="w-9 h-9 rounded-full bg-[#CC9A55] text-white text-xl font-bold flex items-center justify-center  transition"
+              className="w-9 h-9 rounded-full bg-[#D3202D] text-white text-xl font-bold flex items-center justify-center  transition"
               onClick={() => handleInc("child")}
               disabled={localAdults + localChild >= maxPax}
               type="button"
@@ -135,7 +135,7 @@ disabled={localAdults <= 1}
            {t('cancel')}
           </button>
           <button
-            className="px-4 py-2 rounded-lg bg-[#CC9A55] text-white font-medium transition"
+            className="px-4 py-2 rounded-lg bg-[#D3202D] text-white font-medium transition"
            disabled={!!adultsError || !!childError || (localAdults + localChild < minPax)}
             onClick={handleApply}
             type="button"

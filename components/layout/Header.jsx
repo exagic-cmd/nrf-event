@@ -75,7 +75,7 @@ export default function Header() {
       </button>
       {userMenuOpen && (
         <div
-          className={`absolute right-0 top-12 bg-white shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
+          className={`absolute right-0 top-12 bg-[#D3202D] shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
             isMobile ? "w-44" : "w-48"
           }`}
         >
@@ -89,7 +89,7 @@ export default function Header() {
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text-[#CC9A55] text-left"
+            className="flex items-center space-x-2 text[#D3202D] text-left"
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
@@ -122,7 +122,7 @@ export default function Header() {
                 setLangDropdownOpen(false);
               }}
               className={`w-full flex items-center space-x-2 px-3 py-2 text-sm hover:bg-gray-100 ${
-                router.locale === loc.code ? "font-semibold text-[#CC9A55]" : ""
+                router.locale === loc.code ? "font-semibold text[#D3202D]" : ""
               }`}
             >
               <img
@@ -144,7 +144,7 @@ export default function Header() {
       <div className="flex items-center">
         <LocalizedLink href="/">
           <img
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763551460/External%20Links/Desktop.png"
+            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642543/External%20Links/Desktop_red.png"
             alt="Logo"
             className="h-8 md:h-20 w-56 object-contain"
           />

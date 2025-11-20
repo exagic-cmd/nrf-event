@@ -308,7 +308,7 @@ setFlywireTotal(totalPrice);
                   <span className="flex items-center gap-1">
                     <Tag className="w-4 h-4 text-gray-400" /> {t("promoCode")}
                   </span>
-                  <a href="#" className="text-sm text-[#CC9A55] underline">{t("findPromo")}</a>
+                  <a href="#" className="text-sm text-[#D3202D] underline">{t("findPromo")}</a>
                 </label>
                 <input
                   type="text"
@@ -340,7 +340,7 @@ setFlywireTotal(totalPrice);
           <div className="mt-8 flex justify-end">
             <button
               type="submit"
-              className="bg-[#CC9A55] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
+              className="bg-[#D3202D] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

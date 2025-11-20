@@ -36,9 +36,7 @@ export default function RecommendedProducts() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(
-          "https://app.airporttransfers.ai/api/recommendedProducts"
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/recommendedProducts`);
         const data = await res.json();
         setProducts(data?.data?.products || []);
       } catch (err) {
@@ -91,10 +89,10 @@ export default function RecommendedProducts() {
   };
 
   return (
-    <section className="relative w-full py-2 md:py-4 bg-black">
+    <section className="relative w-full py-2 md:py-4 bg-[#D0E9FF]">
       {/* Loader Overlay */}
       {loading && (
-        <div className="absolute inset-0 z-50 flex justify-center items-center bg-black/60 pointer-events-none">
+        <div className="absolute inset-0 z-50 flex justify-center items-center bg-[#D0E9FF] pointer-events-none">
           <SvgLoader2 />
         </div>
       )}
@@ -102,7 +100,7 @@ export default function RecommendedProducts() {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Header with arrows */}
         <div className="flex items-center justify-between mb-6 md:mb-10">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#D3202D]">
             {t("recommended_products", "Recommended Products")}
           </h2>
 
@@ -112,7 +110,7 @@ export default function RecommendedProducts() {
               disabled={!canScrollLeft}
               className={`p-2 rounded-full border border-gray-600 transition ${
                 canScrollLeft
-                  ? "hover:bg-gray-800 text-white"
+                  ? "hover:bg-gray-800 text-black"
                   : "opacity-40 cursor-not-allowed text-gray-500"
               }`}
             >
@@ -123,7 +121,7 @@ export default function RecommendedProducts() {
               disabled={!canScrollRight}
               className={`p-2 rounded-full border border-gray-600 transition ${
                 canScrollRight
-                  ? "hover:bg-gray-800 text-white"
+                  ? "hover:bg-gray-800 text-black"
                   : "opacity-40 cursor-not-allowed text-gray-500"
               }`}
             >
@@ -166,13 +164,13 @@ export default function RecommendedProducts() {
                     {item.short_desc}
                   </p>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="font-semibold text-[#CC9A55] text-xs sm:text-sm">
+                    <span className="font-semibold text-[#D3202D] text-xs sm:text-sm">
                       {item.starting_price} SGD
                     </span>
                     <button
                       onClick={() => goToDetail(item)}
                       disabled={loadingCardId}
-                      className="bg-[#CC9A55] hover:bg-[#b88a45] text-white px-2.5 md:py-2 py-1 rounded-md text-[11px] sm:text-xs font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="bg-[#D3202D]  text-white px-2.5 md:py-2 py-1 rounded-md text-[11px] sm:text-xs font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {loadingCardId === item.id
                         ? t("loading", "Loading...")

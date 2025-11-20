@@ -45,7 +45,7 @@ const normalizeText = (text) =>
         return (
           <details
             key={index}
-            className="bg-[#CC9A55] rounded-lg border border-gray-200 shadow-sm overflow-hidden group"
+            className="bg-[#D3202D] rounded-lg border border-gray-200 shadow-sm overflow-hidden group"
             open={index === 0}
           >
             <summary className="cursor-pointer p-4 sm:p-4  transition-colors duration-200 flex items-center justify-between">
@@ -60,7 +60,7 @@ const normalizeText = (text) =>
               </div>
             </summary>
 
-            <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t border-gray-100 bg-[#ede0ce]">
+            <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t border-gray-100 bg-blue-50">
               {section.type === 'inclusion_exclusion' ? (
                 <div>
                   <h3 className="font-semibold text-black mb-2">{t("whatsIncluded")}</h3>
@@ -68,7 +68,7 @@ const normalizeText = (text) =>
                     {section.inclusions?.map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-black text-sm">
                         <CheckCircle
-                          className="text-[#CC9A55] mt-1 flex-shrink-0"
+                          className="text-[#D3202D] mt-1 flex-shrink-0"
                           size={14}
                         />
                         <span>{item}</span>
@@ -80,7 +80,7 @@ const normalizeText = (text) =>
                     {section.exclusions?.map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-black text-sm">
                         <XCircle
-                          className="text-[#CC9A55] mt-1 flex-shrink-0"
+                          className="text-[#D3202D] mt-1 flex-shrink-0"
                           size={14}
                         />
                         <span>{item}</span>

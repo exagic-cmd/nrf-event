@@ -97,7 +97,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
         <div
           className={`mb-4 text-sm p-2 rounded-md ${
             message.type === "success"
-              ? "bg-[#cfc1ae] text-[#CC9A55]"
+              ? "bg-[#cfc1ae] text-[#D3202D]"
               : "bg-gray-100 text-gray-600"
           }`}
         >

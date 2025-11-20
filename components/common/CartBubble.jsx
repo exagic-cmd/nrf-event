@@ -37,9 +37,9 @@ const CartBubble = () => {
       className="fixed bottom-[70px] border-b border-black right-5 z-40 bg-white border shadow-md rounded-full p-3 flex items-center justify-center hover:bg-gray-100 transition"
     >
       <div className="relative">
-         <ShoppingCart size={24} className="text-[#CC9A55]" />
+         <ShoppingCart size={24} className="text-[#D3202D]" />
         {items.length > 0 && (
-          <span className="absolute -top-2 -right-2 bg-orange-100 text-[#CC9A55] font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+          <span className="absolute -top-2 -right-2 bg-orange-100 text-[#D3202D] font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
             {items.length}
           </span>
         )}

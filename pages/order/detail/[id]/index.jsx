@@ -86,12 +86,12 @@ const DriverCard = ({ driver, status }) => {
           <div className="flex items-center gap-5 text-sm my-2 text-gray-900">
             {/* {driver.email && (
               <span className="flex items-center gap-1">
-                <Mail className="w-4 h-4 text-[#CC9A55]" /> {driver.email}
+                <Mail className="w-4 h-4 text-[#D3202D]" /> {driver.email}
               </span>
             )} */}
             {driver.contact_number && (
               <span className="flex items-center gap-1">
-                <WhatsappIcon className="w-4 h-4 text-[#CC9A55]" /> {driver.contact_number}
+                <WhatsappIcon className="w-4 h-4 text-[#D3202D]" /> {driver.contact_number}
               </span>
             )}
           </div>
@@ -228,7 +228,7 @@ const confirmCancel = (id, reason) => {
             <div className="text-red-500 text-xl mb-4">⚠️</div>
             <h2 className="text-xl text-black mb-2">{t("errorLoadingOrder")}</h2>
             <p className="text-gray-900 mb-4">{error}</p>
-            <button onClick={() => router.back()} className="bg-[#CC9A55] text-white px-4 py-2 rounded-lg">
+            <button onClick={() => router.back()} className="bg-[#D3202D] text-white px-4 py-2 rounded-lg">
               {t("goBack")}
             </button>
           </div>
@@ -240,7 +240,7 @@ const confirmCancel = (id, reason) => {
   return (
     <ProtectedRoute>
       
-      <div className="min-h-screen text-black  font-normal bg-black">
+      <div className="min-h-screen text-black  font-normal bg-[#D0E9FF]">
         {displayItineraries.map((it) => (
   <div key={it.id} className="relative">
 
@@ -253,7 +253,7 @@ const confirmCancel = (id, reason) => {
             query: { post: "true" },
           });
         }}
-        className="fixed bottom-6 right-6 bg-[#CC9A55] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#b3843f] transition-colors z-50"
+        className="fixed bottom-6 right-6 bg-[#D3202D] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#b3843f] transition-colors z-50"
       >
      
          <span className="inline-flex items-center gap-1">
@@ -268,7 +268,7 @@ const confirmCancel = (id, reason) => {
        <div className="md:pt-24 pt-20">
          <button
  onClick={() => router.push("/order")}
-                  className="flex items-center gap-2 text-gray-100 hover:text-[#CC9A55]  ml-3 md:ml-6 mb-6 transition-colors"
+                  className="flex items-center gap-2 text-gray-100 hover:text-[#D3202D]  ml-3 md:ml-6 mb-6 transition-colors"
                 >
                   <ArrowLeft size={20} /> {t("button.back")}
                 </button>
@@ -312,7 +312,7 @@ const confirmCancel = (id, reason) => {
         className="bg-white relative rounded-xl shadow-sm p-1 border border-gray-200"
       >
         <div className="flex absolute right-2 top-1 items-center gap-3">
-          <Hotel className="w-4 h-4 text-[#CC9A55]" />
+          <Hotel className="w-4 h-4 text-[#D3202D]" />
           <h4 className="text-xs md:text-sm font-semibold text-black">
             {t("room", "Room")} {roomIdx + 1}
           </h4>
@@ -356,7 +356,7 @@ const confirmCancel = (id, reason) => {
                     <div className="space-y-2">
                       {adults.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold  text-[#CCA655] tracking-wider">{t("adults", "Adults")}</p>
+                          <p className="text-xs font-semibold  text-[#D3202D] tracking-wider">{t("adults", "Adults")}</p>
                           <p className="text-sm text-black">
                             {adults.map((g) => `${g.title} ${g.first} ${g.last}`).join(", ")}
                           </p>
@@ -364,7 +364,7 @@ const confirmCancel = (id, reason) => {
                       )}
                       {children.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold  text-[#CCA655] tracking-wider">{t("children", "Children")}</p>
+                          <p className="text-xs font-semibold  text-[#D3202D] tracking-wider">{t("children", "Children")}</p>
                           <p className="text-sm text-black">
                             {children.map((g) => `${g.first} ${g.last}`).join(", ")}
                           </p>
@@ -516,7 +516,7 @@ const confirmCancel = (id, reason) => {
                                 <li key={i} className="leading-snug">
                                   <span className="font-medium">{feature.title}</span>
                                   {/* {feature.flag && (
-                                    <p className="text-xs text-[#CC9A55] ml-5 mt-0.5">{feature.flag}</p>
+                                    <p className="text-xs text-[#D3202D] ml-5 mt-0.5">{feature.flag}</p>
                                   )} */}
                                 </li>
                               ))}
@@ -587,7 +587,7 @@ const confirmCancel = (id, reason) => {
 
     {it.pickup_point_remarks ? (
       <details className="group">
-        <summary className="flex justify-between items-center cursor-pointer text-sm font-semibold text-[#CC9A55]">
+        <summary className="flex justify-between items-center cursor-pointer text-sm font-semibold text-[#D3202D]">
           {t('viewNotes')}
           <span className="ml-2 text-black group-open:rotate-180 transition-transform">▼</span>
         </summary>
@@ -678,7 +678,7 @@ const confirmCancel = (id, reason) => {
         You can <span  onClick={() => {
         setSelectedItineraryId(it.id);
         setCancelModalOpen(true);
-      }} className="font-semibold text-[#CC9A55] cursor-pointer">cancel your service </span> without incurring any charges 24 hours before the pickup time.
+      }} className="font-semibold text-[#D3202D] cursor-pointer">cancel your service </span> without incurring any charges 24 hours before the pickup time.
       
     </p>
 

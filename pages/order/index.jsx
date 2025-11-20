@@ -114,7 +114,7 @@ const TravelInfoPage = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black mt-12">
+      <div className="min-h-screen bg-[#D0E9FF] mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
@@ -131,7 +131,7 @@ const TravelInfoPage = () => {
           )}
 <button
   onClick={() => router.push("/chat")} 
-  className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#CC9A55] to-[#e5c9a1] text-white 
+  className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#D3202D] to-[#D0E9FF] text-white 
              p-4 rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
   aria-label="Chat with AI"
 >
@@ -139,7 +139,7 @@ const TravelInfoPage = () => {
 </button>
 
           {weatherInfo ? (
-            <div className="relative mt-4 md:mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-[#CC9A55] via-[#cb913f] to-[#e5c9a1] text-white shadow-2xl">
+            <div className="relative mt-4 md:mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-[#D3202D] via-[#D0E9FF] to-[#2176FF] text-white shadow-2xl">
               <div className="absolute inset-0 bg-black opacity-10"></div>
 
               <div className="relative p-8 flex justify-between items-start lg:items-center">
@@ -184,21 +184,21 @@ const TravelInfoPage = () => {
           )}
 
 {accommodations?.length > 0 && (
-  <div className="relative text-white">
+  <div className="relative text-[#D3202D]">
     <div className="flex justify-between items-center px-4 mb-4">
       <h2 className="text-xl font-semibold">Accommodations</h2>
       <div className="flex space-x-2">
         <button 
           onClick={() => scroll('left')}
           type="button" 
-          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#CC9A55] text-white shadow transition-colors duration-200"
+          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#D3202D] text-white shadow transition-colors duration-200"
         >
           <ChevronLeft size={20} />
         </button>
         <button 
           onClick={() => scroll('right')}
           type="button" 
-          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#CC9A55] text-white shadow transition-colors duration-200"
+          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#D3202D] text-white shadow transition-colors duration-200"
         >
           <ChevronRight size={20} />
         </button>

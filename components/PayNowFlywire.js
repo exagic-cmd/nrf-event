@@ -102,13 +102,14 @@ const initiatePayment = () => {
 
   console.log("🚀 Final Flywire config:", config);
 
-  if (window.FlywirePayment) {
-    const modal = window.FlywirePayment.initiate(config);
-    modal.render();
-  } else {
-    console.error("Flywire script not loaded.");
-    onFailure("Flywire not loaded");
-  }
+ if (window.FlywirePayment) {
+  const modal = window.FlywirePayment.initiate(config);
+  setFlywireModal(modal);   
+  modal.render();
+} else {
+  console.error("Flywire script not loaded.");
+ // onFailure("Flywire not loaded");
+}
 };
 
 

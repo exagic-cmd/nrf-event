@@ -37,7 +37,7 @@ export default function CancelPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#f7f2ec]">
-      <p className="text-xl font-semibold mb-4 text-[#cc9a55]">
+      <p className="text-xl font-semibold mb-4 text-[#D3202D]">
         ⚠️ {t("message.paymentCanceled")}
       </p>
 
@@ -46,7 +46,7 @@ export default function CancelPage() {
           onClick={handleRetry}
           disabled={loading}
           className={`px-6 py-3 rounded-lg text-white transition flex items-center justify-center
-            ${loading ? "bg-[#b08445] cursor-not-allowed" : "bg-[#cc9a55] hover:bg-[#b08445]"}`}
+            ${loading ? "bg-[#b08445] cursor-not-allowed" : "bg-[#D3202D] hover:bg-[#b08445]"}`}
         >
           {loading ? (
             <svg
