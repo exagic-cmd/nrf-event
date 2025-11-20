@@ -116,7 +116,7 @@ export default function AccommodationBookingPage() {
                 <div className="space-y-3 text-sm">
                   <div><strong>Hotel:</strong> {hotel?.title}</div>
                   <div><strong>Room:</strong> {selectedRoom.roomType || "Not selected"}</div>
-                  <div><strong>Meal:</strong> {selectedRoom.mealType || "Room Only"}</div>
+                  <div><strong>Bed:</strong> {selectedRoom.mealType || "Room Only"}</div>
                   <div><strong>Dates:</strong> {bookingData.checkIn} to {bookingData.checkOut}</div>
                   <div><strong>Nights:</strong> {bookingData.nights}</div>
                   {/* {isNonStuba && (
@@ -127,8 +127,8 @@ export default function AccommodationBookingPage() {
                   <div className="pt-3 border-t border-gray-50">
                     <div className="flex justify-between">
                       <span>Total</span>
-                      <span className="text-md lg:text-lg font-bold text-[#D3202D]">
-                        USD {Number(selectedRoom.price || 0).toFixed(2)}
+                      <span className="text-md text-white lg:text-lg font-bold text-[#D3202D]">
+                        {hotel?.currency} {Number(selectedRoom.price || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

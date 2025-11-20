@@ -116,13 +116,13 @@ const CartDrawerContent = () => {
                         {/* Accommodation Details */}
                         <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
                           <p>
-                            <strong>{t("room", { ns: "accommodation" })}:</strong> {item.roomType} | <strong>{t("meal", { ns: "accommodation" })}:</strong> {item.mealType} | <strong>{t("nights", { ns: "accommodation" })}:</strong> {item.nights} |  <strong>{t("guests", { ns: "accommodation" })}:</strong> {item.guests}
+                            <strong>{t("Room", { ns: "accommodation" })}:</strong> {item.roomType} | <strong>{t("Bed", { ns: "accommodation" })}:</strong> {item.mealType} | <strong>{t("Nights", { ns: "accommodation" })}:</strong> {item.nights} |  <strong>{t("Guests", { ns: "accommodation" })}:</strong> {item.adult_count + item.child_count}
                           </p>
                         </div>
 
                         {/* Price */}
                         <p className="text-sm text-[#CC9A55] font-semibold mt-1">
-                           {Number(item.price).toFixed(2)} USD
+                           {Number(item.price).toFixed(2)} SGD
                         </p>
                       </>
                     ) : item.vehicle ? (

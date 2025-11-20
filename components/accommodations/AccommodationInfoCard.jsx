@@ -88,12 +88,12 @@ const AccommodationInfoCard = ({
             )}
           </div>
 
-          {selectedRoom && (
+          {/* {selectedRoom && (
             <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 text-[#233BA0] text-xs px-2 py-1 rounded-full">
               <Check className="h-3 w-3" />
               Room Selected
             </div>
-          )}
+          )} */}
 
           {!selectedRoom && allRooms.length > 0 && (
             <div className="text-[#233BA0] text-xs mt-1.5">
@@ -158,7 +158,7 @@ const AccommodationInfoCard = ({
             disabled={!allRooms.length}
             className="w-full bg-[#D3202D] text-sm lg:text-lg text-white lg:py-2 py-3 px-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {selectedRoom ? "Change Room" : `Choose Room (${allRooms.length})`}
+            {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>
 
           {/* <button

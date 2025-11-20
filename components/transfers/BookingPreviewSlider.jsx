@@ -181,14 +181,14 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                   {formatDate(item.checkIn)} – {formatDate(item.checkOut)}
                 </span>
                 <span>{item.nights} {t("nights", { ns: "accommodation" })}</span>
-                <span>{item.guests} {t("guests", { ns: "accommodation" })}</span>
+                <span>{item.adult_count + item.child_count} {t("guests", { ns: "accommodation" })}</span>
               </div>
             </div>
           </div>
 
           <div className="mt-3 space-y-1 text-xs text-gray-700">
-            <p><strong>{t("room", { ns: "accommodation" })}:</strong> {item.roomType}</p>
-            <p><strong>{t("meal", { ns: "accommodation" })}:</strong> {item.mealType}</p>
+            <p><strong>{t("Room", { ns: "accommodation" })}:</strong> {item.roomType}</p>
+            <p><strong>{t("Bed", { ns: "accommodation" })}:</strong> {item.mealType}</p>
             {item.specialRequests && (
               <p className="italic text-gray-500">
                 {t("specialRequests", { ns: "accommodation" })}: {item.specialRequests}
@@ -198,7 +198,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#CC9A55] font-semibold">USD {basePrice.toFixed(2)}</span>
+            <span className="text-[#CC9A55] font-semibold"> {basePrice.toFixed(2)} SGD</span>
           </div>
         </div>
       ) : isTransfer ? (

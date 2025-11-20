@@ -65,7 +65,7 @@ const StubaRoomList = ({
       // If parent provided a proceed handler (info card), call it to continue to booking
       try {
         if (typeof onProceedBooking === 'function') {
-          onProceedBooking();
+          onProceedBooking(room);
         }
       } catch (err) {
         console.error('onProceedBooking threw:', err);
@@ -154,7 +154,7 @@ const StubaRoomList = ({
                           <div className="flex items-center gap-3">
                             {/* <div className="text-2xl">{meal.icon}</div> */}
                             <div>
-                              <div className="font-medium text-black">{meal.text}</div>
+                              <div className="font-medium text-black">{meal.text} Bed</div>
                               {/* <div className="text-xs text-gray-400">Meal Plan</div> */}
                             </div>
                           </div>

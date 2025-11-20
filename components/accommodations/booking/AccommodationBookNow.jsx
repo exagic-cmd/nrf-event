@@ -595,7 +595,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 bg-white border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 "
+              className="w-full px-3 py-2 bg-white text-black border border-gray-600 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 "
               placeholder="Late check-in, extra bed, dietary needs, etc..."
             />
           </div>
