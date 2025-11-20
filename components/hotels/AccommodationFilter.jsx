@@ -199,9 +199,9 @@ export default function AccommodationFilter({ onSearch }) {
   if (selectedItem.type === "hotel") {
     searchPayload.hotel_id = selectedItem.stuba_id || false;
     searchPayload.region = false;
-    if (selectedItem?.link_type_id != 9) {
+    //if (selectedItem?.link_type_id != 9) {
       searchPayload.ids = [selectedItem?.id];
-    }
+   // }
   } else if (selectedItem.type === "region") {
     searchPayload.region = selectedItem.region_id;
     searchPayload.hotel_id = false;
@@ -543,7 +543,7 @@ export default function AccommodationFilter({ onSearch }) {
       </div>
 
       {/* Additional Parameters */}
-      <h6 className="mt-4 relative sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-sm sm:text-base">Additional Parameters</h6>
+      <h6 className="mt-4 relative sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-[#D3202D text-sm sm:text-base">Additional Parameters</h6>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
         <div className="md:col-span-3">
           <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1">Guest's citizenship</label>

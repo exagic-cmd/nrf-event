@@ -27,7 +27,7 @@ const StubaRoomList = ({
   if (!allRooms.length) {
     return (
       <div className="px-4 sm:px-6 lg:px-12 py-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Available Rooms</h2>
+        <h2 className="text-2xl font-bold text-black mb-6">Available Rooms</h2>
         <div className="text-gray-400 text-center py-12 bg-gray-800 rounded-xl border border-gray-700">
           <div className="text-lg mb-2">No rooms available</div>
           <div className="text-sm">Try different dates or check back later</div>
@@ -105,16 +105,16 @@ const StubaRoomList = ({
   };
 
   return (
-    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-8">
+    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-2">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">Available Rooms</h2>
-            <p className="text-gray-400">
+            <h2 className="text-2xl font-bold text-[#233BA0] mb-1">Available Rooms</h2>
+            <p className="text-black ">
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
             </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400 bg-gray-800 px-4 py-2 rounded-full">
+          <div className="flex items-center gap-2 text-sm text-white bg-gray-800 px-4 py-2 rounded-full">
             <Calendar className="w-4 h-4" />
             <span>{nights} night{nights > 1 ? "s" : ""}</span>
           </div>
@@ -122,10 +122,10 @@ const StubaRoomList = ({
 
         <div className="space-y-8">
           {Object.entries(groupedRooms).map(([roomType, rooms]) => (
-            <div key={roomType} className="bg-gray-800 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 transition-all">
+            <div key={roomType} className="bg-white rounded-2xl p-3 border border-gray-700 hover:border-gray-600 transition-all">
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Bed className="w-5 h-5 text-[#CC9A55]" />
+                <h3 className="text-md md:text-lg font-bold text-black flex items-center gap-2">
+                  <Bed className="w-5 h-5 text-[#D3202D]" />
                  {totalRoomsRequested} x {roomType}
                 </h3>
                 {/* <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
@@ -143,18 +143,18 @@ const StubaRoomList = ({
                   return (
                     <div
                       key={room.id}
-                      className={`bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border-2 transition-all duration-200 ${
+                      className={`bg-white backdrop-blur-sm p-3 rounded-xl border-2 transition-all duration-200 ${
                         isSelected
-                          ? "border-[#CC9A55] bg-[#CC9A55]/5 shadow-lg shadow-[#CC9A55]/10"
+                          ? "border-[#D3202D] bg-[#D3202D]/5 shadow-lg shadow-[#D3202D]/10"
                           : "border-gray-700 hover:border-gray-600"
                       }`}
                     >
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                         <div className="space-y-4">
                           <div className="flex items-center gap-3">
                             {/* <div className="text-2xl">{meal.icon}</div> */}
                             <div>
-                              <div className="font-medium text-white">{meal.text}</div>
+                              <div className="font-medium text-black">{meal.text}</div>
                               {/* <div className="text-xs text-gray-400">Meal Plan</div> */}
                             </div>
                           </div>
@@ -167,12 +167,12 @@ const StubaRoomList = ({
                           </div> */}
                         </div>
 
-                       <div className="flex justify-between items-center text-center lg:text-left w-full">
-  <div className="text-3xl font-bold text-[#CC9A55]">
+                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-center lg:text-left w-full">
+  <div className="text-md md:text-lg font-bold text-[#D3202D]">
     {currency} {formatPrice(room.price)}
   </div>
   {nights > 1 && (
-    <div className="text-xs text-gray-500">
+    <div className="text-xs text-gray-500 sm:ml-2">
       ({currency} {getPricePerNight(room.price)} per night)
     </div>
   )}
@@ -181,10 +181,10 @@ const StubaRoomList = ({
                         <div className="flex flex-col items-center lg:items-end">
   <button
     onClick={() => handleRoomSelect(room)}
-    className={`px-8 py-3 rounded-xl font-bold text-lg transition-all min-w-[160px] gap-2 ${
+    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all w-full md:w-auto ${
       isSelected
-        ? "bg-green-600 hover:bg-green-700 text-white"
-        : "bg-[#CC9A55] hover:bg-[#b88a45] text-white"
+        ? "bg-[#D3202D]  text-white"
+        : "bg-[#D0E9FF]  text-black"
     }`}
   >
     {isSelected ? (

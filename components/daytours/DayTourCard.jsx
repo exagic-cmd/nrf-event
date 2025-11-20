@@ -57,7 +57,7 @@ function DaytourCard({ tour, category = "daytour" }) {
             <p className="mb-4">This tour is already in your cart</p>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-[#CC9A55] text-white px-4 py-2 rounded"
+              className="bg-[#D3202D] text-white px-4 py-2 rounded"
             >
               Close
             </button>
@@ -105,7 +105,7 @@ function DaytourCard({ tour, category = "daytour" }) {
         {/* Info Section */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h2 className="font-semibold text-lg">{tour.name}</h2>
+            <h2 className="font-bold text-sm lg:text-md line-clamp-1">{tour.name}</h2>
             
             {/* Landmark and Duration */}
             {/* <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
@@ -187,7 +187,7 @@ function DaytourCard({ tour, category = "daytour" }) {
                     {formatPrice(tour.originalPrice)} {tour.currency || 'SGD'}
                   </p>
                 )}
-                <p className="text-lg font-bold text-[#CC9A55]">
+                <p className="text-lg font-bold text-[#D3202D]">
                   {formatPrice(tour.price)} {tour.currency || 'SGD'}
                 </p>
               </div>

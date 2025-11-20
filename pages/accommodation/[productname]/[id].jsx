@@ -481,7 +481,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
         </title>
       </Head>
 
-      <div className="min-h-screen bg-black text-white pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-[#D0E9FF] text-black pt-[80px] md:pt-10 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <AccommodationHeader hotelData={hotelData} />
 

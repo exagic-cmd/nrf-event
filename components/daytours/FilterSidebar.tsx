@@ -55,6 +55,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
   const { searchResults, applyClientFilter, resetFilters } = useDaytoursStore();
   const { accommodations, applyAccommodationFilter, resetAccommodationFilters } = useAccommodationsStore();
   const [isPending, startTransition] = useTransition();
+  const [isMobileFiltersVisible, setMobileFiltersVisible] = useState(false);
 
   const ALL_KEYS = [...FILTER_KEYS, "amenities"];
   const [selected, setSelected] = useState<Record<string, string[]>>(() => {
@@ -231,15 +232,32 @@ export default function FilterSidebar({ mode = "daytour" }) {
   // -----------------------------------------------------------------
   // Render
   // -----------------------------------------------------------------
-  return (
-    <aside className="bg-white rounded-lg shadow p-5 space-y-6 w-full lg:w-80">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg">Filters</h3>
-        <button onClick={clearAll} className="text-sm text-blue-600 hover:underline">
-          Clear all
-        </button>
-      </div>
+ return (
+  <aside className="bg-white rounded-lg shadow p-5 w-full lg:overflow-y-auto lg:max-h-[80vh]">
+    <div className="flex items-center justify-between">
+    
+      <h3 className="font-semibold hidden lg:flex text-[#D3202D] text-lg">Filters</h3>
+      <button 
+        onClick={clearAll} 
+        className="text-sm text-blue-600 hover:underline hidden lg:block"
+      >
+        Clear all
+      </button>
+      <button
+        className="lg:hidden font-semibold px-8 text-[#D3202D] text-lg"
+        onClick={() => setMobileFiltersVisible(!isMobileFiltersVisible)}
+      >
+        {isMobileFiltersVisible ? 'Apply' : 'Filters'}
+      </button>
+    </div>
 
+    <div
+      className={`
+        mt-6 space-y-6
+        lg:block
+        ${isMobileFiltersVisible ? 'block fixed inset-0 bg-white z-50 p-6 overflow-y-auto' : 'hidden'}
+      `}
+    >
       {isPending && (
         <p className="text-xs text-gray-500 animate-pulse">Updating results…</p>
       )}
@@ -255,8 +273,29 @@ export default function FilterSidebar({ mode = "daytour" }) {
           />
         ) : null
       )}
-    </aside>
-  );
+
+      {/* Bottom Sticky Controls on Mobile */}
+      {isMobileFiltersVisible && (
+        <div className="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-between">
+          <button
+            onClick={clearAll}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Clear all
+          </button>
+
+          <button
+            onClick={() => setMobileFiltersVisible(false)}
+            className="bg-[#D3202D] text-white px-6 py-2 rounded-lg font-semibold"
+          >
+            Apply
+          </button>
+        </div>
+      )}
+    </div>
+  </aside>
+);
+
 }
 
 function FilterGroup({
@@ -272,8 +311,8 @@ function FilterGroup({
 }) {
   return (
     <div>
-      <h4 className="font-medium text-sm mb-2">{title}</h4>
-      <div className="space-y-1 max-h-100 overflow-y-auto pr-2">
+      <h4 className="font-medium text--[#D3202D] text-sm mb-2">{title}</h4>
+      <div className="space-y-1 max-h-96 overflow-y-auto pr-2">
         {options.map((opt) => (
           <label
             key={opt}

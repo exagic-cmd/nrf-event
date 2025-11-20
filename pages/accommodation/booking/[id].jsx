@@ -96,7 +96,7 @@ export default function AccommodationBookingPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black text-white pt-20 pb-12">
+      <div className="min-h-screen bg-[#D0E9FF] text-black pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4">
           <h1 className="text-3xl font-bold mb-8">Book {hotel?.title || "Hotel"}</h1>
 
@@ -111,7 +111,7 @@ export default function AccommodationBookingPage() {
 
             {/* Summary Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-gray-800 rounded-lg p-6 sticky top-24">
+              <div className="bg-[#D3202D] text-white rounded-lg p-6 sticky top-24">
                 <h3 className="text-xl font-semibold mb-4">Booking Summary</h3>
                 <div className="space-y-3 text-sm">
                   <div><strong>Hotel:</strong> {hotel?.title}</div>
@@ -124,10 +124,10 @@ export default function AccommodationBookingPage() {
                       Direct booking (no validation)
                     </div>
                   )} */}
-                  <div className="pt-3 border-t border-gray-700">
+                  <div className="pt-3 border-t border-gray-50">
                     <div className="flex justify-between">
                       <span>Total</span>
-                      <span className="text-2xl font-bold text-[#CC9A55]">
+                      <span className="text-md lg:text-lg font-bold text-[#D3202D]">
                         USD {Number(selectedRoom.price || 0).toFixed(2)}
                       </span>
                     </div>

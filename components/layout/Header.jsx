@@ -139,14 +139,14 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-4 bg-[#CC9A55] shadow-md z-40">
+    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-0 bg-white shadow-md z-40">
       {/* Logo */}
       <div className="flex items-center">
         <LocalizedLink href="/">
           <img
-            src={`https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.logo}`}
+            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763551460/External%20Links/Desktop.png"
             alt="Logo"
-            className="h-8 sm:h-10 md:h-12 w-auto object-contain"
+            className="h-8 md:h-20 w-56 object-contain"
           />
         </LocalizedLink>
       </div>
@@ -159,7 +159,7 @@ export default function Header() {
           {!token ? (
             <Link
               href="/login"
-              className="text-[#CC9A55] bg-white py-2 px-5 sm:px-4 rounded-full text-sm sm:text-sm font-semibold hover:bg-gray-100 transition"
+              className="text-white bg-[#D3202D] py-2 px-5 sm:px-4 rounded-full text-sm sm:text-sm font-semibold hover:bg-gray-100 transition"
             >
               Login
             </Link>
@@ -174,7 +174,7 @@ export default function Header() {
           {!token ? (
             <Link
               href="/login"
-              className="text-[#CC9A55] bg-white md:py-2 py-1.5 px-2 md:px-4 rounded-full text-xs sm:text-sm font-semibold"
+              className="text-white bg-[#D3202D] md:py-2 py-1.5 px-2 md:px-4 rounded-full text-xs sm:text-sm font-semibold"
             >
               Login
             </Link>

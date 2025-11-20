@@ -98,7 +98,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
       {/* Card */}
       <div
-        className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-4 flex flex-col md:flex-row gap-4 cursor-pointer"
+        className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden p-2 sm:p-3 flex flex-col md:flex-row gap-3 cursor-pointer"
         role="button"
         tabIndex={0}
         onClick={handleCardClick}
@@ -111,7 +111,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         )}
 
         {/* Image */}
-        <div className="relative w-full md:w-[180px] flex-shrink-0 flex justify-center items-center">
+        <div className="relative w-full md:w-[150px] flex-shrink-0 flex justify-center items-center">
           <img
            src={$helpers.getEnv('CLOUDINARY_BASE_URL') + mainImage}
             alt={hotelData.title}
@@ -130,37 +130,28 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         {/* Info Section */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h2 className="font-semibold text-lg">{hotelData.title || hotelData.product_title}</h2>
+           <div className="flex flex-col justify-between my-1">
+             <h2 className="font-bold text-sm lg:text-md line-clamp-1">{hotelData.title || hotelData.product_title}</h2>
             
             {/* Location and Rating */}
-            <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
+            <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
               {(address || hotelData.country_name) && (
                 <div className="flex items-center gap-1">
-                  <MapPin size={14} />
-                  <span>{address || hotelData.country_name}</span>
+                  <MapPin className="text-[#2176FF]" size={12} />
+                  <span className="text-[#233BA0]">{hotelData.country_name}</span>
                 </div>
               )}
-              {/* {rating && (
-                <div className="flex items-center gap-1">
-                  <Star size={14} className="text-yellow-500" />
-                  <span>{rating.description || `${hotelData.stars} stars`}</span>
-                </div>
-              )} */}
-              {/* {hotelData.type && (
-                <div className="text-gray-500">
-                  {hotelData.type}
-                </div>
-              )} */}
             </div>
+           </div>
 
             {/* Description */}
-            <p className="text-sm text-gray-700 line-clamp-2 mt-2">
+            <p className="text-xs text-gray-700 line-clamp-2 mt-1">
               {hotelData.description || hotelData.short_desc }
             </p>
 
             {/* Room Types Preview */}
                   {validResults.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="flex flex-wrap gap-1 mt-1">
                     {validResults.slice(0, 2).map((result, idx) => {
                       const roomsArr = result?.Room ? (Array.isArray(result.Room) ? result.Room : [result.Room]) : [];
                       const roomTypeTexts = roomsArr
@@ -170,7 +161,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
                       return (
                         <span
                           key={idx}
-                          className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                          className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded-full"
                         >
                           {displayText}
                         </span>
@@ -178,7 +169,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
                     })}
                     {validResults.length > 2 && (
                       <span
-                        className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 cursor-help"
+                        className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full hover:bg-gray-200 cursor-help"
                         title={results
                           .slice(2)
                           .map((result) => {
@@ -208,11 +199,11 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
           </div>
 
           {/* Bottom Section */}
-          <div className="flex justify-between items-end mt-3">
+          <div className="flex justify-between items-end mt-1">
             <div>
               {/* Price display */}
               <div className="flex items-center gap-2">
-                <p className="text-lg font-bold text-[#CC9A55]">
+                <p className="text-base font-bold text-[#D3202D]">
                   {formatPrice(lowestPrice)} {hotelData?.currency || accommodation.currency || 'USD'}
                 </p>
               </div>

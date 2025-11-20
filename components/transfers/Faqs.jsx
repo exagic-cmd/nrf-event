@@ -42,7 +42,7 @@ function Faqs() {
   };
 
   return (
-    <div className="w-full md:w-[350px]  sticky top-0 rounded-xl overflow-hidden p-4 text-white shadow-md bg-[#CC9A55] border">
+    <div className="w-full md:w-[350px]  sticky top-0 rounded-xl overflow-hidden p-4 text-white shadow-md bg-[#D3202D] border">
       <h1 className="text-lg font-semibold text-white mb-6">
         {t("faqs.title")}
       </h1>
