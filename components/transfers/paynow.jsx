@@ -338,8 +338,6 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     setIsSubmitting(true);
     try {
       const finalPayload = buildFinalPayload();
-      console.log("Final Booking Payload:", finalPayload);
-      return 0;
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
 
