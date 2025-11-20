@@ -211,15 +211,15 @@ export default function AccommodationFilter({ onSearch }) {
 
   try {
     // This will now return [] if !data.status
-    const results = await setSearchParamsAndSearch(searchPayload);;
+    const results = await setSearchParamsAndSearch(searchPayload);
   if (!results || results.length === 0) {
       return;
     }
     const { error } = useAccommodationsStore.getState();
     if (error) {
       alert(error);
-      return;
-    }
+      return;
+    }
     if (onSearch) onSearch(searchPayload);
 
   } catch (err) {
