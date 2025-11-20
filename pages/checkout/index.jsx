@@ -55,25 +55,25 @@ const PayNowPage = () => {
     );
   }
 
-  if (items.length === 0) {
-    return (
-      <Layout>
-        <div className=" bg-[#D0E9FF] flex items-center justify-center min-h-screen text-center px-4">
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-2">
-              {t('noItemsInCart')}
-            </h2>
-            <button
-              onClick={() => localizedPush("/")}
-              className="bg-[#D3202D] text-white px-4 py-2 rounded-lg"
-            >
-              {t("goBack")}
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // if (items.length === 0) {
+  //   return (
+  //     <Layout>
+  //       <div className=" bg-[#D0E9FF] flex items-center justify-center min-h-screen text-center px-4">
+  //         <div>
+  //           <h2 className="text-xl font-semibold text-white mb-2">
+  //             {t('noItemsInCart')}
+  //           </h2>
+  //           <button
+  //             onClick={() => localizedPush("/")}
+  //             className="bg-[#D3202D] text-white px-4 py-2 rounded-lg"
+  //           >
+  //             {t("goBack")}
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </Layout>
+  //   );
+  // }
 
   return (
     <Layout>
