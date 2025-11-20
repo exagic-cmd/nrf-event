@@ -42,7 +42,7 @@ const TourVariants = forwardRef(({ groupProducts, onVariantSelect }, ref) => {
                 </div>
                 <button
                   onClick={() => onVariantSelect(variant)}
-                  className="bg-[#CC9A55] hover:bg-[#CC9A55] text-white text-sm px-4 py-2 rounded-xl font-semibold shadow"
+                  className="bg-[#D3202D] hover:bg-[#D3202D] text-white text-sm px-4 py-2 rounded-xl font-semibold shadow"
                 >
                   {t("choose")}
                 </button>
@@ -65,7 +65,7 @@ const TourVariants = forwardRef(({ groupProducts, onVariantSelect }, ref) => {
           </thead>
           <tbody>
             {groupProducts.map((variant) => (
-              <tr key={variant.group_product_id} className="border-b hover:bg-orange-50 transition">
+              <tr key={variant.group_product_id} className="border-b hover:bg-blue-50 transition">
                 <td className="p-4">
                   <div className="font-bold text-gray-900">{variant.Title}</div>
                   <div className="text-xs text-gray-500 mt-1">{variant.Description}</div>
@@ -85,7 +85,7 @@ const TourVariants = forwardRef(({ groupProducts, onVariantSelect }, ref) => {
                 <td className="p-4 text-center">
                   <button
                     onClick={() => onVariantSelect(variant)}
-                    className="bg-[#CC9A55] text-white text-sm px-5 py-2 rounded-xl font-semibold shadow"
+                    className="bg-[#D3202D] text-white text-sm px-5 py-2 rounded-xl font-semibold shadow"
                   >
                     {t("choose")}
                   </button>

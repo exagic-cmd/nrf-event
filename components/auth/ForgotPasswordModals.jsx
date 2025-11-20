@@ -66,7 +66,7 @@ export default function ForgotPasswordModals({ onClose }) {
           </button>
         )}
 
-        <h2 className="text-xl font-semibold mb-4 text-[#CC9A55]">
+        <h2 className="text-xl font-semibold mb-4 text-[#D3202D]">
           {step === 1 ? t('forgotPassword') : step === 3 ? t('resetNewPassword') : ''}
         </h2>
 
@@ -82,7 +82,7 @@ export default function ForgotPasswordModals({ onClose }) {
             />
             <button
               onClick={handleStep1}
-              className="w-full bg-[#CC9A55] text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
+              className="w-full bg-[#D3202D] text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
               disabled={loading}
             >
               {loading ? t('sending') : t('sendEmail')}
@@ -151,7 +151,7 @@ export default function ForgotPasswordModals({ onClose }) {
 
             <button
               onClick={handleStep3}
-              className="w-full bg-[#CC9A55] text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
+              className="w-full bg-[#D3202D] text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
               disabled={loading}
             >
               {loading ? t('submitting') : t('resetPassword')}

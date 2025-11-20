@@ -74,7 +74,7 @@ const ImageGallery = ({ images, onImageClick, autoPlay = false, interval = 3000,
             <div
               key={img.id}
               className={`relative ${compact ? 'w-1/4 h-12' : 'w-1/5 h-16'} rounded-md overflow-hidden cursor-pointer border-2 ${
-                currentIndex === index ? 'border-[#CC9A55]' : 'border-transparent'
+                currentIndex === index ? 'border-[#D3202D]' : 'border-transparent'
               }`}
               onClick={() => setCurrentIndex(index)}
             >

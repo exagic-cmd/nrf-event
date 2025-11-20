@@ -120,7 +120,7 @@ export default function SuccessPage() {
                 <span className="font-mono text-sm text-blue-600">{gateway}</span>
               </div>
 
-              <div className="flex items-center space-x-2 text-[#CC9A55] mt-2">
+              <div className="flex items-center space-x-2 text-[#D3202D] mt-2">
                 <MailCheck size={14} />
                 <span className="text-xs font-semibold">{t("emailSent")}</span>
               </div>
@@ -135,7 +135,7 @@ export default function SuccessPage() {
           </div>
 
           <Link href="/" className="block pt-2">
-            <button className="w-full bg-[#CC9A55] text-white font-semibold py-2 px-4 rounded-md hover:opacity-90">
+            <button className="w-full bg-[#D3202D] text-white font-semibold py-2 px-4 rounded-md hover:opacity-90">
               {t("backHome")}
             </button>
           </Link>

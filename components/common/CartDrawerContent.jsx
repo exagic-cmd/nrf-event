@@ -123,6 +123,8 @@ const CartDrawerContent = () => {
                         {/* Price */}
                         <p className="text-sm text-[#CC9A55] font-semibold mt-1">
                            {Number(item.price).toFixed(2)} SGD
+                        <p className="text-sm text-[#D3202D] font-semibold mt-1">
+                           {Number(item.price).toFixed(2)} USD
                         </p>
                       </>
                     ) : item.vehicle ? (
@@ -134,7 +136,7 @@ const CartDrawerContent = () => {
                         <p className="text-xs text-gray-500 mt-0.5">
                           {t("passengers")}: {item.passengers} | {t("baggage")}: {item.baggage}
                         </p>
-                        <p className="text-sm text-[#CC9A55] font-semibold mt-1">
+                        <p className="text-sm text-[#D3202D] font-semibold mt-1">
                           {item?.pricing || item?.price} SGD
                         </p>
                       </>
@@ -147,7 +149,7 @@ const CartDrawerContent = () => {
                         <p className="text-xs text-gray-500 mt-0.5">
                           {t("adult")}: {item?.adults || item?.pax} | {t("child")}: {item?.child || 0}
                         </p>
-                        <p className="text-sm text-[#CC9A55] font-semibold mt-1">
+                        <p className="text-sm text-[#D3202D] font-semibold mt-1">
                           {item.pricing?.total || item?.price || "0"} {item.currency || "SGD"}
                         </p>
                       </>
@@ -223,7 +225,7 @@ const CartDrawerContent = () => {
 
               <button
                 onClick={handleContinue}
-                className="w-full bg-[#CC9A55] text-white py-2.5 rounded-lg text-sm font-semibold transition"
+                className="w-full bg-[#D3202D] text-white py-2.5 rounded-lg text-sm font-semibold transition"
               >
                 {t("continueShopping")}
               </button>

@@ -194,14 +194,14 @@ const VouchersAndQRSection = ({ vouchers }) => {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handleSelectAll}
-              className="px-3 py-1.5 text-xs sm:text-sm text-[#CC9A55] hover:bg-[#CC9A55]/10 rounded-lg transition-colors whitespace-nowrap"
+              className="px-3 py-1.5 text-xs sm:text-sm text-[#D3202D] hover:bg-[#D3202D]/10 rounded-lg transition-colors whitespace-nowrap"
             >
               {selectedVouchers.length === pdfVouchers.length ? 'Deselect All' : 'Select All'}
             </button>
             <button
               onClick={handleDownloadAll}
               disabled={downloadingAll}
-              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#CC9A55] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#D3202D] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {downloadingAll ? (
                 <>
@@ -231,8 +231,8 @@ const VouchersAndQRSection = ({ vouchers }) => {
             key={voucher.id}
             className={`flex items-center justify-between p-3 bg-gray-50 rounded-lg border transition-colors ${
               selectedVouchers.includes(voucher.id)
-                ? 'border-[#CC9A55] bg-[#CC9A55]/5'
-                : 'border-gray-200 hover:border-[#CC9A55]'
+                ? 'border-[#D3202D] bg-[#D3202D]/5'
+                : 'border-gray-200 hover:border-[#D3202D]'
             }`}
           >
             <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
@@ -242,7 +242,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
                     type="checkbox"
                     checked={selectedVouchers.includes(voucher.id)}
                     onChange={() => handleSelectVoucher(voucher.id)}
-                    className="peer w-4 h-4 appearance-none border-2 border-gray-300 rounded cursor-pointer checked:bg-[#CC9A55] checked:border-[#CC9A55] focus:ring-2 focus:ring-[#CC9A55] focus:ring-offset-1"
+                    className="peer w-4 h-4 appearance-none border-2 border-gray-300 rounded cursor-pointer checked:bg-[#D3202D] checked:border-[#D3202D] focus:ring-2 focus:ring-[#D3202D] focus:ring-offset-1"
                   />
                   <svg
                     className="absolute top-0 left-0 w-4 h-4 pointer-events-none hidden peer-checked:block text-white"
@@ -257,12 +257,12 @@ const VouchersAndQRSection = ({ vouchers }) => {
               )}
               
               {voucher.type === 'voucher' ? (
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#CC9A55]/10 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#CC9A55]" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#D3202D]/10 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#D3202D]" />
                 </div>
               ) : (
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#CC9A55]/10 flex items-center justify-center flex-shrink-0">
-                  <QrCode className="w-4 h-4 sm:w-5 sm:h-5 text-[#CC9A55]" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#D3202D]/10 flex items-center justify-center flex-shrink-0">
+                  <QrCode className="w-4 h-4 sm:w-5 sm:h-5 text-[#D3202D]" />
                 </div>
               )}
               
@@ -281,7 +281,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
                 <button
                   onClick={() => handleDownload(voucher.file_path, `${voucher.title}_${voucher.id}.pdf`, voucher.id)}
                   disabled={loadingStates[voucher.id] || downloadingAll}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#CC9A55] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#D3202D] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Download PDF"
                 >
                   {loadingStates[voucher.id] ? (
@@ -295,7 +295,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
               {voucher.type === 'qr' && voucher.qr_link && (
                 <button
                   onClick={() => handleQROpen(voucher)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#CC9A55] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#D3202D] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium"
                   title="Show QR Code"
                 >
                   <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -306,8 +306,8 @@ const VouchersAndQRSection = ({ vouchers }) => {
         ))}
       </div>
       
-      <div className="mt-3 p-3 bg-[#CC9A55]/10 border border-[#CC9A55]/30 rounded-lg">
-        <p className="text-xs sm:text-sm text-[#CC9A55]">
+      <div className="mt-3 p-3 bg-[#D3202D]/10 border border-[#D3202D]/30 rounded-lg">
+        <p className="text-xs sm:text-sm text-[#D3202D]">
           <strong>Note:</strong> {(() => {
             const browser = detectBrowser();
             if (browser.isIOS) {
@@ -343,11 +343,11 @@ const VouchersAndQRSection = ({ vouchers }) => {
             {showQRModal.title}
           </h3>
           
-          <div className="bg-white p-4 rounded-lg border-2 border-[#CC9A55] mb-4 relative">
+          <div className="bg-white p-4 rounded-lg border-2 border-[#D3202D] mb-4 relative">
             <div className="w-full aspect-square flex items-center justify-center">
                 {loadingStates[`qr-${showQRModal.id}`] !== false && !loadingStates[`qr-error-${showQRModal.id}`] && (
                 <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="w-8 h-8 text-[#CC9A55] animate-spin" />
+                    <Loader2 className="w-8 h-8 text-[#D3202D] animate-spin" />
                     <p className="text-sm text-gray-600">Loading QR Code...</p>
                 </div>
                 )}
@@ -379,7 +379,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
           
           <button
             onClick={() => window.open(showQRModal.qr_link, '_blank', 'noopener,noreferrer')}
-            className="w-full px-4 py-2.5 bg-[#CC9A55] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+            className="w-full px-4 py-2.5 bg-[#D3202D] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center justify-center gap-2 text-sm font-medium"
           >
             <ExternalLink className="w-4 h-4" />
             Open Link Directly

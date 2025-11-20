@@ -122,7 +122,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-5 py-3 bg-[#CC9A55] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+                className="flex-1 px-5 py-3 bg-[#D3202D] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
               >
                 {t("submitReview")}
               </button>

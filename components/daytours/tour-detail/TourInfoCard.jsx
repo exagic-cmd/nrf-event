@@ -59,7 +59,7 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
     <div className="lg:col-span-2 space-y-4 sm:space-y-6">
       {/* Mobile Pricing Card */}
       <div className="hidden md:block
- bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200 mb-6">
+ bg-blue-50 p-4 rounded-xl border bordee-[#D3202D] mb-6">
         <div className="text-center">
           <div className="text-sm text-gray-600">{t("starting_from")}</div>
           <div className="my-2">
@@ -68,7 +68,7 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
           {apiData?.is_group ? (
             <button
               onClick={onScrollToOptions}
-              className="w-full bg-[#CC9A55] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("choose_tour_type")}
               <ChevronDown size={20} />
@@ -76,7 +76,7 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
           ) : (
             <button
               onClick={onProceedBooking}
-              className="w-full bg-[#CC9A55] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("proceed_booking")}
               <ChevronRight size={20} />
@@ -92,15 +92,15 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
           return (
             <div
               key={i}
-              className="flex items-center justify-between gap-2 p-3 bg-black rounded-lg shadow-sm border border-[#CC9A55] flex-shrink-0 "
+              className="flex items-center justify-between gap-2 p-3 bg-blue-50 rounded-lg shadow-sm border border-[#D3202D] flex-shrink-0 "
             >       
               <div className="flex items-center gap-2">
-                <div className="bg-gradient-to-br from-orange-100 to-orange-200 p-2 rounded-lg">
+                <div className="bg-blue-50 p-2 rounded-lg">
                   <IconComponent size={14} className="text-[black]" />
                 </div>
-                <div className="font-medium text-sm text-gray-50">{feature.title}</div>
+                <div className="font-medium text-sm text-black">{feature.title}</div>
               </div>
-              <div className="text-xs text-gray-50">{feature.desc}</div>
+              <div className="text-xs text-black">{feature.desc}</div>
             </div>
           )
         })}

@@ -158,7 +158,7 @@ if (successMessage)
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full text-center">
-        <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#CC9A55]">
+        <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#D3202D]">
           {t("success.title", { defaultValue: "Thank you!" })}
         </h2>
         <p className="text-gray-600 mb-6">
@@ -166,7 +166,7 @@ if (successMessage)
         </p>
         <button
           onClick={() => router.push("/order")}
-          className="px-6 py-2 bg-[#CC9A55] text-white rounded-lg hover:bg-[#b88a4a]"
+          className="px-6 py-2 bg-[#D3202D] text-white rounded-lg hover:bg-[#b88a4a]"
         >
           {t("button.back")}
         </button>
@@ -186,7 +186,7 @@ if (successMessage)
           </p>
           <button
             onClick={() => router.push("/order")}
-            className="px-6 py-2 bg-[#CC9A55] text-white rounded-lg"
+            className="px-6 py-2 bg-[#D3202D] text-white rounded-lg"
           >
             {t("button.back")}
           </button>
@@ -200,7 +200,7 @@ if (successMessage)
         {/* Back button */}
         <button
           onClick={onBack ? onBack : () => router.push("/order")}
-          className="flex items-center mt-2  gap-2 text-gray-100 hover:text-[#CC9A55] mb-6 transition-colors"
+          className="flex items-center mt-2  gap-2 text-gray-100 hover:text-[#D3202D] mb-6 transition-colors"
         >
           <ArrowLeft size={20} /> {t("button.backToTrips")}
         </button>
@@ -224,7 +224,7 @@ if (successMessage)
     </p>
     <button
       onClick={() => router.push("/order")}
-      className="mt-4 px-6 py-2 bg-[#CC9A55] text-white rounded-lg"
+      className="mt-4 px-6 py-2 bg-[#D3202D] text-white rounded-lg"
     >
       {t('goback')}
     </button>
@@ -311,7 +311,7 @@ if (successMessage)
               <button
                 onClick={handleSubmit}
                 disabled={storeLoading}
-                className="flex-1 px-6 py-3 bg-[#CC9A55] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-6 py-3 bg-[#D3202D] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
               >
                 {storeLoading ? t("button.submitting") : t("button.submit")}
               </button>

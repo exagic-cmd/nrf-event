@@ -84,7 +84,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
       <div className="text-end">
         <button
           onClick={() => setShowPastBookings(!showPastBookings)}
-          className="inline-flex items-center space-x-3 bg-[#cb913f] text-white px-4 py-2 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          className="inline-flex items-center space-x-3 bg-[#D3202D] text-white px-4 py-2 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <History className="w-6 h-6" />
           <span>{showPastBookings ? t("hidePastTrips") : t("viewPastTrips")}</span>
@@ -98,7 +98,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
 
       {showPastBookings && (
         <div className="mt-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">
+          <h2 className="text-xl font-semibold text-[#D3202D] mb-6 text-start">
             {t("pastTrips")}
           </h2>
 
@@ -112,7 +112,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                   placeholder={t("searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#cb913f] focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -120,7 +120,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 <select
                   value={filterBy}
                   onChange={(e) => setFilterBy(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#cb913f] focus:border-transparent outline-none"
+                  className="w-full sm:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
                 >
                   <option value="all">{t("allStatus")}</option>
                   <option value="confirmed">{t("confirmed")}</option>
@@ -130,7 +130,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#cb913f] focus:border-transparent outline-none"
+                  className="w-full sm:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
                 >
                   <option value="date">{t("sortByDate")}</option>
                   <option value="name">{t("sortByName")}</option>
@@ -166,7 +166,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                         />
                         <span
                           className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold shadow-md ${
-                            isConfirmed ? "bg-gray-800 text-white" : "bg-[#CC9A55] text-white"
+                            isConfirmed ? "bg-gray-800 text-white" : "bg-[#D3202D] text-white"
                           }`}
                         >
                           {isConfirmed ? t("confirmed") : t("unconfirmed")}
@@ -189,7 +189,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                           <div className="flex flex-col sm:flex-row gap-2 mt-3">
                             <button
                               onClick={() => onReviewClick(item)}
-                              className="flex-1 bg-[#CC9A55] text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#cb913f] transition-colors text-sm"
+                              className="flex-1 bg-[#D3202D] text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#D3202D] transition-colors text-sm"
                             >
                               <Star className="w-4 h-4" />
                               <span>{t("review")}</span>

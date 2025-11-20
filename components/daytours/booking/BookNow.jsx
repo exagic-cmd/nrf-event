@@ -182,7 +182,7 @@ useEffect(() => {
                   </h3>
                   <Separator />
                   <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                    <Tag className="w-4 h-4 text-green-600" />
+                    <Tag className="w-4 h-4 text-[]" />
                     <p className="font-medium text-gray-900">
                       {t("startingFrom")} SGD {displayPrice}
                     </p>
@@ -196,7 +196,7 @@ useEffect(() => {
           <div className="bg-white rounded-lg p-2 px-6 md:px-5 md:p-5 shadow-sm border border-gray-100">
             <p className="md:text-sm text-xs py-1">
               Non-Refundable, Free Cancellation{" "}
-              <span className="text-[#CC9A55]">24 hours</span> before service starts
+              <span className="text-[#D3202D]">24 hours</span> before service starts
             </p>
 
             <div className="mt-2 flex flex-col sm:flex-row justify-between gap-3">
@@ -215,7 +215,7 @@ useEffect(() => {
                 <button
                   onClick={handleBookNow}
                   disabled={loadingButton === "addToCart"}
-                  className="bg-[#CC9A55] hover:bg-[#b98a4d] text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2"
+                  className="bg-[#D3202D]  text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2"
                 >
                   {loadingButton === "addToCart" ? (
                     <>
@@ -244,7 +244,7 @@ useEffect(() => {
                   <button
                     onClick={handleViewCart}
                     disabled={loadingButton === "checkout"}
-                    className="bg-[#CC9A55] hover:bg-[#b98a4d] text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
+                    className="bg-[#D3202D]  text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     {loadingButton === "checkout" ? (
                       <>
