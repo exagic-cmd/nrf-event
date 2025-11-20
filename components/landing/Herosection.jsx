@@ -146,14 +146,14 @@ export default function HomePage() {
 
   return (
     <div className="bg-background">
-      <section className="relative min-h-[85vh] flex items-center justify-center">
+      <section className="relative md:min-h-[75vh] min-h-[55vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 z-0">
           {event?.event?.title}
           <div
             className="absolute inset-0 bg-cover min-w-full"
             style={{
-              backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.banner}')`,
+              backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763653733/External%20Links/form_BG.jpg')`,
             }}
           />
           <div className="absolute inset-0 bg-black/10" />

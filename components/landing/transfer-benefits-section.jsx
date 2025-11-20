@@ -82,10 +82,10 @@ export function TransferBenefitsSection() {
         ) : (
           <>
           <div className="text-center mb-p">
-          <h2 className="font-bold tracking-tighter text-3xl md:text-4xl">
+          <h2 className="font-bold tracking-tighter text-md md:text-xl">
             Top Day Tours
           </h2>
-          <p className="mt-2 max-w-2xl mx-auto">
+          <p className="mt-2 max-w-2xl mb-1 text-sm md:text-md mx-auto">
             Explore our hand-picked selection of top-rated day tours.
           </p>
         </div>

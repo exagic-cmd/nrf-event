@@ -63,7 +63,7 @@ export default function LandingPage() {
   }
   return (
     <Layout className=" ">
-      <div className="bg-[#D0E9FF] pt-20">
+      <div className="bg-[#233BA0]  pt-16">
         <ImageSlider />
       </div>
  < Herosection/>
