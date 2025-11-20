@@ -187,38 +187,47 @@ export default function AccommodationDetailPage() {
   };
 
   // Handle proceed to booking with cart validation
-  const handleProceedBooking = () => {
-  if (!selectedRoom) {
-    alert("Please select a room first");
-    return;
-  }
+  // Accept an optional `roomArg` so callers (e.g. RoomTypes) can pass the room directly
+  const handleProceedBooking = (roomArg = null) => {
+    const roomToUse = roomArg || selectedRoom;
+    if (!roomToUse) {
+      alert("Please select a room first");
+      return;
+    }
 
-  const exists = items.some(item => 
-    item.tourId === accommodationId && item.type === 'accommodation'
-  );
+    // Ensure local selectedRoom state reflects the room being booked
+    if (!roomArg) {
+      // nothing to do, selectedRoom already set
+    } else {
+      setSelectedRoom(roomToUse);
+    }
 
-  if (exists) {
-    setAlreadyModal(true);
-    return;
-  }
+    const exists = items.some(item => 
+      item.tourId === accommodationId && item.type === 'accommodation'
+    );
 
-  const bookingData = {
-    accommodationId,
-    hotelData: accommodation.normalizedHotelData, // ← fixed
-    selectedRoom,
-    searchParams,
-    nights: searchParams?.nights || 1,
-    checkIn: searchParams?.start_date,
-    checkOut: searchParams?.end_date,
-    isNonStuba, // optional
-    isNonStuba: isNonStuba,
-    timestamp: new Date().toISOString()
+    if (exists) {
+      setAlreadyModal(true);
+      return;
+    }
+
+    const bookingData = {
+      accommodationId,
+      hotelData: accommodation.normalizedHotelData, // ← fixed
+      selectedRoom: roomToUse,
+      searchParams,
+      nights: searchParams?.nights || 1,
+      checkIn: searchParams?.start_date,
+      checkOut: searchParams?.end_date,
+      isNonStuba, // optional
+      isNonStuba: isNonStuba,
+      timestamp: new Date().toISOString()
+    };
+
+    sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
+    sessionStorage.setItem("fromAccommodationDetail", "true");
+    localizedPush(`/accommodation/booking/${accommodationId}`);
   };
-
-  sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
-  sessionStorage.setItem("fromAccommodationDetail", "true");
-  localizedPush(`/accommodation/booking/${accommodationId}`);
-};
 
   // Handle modal update (remove existing and proceed)
   const handleModalUpdate = async () => {
@@ -347,9 +356,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
 
   setAccommodation(fullData);
   setIsNonStuba(true);
-  if (lowestPriceRoom?.isAvailable) {
-    setSelectedRoom(lowestPriceRoom);
-  }
+  // Do not auto-select the lowest price room; require explicit user selection
 
   // Slug fix
   const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
@@ -411,9 +418,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       setAccommodation(normalizedData);
       setIsNonStuba(false);
 
-      if (normalizedData.lowestPriceRoom) {
-        setSelectedRoom(normalizedData.lowestPriceRoom);
-      }
+      // Do not auto-select the lowest price room for Stuba flow; require explicit user selection
 
   // Save quote ID (if present on matched result)
   const quoteId = matched?.["@attributes"]?.hotelQuoteId || matched?.Hotel_Data?.["@attributes"]?.hotelQuoteId || matched?.hotelQuoteId || null;

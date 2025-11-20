@@ -277,7 +277,10 @@ export default function AccommodationFilter({ onSearch }) {
                         <button
                           key={region.id}
                           type="button"
-                          onMouseDown={() => handleSelection(region, "region")}
+                          onMouseDown={(e) => {
+                              e.preventDefault();     // ❗ prevents input blur
+                              handleSelection(region, "region");
+                            }}
                           className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                         >
                           <MapPin className="h-4 w-4 text-yellow-500 flex-shrink-0" />
@@ -299,7 +302,10 @@ export default function AccommodationFilter({ onSearch }) {
                         <button
                           key={hotel.id}
                           type="button"
-                          onMouseDown={() => handleSelection(hotel, "hotel")}
+                          onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSelection(hotel, "hotel");
+                            }}
                           className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                         >
                           <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
