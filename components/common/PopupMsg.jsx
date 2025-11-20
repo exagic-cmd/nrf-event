@@ -29,6 +29,7 @@ closePopup()
             alt="Success"
             className="h-24 object-cover opacity-30"
           />
+          
           <img
             src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744797488/External%20Links/yrgzbjyvjvyziduap2zr.svg"
             alt="Tour"
