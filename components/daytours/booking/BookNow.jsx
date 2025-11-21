@@ -251,7 +251,7 @@ useEffect(() => {
                         <LoaderSvg color="#fff"/> {t("processing")}
                       </>
                     ) : (
-                      t("checkout")
+                      t("Checkout")
                     )}
                   </button>
                 </div>
