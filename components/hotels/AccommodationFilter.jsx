@@ -603,7 +603,7 @@ export default function AccommodationFilter({ onSearch }) {
           </button>
           <div className="flex items-center justify-end gap-1">
             <span className="text-xs text-gray-400">Powered by </span>
-            <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642544/External%20Links/toureast_logo.png" alt="Toureast Logo" />
+            <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763694508/External%20Links/toureast_logo.png" alt="Toureast Logo" />
           </div>
       </div>
     </form>
