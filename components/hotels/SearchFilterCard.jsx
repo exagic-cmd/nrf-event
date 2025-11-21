@@ -378,6 +378,10 @@ export default function SearchFilterCard({
 
 
             </div>
+            <div className="md:col-span-12 right-0 flex justify-end gap-1">
+              <span className="text-xs text-gray-400">Powered by </span>
+              <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642544/External%20Links/toureast_logo.png" alt="Toureast Logo" />
+            </div>
           </div>
         </form>
       )}
@@ -569,6 +573,10 @@ export default function SearchFilterCard({
               >
                 {isLoading ? "Searching..." : "Search"}
               </button>
+            </div>
+            <div className=" flex justify-end md:col-span-12 gap-1">
+              <span className="text-xs text-gray-400">Powered by </span>
+              <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642544/External%20Links/toureast_logo.png" alt="Toureast Logo" />
             </div>
           </div>
         </form>
