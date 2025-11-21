@@ -198,7 +198,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#CC9A55] font-semibold"> {basePrice.toFixed(2)} SGD</span>
+            <span className="text-[#D3202D] font-semibold"> {basePrice.toFixed(2)} SGD</span>
           </div>
         </div>
       ) : isTransfer ? (
@@ -221,7 +221,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
               <div className="flex flex-col items-end justify-end text-xs text-gray-500">
                 {item?.vehicle?.price && (
-                  <span className="text-[#CC9A55] font-medium">{item.vehicle.price} SGD</span>
+                  <span className="text-[#D3202D] font-medium">{item.vehicle.price} SGD</span>
                 )}
                 {date && <span>{date}</span>}
               </div>
@@ -257,7 +257,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                     {!showAllAddons ? (
                       <button
                         onClick={() => setShowAllAddons(true)}
-                        className="text-xs text-[#CC9A55] mt-2 inline-flex items-center"
+                        className="text-xs text-[#D3202D] mt-2 inline-flex items-center"
                       >
                         {t("load_more", "Load More")}
                         <ChevronDown className="w-4 h-4 ml-1" />
@@ -265,7 +265,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                     ) : (
                       <button
                         onClick={() => setShowAllAddons(false)}
-                        className="text-xs text-[#CC9A55] mt-2 inline-flex items-center"
+                        className="text-xs text-[#D3202D] mt-2 inline-flex items-center"
                       >
                         {t("load_less", "Load Less")}
                         <ChevronUp className="w-4 h-4 ml-1" />
@@ -278,7 +278,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           )}
 
           {totalSurcharge > 0 && (
-            <p className="text-xs text-[#CC9A55] font-medium bg-gray-50 rounded-lg px-3 py-2 mt-1 flex justify-between items-center">
+            <p className="text-xs text-[#D3202D] font-medium bg-gray-50 rounded-lg px-3 py-2 mt-1 flex justify-between items-center">
               <span>
                 {t("Surcharges")} {surchargeScope}
               </span>
@@ -328,7 +328,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#CC9A55]">{basePrice || "0"} SGD</span>
+            <span className="text-[#D3202D]">{basePrice || "0"} SGD</span>
           </div>
         </div>
       )}
@@ -337,7 +337,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       <div className="pt-2 flex flex-col justify-between text-md font-normal">
         <div className="flex border-t mt-2 pt-2 justify-between text-lg font-semibold">
           <span>{t("total_all_items")}</span>
-          <span className="text-[#CC9A55]">{overallTotal.toFixed(2)} SGD</span>
+          <span className="text-[#D3202D]">{overallTotal.toFixed(2)} SGD</span>
         </div>
       </div>
     </div>
