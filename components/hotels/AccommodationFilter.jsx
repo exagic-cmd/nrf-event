@@ -229,7 +229,7 @@ export default function AccommodationFilter({ onSearch }) {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 ">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-20">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">
@@ -593,14 +593,19 @@ export default function AccommodationFilter({ onSearch }) {
         </div>
         
       </div>
-      <div className="flex justify-end">
+      {/* --- Footer with Search Button and Powered by Logo --- */}
+      <div className="mt-6 flex flex-col items-end gap-2 md:absolute md:bottom-3 md:right-3 md:w-1/5">
           <button
             type="submit"
-            className="w-1/2 md:w-1/5 md:absolute md:bottom-9 rounded-xl bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2  active:bg-[#D3202D] transition touch-manipulation"
+            className="w-1/2 md:w-full rounded-xl bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
           >
             Search
           </button>
-        </div>
+          <div className="flex items-center justify-end gap-1">
+            <span className="text-xs text-gray-400">Powered by </span>
+            <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763694508/External%20Links/toureast_logo.png" alt="Toureast Logo" />
+          </div>
+      </div>
     </form>
   );
 }
