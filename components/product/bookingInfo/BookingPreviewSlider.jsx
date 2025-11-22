@@ -109,11 +109,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           <div className="pt-2 flex flex-col justify-between text-md font-normal">
             <div className='flex justify-between'>
               <span>{t('subtotal')}</span>
-              <span className="text-[#CC9A55]">SGD {total}</span>
+              <span className="text-[#D3202D]">SGD {total}</span>
             </div>
             <div className='flex border-t mt-4 pt-2 justify-between text-lg font-semibold'>
               <span>{t('total_all_items')}</span>
-              <span className="text-[#CC9A55]">SGD {overallTotal}</span>
+              <span className="text-[#D3202D]">SGD {overallTotal}</span>
             </div>
           </div>
         </>
@@ -133,11 +133,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           <div className="pt-2 flex flex-col justify-between text-md font-normal">
             <div className='flex justify-between'>
               <span>{t('subtotal')}</span>
-              <span className="text-[#CC9A55]">SGD {total}</span>
+              <span className="text-[#D3202D]">SGD {total}</span>
             </div>
             <div className='flex border-t mt-4 pt-2 justify-between text-lg font-semibold'>
               <span>{t('total_all_items')}</span>
-              <span className="text-[#CC9A55]">SGD {overallTotal}</span>
+              <span className="text-[#D3202D]">SGD {overallTotal}</span>
             </div>
           </div>
         </>

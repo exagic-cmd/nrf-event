@@ -122,9 +122,8 @@ const CartDrawerContent = () => {
 
                         {/* Price */}
                       
-                           {Number(item.price).toFixed(2)} SGD
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                           {Number(item.price).toFixed(2)} USD
+                           {Number(item.price).toFixed(2)} SGD
                         </p>
                       </>
                     ) : item.vehicle ? (

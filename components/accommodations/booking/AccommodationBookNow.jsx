@@ -540,13 +540,13 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
                 {/* Children */}
                 {roomGuests.children.map((child, i) => (
-                  <div key={`child-${i}`} className="bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                  <div key={`child-${i}`} className="bg-[#D0E9FF] rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">Title *</label>
                       <select
                         value={child.title}
                         onChange={(e) => updateGuest(roomIdx, "children", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       >
                         {TITLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -558,7 +558,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                         type="text"
                         value={child.firstName}
                         onChange={(e) => updateGuest(roomIdx, "children", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       />
                     </div>
@@ -568,7 +568,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                         type="text"
                         value={child.lastName}
                         onChange={(e) => updateGuest(roomIdx, "children", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                         required
                       />
                     </div>
@@ -578,7 +578,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                         type="text"
                         value={child.age}
                         readOnly
-                        className="w-full px-3 py-2 bg-gray-500 border border-gray-600 rounded-md text-black cursor-not-allowed"
+                        className="w-full px-3 py-2 bg-gray-300 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] cursor-not-allowed"
                       />
                     </div>
                   </div>
