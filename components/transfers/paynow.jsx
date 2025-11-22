@@ -348,10 +348,10 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       const creditCardOption = paymentOptions.find(opt => opt.name === "Credit Card" || opt.id === 2);
 
     if (paymentOption == creditCardOption?.id) {
-        setReturnOrderId(orderId);
-    setFlywireTotal(totalPrice);
-          setShowFlywire(true); 
-           useCartStore.getState().clearCart();
+         setReturnOrderId(orderId);
+         setFlywireTotal(totalPrice);
+         setShowFlywire(true); 
+         useCartStore.getState().clearCart();
        alert("Order ID: " + orderId);
         } else {
     
