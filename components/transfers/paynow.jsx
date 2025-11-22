@@ -342,6 +342,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       const finalPayload = buildFinalPayload();
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
+      const totalPrice = response?.total_price;
       console.log('submitBooking response:', response, 'orderId:', orderId, 'selected paymentOption:', paymentOption);
 
       const creditCardOption = paymentOptions.find(opt => opt.name === "Credit Card" || opt.id === 2);

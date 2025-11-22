@@ -25,7 +25,7 @@ useEffect(() => {
     recipientCode: "OUH",
     thailandEnv: process.env.NEXT_PUBLIC_FLYWIRE_THAILAND_ENV,
     thailandRecipientCode: process.env.NEXT_PUBLIC_FLYWIRE_THAILAND_RECIPIENT_CODE,
-    callbackUrl: "https://app.airporttransfers.ai/api/flywire-notifications",
+    callbackUrl: "https://app.exploresingapore.ai/api/flywire-notifications",
     thailandCallbackUrl: process.env.NEXT_PUBLIC_FLYWIRE_THAILAND_CALLBACK_URL,
     callbackVersion: 2,
     thailandCallbackVersion: process.env.NEXT_PUBLIC_FLYWIRE_THAILAND_CALLBACK_VERSION,
@@ -68,7 +68,7 @@ const initiatePayment = () => {
       additional_information: null,
     },
     callbackId: returnOrderId,
-    callbackUrl: "https://app.airporttransfers.ai/api/flywire-notifications",
+    callbackUrl: "https://app.exploresingapore.ai/api/flywire-notifications",
     callbackVersion:"2",
     onCancel: () => {
       localizedPush(`/payment-process/${returnOrderId}`);
