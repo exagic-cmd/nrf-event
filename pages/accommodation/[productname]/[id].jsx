@@ -400,6 +400,8 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       if (!res.ok) throw new Error("Network error");
       const data = await res.json();
 
+      console.log("Fetched accommodation detail data:", data);
+
       // ... find matched hotel, normalize ...
       const results = data?.accommodations || data?.data || data || [];
       let matched = null;

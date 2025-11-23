@@ -149,7 +149,7 @@ const PayNow = ({ totalPrice }) => {
         category_id: 4,
         adult_count: item.adult_count || item.guests || 0,
         child_count: item.child_count || 0,
-        total: Number(item.total) || Number(item.price) || 0,
+        total: item?.price ?? 0,
         tour_date: item.tour_date || item.checkIn||"20-11-2025",
         check_in: item.check_in || item.checkIn,
         check_out: item.check_out || item.checkOut,
@@ -340,6 +340,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     setIsSubmitting(true);
     try {
       const finalPayload = buildFinalPayload();
+      console.log("Final Payload for submitBooking:", finalPayload);
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
       const totalPrice = response?.total_price;
@@ -352,7 +353,6 @@ console.log("cart_items:PAYNOW #####################", cart_items);
          setFlywireTotal(totalPrice);
          setShowFlywire(true); 
          useCartStore.getState().clearCart();
-       alert("Order ID: " + orderId);
         } else {
     
         setIsPopupVisible(true);
