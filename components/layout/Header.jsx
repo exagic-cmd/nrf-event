@@ -145,7 +145,7 @@ export default function Header() {
   <LocalizedLink href="/">
     {/* Mobile + Tablet Logo */}
     <img
-      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763551460/External%20Links/Mobile.png"
+      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642543/External%20Links/Desktop_red.png"
       alt="Mobile Logo"
       className="h-14 w-auto object-contain lg:hidden"
     />

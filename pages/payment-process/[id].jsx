@@ -272,7 +272,7 @@ console.log(order.email)
                     <div className="text-left">
                       <p className="text-sm text-gray-600">{t('callUs')}</p>
                       <a href="tel:+6588998424" className="font-semibold text-[#D3202D] hover:underline">
-                        1546541321
+                        (65)  6461 7995
                       </a>
                     </div>
                   </div>
@@ -286,8 +286,8 @@ console.log(order.email)
                     </div>
                     <div className="text-left">
                       <p className="text-sm text-gray-600">{t('emailUs')}</p>
-                      <a href="mailto:contact@nrf.com" className="font-semibold text-[#D3202D] hover:underline">
-                        contact@nrf.com
+                      <a href="mailto:fay.l@toureast.net" className="font-semibold text-[#D3202D] hover:underline">
+                        fay.l@toureast.net
                       </a>
                     </div>
                   </div>
