@@ -26,7 +26,7 @@ export default function LandingPage() {
   useEffect(() => {
     if (token) {
     
-      router.push("/order")
+      // router.push("/order")
     } else {
     
       setCheckingAuth(false)

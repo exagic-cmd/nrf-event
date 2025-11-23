@@ -11,7 +11,8 @@ import { User, ShoppingBag, LogOut } from "lucide-react";
 
 export default function Header() {
   const setLocale = useLanguageStore((state) => state.setLocale);
-  const { token, logout } = useUserStore();
+  const { token, logout,user } = useUserStore();
+  
   const [event, setEvent] = useState(null);
 
   useEffect(() => {
@@ -22,7 +23,29 @@ export default function Header() {
 
     loadEvent();
   }, []);
+    useEffect(() => {
+    const timer = setTimeout(() => {
+        if (!user) {
+          (async () => {
+            try {
+              if (typeof $helpers?.getGevmeRedirectURL === "function") {
+                const url =  $helpers.getGevmeRedirectURL();
+                if (url) window.location.assign(url);
+              } else {
+                console.error("helpers.getGevmeRedirectURL is not available");
+              }
+            } catch (err) {
+              console.error("Failed to get redirect URL", err);
+            }
+          })();
+        }
+      
+      console.log('user is here', user)
+    }, 500) 
 
+    return () => clearTimeout(timer)
+  }, [user])
+  
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
