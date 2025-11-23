@@ -92,7 +92,7 @@ export const useAffiliateStore = create<AffiliateStoreState>()(
         }
 
         try {
-          const fullUrl = `https://app.airporttransfers.ai${router.asPath}`;
+          const fullUrl = `https://app.exploresingapore.ai${router.asPath}`;
 
           let visitorNumber = localStorage.getItem("visitorNumber");
           if (!visitorNumber) {

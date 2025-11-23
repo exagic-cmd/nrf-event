@@ -877,7 +877,7 @@ function VehicleSlider({
           return;
         }
 
-        const response = await fetch("https://app.airporttransfers.ai/api/transfer/search", {
+        const response = await fetch("https://app.exploresingapore.ai/api/transfer/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -899,7 +899,7 @@ function VehicleSlider({
             price: Number(v.final_price),
             estimatedTime: "N/A",
             rating: 5.0,
-            image: v.vehicle_image ? `https://app.airporttransfers.ai/vehicle_images//${v.vehicle_image}` : "/placeholder.svg",
+            image: v.vehicle_image ? `https://app.exploresingapore.ai/vehicle_images//${v.vehicle_image}` : "/placeholder.svg",
             description: v.description,
             detailedFeatures: [],
             cancellationPolicy: "",

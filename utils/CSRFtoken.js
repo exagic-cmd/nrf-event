@@ -1,5 +1,5 @@
 export async function ensureCsrfCookie() {
-  const res = await fetch("https://app.airporttransfers.ai/sanctum/csrf-cookie", {
+  const res = await fetch("https://app.exploresingapore.ai/sanctum/csrf-cookie", {
     credentials: "include",   // important to send cookies cross-origin
   });
   if (!res.ok) {

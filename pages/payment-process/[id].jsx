@@ -27,7 +27,7 @@ export default function OrderPaymentPage() {
 
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`https://app.airporttransfers.ai/api/orderInfo/${returnOrderId}`);
+        const res = await fetch(`https://app.exploresingapore.ai/api/orderInfo/${returnOrderId}`);
         const data = await res.json();
 
 if (data?.status === "success" && data?.data) {

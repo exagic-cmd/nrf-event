@@ -21,7 +21,7 @@ export default function ResumePayment() {
     const fetchOrder = async () => {
       try {
         const res = await fetch(
-          `https://app.airporttransfers.ai/api/orderInfo/${orderId}`
+          `https://app.exploresingapore.ai/api/orderInfo/${orderId}`
         );
         const data = await res.json();
 
