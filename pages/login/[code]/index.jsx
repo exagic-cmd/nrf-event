@@ -21,7 +21,7 @@ export default function LoginWithCodePage() {
 
       if (result.success) {
         setStatus(t("loginSuccess"));
-        setTimeout(() => router.replace("/order"), 1500);
+        setTimeout(() => router.replace("/"), 1500);
       } else {
         setStatus(t("invalidOrExpired"));
         setTimeout(() => router.replace("/login"), 2000);
