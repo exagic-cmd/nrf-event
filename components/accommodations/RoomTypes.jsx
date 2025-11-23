@@ -82,7 +82,22 @@ const StubaRoomList = ({
     });
   };
 
+  const formatedPrice = (price) => {
+      const validPrice = parseFloat(price);
+      if (isNaN(validPrice)) return "0";
+
+      return Math.round(validPrice).toLocaleString("en-US");
+  };
+
   const getPricePerNight = (price) => (price / nights).toFixed(2);
+
+  const getPricePerNightFormatted = (price) => {
+      const validPrice = parseFloat(price);
+      if (isNaN(validPrice) || validPrice === 0) return "0";
+
+      const perNight = validPrice / (nights || 1);
+      return Math.round(perNight).toLocaleString('en-US');
+  };
 
   const getCancellationDisplay = (policy) => {
     const p = (policy || "").toLowerCase();
@@ -169,11 +184,11 @@ const StubaRoomList = ({
 
                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-center lg:text-left w-full">
   <div className="text-md md:text-lg font-bold text-[#D3202D]">
-    {currency} {formatPrice(room.price)}
+    {currency} {formatedPrice(room.price)}
   </div>
   {nights > 1 && (
     <div className="text-xs text-gray-500 sm:ml-2">
-      ({currency} {getPricePerNight(room.price)} per night)
+      ({currency} {getPricePerNightFormatted(room.price)} per night)
     </div>
   )}
 </div>
