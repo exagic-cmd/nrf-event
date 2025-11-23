@@ -47,6 +47,14 @@ const AccommodationInfoCard = ({
     return `${currency} ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  const formattedPrice = (price) => {
+      if (!price || price <= 0) return "Price on request";
+
+      const formattedPrice = Math.round(price).toLocaleString();
+
+      return `${currency} ${formattedPrice}`;
+  };
+
   const getRoomCountText = () => {
     if (!allRooms.length) return "No rooms available";
     return allRooms.length === 1 ? "1 room option" : `${allRooms.length} room options`;
@@ -71,7 +79,7 @@ const AccommodationInfoCard = ({
         {/* Price */}
         <div className="mb-5">
           <div className="text-lg lg:text-xl font-bold text-[#D3202D] mb-1">
-            {formatPrice(lowestPrice)}
+            {formattedPrice(lowestPrice)}
           </div>
           <div className="text-black text-sm flex items-center gap-1">
             {selectedRoom ? (

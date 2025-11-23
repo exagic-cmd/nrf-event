@@ -47,7 +47,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
   // Parse media to get images
   const media = Array.isArray(hotelData?.media) ? hotelData.media : [];
-  const mainImage = media.length > 0 ? (media[0].image || media[0].url) : hotelData.image;
+  const mainImage = hotelData.image ?? "";
 
   const formatPrice = (value) => {
     const num = Number(value);
