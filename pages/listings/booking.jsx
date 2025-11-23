@@ -42,7 +42,13 @@ const { surchargePickup, surchargeReturn,resetTransferStore  } = useTransferStor
   useEffect(() => {
     if (selectedTransfer) {
       if (tripType === "round-trip") {
-        setBasePrice(selectedTransfer.two_way_promo_price || selectedTransfer.two_way_price);
+        const promo = selectedTransfer?.two_way_promo_price;
+        const priceToUse =
+          promo && Number(promo) > 0
+            ? Number(promo)
+            : Number(selectedTransfer?.two_way_price) || 0;
+
+        setBasePrice(Math.floor(priceToUse));
       } else {
         setBasePrice(selectedTransfer.price);
       }
