@@ -13,18 +13,31 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 
+const DEFAULT_REGION = {
+  id: 4352,
+  region_id: 18196,
+  region_name: "Singapore",
+  name: "Singapore, All Hotels",
+};
+
 export default function AccommodationFilter({ onSearch }) {
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showGuestPopup, setShowGuestPopup] = useState(false);
-  const [rooms, setRooms] = useState([{ adult: 1, children: [] }]);
+  const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
   const [nationality, setNationality] = useState("SG");
   const [stars, setStars] = useState("");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
+
+const [selectedItem, setSelectedItem] = useState({
+    ...DEFAULT_REGION,
+    type: 'region'
+});
+const [selectedRegion, setSelectedRegion] = useState(DEFAULT_REGION);
+const [search, setSearch] = useState(DEFAULT_REGION.name);
 
   // Debounce timer ref
   const debounceTimeoutRef = useRef(null);
@@ -44,32 +57,40 @@ export default function AccommodationFilter({ onSearch }) {
     fetchNationalities();
   }, [fetchNationalities]);
 
-  // DEBOUNCED: Fetch hotels & regions only after 400ms pause
-  useEffect(() => {
-    // Clear previous timeout
+ useEffect(() => {
+  //  if (debounceTimeoutRef.current) {
+  //     clearTimeout(debounceTimeoutRef.current);
+  //   }
+  if (search === DEFAULT_REGION.name) return; 
+
+  if (debounceTimeoutRef.current) {
+    clearTimeout(debounceTimeoutRef.current);
+  }
+
+  const query = search.trim();
+
+  if (!query) {
+    setShowDropdown(false);
+    return;
+  }
+
+  debounceTimeoutRef.current = setTimeout(() => {
+    fetchHotelsAndRegions(query);
+    setShowDropdown(true);
+  }, 400);
+
+   // return () => {
+  //    if (debounceTimeoutRef.current) {
+   //     clearTimeout(debounceTimeoutRef.current);
+   //   }
+  //  };
+//  }, [search, fetchHotelsAndRegions]);
+  return () => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
-
-    const query = search.trim();
-
-    if (!query) {
-      setShowDropdown(false);
-      return;
-    }
-
-    debounceTimeoutRef.current = setTimeout(() => {
-      fetchHotelsAndRegions(query);
-      setShowDropdown(true);
-    }, 400);
-
-    // Cleanup on unmount or new input
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, [search, fetchHotelsAndRegions]);
+  };
+}, [search, fetchHotelsAndRegions]);
 
   // Client-side filtering of results (after API returns)
   const filtered = useMemo(() => {
@@ -158,8 +179,13 @@ export default function AccommodationFilter({ onSearch }) {
     const value = e.target.value;
     setSearch(value);
     if (!value.trim()) {
-      setSelectedItem(null);
-    }
+   //  setSelectedItem(null);
+   // }
+      setSearch(DEFAULT_REGION.name);
+  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+  return;
+}
+
   };
 
   const handleSubmit = async (e) => {
@@ -243,19 +269,20 @@ export default function AccommodationFilter({ onSearch }) {
               className="w-full bg-transparent outline-none text-base sm:text-lg"
               autoComplete="off"
             />
-            {search && (
+            {/* {search && (
               <button
                 type="button"
-                onClick={() => {
-                  setSearch("");
-                  setSelectedItem(null);
-                  setShowDropdown(false);
-                }}
+              onClick={() => {
+  setSearch(DEFAULT_REGION.name);
+  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+  setShowDropdown(false);
+}}
+
                 className="text-gray-400 hover:text-gray-600 flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
-            )}
+            )} */}
           </div>
 
           {/* Dropdown with Loading - Mobile Full Width */}
@@ -566,7 +593,7 @@ export default function AccommodationFilter({ onSearch }) {
           </select>
         </div>
 
-        <div className="md:col-span-9">
+        {/* <div className="md:col-span-9">
           <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1 invisible md:visible">&nbsp;</label>
           <div className="flex flex-wrap gap-2 mb-3">
             {["All", "1 star", "2 star", "3 star", "4 star", "5 star"].map((label, i) => (
@@ -590,7 +617,7 @@ export default function AccommodationFilter({ onSearch }) {
               </label>
             ))}
           </div>
-        </div>
+        </div> */}
         
       </div>
       {/* --- Footer with Search Button and Powered by Logo --- */}

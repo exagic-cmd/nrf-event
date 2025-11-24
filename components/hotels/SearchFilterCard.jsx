@@ -11,6 +11,8 @@ import {
 import { useTransferStore } from "@/store/useTransferStore";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import AccommodationFilter from "./AccommodationFilter";
+import { useCartStore } from "@/store/useCartStore";
+import { useOrderStore } from "@/store/useOrderStore";
 
 export default function SearchFilterCard({
   filterActiveTab,
@@ -60,6 +62,11 @@ export default function SearchFilterCard({
   const [showDropoffDropdown, setShowDropoffDropdown] = useState(false);
 
   const isLoading = transferLoading || daytoursLoading;
+  const { prefillData, updatePrefillDataFromCart } = useOrderStore();
+  const { items: cartItems } = useCartStore();
+  useEffect(() => {
+    updatePrefillDataFromCart(cartItems);
+  }, [cartItems, updatePrefillDataFromCart]);
 
   // Sync inputs
   useEffect(() => setPickupQuery(selectedPickup?.name || ""), [selectedPickup]);
@@ -100,7 +107,29 @@ export default function SearchFilterCard({
     setShowPickupDropdown(false);
     setSelectedDropoff(null);
     setDropoffQuery("");
-    if (opt?.id) fetchDropoffOptions(opt.id);
+    const pickupName = (opt.name || opt.title || "").toLowerCase();
+    let prefName = null;
+    if ((pickupName.includes("changi airport") || pickupName.includes("terminal")) && prefillData && prefillData.pickup_point) {
+         const pref = prefillData.pickup_point;
+         prefName = pref?.name || pref?.title || pref;
+         setDropoffQuery(prefName);
+         // If prefill is already a full object with an id, accept it as selectedDropoff
+         if (pref && typeof pref === "object" && (pref.id || pref.place_id)) {
+           setSelectedDropoff(pref);
+         }
+    }
+    if (opt?.id) {
+      fetchDropoffOptions(opt.id);
+      // try to immediately match a prefill name to existing dropoffOptions
+      if (prefName && dropoffOptions && dropoffOptions.length) {
+        const prefNameLower = (prefName || "").toLowerCase();
+        const match = dropoffOptions.find((d) => ((d.name || d.title || "").toLowerCase() === prefNameLower));
+        if (match) {
+          setSelectedDropoff(match);
+          setDropoffQuery(match.name || match.title || prefName);
+        }
+      }
+    }
   };
 
   const onDropoffChange = (val) => {
@@ -122,6 +151,19 @@ export default function SearchFilterCard({
       (d.name || d.title || "").toLowerCase().includes(q)
     );
   }, [dropoffOptions, dropoffQuery]);
+
+  // When dropoff options load, if we have a dropoffQuery but no selectedDropoff,
+  // try to auto-select an option that matches the prefilled name.
+  useEffect(() => {
+    if (dropoffQuery && !selectedDropoff && dropoffOptions && dropoffOptions.length) {
+      const q = (dropoffQuery || "").toLowerCase();
+      const match = dropoffOptions.find((d) => ((d.name || d.title || "").toLowerCase() === q));
+      if (match) {
+        setSelectedDropoff(match);
+        setDropoffQuery(match.name || match.title || q);
+      }
+    }
+  }, [dropoffOptions, dropoffQuery, selectedDropoff, setSelectedDropoff]);
 
   const swapLocations = () => {
     if (!(selectedPickup || pickupQuery || selectedDropoff || dropoffQuery)) return;
@@ -331,10 +373,9 @@ export default function SearchFilterCard({
                         type="text"
                         value={dropoffQuery}
                         onChange={(e) => onDropoffChange(e.target.value)}
-                        placeholder="Hotel, or Address"
-                        disabled={!selectedPickup}       
-                        className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none disabled:text-gray-400"
-                      />
+                                                placeholder="Hotel, or Address"
+                                                disabled={!selectedPickup && !dropoffQuery}
+                                                className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none disabled:text-gray-400"                      />
                       {dropoffQuery && (
                         <button type="button" onClick={() => onDropoffChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear drop-off">
                           <X className="h-4 w-4" />

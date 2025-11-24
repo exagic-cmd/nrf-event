@@ -29,7 +29,12 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const { setJustAdded, justAdded } = useDrawerStore();
   const { tieredPricingData, bookedProductDetail } = useProductStore();
   const { removeItem } = useCartStore();
-const { prefillData } = useOrderStore();
+  const { prefillData, updatePrefillDataFromCart } = useOrderStore();
+  const { items: cartItems } = useCartStore();
+  useEffect(() => {
+    updatePrefillDataFromCart(cartItems);
+  }, [cartItems, updatePrefillDataFromCart]);
+
   const [errors, setErrors] = useState({});
   const [selectedPolicies, setSelectedPolicies] = useState([]);
   const [policyErrors, setPolicyErrors] = useState(null);
@@ -55,19 +60,19 @@ const { prefillData } = useOrderStore();
       return newErrors;
     });
   };
-useEffect(() => {
-  if (prefillData) {
-    setFormData((prev) => ({
-      ...prev,
-      date: prefillData.date || prev.date,
-      time: prefillData.pickup_time || prev.time,
-      hotel: prefillData.pickup_point || prev.hotel,
-      adults: prefillData.total_adult || prev.adults,
-      child: prefillData.total_child || prev.child,
-    }));
-  }
-}, [prefillData]);
-  const handleBookNow = async () => {
+
+  useEffect(() => {
+    if (prefillData) {
+      setFormData((prev) => ({
+        ...prev,
+        date: prefillData.date || prev.date,
+        time: prefillData.pickup_time || prev.time,
+        hotel: prefillData.pickup_point || prev.hotel,
+        adults: prefillData.total_adult || prev.adults,
+        child: prefillData.total_child || prev.child,
+      }));
+    }
+  }, [prefillData]);  const handleBookNow = async () => {
   setLoadingButton("addToCart");
     const validationErrors = {};
     if (!formData.adults) validationErrors.adults = "adultsError";
