@@ -11,9 +11,15 @@ import { User, ShoppingBag, LogOut } from "lucide-react";
 
 export default function Header() {
   const setLocale = useLanguageStore((state) => state.setLocale);
-  const { token, logout,user } = useUserStore();
+  const { token, logout, user } = useUserStore();
+  const [hydrated, setHydrated] = useState(false);
   
   const [event, setEvent] = useState(null);
+
+  // Hydrate persisted store on mount
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     async function loadEvent() {
@@ -23,7 +29,11 @@ export default function Header() {
 
     loadEvent();
   }, []);
-    useEffect(() => {
+
+  useEffect(() => {
+    // Only check redirect after hydration is complete
+    if (!hydrated) return;
+    
     const timer = setTimeout(() => {
         if (!user) {
           (async () => {
@@ -44,7 +54,7 @@ export default function Header() {
     }, 500) 
 
     return () => clearTimeout(timer)
-  }, [user])
+  }, [user, hydrated])
   
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
