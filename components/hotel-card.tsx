@@ -70,7 +70,7 @@ export default function HotelCard({ hotel, onSelect }: HotelCardProps) {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-1 mt-3">
+          {/* <div className="flex flex-wrap gap-1 mt-3">
           {(hotel?.amenities ?? []).slice(0, 1).map((amenity, index) => (
             <Badge
               key={index}
@@ -88,7 +88,7 @@ export default function HotelCard({ hotel, onSelect }: HotelCardProps) {
               +{hotel.amenities.length - 3} more
             </Badge>
           )}
-        </div>
+        </div> */}
 
 
           {/* <div className="mt-auto pt-3">
