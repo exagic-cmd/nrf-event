@@ -349,8 +349,8 @@ fetchNonStubaAccommodation: async (hotelId) => {
           type: "photo"
         }] : [],
         stars: hotel.stars || 4,                    // fallback
-        amenities: hotel.amenities || "WiFi, AC, TV",
-        features: (hotel.amenities || "WiFi, AC, TV").split(",").map(s => s.trim()),
+      //  amenities: hotel?.amenities || "WiFi, AC, TV",
+      //  features: (hotel?.amenities || "WiFi, AC, TV").split(",").map(s => s.trim()),
         starting_price: parseFloat(hotel.starting_price) || 0,
         price: parseFloat(hotel.starting_price) || 0,
         category_name: hotel.category_name,

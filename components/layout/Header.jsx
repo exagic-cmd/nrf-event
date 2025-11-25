@@ -170,7 +170,7 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-0 bg-white shadow-md z-40">
+    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-2 bg-white shadow-md z-40">
       {/* Logo */}
     <div className="flex items-center">
   <LocalizedLink href="/">

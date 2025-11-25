@@ -256,7 +256,7 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
 
   return (
     <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-5 mt-2 lg:mt-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3">
+      <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">
           <div className="rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 flex items-center gap-2">
