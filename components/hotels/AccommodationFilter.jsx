@@ -255,8 +255,8 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
 };
 
   return (
-    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-20">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-5 mt-2 lg:mt-8">
+      <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">
           <div className="rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 flex items-center gap-2">
@@ -264,6 +264,7 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
             <input
               type="text"
               value={search}
+              readOnly
               onChange={handleInputChange}
               placeholder="Search hotels or regions..."
               className="w-full bg-transparent outline-none text-base sm:text-lg"
@@ -573,10 +574,10 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
             Search
           </button>
         </div> */}
-      </div>
+     
 
       {/* Additional Parameters */}
-      <h6 className="mt-4 relative sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-[#D3202D text-sm sm:text-base">Additional Parameters</h6>
+      {/* <h6 className="mt-4 relative sm:mt-5 md:mt-6 mb-2 sm:mb-3 font-medium text-[#D3202D text-sm sm:text-base">Additional Parameters</h6>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
         <div className="md:col-span-3">
           <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1">Guest's citizenship</label>
@@ -591,7 +592,7 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* <div className="md:col-span-9">
           <label className="block text-xs sm:text-sm mb-1.5 sm:mb-1 invisible md:visible">&nbsp;</label>
@@ -617,22 +618,25 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
               </label>
             ))}
           </div>
-        </div> */}
+        </div> 
         
-      </div>
-      {/* --- Footer with Search Button and Powered by Logo --- */}
-      <div className="mt-6 flex flex-col items-end gap-2 md:absolute md:bottom-3 md:right-3 md:w-1/5">
+      </div>*/}
+      <div className="col-span-2">
           <button
             type="submit"
-            className="w-1/2 md:w-full rounded-xl bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
+            className="min-w-full rounded-xl  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
           >
             Search
           </button>
-          <div className="flex items-center justify-end gap-1">
+         
+      </div>
+     
+     
+       </div>
+         <div className="flex items-center justify-end gap-1 mt-4">
             <span className="text-xs text-gray-400">Powered by </span>
             <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763694508/External%20Links/toureast_logo.png" alt="Toureast Logo" />
           </div>
-      </div>
     </form>
   );
 }

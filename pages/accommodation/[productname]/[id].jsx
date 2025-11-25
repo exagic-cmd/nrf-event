@@ -490,21 +490,25 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
 
       <div className="min-h-screen bg-[#D0E9FF] text-black pt-[80px] md:pt-10 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
-          <AccommodationHeader hotelData={hotelData} />
+<div className="flex flex-col lg:flex-row justify-between gap-1">
+  <AccommodationHeader hotelData={hotelData} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8 mt-6">
-            <AccommodationGallery hotelData={hotelData} />
-            <AccommodationInfoCard
-              hotelData={hotelData}
-              startingPrice={hotelData.starting_price}
-              allRooms={accommodation.normalizedRoomData}
-              selectedRoom={selectedRoom}
-              currency={hotelData.currency} // Pass currency from hotelData
-              onScrollToOptions={handleScrollToOptions}
-              onProceedBooking={handleProceedBooking}
-              nights={nights}
-              totalGuests={totalGuests}
-            />
+  <AccommodationInfoCard
+    hotelData={hotelData}
+    startingPrice={hotelData.starting_price}
+    allRooms={accommodation.normalizedRoomData}
+    selectedRoom={selectedRoom}
+    currency={hotelData.currency}
+    onScrollToOptions={handleScrollToOptions}
+    onProceedBooking={handleProceedBooking}
+    nights={nights}
+    totalGuests={totalGuests}
+  />
+</div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-1 lg:mr-24 gap-6 lg:gap-8 mt-6">
+            <AccommodationGallery hotelData={accommodation} />
+        
           </div>
         </div>
 

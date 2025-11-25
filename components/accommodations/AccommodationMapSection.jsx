@@ -65,8 +65,8 @@ const AccommodationMapSection = ({ hotelData }) => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold text-white mb-4">Location</h2>
-      <div className="bg-gray-800 rounded-xl overflow-hidden">
+      <h2 className="text-2xl font-bold text-[#D3202D] mb-4">Location</h2>
+      <div className="bg-gray-800 rounded-xl overflow-hidden mr-0 lg:mr-12">
         <div className="aspect-[8/3] bg-gray-700">
           <div ref={mapRef} className="w-full h-full" />
         </div>
