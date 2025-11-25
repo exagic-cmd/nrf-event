@@ -36,7 +36,7 @@ fetchWeatherInfo: async ( userId) => {
   }
 },
 
-fetchUpcomingBookings: async (token) => {
+     fetchUpcomingBookings: async (token) => {
   set({ loading: true, error: null });
   try {
     const res = await apiRequest({
@@ -66,10 +66,14 @@ fetchUpcomingBookings: async (token) => {
     });
 
     set({ upcomingBookings: bookings, loading: false });
-
     if (bookings.length > 0 && bookings[0].itineraries?.length > 0) {
       const firstOrder = bookings[0];
       const firstItinerary = firstOrder.itineraries[0];
+
+      let pickupPoint = firstItinerary.pickup_point;
+      if (pickupPoint && (pickupPoint.toLowerCase().includes('changi airport') || pickupPoint.toLowerCase().includes('terminal'))) {
+        pickupPoint = firstItinerary.dropoff_point;
+      }
 
       const prefillData = {
         order_id: firstOrder.order_id,
@@ -77,7 +81,7 @@ fetchUpcomingBookings: async (token) => {
         title: firstItinerary.title,
         date: firstItinerary.date,
         pickup_time: firstItinerary.pickup_time,
-        pickup_point: firstItinerary.pickup_point, 
+        pickup_point: pickupPoint, 
         total_adult: firstOrder.total_adult ?? 0,
         total_child: firstOrder.total_child ?? 0,
       };
@@ -87,8 +91,8 @@ fetchUpcomingBookings: async (token) => {
     }
   } catch (err) {
     set({
-      loading: false,
       error: err.message || "Failed to fetch upcoming bookings",
+      loading: false,
     });
   }
 },
@@ -245,10 +249,74 @@ cancelOrder: async (itineraryId, reason, accessCode) => {
 
 
 
-      setSelectedTrip: (trip) => set({ selectedTrip: trip }),
-      setSelectedOrder: (order) => set({ selectedOrder: order }),
       clearError: () => set({ error: null }),
-    }),
+
+updatePrefillDataFromCart: (cartItems = []) => {
+  if (!Array.isArray(cartItems) || cartItems.length === 0) return;
+
+  // ✅ find accommodation first
+  const accommodation = cartItems.find(
+    (item) => item.productType === "accommodation" || item.type === "accommodation"
+  );
+
+  const transfer = cartItems.find(
+    (item) =>
+      item.type === "transfer" ||
+      item.productType === "transfer"
+  );
+
+  let hotelValue = "";
+  let date = "";
+  let time = "";
+  let adults = 0;
+  let children = 0;
+
+  // ✅ 1) Accommodation takes priority
+  if (accommodation) {
+    hotelValue = accommodation.productTitle || "";
+    date = accommodation.check_in || accommodation.tour_date || "";
+    time = accommodation.check_in_time || "";
+    adults = accommodation.adult_count || 0;
+    children = accommodation.child_count || 0;
+  }
+
+  // ✅ 2) Fallback → transfer logic
+  else if (transfer) {
+    const pickupName = transfer.searchParams?.pickup?.name;
+    const dropoffName = transfer.searchParams?.dropoff?.name;
+
+    if (
+      pickupName &&
+      (pickupName.toLowerCase().includes("airport") ||
+        pickupName.toLowerCase().includes("terminal"))
+    ) {
+      hotelValue = dropoffName;
+    } else {
+      hotelValue = pickupName;
+    }
+
+    date = transfer.selectedDate || "";
+    time = transfer.selectedTime || "";
+    adults = transfer.passengers || transfer.total_adult || 0;
+    children = transfer.total_child || 0;
+  }
+
+  // ✅ nothing to save
+  if (!hotelValue) return;
+
+  const newPrefillData = {
+    pickup_point: hotelValue,
+    date,
+    pickup_time: time,
+    total_adult: adults,
+    total_child: children,
+  };
+
+  set({ prefillData: newPrefillData });
+
+  console.log("✅ Prefill updated:", newPrefillData);
+},
+   }),
     {
       name: "order-store",
      partialize: (state) => ({

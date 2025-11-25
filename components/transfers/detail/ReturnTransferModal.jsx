@@ -12,11 +12,17 @@ const ReturnTransferModal = ({
   if (!isOpen || !selectedTransfer) return null;
 
   // Calculate savings
-  const oneWayPrice = parseFloat(selectedTransfer?.final_promo_price || selectedTransfer?.final_price || 0);
-  const twoWayPrice = parseFloat(selectedTransfer?.two_way_promo_price || selectedTransfer?.two_way_price || 0);
-  const returnPrice = twoWayPrice - oneWayPrice;
+  const promoPrice = parseFloat(selectedTransfer?.final_promo_price);
+  const finalPrice = parseFloat(selectedTransfer?.final_price);
+  const oneWayPrice = promoPrice > 0 ? promoPrice : finalPrice;
+
+  const twoWayPromoPrice = parseFloat(selectedTransfer?.two_way_promo_price);
+  const twoWayFinalPrice = parseFloat(selectedTransfer?.two_way_price);
+  const twoWayPrice = twoWayPromoPrice > 0 ? twoWayPromoPrice : twoWayFinalPrice;
+
+  const returnPrice = twoWayPrice > oneWayPrice ? twoWayPrice - oneWayPrice : 0;
   const twoSeparatePrice = oneWayPrice * 2;
-  const savingsAmount = twoSeparatePrice - twoWayPrice;
+  const savingsAmount = twoSeparatePrice > twoWayPrice ? twoSeparatePrice - twoWayPrice : 0;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">

@@ -1,6 +1,7 @@
 // store/useCartStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useOrderStore } from "./useOrderStore";
 
 // Utility: slugify strings
 const slug = (s: string | undefined | null): string =>
@@ -146,6 +147,7 @@ export const useCartStore = create<CartState>()(
 
       clearCart: () => {
         set({ items: [] });
+        useOrderStore.getState().updatePrefillDataFromCart([]);
       },
 
       setItemToEdit: (item) => set({ itemToEdit: item }),

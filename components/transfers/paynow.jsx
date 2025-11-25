@@ -324,8 +324,8 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     customer_type: 'potential_customer',
     visitor_number: 'V68261',
     redemption_voucher_id: 0,
-    // event is stored as object in useEventStore; read user_id directly
-    agent_id: event?.user_id || null,
+    agent_id: event?.event?.user_id || null,
+    event_id:event?.event?.id|| null,
     ref_type: refType || null,
     track_agent_id: track_agent_id || null
   };
