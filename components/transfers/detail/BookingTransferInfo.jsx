@@ -132,6 +132,8 @@ const FlightNumberField = ({
 }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [apiError, setApiError] = useState(null);
+  const [isAutoTracking, setIsAutoTracking] = useState(false);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && onTrack) {
@@ -140,31 +142,57 @@ const FlightNumberField = ({
     }
   };
 
-  const handleTrack = async () => {
-    if (!onTrack || !value) return;
+  const handleTrack = async (flightNumber = null) => {
+    const numberToTrack = flightNumber || value;
+    if (!onTrack || !numberToTrack) return;
 
     setShowSuggestions(false);
     setSuggestions([]);
+    setApiError(null);
 
     try {
-      const result = await onTrack(); // 🔥 your onTrack runs and may return similar_flights
+      const result = await onTrack(); 
 
       // if API returns similar flights, show them in dropdown
+
+      //  const result = await onTrack(numberToTrack);
+
+       if (result?.error && !result?.similar_flights) {
+         setApiError(result.error);
+         return;
+      }
+
       if (result?.similar_flights?.length > 0) {
         setSuggestions(result.similar_flights);
         setShowSuggestions(true);
       }
     } catch (err) {
       console.error("Error tracking flight:", err);
+      setApiError("Failed to track flight. Please try again.");
     }
   };
 
-  const handleSelectSuggestion = (suggestion) => {
-    onChange(suggestion); // update field
-    setShowSuggestions(false); // close dropdown
-    // do NOT re-track automatically — wait for user to click “Check”
+  // const handleSelectSuggestion = (suggestion) => {
+  //   onChange(suggestion); // update field
+  //   setShowSuggestions(false); // close dropdown
+  //   // do NOT re-track automatically — wait for user to click “Check”
+  // };
+  const handleSelectSuggestion = async (suggestion) => {
+    onChange(suggestion);
+    setShowSuggestions(false);
+    setApiError(null);
+    
+    if (onTrack) {
+        setIsAutoTracking(true);
+        try {
+            await onTrack(suggestion);
+        } catch (e) {
+            setApiError("Failed to track selected flight.");
+        } finally {
+            setIsAutoTracking(false);
+        }
+    }
   };
-
   return (
     <FormField label={label} required icon={Hash} orangeColor={orangeColor}>
       <div className="relative">
@@ -178,6 +206,7 @@ const FlightNumberField = ({
               .replace(/[^A-Z0-9]/g, "");
             onChange(sanitized);
             setShowSuggestions(false);
+            setApiError(null);
           }}
           onKeyDown={handleKeyDown}
           placeholder={t("booking.flightPlaceholder")}
@@ -192,15 +221,15 @@ const FlightNumberField = ({
         {/* Check Button */}
         <button
           type="button"
-          onClick={handleTrack}
-          disabled={disabled || !value || tracking}
+          onClick={() => handleTrack()}
+          disabled={disabled || !value || tracking || isAutoTracking}
           className={`absolute right-2 top-1/2 -translate-y-1/2 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors flex items-center justify-center gap-1 ${
             disabled || !value
               ? "bg-gray-300 cursor-not-allowed"
-              : "bg-[#D3202D] "
+              : "bg-[#D3202D] hover:bg-red-700"
           }`}
         >
-          {tracking ? "Checking..." : t("booking.check") || "Check"}
+          {tracking || isAutoTracking ? "Checking..." : t("booking.check") || "Check"}
         </button>
 
         {/* Dropdown for similar flights */}
@@ -210,16 +239,24 @@ const FlightNumberField = ({
               <li
                 key={idx}
                 onClick={() => handleSelectSuggestion(flight)}
-                className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-sm text-gray-800 border-b last:border-none"
+                className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-sm text-gray-800 border-b last:border-none flex items-center gap-2"
               >
-                ✈️ {flight}
+                <span>✈️ {flight}</span>
+                {isAutoTracking && <span className="text-xs text-gray-400">Auto-tracking...</span>}
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      {error && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
+  
+      {apiError && (
+        <p className="text-[#D3202D] text-xs mt-2 bg-red-50 px-3 py-2 rounded border border-red-200">
+          {apiError}
+        </p>
+      )}
+
+      {error && !apiError && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
     </FormField>
   );
 };
@@ -383,54 +420,62 @@ if (updates.pickupOption || updates.returnOption) {
     }
   };
 
-const handlePickupTrack = async () => {
-  if (!userBookingDetails.pickupFlightNumber) return;
+const handlePickupTrack = async (flightNumber = null) => {
+  const numberToUse = flightNumber || userBookingDetails.pickupFlightNumber;
+  if (!numberToUse) return;
 
   setPickupTracking(true);
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
-        userBookingDetails.pickupFlightNumber
+        numberToUse
       )}&pickup_id=${encodeURIComponent(selectedTransfer?.pickup_point_id)}`
     );
 
     const data = await res.json();
 
     if (res.ok && !data.error) {
-      setPickupTrigger((prev) => prev + 1);
+      if (!data.similar_flights || data.similar_flights.length === 0) {
+        setPickupTrigger((prev) => prev + 1);
+      }
       return data;
     } else {
       return data;
     }
   } catch (e) {
     console.error("Pickup track error", e);
+    return { error: "An error occurred while fetching flight data." };
   } finally {
     setPickupTracking(false);
   }
 };
 
 
-const handleReturnTrack = async () => {
-  if (!userBookingDetails.returnFlightNumber) return;
+const handleReturnTrack = async (flightNumber = null) => {
+  const numberToUse = flightNumber || userBookingDetails.returnFlightNumber;
+  if (!numberToUse) return;
 
   setReturnTracking(true);
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
-        userBookingDetails.returnFlightNumber
-      )}&pickup_id=${encodeURIComponent(selectedTransfer?.pickup_point_id)}`
+        numberToUse
+      )}&pickup_id=${encodeURIComponent(selectedTransfer?.dropoff_point_id)}`
     );
 
     const data = await res.json();
 
     if (res.ok && !data.error) {
-      setReturnTrigger((prev) => prev + 1);
+      if (!data.similar_flights || data.similar_flights.length === 0) {
+        setReturnTrigger((prev) => prev + 1);
+      }
       return data; 
     } else {
       return data; 
     }
   } catch (e) {
     console.error("Return track error", e);
+    return { error: "An error occurred while fetching flight data." };
   } finally {
     setReturnTracking(false);
   }
@@ -630,7 +675,7 @@ const handleReturnTrack = async () => {
 
     {/* Flight Tracker (auto triggers when valid flight found) */}
     <FlightTracker
-  pickupId={selectedTransfer?.pickup_point_id}
+  pickupId={selectedTransfer?.dropoff_point_id}
   flightNumber={userBookingDetails.returnFlightNumber}
   trigger={returnTrigger}
   onTrackSuccess={(result) => {
