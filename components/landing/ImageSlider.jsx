@@ -88,11 +88,11 @@ const ImageSlider = () => {
       {/* DESKTOP */}
       <div className="hidden md:block relative">
         <div className="absolute inset-0 flex flex-col justify-center items-start text-white z-20 px-10">
-          <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-2">
+          <h2 className="text-lg md:text-xl lg:text-xl  font-semibold mb-2">
             {desktopSlides[selectedIndexDesktop].subtitle}
           </h2>
 
-          <h1 className="text-xl md:text-2xl lg:text-2xl font-bold mb-4 text-[#D0E9FF]">
+          <h1 className="text-xl md:text-2xl lg:text-4xl font-bold mb-4 text-[#D3202D]">
             {desktopSlides[selectedIndexDesktop].title}
           </h1>
 

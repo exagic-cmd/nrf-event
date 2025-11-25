@@ -2,14 +2,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import {
-  Check, X, Utensils, Calendar, Shield, Bed, Loader2,
+  Check, X, Utensils, Calendar, Shield, Bed,BathIcon ,Loader2,CameraIcon,Wifi,Tv,
   Star, MapPin, Clock
 } from "lucide-react";
 
 // === STUBA VERSION: List of Rooms ===
+// === REVISED STUBA VERSION: List of Rooms ===
 const StubaRoomList = ({
   allRooms = [],
-  currency = "USD",
+  currency = "SGD", // Defaulting to SGD based on the image
   onRoomSelect,
   onProceedBooking,
   nights = 1,
@@ -37,32 +38,30 @@ const StubaRoomList = ({
   }
 
   const groupedRooms = allRooms.reduce((acc, room) => {
-    const roomType = room.roomType || "Standard Room";
-    if (!acc[roomType]) acc[roomType] = [];
-    acc[roomType].push(room);
+   const roomTypeKey = `${room.roomType || "Standard Room"} | ${room.bedDetails || "Non-specified Bed"}`;
+    if (!acc[roomTypeKey]) acc[roomTypeKey] = [];
+    acc[roomTypeKey].push(room);
     return acc;
   }, {});
+  const getRoomDisplayName = (key) => key.split(' | ')[0];
+  const getRoomBedDetails = (key) => key.split(' | ')[1];
 
   const handleRoomSelect = (room) => {
     try {
       const result = onRoomSelect ? onRoomSelect(room) : { ok: true };
 
-      // Accept multiple return forms for compatibility
       const normalized = (result === true || result === undefined)
         ? { ok: true }
         : (typeof result === 'boolean' ? { ok: result } : result);
 
       if (!normalized.ok) {
-        // show inline message under this room's button
         setRoomMessages(prev => ({ ...prev, [room.id]: normalized.message || 'This room is not available on your selected dates' }));
-        // clear message after 5s
         setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[room.id]; return c; }), 5000);
         return;
       }
 
       setInternalSelectedRoom(room.id);
 
-      // If parent provided a proceed handler (info card), call it to continue to booking
       try {
         if (typeof onProceedBooking === 'function') {
           onProceedBooking(room);
@@ -75,21 +74,12 @@ const StubaRoomList = ({
     }
   };
 
-  const formatPrice = (price) => {
-    return parseFloat(price).toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
   const formatedPrice = (price) => {
       const validPrice = parseFloat(price);
       if (isNaN(validPrice)) return "0";
 
       return Math.round(validPrice).toLocaleString("en-US");
   };
-
-  const getPricePerNight = (price) => (price / nights).toFixed(2);
 
   const getPricePerNightFormatted = (price) => {
       const validPrice = parseFloat(price);
@@ -102,25 +92,22 @@ const StubaRoomList = ({
   const getCancellationDisplay = (policy) => {
     const p = (policy || "").toLowerCase();
     if (p.includes("nonrefundable") || p.includes("non-refundable")) {
-      return { text: "Non-Refundable", color: "text-red-400", icon: <X className="w-4 h-4" />, desc: "No refund if cancelled" };
+      return { text: "Non-Refundable", color: "text-red-400", icon: <X className="w-4 h-4" />, desc: "No refund if cancelled", staticDate: "No" };
     }
     if (p.includes("refundable") || p.includes("free")) {
-      return { text: "Free Cancellation", color: "text-green-400", icon: <Check className="w-4 h-4" />, desc: "Cancel for free" };
+      return { text: "Free Cancellation", color: "text-green-400", icon: <Check className="w-4 h-4" />, desc: "Cancel for free", staticDate: "SGD 0 until Nov 26" }; 
     }
-    return { text: policy || "Check Policy", color: "text-yellow-400", icon: <Shield className="w-4 h-4" />, desc: "See terms" };
+    return { text: policy || "Check Policy", color: "text-yellow-400", icon: <Shield className="w-4 h-4" />, desc: "See terms", staticDate: "Check Policy" };
   };
 
   const getMealDisplay = (mealType) => {
     const m = (mealType || "").toLowerCase();
-    // if (m.includes("breakfast")) return { text: "Breakfast", icon: "Egg Fried" };
-    // if (m.includes("all inclusive")) return { text: "All Inclusive", icon: "Utensils" };
-    // if (m.includes("half board")) return { text: "Half Board", icon: "Utensils" };
-    // if (m.includes("full board")) return { text: "Full Board", icon: "Utensils" };
-    return { text: mealType || "Room Only", icon: "Bed" };
+    if (m.includes("breakfast")) return { text: "Breakfast included", icon: "Utensils" };
+    return { text: "Not included", icon: "Bed" };
   };
 
   return (
-    <div id="room-types-section" className="px-4 sm:px-6 lg:px-12 py-2">
+    <div id="room-types-section" className="pr-0 lg:pr-12 py-2">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
@@ -136,93 +123,94 @@ const StubaRoomList = ({
         </div>
 
         <div className="space-y-8">
-          {Object.entries(groupedRooms).map(([roomType, rooms]) => (
-            <div key={roomType} className="bg-white rounded-2xl p-3 border border-gray-700 hover:border-gray-600 transition-all">
-              <div className="mb-6">
-                <h3 className="text-md md:text-lg font-bold text-black flex items-center gap-2">
-                  <Bed className="w-5 h-5 text-[#D3202D]" />
-                 {totalRoomsRequested} x {roomType}
-                </h3>
-                {/* <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
-                  <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Flexible check-in</div>
-                  <div className="flex items-center gap-2"><Utensils className="w-4 h-4" /> Meal options available</div>
-                </div> */}
+          {Object.entries(groupedRooms).map(([roomTypeKey, rooms]) => (
+            <div key={roomTypeKey} className="bg-white rounded-2xl p-0 border border-gray-700 overflow-hidden">
+              
+              <div className="p-4 bg-gray-50 flex items-center gap-4 border-b border-gray-200">
+                 <div>
+                    <h3 className="text-xl font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs text-gray-500">
+                      <span><Bed className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.bedDetails || rooms?.[0]?.mealType || getRoomBedDetails(roomTypeKey) || "Bed info"}</span>
+                      <span><Shield className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Smoking" : "Non-smoking"}</span>
+                      <span><Wifi className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Free Wifi" :  "Wifi"}</span>
+                      <span><CameraIcon className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Safe" : "Safe"}</span>
+                      <span><Tv className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "TV" : "TV"}</span>
+                      <span><BathIcon className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.privateBathroom === false ? "Shared Bathroom" : "Private Bathroom"}</span>
+                    </div>
+                  </div>
               </div>
 
-              <div className="space-y-5">
+              {/* Rate Table Header */}
+              <div className="hidden lg:grid grid-cols-7 text-xs font-bold uppercase text-gray-500 bg-gray-100 border-b border-gray-200 py-3 px-4">
+                  <div className="col-span-2">Room</div>
+                  <div>Meals</div>
+                  <div>Cancellation</div>
+                  <div>NET Price</div>
+                  <div>Payment type</div>
+                  <div></div>
+              </div>
+
+              {/* Rate Items */}
+              <div className="space-y-0 divide-y divide-gray-200">
                 {rooms.map((room) => {
                   const isSelected = internalSelectedRoom === room.id;
                   const cancellation = getCancellationDisplay(room.cancellationPolicy);
                   const meal = getMealDisplay(room.mealType);
+                  const netPriceStatic = `${currency} ${formatedPrice(room.price)}`;
+                  const paymentTypeStatic = "By card"; // Sta
+                  const surchargeStatic = "No surcharge"; // Sta
 
                   return (
                     <div
                       key={room.id}
-                      className={`bg-white backdrop-blur-sm p-3 rounded-xl border-2 transition-all duration-200 ${
+                      
+                      className={`grid grid-cols-1 md:grid-cols-7 gap-2 lg:gap-4 items-center p-4 transition-all duration-200 ${
                         isSelected
-                          ? "border-[#D3202D] bg-[#D3202D]/5 shadow-lg shadow-[#D3202D]/10"
-                          : "border-gray-700 hover:border-gray-600"
+                          ? "bg-[#D0E9FF] border-l-4 border-[#D3202D]" 
+                          : "bg-white hover:bg-gray-50"
                       }`}
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3">
-                            {/* <div className="text-2xl">{meal.icon}</div> */}
-                            <div>
-                              <div className="font-medium text-black">{meal.text} Bed</div>
-                              {/* <div className="text-xs text-gray-400">Meal Plan</div> */}
-                            </div>
+                      <div className="col-span-2 flex flex-col space-y-1">
+                          <div className="font-medium text-black">{getRoomDisplayName(roomTypeKey)}</div>
+                          <div className="text-xs text-gray-500">{room.roomCat || room.room_cat || ""}</div>
+                      </div>
+                      <div className="text-sm text-gray-700">
+                          {meal.text}
+                      </div> 
+                      <div className="text-sm text-gray-700 flex flex-col">
+                          <div>{cancellation.staticDate}</div>
+                      </div>
+                      <div className="text-sm text-black font-semibold flex flex-col">
+                          <div>{netPriceStatic}</div>
+                          <div className="text-[12px] text-gray-500">{surchargeStatic}</div>
+                      </div>
+                      <div className="flex flex-col items-center justify-between gap-2 md:gap-4 md:flex-row">
+                          <div className="text-xs text-green-700 font-medium whitespace-nowrap">
+                              {paymentTypeStatic} 
+                          </div>             
+                      </div>
+                      <div className="flex justify-end"> 
+                          <button
+                            onClick={() => handleRoomSelect(room)}
+                            className={`px-6 py-2 rounded-lg font-bold text-sm transition-all w-full md:w-auto flex items-center justify-center whitespace-nowrap ${
+                              isSelected
+                                ? "bg-red-500 text-white shadow-md"
+                                : "bg-[#D3202D] text-white"
+                            }`}
+                          >
+                            {isSelected ? (
+                              <>
+                                <Check className="w-5 h-5 inline-block mr-1" />
+                                Selected
+                              </>
+                            ) : (
+                              "Choose"
+                            )}
+                          </button>
                           </div>
-                          {/* <div className="flex items-center gap-3">
-                            <div className={cancellation.color}>{cancellation.icon}</div>
-                            <div>
-                              <div className={`font-medium ${cancellation.color}`}>{cancellation.text}</div>
-                              <div className="text-xs text-gray-400">{cancellation.desc}</div>
-                            </div>
-                          </div> */}
-                        </div>
-
-                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-center lg:text-left w-full">
-  <div className="text-md md:text-lg font-bold text-[#D3202D]">
-    {currency} {formatedPrice(room.price)}
-  </div>
-  {nights > 1 && (
-    <div className="text-xs text-gray-500 sm:ml-2">
-      ({currency} {getPricePerNightFormatted(room.price)} per night)
-    </div>
-  )}
-</div>
-
-                        <div className="flex flex-col items-center lg:items-end">
-  <button
-    onClick={() => handleRoomSelect(room)}
-    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all w-full md:w-auto ${
-      isSelected
-        ? "bg-[#D3202D]  text-white"
-        : "bg-[#D0E9FF]  text-black"
-    }`}
-  >
-    {isSelected ? (
-      <>
-        <Check className="w-5 h-5 inline-block mr-2" />
-        Selected
-      </>
-    ) : (
-      "Select Room"
-    )}
-  </button>
-  {roomMessages[room.id] && (
-    <div className="text-red-400 text-sm mt-2 text-center w-full">
-      {roomMessages[room.id]}
-    </div>
-  )}
-</div>
-</div>
-
-                      {(room.roomCode || room.mealCode) && (
-                        <div className="mt-4 pt-4 border-t border-gray-700 flex flex-wrap gap-4 text-xs text-gray-500">
-                          {room.roomCode && <span>Room Code: {room.roomCode}</span>}
-                          {room.mealCode && <span>Meal Code: {room.mealCode}</span>}
+                      {roomMessages[room.id] && (
+                        <div className="md:col-span-6 text-red-400 text-sm mt-2 text-center w-full">
+                          {roomMessages[room.id]}
                         </div>
                       )}
                     </div>
@@ -238,7 +226,6 @@ const StubaRoomList = ({
 };
 
 
-// MAIN COMPONENT – now super simple
 const RoomTypes = ({
   isNonStuba,
   allRooms = [],
@@ -252,7 +239,7 @@ const RoomTypes = ({
   selectedRoom,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
-
+console.log("romm",roomsToDisplay)
   const { searchParams } = useAccommodationsStore();
 
   const totalGuests = useMemo(() => {

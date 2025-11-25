@@ -75,10 +75,10 @@ const AccommodationInfoCard = ({
 
   return (
     <div className="lg:col-span-2">
-      <div className="bg-white rounded-xl p-6 sticky top-24 shadow-xl">
+      <div className="bg-[#D0E9FF] px-0 lg:px-24 lg:flex-col justify-end  p-6 sticky top-4 ">
         {/* Price */}
         <div className="mb-5">
-          <div className="text-lg lg:text-xl font-bold text-[#D3202D] mb-1">
+          <div className="text-lg lg:text-2xl font-bold text-[#D3202D] mb-1">
             {formattedPrice(lowestPrice)}
           </div>
           <div className="text-black text-sm flex items-center gap-1">
@@ -92,8 +92,7 @@ const AccommodationInfoCard = ({
               <>
                 <Check className="h-3.5 w-3.5" />
                 {/* Starting from · {nights} night{nights > 1 ? "s" : ""} */}
-                Total for {nights} night{nights > 1 ? "s " : ""}
-               for { totalGuests +" Guests"}
+                Total for {nights} night {nights > 1 ? "s " : ""},{ totalGuests +" Guests"}
               </>
             )}
           </div>
@@ -105,11 +104,11 @@ const AccommodationInfoCard = ({
             </div>
           )} */}
 
-          {!selectedRoom && allRooms.length > 0 && (
+          {/* {!selectedRoom && allRooms.length > 0 && (
             <div className="text-[#233BA0] text-xs mt-1.5">
               {roomCountText} available
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Selected Room */}
@@ -131,7 +130,7 @@ const AccommodationInfoCard = ({
         )}
 
         {/* Highlights */}
-        {highlights.length > 0 && (
+        {/* {highlights.length > 0 && (
           <div className="mb-5">
             <div className="flex flex-wrap gap-2">
               {highlights.slice(0, 2).map((h, i) => (
@@ -145,10 +144,10 @@ const AccommodationInfoCard = ({
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Amenities */}
-        {amenities.length > 0 && (
+        {/* {amenities.length > 0 && (
           <div className="mb-6">
             <h4 className="text-[#D3202D] text-sm font-medium mb-2.5">Top Amenities</h4>
             <div className="flex flex-wrap gap-1.5">
@@ -159,14 +158,14 @@ const AccommodationInfoCard = ({
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Buttons */}
         <div className="space-y-3">
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-[#D3202D] text-sm lg:text-lg text-white lg:py-2 py-3 px-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-[#D3202D] text-lg lg:text-xl text-white lg:py-2 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>

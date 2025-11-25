@@ -7,13 +7,21 @@ const ImageGallery = ({ hotelData }) => {
   // ✅ Extract and normalize images from hotelData
   const getImages = () => {
     let images = [];
-
-    // Try to get images from media field (parsed JSON array)
-    if (hotelData?.images && Array.isArray(hotelData.images)) {
-      images = hotelData.images.map(media => ({
-        url: getFullImageUrl(media.url),
-        thumb: media.thumb ? getFullImageUrl(media.thumb) : getFullImageUrl(media.url),
-        type: media.type || "Image"
+    let rawImages = hotelData?.media; 
+console.log("imggg",hotelData)
+    if (typeof rawImages === 'string') {
+      try {
+        rawImages = JSON.parse(rawImages);
+      } catch (error) {
+        console.error("Failed to parse images JSON:", error);
+        rawImages = null; 
+      }
+    }
+    if (rawImages && Array.isArray(rawImages) && rawImages.length > 0) {
+      images = rawImages.map(media => ({
+        url: getFullImageUrl(media.image),
+        thumb: getFullImageUrl(media.image),
+        type: media.name || "Image"
       }));
     }
     
@@ -40,22 +48,16 @@ const ImageGallery = ({ hotelData }) => {
 
   // ✅ Helper function to construct full image URLs
   const getFullImageUrl = (imagePath) => {
-
-    if (!imagePath) return "/images/placeholder-hotel.jpg";
-    
-    // If it's already a full URL, return as is
+    if (!imagePath) {
+      return "/images/placeholder-hotel.jpg";
+    }
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
     
-    // If it starts with /, it's probably a relative path from your server
-    if (imagePath.startsWith('/')) {
-      return `${$helpers.getEnv('CLOUDINARY_BASE_URL') || ''}${imagePath}`;
-    }
-     return `${$helpers.getEnv('CLOUDINARY_BASE_URL') || ''}${imagePath}`;
-    // Default fallback
-    return imagePath;
-  };
+    const baseUrl = ($helpers.getEnv('CLOUDINARY_BASE_URL') || '').replace(/\/$/, ''); // Get base URL and remove trailing slash
+    
+    return `${baseUrl}/${imagePath.replace(/^\//, '')}`;  };
 
   const images = getImages();
 
@@ -79,104 +81,91 @@ const ImageGallery = ({ hotelData }) => {
     return `${hotelName} - ${imageType} ${index + 1}`;
   };
 
-  return (
-    <div className="lg:col-span-4">
-      {/* Main Image Display */}
-      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-800">
-        <img
-          src={images[currentImageIndex]?.url}
-          alt={getImageAlt(images[currentImageIndex], currentImageIndex)}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            // Fallback if image fails to load
-            e.target.src = "/images/placeholder-hotel.jpg";
-          }}
-        />
-        
-        {/* Navigation Arrows */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
-              aria-label="Previous image"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
-              aria-label="Next image"
-            >
-              <ChevronRight size={24} />
-            </button>
-          </>
-        )}
-        
-        {/* Image Counter */}
-        {images.length > 1 && (
-          <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm z-10">
-            {currentImageIndex + 1} / {images.length}
-          </div>
-        )}
-        
-        {/* Image Dots Indicator */}
-        {images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1 z-10">
-            {images.map((_, index) => (
+ return (
+  <div className="lg:col-span-4">
+    <div className="flex flex-col lg:flex-row gap-6">
+
+      {/* Main Display */}
+      <div className="w-full lg:flex-[2]">
+        <div className="relative rounded-2xl overflow-hidden bg-black/10 shadow-xl backdrop-blur">
+
+          <img
+            src={images[currentImageIndex]?.url}
+            alt={getImageAlt(images[currentImageIndex], currentImageIndex)}
+            className="w-full h-[280px] md:h-[320px] lg:h-[420px] object-cover rounded-2xl"
+            onError={(e) => (e.target.src = "/images/placeholder-hotel.jpg")}
+          />
+
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent pointer-events-none" />
+
+          {/* Navigation Buttons */}
+          {images.length > 1 && (
+            <>
               <button
-                key={index}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentImageIndex ? "bg-white" : "bg-white/50"
-                }`}
-                aria-label={`Go to image ${index + 1}`}
-              />
-            ))}
+                onClick={prevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-lg text-white p-3 rounded-full shadow-lg transition"
+              >
+                <ChevronLeft size={22} />
+              </button>
+
+              <button
+                onClick={nextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-lg text-white p-3 rounded-full shadow-lg transition"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </>
+          )}
+
+          {/* Counter */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 right-4 text-white bg-black/40 px-3 py-1 rounded-full text-xs shadow">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+          )}
+        </div>
+
+        {/* Image Type Label */}
+        {/* {images[currentImageIndex]?.type && (
+          <div className="mt-3 text-center text-gray-300 font-light text-sm">
+            {images[currentImageIndex].type.replace(/([A-Z])/g, " $1").trim()}
           </div>
-        )}
+        )} */}
       </div>
-      
-      {/* Thumbnails Gallery */}
+
+      {/* Thumbnail Panel */}
       {images.length > 1 && (
-        <div className="mt-4">
-          <h4 className="text-white text-sm font-medium mb-2">Gallery ({images.length} images)</h4>
-          <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="lg:flex-[]">
+          {/* <h4 className="text-gray-300 text-sm mb-2 font-semibold">
+            Gallery ({images.length})
+          </h4> */}
+
+          <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent pr-1">
             {images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentImageIndex(index)}
-                className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                  index === currentImageIndex 
-                    ? "border-[#CC9A55] ring-2 ring-[#CC9A55]/30" 
-                    : "border-transparent hover:border-white/50"
+                className={`flex-shrink-0 w-24 lg:w-full h-24 rounded-xl overflow-hidden shadow-md transition border-2 ${
+                  index === currentImageIndex
+                    ? "border-[#D3202D] shadow-lg"
+                    : "border-transparent hover:border-white/40"
                 }`}
-                aria-label={`View ${image.type} image ${index + 1}`}
               >
                 <img
-                  src={image.thumb || image.url}
+                  src={image.thumb}
                   alt={getImageAlt(image, index)}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = "/images/placeholder-hotel.jpg";
-                  }}
+                  className="w-full h-full object-contain"
                 />
               </button>
             ))}
           </div>
         </div>
       )}
-
-      {/* Image Type Indicator */}
-      {images[currentImageIndex]?.type && images.length > 1 && (
-        <div className="mt-2 text-center">
-          <span className="text-gray-400 text-sm capitalize">
-            {images[currentImageIndex].type.replace(/([A-Z])/g, ' $1').trim()}
-          </span>
-        </div>
-      )}
     </div>
-  );
+  </div>
+);
+
 };
 
 export default ImageGallery;

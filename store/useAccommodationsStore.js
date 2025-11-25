@@ -360,10 +360,12 @@ fetchNonStubaAccommodation: async (hotelId) => {
       lowestPriceRoom: null
     };
 
-    console.log("✅ Normalized non-Stuba data:", normalized);
+    const result = { ...hotel, ...normalized };
+
+    console.log("✅ Normalized non-Stuba data:", result);
 
     set({ isLoading: false });
-    return normalized;
+    return result;
   } catch (err) {
     console.error("❌ fetchNonStubaAccommodation failed:", err);
     set({ isLoading: false, error: err.message });
