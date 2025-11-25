@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import useUserStore from '@/store/useAuthStore';
 
 function index() {
   const [showFlywire, setShowFlywire] = useState(false);
   const user = useUserStore((state) => state.user);
+  const router = useRouter();
+  const { msg } = router.query;
 
   const handleTryAgain = () => {
     if (!user) {
@@ -46,7 +49,7 @@ function index() {
             </h2>
             
             <p className="text-gray-600 mb-8 text-lg leading-relaxed">
-              We couldn't process your request. Please try again.
+              {msg ? decodeURIComponent(msg) : "We couldn't process your request. Please try again."}
             </p>
 
             {/* Help section with enhanced styling */}
@@ -121,5 +124,3 @@ function index() {
     </div>
   )
 }
-
-export default index;

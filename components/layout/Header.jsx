@@ -13,55 +13,12 @@ export default function Header() {
   const setLocale = useLanguageStore((state) => state.setLocale);
   const { token, logout, user } = useUserStore();
   const [hydrated, setHydrated] = useState(false);
-  
+  const router = useRouter()
   const [event, setEvent] = useState(null);
-
-  // Hydrate persisted store on mount
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    async function loadEvent() {
-      const data = await $helpers.getEventData();
-      setEvent(data);
-    }
-
-    loadEvent();
-  }, []);
-
-  useEffect(() => {
-    // Only check redirect after hydration is complete
-    if (!hydrated) return;
-    
-    const timer = setTimeout(() => {
-        if (!user) {
-          (async () => {
-            try {
-              if (typeof $helpers?.getGevmeRedirectURL === "function") {
-                const url =  $helpers.getGevmeRedirectURL();
-                if (url) window.location.assign(url);
-              } else {
-                console.error("helpers.getGevmeRedirectURL is not available");
-              }
-            } catch (err) {
-              console.error("Failed to get redirect URL", err);
-            }
-          })();
-        }
-      
-      console.log('user is here', user)
-    }, 500) 
-
-    return () => clearTimeout(timer)
-  }, [user, hydrated])
-  
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
-  const router = useRouter();
   const dropdownRef = useRef(null);
-
   const availableLocales = [
     {
       code: "en",
@@ -79,6 +36,47 @@ export default function Header() {
       flag: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1753790442/External%20Links/spain.png",
     },
   ];
+
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    async function loadEvent() {
+      const data = await $helpers.getEventData();
+      setEvent(data);
+    }
+
+    loadEvent();
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    const timer = setTimeout(() => {
+      if (!user && router.pathname !== '/error') {
+        (async () => {
+          try {
+            if (typeof $helpers?.getGevmeRedirectURL === "function") {
+              const url = $helpers.getGevmeRedirectURL();
+              if (url) window.location.assign(url);
+            } else {
+              console.error("helpers.getGevmeRedirectURL is not available");
+            }
+          } catch (err) {
+            console.error("Failed to get redirect URL", err);
+          }
+        })();
+      }
+      
+      console.log('user is here', user)
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [user, hydrated, router.pathname]);
+  
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
