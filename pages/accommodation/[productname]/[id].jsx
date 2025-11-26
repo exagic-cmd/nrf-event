@@ -529,6 +529,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
             allotments={accommodation.allotments}
             selectedRoom={selectedRoom}
             rooms={searchParams?.rooms || 1}
+            img={accommodation?.image}
           />
           <AccommodationMap hotelData={hotelData} />
          <AccommodationHotelDetail hotelData={accommodation}/>
