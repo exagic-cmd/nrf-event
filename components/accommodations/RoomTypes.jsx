@@ -5,6 +5,8 @@ import {
   Check, X, Utensils, Calendar, Shield, Bed,BathIcon ,Loader2,CameraIcon,Wifi,Tv,
   Star, MapPin, Clock
 } from "lucide-react";
+import { getFullImageUrl } from "@/utils/imageService";
+
 
 // === STUBA VERSION: List of Rooms ===
 // === REVISED STUBA VERSION: List of Rooms ===
@@ -17,6 +19,7 @@ const StubaRoomList = ({
   totalRooms = 1,
   totalRoomsRequested = 1,
   selectedRoom = null,
+  img
 }) => {
   const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
@@ -131,8 +134,13 @@ const StubaRoomList = ({
               
               <div className="p-4 bg-gray-50 flex items-center gap-4 border-b border-gray-200">
                  <div>
-                    <h3 className="text-xl font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
-                    <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs text-gray-500">
+                         <div className="flex gap-2">
+                           {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-20 h-16 rounded-lg object-cover mb-2" />}
+                         
+                    <h3 className="text-xl flex mt-4 font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
+                    
+                         </div>
+                         <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs text-gray-500">
                       <span><Bed className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.bedDetails || rooms?.[0]?.mealType || getRoomBedDetails(roomTypeKey) || "Bed info"}</span>
                       <span><Shield className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Smoking" : "Non-smoking"}</span>
                       <span><Wifi className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Free Wifi" :  "Wifi"}</span>
@@ -241,6 +249,7 @@ const RoomTypes = ({
   onProceedBooking,
   roomsSearched,
   selectedRoom,
+  img,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
 console.log("romm",roomsToDisplay)
@@ -325,6 +334,7 @@ console.log("romm",roomsToDisplay)
       totalRooms={roomsCount}
       totalRoomsRequested={totalRoomsRequested}
       selectedRoom={selectedRoom}
+      img={img}
     />
   );
 };
