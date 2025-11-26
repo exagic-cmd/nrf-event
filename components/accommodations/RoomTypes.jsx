@@ -5,6 +5,8 @@ import {
   Check, X, Utensils, Calendar, Shield, Bed,BathIcon ,Loader2,CameraIcon,Wifi,Tv,
   Star, MapPin, Clock
 } from "lucide-react";
+import { getFullImageUrl } from "@/utils/imageService";
+
 
 // === STUBA VERSION: List of Rooms ===
 // === REVISED STUBA VERSION: List of Rooms ===
@@ -17,13 +19,17 @@ const StubaRoomList = ({
   totalRooms = 1,
   totalRoomsRequested = 1,
   selectedRoom = null,
+  img
 }) => {
-  const [internalSelectedRoom, setInternalSelectedRoom] = useState(null);
+  const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
 
   useEffect(() => {
-    setInternalSelectedRoom(selectedRoom?.id || null);
-  }, [selectedRoom?.id]);
+    // The logic to initialize from `selectedRoom` prop is difficult if `selectedRoom.id` is not unique.
+    // A more robust solution would require a unique identifier for each room option from the parent.
+    // For now, we clear selection on room list change to avoid incorrect selections.
+    setInternalSelectedRoomKey(null);
+  }, [allRooms]);
 
   if (!allRooms.length) {
     return (
@@ -46,7 +52,7 @@ const StubaRoomList = ({
   const getRoomDisplayName = (key) => key.split(' | ')[0];
   const getRoomBedDetails = (key) => key.split(' | ')[1];
 
-  const handleRoomSelect = (room) => {
+  const handleRoomSelect = (room, uniqueKey) => {
     try {
       const result = onRoomSelect ? onRoomSelect(room) : { ok: true };
 
@@ -55,12 +61,12 @@ const StubaRoomList = ({
         : (typeof result === 'boolean' ? { ok: result } : result);
 
       if (!normalized.ok) {
-        setRoomMessages(prev => ({ ...prev, [room.id]: normalized.message || 'This room is not available on your selected dates' }));
-        setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[room.id]; return c; }), 5000);
+        setRoomMessages(prev => ({ ...prev, [uniqueKey]: normalized.message || 'This room is not available on your selected dates' }));
+        setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[uniqueKey]; return c; }), 5000);
         return;
       }
 
-      setInternalSelectedRoom(room.id);
+      setInternalSelectedRoomKey(uniqueKey);
 
       try {
         if (typeof onProceedBooking === 'function') {
@@ -107,8 +113,8 @@ const StubaRoomList = ({
   };
 
   return (
-    <div id="room-types-section" className="pr-0 lg:pr-12 py-2">
-      <div className="max-w-7xl mx-auto">
+    <div id="room-types-section" className="py-2">
+      <div className="">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
             <h2 className="text-2xl font-bold text-[#233BA0] mb-1">Available Rooms</h2>
@@ -122,14 +128,19 @@ const StubaRoomList = ({
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-5">
           {Object.entries(groupedRooms).map(([roomTypeKey, rooms]) => (
-            <div key={roomTypeKey} className="bg-white rounded-2xl p-0 border border-gray-700 overflow-hidden">
+            <div key={roomTypeKey} className="bg-white rounded-2xl p-0 overflow-hidden">
               
               <div className="p-4 bg-gray-50 flex items-center gap-4 border-b border-gray-200">
                  <div>
-                    <h3 className="text-xl font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
-                    <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs text-gray-500">
+                         <div className="flex gap-2">
+                           {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-20 h-16 rounded-lg object-cover mb-2" />}
+                         
+                    <h3 className="text-xl flex mt-4 font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
+                    
+                         </div>
+                         <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs text-gray-500">
                       <span><Bed className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.bedDetails || rooms?.[0]?.mealType || getRoomBedDetails(roomTypeKey) || "Bed info"}</span>
                       <span><Shield className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Smoking" : "Non-smoking"}</span>
                       <span><Wifi className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Free Wifi" :  "Wifi"}</span>
@@ -152,8 +163,9 @@ const StubaRoomList = ({
 
               {/* Rate Items */}
               <div className="space-y-0 divide-y divide-gray-200">
-                {rooms.map((room) => {
-                  const isSelected = internalSelectedRoom === room.id;
+                {rooms.map((room, index) => {
+                  const uniqueKey = `${room.id}-${index}`;
+                  const isSelected = internalSelectedRoomKey === uniqueKey;
                   const cancellation = getCancellationDisplay(room.cancellationPolicy);
                   const meal = getMealDisplay(room.mealType);
                   const netPriceStatic = `${currency} ${formatedPrice(room.price)}`;
@@ -162,11 +174,11 @@ const StubaRoomList = ({
 
                   return (
                     <div
-                      key={room.id}
+                      key={uniqueKey}
                       
                       className={`grid grid-cols-1 md:grid-cols-7 gap-2 lg:gap-4 items-center p-4 transition-all duration-200 ${
                         isSelected
-                          ? "bg-[#D0E9FF] border-l-4 border-[#D3202D]" 
+                          ? "border-l-4 border-[#D3202D]" 
                           : "bg-white hover:bg-gray-50"
                       }`}
                     >
@@ -191,7 +203,7 @@ const StubaRoomList = ({
                       </div>
                       <div className="flex justify-end"> 
                           <button
-                            onClick={() => handleRoomSelect(room)}
+                            onClick={() => handleRoomSelect(room, uniqueKey)}
                             className={`px-6 py-2 rounded-lg font-bold text-sm transition-all w-full md:w-auto flex items-center justify-center whitespace-nowrap ${
                               isSelected
                                 ? "bg-red-500 text-white shadow-md"
@@ -208,9 +220,9 @@ const StubaRoomList = ({
                             )}
                           </button>
                           </div>
-                      {roomMessages[room.id] && (
+                      {roomMessages[uniqueKey] && (
                         <div className="md:col-span-6 text-red-400 text-sm mt-2 text-center w-full">
-                          {roomMessages[room.id]}
+                          {roomMessages[uniqueKey]}
                         </div>
                       )}
                     </div>
@@ -237,6 +249,7 @@ const RoomTypes = ({
   onProceedBooking,
   roomsSearched,
   selectedRoom,
+  img,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
 console.log("romm",roomsToDisplay)
@@ -321,6 +334,7 @@ console.log("romm",roomsToDisplay)
       totalRooms={roomsCount}
       totalRoomsRequested={totalRoomsRequested}
       selectedRoom={selectedRoom}
+      img={img}
     />
   );
 };

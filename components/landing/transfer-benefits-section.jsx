@@ -44,6 +44,7 @@ export function TransferBenefitsSection() {
         const results = await fetchSearchResults({
           category_id: 3,
           is_b2c_only: 1,
+          is_active:1,
         });
 
         if (results?.length) {

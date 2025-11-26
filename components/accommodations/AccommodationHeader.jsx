@@ -48,7 +48,7 @@ const AccommodationHeader = ({ hotelData }) => {
   const locationText = getLocationText();
 
   return (
-    <div className="mb-0 lg:mb-8 mt-6">
+    <div className="mb-0 lg:mb-4 mt-6">
       <div className="flex flex-wrap items-center gap-2 mb-2">
         {/* Star Rating Badge */}
         {starRating && (
@@ -60,7 +60,7 @@ const AccommodationHeader = ({ hotelData }) => {
         
         {/* Hotel Type Badge */}
         {hotelData?.category_name && (
-          <span className="bg-[#a59d9d] text-black px-2 py-1 rounded-md text-sm">
+          <span className="bg-[#ffffff] text-black px-2 py-1 rounded-md text-sm">
             {hotelData.category_name}
           </span>
         )}

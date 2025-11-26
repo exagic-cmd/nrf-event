@@ -32,6 +32,7 @@ function DaytoursPage() {
         city_id: Number(city_id),
         name,
         is_b2c_only: 1,
+        is_active:1
       };
 
       console.log("🎯 Fetching Day Tours:", payload);
