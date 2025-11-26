@@ -8,16 +8,18 @@ import {
   ChevronDown,
   Plus,
   Minus,
+  Calendar,
+  Users,
 } from "lucide-react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
-
+import { useMediaQuery } from "@/hooks/use-media-query";
 const DEFAULT_REGION = {
   id: 4352,
   region_id: 18196,
   region_name: "Singapore",
-  name: "Singapore, All Hotels",
+  name: "Singapore",
 };
 
 export default function AccommodationFilter({ onSearch }) {
@@ -31,12 +33,17 @@ export default function AccommodationFilter({ onSearch }) {
   const [stars, setStars] = useState("");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+// selectedItem.type: 'region' | 'hotel'
 const [selectedItem, setSelectedItem] = useState({
-    ...DEFAULT_REGION,
-    type: 'region'
+  ...DEFAULT_REGION,
+  type: "region",
 });
 const [selectedRegion, setSelectedRegion] = useState(DEFAULT_REGION);
+
 const [search, setSearch] = useState(DEFAULT_REGION.name);
 
   // Debounce timer ref
@@ -57,17 +64,16 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     fetchNationalities();
   }, [fetchNationalities]);
 
- useEffect(() => {
-  //  if (debounceTimeoutRef.current) {
-  //     clearTimeout(debounceTimeoutRef.current);
-  //   }
-  if (search === DEFAULT_REGION.name) return; 
-
+useEffect(() => {
   if (debounceTimeoutRef.current) {
     clearTimeout(debounceTimeoutRef.current);
   }
 
-  const query = search.trim();
+  if (!isInputFocused) {
+    setShowDropdown(false);
+    return;
+  }
+  const query = search && search.trim() ? search.trim() : DEFAULT_REGION.region_name;
 
   if (!query) {
     setShowDropdown(false);
@@ -79,18 +85,12 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     setShowDropdown(true);
   }, 400);
 
-   // return () => {
-  //    if (debounceTimeoutRef.current) {
-   //     clearTimeout(debounceTimeoutRef.current);
-   //   }
-  //  };
-//  }, [search, fetchHotelsAndRegions]);
   return () => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
   };
-}, [search, fetchHotelsAndRegions]);
+}, [search, isInputFocused, fetchHotelsAndRegions]);
 
   // Client-side filtering of results (after API returns)
   const filtered = useMemo(() => {
@@ -172,6 +172,7 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     console.log("Selected Item:", item, "Type:", type);
     setSelectedItem({ ...item, type });
     setSearch(type === "hotel" ? item.title : item.region_name);
+    if (type === "region") setSelectedRegion(item);
     setShowDropdown(false);
   };
 
@@ -179,20 +180,24 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     const value = e.target.value;
     setSearch(value);
     if (!value.trim()) {
-   //  setSelectedItem(null);
-   // }
-      setSearch(DEFAULT_REGION.name);
-  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
-  return;
-}
-
+      setSearch("");
+      setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+      setSelectedRegion(DEFAULT_REGION);
+      return;
+    }
   };
 
   const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (!selectedItem) {
-    alert("Please select a hotel or destination from the dropdown");
+    setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+  }
+
+  const effectiveSelection = selectedItem || { ...DEFAULT_REGION, type: "region" };
+
+  if (!startDate || !endDate) {
+    alert("Please select both check-in and check-out dates");
     return;
   }
 
@@ -222,14 +227,12 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     ids: ''
   };
 
-  if (selectedItem.type === "hotel") {
-    searchPayload.hotel_id = selectedItem.stuba_id || false;
+  if (effectiveSelection.type === "hotel") {
+    searchPayload.hotel_id = effectiveSelection.stuba_id || false;
     searchPayload.region = false;
-    //if (selectedItem?.link_type_id != 9) {
-      searchPayload.ids = [selectedItem?.id];
-   // }
-  } else if (selectedItem.type === "region") {
-    searchPayload.region = selectedItem.region_id;
+    searchPayload.ids = [effectiveSelection?.id];
+  } else if (effectiveSelection.type === "region") {
+    searchPayload.region = effectiveSelection.region_id || DEFAULT_REGION.region_id;
     searchPayload.hotel_id = false;
   }
 
@@ -259,17 +262,31 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
       <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">
-          <div className="rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 flex items-center gap-2">
-            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-[#D3202D] flex-shrink-0" />
+          <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+            <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
             <input
               type="text"
               value={search}
-              readOnly
               onChange={handleInputChange}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
               placeholder="Search hotels or regions..."
               className="w-full bg-transparent outline-none text-base sm:text-lg"
               autoComplete="off"
             />
+            {search && search !== DEFAULT_REGION.name && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch(DEFAULT_REGION.name);
+                  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+                  setSelectedRegion(DEFAULT_REGION);
+                }}
+                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
             {/* {search && (
               <button
                 type="button"
@@ -353,44 +370,54 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
         </div>
           {/* Date Range Picker - SINGLE */}
 <div className="md:col-span-4 relative">
-  <DatePicker
-    selected={startDate}
-    onChange={handleStartDateChange}
-    startDate={startDate}
-    endDate={endDate}
-    selectsRange
-    minDate={new Date()}
-    placeholderText="Check-in - Check-out"
-    className="w-full rounded-xl md:rounded-2xl border border-gray-200 px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none cursor-pointer"
-    wrapperClassName="w-full"
-    dateFormat="MMM d, yyyy"
-    monthsShown={window.innerWidth >= 768 ? 2 : 1}
-    showPopperArrow={false}
-    onCalendarOpen={handleCalendarOpen}
-    customInput={
-      <div className="flex items-center justify-between pr-8">
-        <span className="truncate font-medium">
-          {startDate ? (
-            <>
-              {startDate.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })}
-              {endDate ? (
-                <> → {endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</>
-              ) : (
-                " → Add checkout"
-              )}
-            </>
-          ) : (
-            "Check-in - Check-out"
-          )}
-        </span>
-        <ChevronDown className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-      </div>
-    }
-  />
-</div>
+          <div className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2">
+            <Calendar className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+            <DatePicker
+              selected={startDate}
+              onChange={handleStartDateChange}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              minDate={new Date()}
+              placeholderText="Check-in - Check-out"
+              className="w-full bg-transparent outline-none cursor-pointer"
+              wrapperClassName="w-full"
+              dateFormat="MMM d, yyyy"
+              monthsShown={isDesktop ? 2 : 1}
+              showPopperArrow={false}
+              onCalendarOpen={handleCalendarOpen}
+              customInput={
+                <div className="flex items-center justify-between w-full">
+                  <span className="truncate font-medium">
+                    {startDate ? (
+                      <>
+                        {startDate.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                        {endDate ? (
+                          <>
+                            {" "}
+                            →{" "}
+                            {endDate.toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </>
+                        ) : (
+                          " → Add checkout"
+                        )}
+                      </>
+                    ) : (
+                      "Check-in - Check-out"
+                    )}
+                  </span>
+                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                </div>
+              }
+            />
+          </div>
+        </div>
         {/* Check-in */}
         {/* <div className="md:col-span-2 relative">
           <DatePicker
@@ -434,13 +461,14 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
           <button
             type="button"
             onClick={() => setShowGuestPopup(!showGuestPopup)}
-            className="w-full rounded-xl md:rounded-2xl border border-gray-200 bg-white px-3 py-2.5 md:py-2 text-base sm:text-lg flex items-center justify-between"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2"
           >
-            <span className="truncate">
+            <Users className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+            <span className="truncate flex-grow text-left">
               {totalGuests} Guest{totalGuests > 1 ? "s" : ""} • {rooms.length} Room
               {rooms.length > 1 ? "s" : ""}
             </span>
-            <ChevronDown className="h-4 w-4 flex-shrink-0" />
+            <ChevronDown className="h-5 w-5 flex-shrink-0" />
           </button>
 
           {/* Guest Popup - Mobile Optimized */}
@@ -624,7 +652,7 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
       <div className="col-span-2">
           <button
             type="submit"
-            className="min-w-full rounded-xl  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
+            className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
           >
             Search
           </button>

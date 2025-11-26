@@ -282,7 +282,7 @@ export default function SearchFilterCard({
     <button
   type="button"
   onClick={() => onSetTab?.(tab.id)}
-  className={`p-2 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-md font-semibold transition ${
+  className={`p-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-md font-semibold transition ${
     filterActiveTab === tab.id
       ? "bg-[#D3202D] text-white sm:py-3.5"
       : "bg-[#D0E9FF] text-black "
@@ -303,130 +303,122 @@ export default function SearchFilterCard({
           ))}
       </div>
 <div className="min-h-[200px] transition-all duration-500 ease-in-out">
-     {/* ====== TRANSFERS ====== */}
-      {filterActiveTab === 2 && (
-        <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
-          <div className="flex items-center gap-6 px-2 pt-1">
-            <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("one-way")}>
-              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "one-way" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
-              One way
-            </label>
-            <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("round-trip")}>
-              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "round-trip" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
-              Round trip
-            </label>
-          </div>
-
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-12 gap-3">
-            <div className="md:col-span-10 space-y-3">
-              <div className="rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3">
-                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-2">
-                  {/* Pick-up */}
-                  <div className="md:col-span-5 relative">
-                    <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">Pick-up point</label>
-                    <div className="flex items-center gap-2 pt-2">
-                      <MapPin className="h-5 w-5 text-[#D3202D]" />
-                      <input
-                        type="text"
-                        value={pickupQuery}
-                        placeholder="Singapore Changi Airport"
-                        onChange={(e) => onPickupChange(e.target.value)}
-                        className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none"
-                      />
-                      {pickupQuery && (
-                        <button type="button" onClick={() => onPickupChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear pick-up">
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-
-                    {showPickupDropdown && pickupQuery && filteredPickup.length > 0 && !selectedPickup && (
-                      <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
-                        {filteredPickup.map((p) => (
-                          <button
-                            key={p.id || p.name}
-                            type="button"
-                            onMouseDown={() => onPickupSelect(p)}
-                            className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-                          >
-                            <MapPin className="h-4 w-4 text-[#D3202D]" />
-                            <span className="text-sm text-black">{p.name || p.title}</span>
-                          </button>
-                        ))}
-                        {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="hidden md:flex md:col-span-1 items-center justify-center">
-                    <button type="button" onClick={swapLocations} className="rounded-full p-2 hover:bg-gray-100" title="Swap">
-                      <ArrowLeftRight className="h-5 w-5 text-gray-400" />
-                    </button>
-                  </div>
-
-                  {/* Dropoff */}
-                  <div className="md:col-span-6 relative">
-                    <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">To</label>
-                    <div className="flex items-center gap-2 pt-2">
-                      <Building className="h-5 w-5 text-[#D3202D]" />
-                      <input
-                        type="text"
-                        value={dropoffQuery}
-                        onChange={(e) => onDropoffChange(e.target.value)}
-                                                placeholder="Hotel, or Address"
-                                                disabled={!selectedPickup && !dropoffQuery}
-                                                className="w-full bg-transparent placeholder:text-gray-400 text-sm md:text-base outline-none disabled:text-gray-400"                      />
-                      {dropoffQuery && (
-                        <button type="button" onClick={() => onDropoffChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear drop-off">
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-
-                    {showDropoffDropdown && selectedPickup && dropoffQuery && filteredDropoff.length > 0 && !selectedDropoff && (
-                      <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
-                        {filteredDropoff.map((d) => (
-                          <button
-                            key={d.id || d.name}
-                            type="button"
-                            onMouseDown={() => {
-                              setSelectedDropoff(d);
-                              setDropoffQuery(d.name || d.title);
-                              setShowDropoffDropdown(false);
-                            }}
-                            className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-                          >
-                            <Building className="h-4 w-4 text-[#D3202D]" />
-                            <span className="text-sm text-black">{d.name || d.title}</span>
-                          </button>
-                        ))}
-                        {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-2 mt-1 flex items-stretch">
-              <button
-  type="submit"
-  className="w-full self-end h-auto md:h-[52px] rounded-xl bg-[#D3202D] text-white font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-[#D3202D] transition shadow"
-  disabled={isLoading}
->
-  {isLoading ? "Searching..." : "Search"}
-</button>
-
-
-            </div>
-            <div className="md:col-span-12 right-0 flex justify-end gap-1">
-              <span className="text-xs text-gray-400">Powered by </span>
-              <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763694508/External%20Links/toureast_logo.png" alt="Toureast Logo" />
-            </div>
-          </div>
-        </form>
-      )}
-
+           {/* ====== TRANSFERS ====== */}
+           {filterActiveTab === 2 && (
+             <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+               <div className="flex items-center gap-6 px-2 pt-1">
+                 <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("one-way")}>
+                   <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "one-way" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
+                   One way
+                 </label>
+                 <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("round-trip")}>
+                   <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "round-trip" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
+                   Round trip
+                 </label>
+               </div>
+     
+               <div className="mt-3 grid grid-cols-1 md:grid-cols-12 gap-3">
+                 {/* Pick-up */}
+                 <div className="md:col-span-5 relative">
+                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+                     <MapPin className="h-5 w-5 text-[#D3202D]" />
+                     <input
+                       type="text"
+                       value={pickupQuery}
+                       placeholder="Pick-up point (e.g. Airport)"
+                       onChange={(e) => onPickupChange(e.target.value)}
+                       className="w-full bg-transparent placeholder:text-gray-400 text-base outline-none"
+                     />
+                     {pickupQuery && (
+                       <button type="button" onClick={() => onPickupChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear pick-up">
+                         <X className="h-4 w-4" />
+                       </button>
+                     )}
+                   </div>
+     
+                   {showPickupDropdown && pickupQuery && filteredPickup.length > 0 && !selectedPickup && (
+                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
+                       {filteredPickup.map((p) => (
+                         <button
+                           key={p.id || p.name}
+                           type="button"
+                           onMouseDown={() => onPickupSelect(p)}
+                           className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                         >
+                           <MapPin className="h-4 w-4 text-[#D3202D]" />
+                           <span className="text-sm text-black">{p.name || p.title}</span>
+                         </button>
+                       ))}
+                       {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
+                     </div>
+                   )}
+                 </div>
+     
+                 {/* Swap Button */}
+                 {/* <div className="hidden md:flex md:col-span-1 items-center justify-center">
+                   <button type="button" onClick={swapLocations} className="rounded-full p-2 hover:bg-gray-100" title="Swap">
+                     <ArrowLeftRight className="h-5 w-5 text-gray-400" />
+                   </button>
+                 </div> */}
+     
+                 {/* Drop-off */}
+                 <div className="md:col-span-5 relative">
+                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+                     <Building className="h-5 w-5 text-[#D3202D]" />
+                     <input
+                       type="text"
+                       value={dropoffQuery}
+                       onChange={(e) => onDropoffChange(e.target.value)}
+                       placeholder="Drop-off point (e.g. Hotel)"
+                       disabled={!selectedPickup && !dropoffQuery}
+                       className="w-full bg-transparent placeholder:text-gray-400 text-base outline-none disabled:text-gray-400"
+                     />
+                     {dropoffQuery && (
+                       <button type="button" onClick={() => onDropoffChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear drop-off">
+                         <X className="h-4 w-4" />
+                       </button>
+                     )}
+                   </div>
+     
+                   {showDropoffDropdown && selectedPickup && dropoffQuery && filteredDropoff.length > 0 && !selectedDropoff && (
+                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
+                       {filteredDropoff.map((d) => (
+                         <button
+                           key={d.id || d.name}
+                           type="button"
+                           onMouseDown={() => {
+                             setSelectedDropoff(d);
+                             setDropoffQuery(d.name || d.title);
+                             setShowDropoffDropdown(false);
+                           }}
+                           className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                         >
+                           <Building className="h-4 w-4 text-[#D3202D]" />
+                           <span className="text-sm text-black">{d.name || d.title}</span>
+                         </button>
+                       ))}
+                       {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
+                     </div>
+                   )}
+                 </div>
+                 
+                 {/* Search button */}
+                 <div className="md:col-span-2 flex items-stretch">
+                   <button
+                     type="submit"
+                     className="w-full self-end h-auto rounded-lg bg-[#D3202D] text-white font-semibold px-3 py-2.5 hover:bg-[#D3202D] transition shadow"
+                     disabled={isLoading}
+                   >
+                     {isLoading ? "Searching..." : "Search"}
+                   </button>
+                 </div>
+                 <div className="md:col-span-12 right-0 flex justify-end gap-1">
+                   <span className="text-xs text-gray-400">Powered by </span>
+                   <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763694508/External%20Links/toureast_logo.png" alt="Toureast Logo" />
+                 </div>
+               </div>
+             </form>
+           )}
       {/* ====== DAY TOURS ====== */}
       {filterActiveTab === 3 && (
         <form onSubmit={handleSubmit} className="rounded-2xl bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
@@ -559,15 +551,15 @@ export default function SearchFilterCard({
             </div> */}
 
             {/* SEARCH INPUT */}
-            <div className="md:col-span-10 relative rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex flex-col">
-              <div className="flex items-center">
-                <Search className="h-5 w-5 text-[#D3202D] mr-2" />
+            <div className="md:col-span-10 relative">
+              <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+                <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   placeholder="Search for tours..."
-                  className="w-full bg-transparent text-sm md:text-base outline-none placeholder:text-gray-400"
+                  className="w-full bg-transparent text-base outline-none placeholder:text-gray-400"
                 />
                 {searchQuery && (
                   <button
@@ -576,7 +568,7 @@ export default function SearchFilterCard({
                       setSearchQuery("");
                       setSuggestedResults([]);
                     }}
-                    className="ml-2 text-gray-400 hover:text-gray-600"
+                    className="ml-auto text-gray-400 hover:text-gray-600"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -609,7 +601,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="w-full self-end h-auto md:h-[52px] rounded-xl bg-[#D3202D] text-white font-semibold px-3 py-2 md:px-4 md:py-3.5 hover:bg-[#D3202D] transition shadow"
+                className="w-full self-end h-auto rounded-xl bg-[#D3202D] text-white font-semibold px-3 py-2.5 hover:bg-[#D3202D] transition shadow"
                 disabled={isLoading}
               >
                 {isLoading ? "Searching..." : "Search"}
