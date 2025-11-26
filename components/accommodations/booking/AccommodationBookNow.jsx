@@ -495,15 +495,15 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
             const roomNumber = roomIdx + 1;
 
             return (
-              <div key={roomIdx} className="border border-gray-600 rounded-xl p-6 bg-gray-750">
-                <h3 className="text-xl font-bold text-black mb-5">
+              <div key={roomIdx} className=" rounded-xl p-0 md:p-4 ">
+                <h3 className="text-sm md:text-lg font-bold text-black mb-5">
                   Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
                   {room.children?.length > 0 && `, ${room.children.length} Child${room.children.length > 1 ? "ren" : ""}`}
                 </h3>
 
                 {/* Adults */}
                 {roomGuests.adults.map((adult, i) => (
-                  <div key={`adult-${i}`} className="bg-[#D0E9FF] rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div key={`adult-${i}`} className="rounded-lg p-0 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">Title *</label>
                       <select

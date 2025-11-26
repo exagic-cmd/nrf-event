@@ -16,6 +16,8 @@ import AccommodationGallery from "@/components/accommodations/ImageGallery";
 import AccommodationInfoCard from "@/components/accommodations/AccommodationInfoCard";
 import AccommodationRooms from "@/components/accommodations/RoomTypes";
 import AccommodationMap from "@/components/accommodations/AccommodationMapSection";
+import AccommodationHotelDetail from "@/components/accommodations/AccommodationHotelDetail.jsx";
+import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
 
 export async function getServerSideProps({ locale }) {
@@ -454,7 +456,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   if (loading) {
     return (
       <Layout>
-        <div className="flex bg-black items-center justify-center min-h-screen">
+        <div className="flex bg-[#D0E9FF] items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -506,13 +508,13 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   />
 </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-1 lg:mr-24 gap-6 lg:gap-8 mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-1 w-full gap-6 lg:gap-8 mt-2">
             <AccommodationGallery hotelData={accommodation} />
         
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
+        <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-2">
           <AccommodationRooms
             isNonStuba={isNonStuba}
             allRooms={accommodation.normalizedRoomData}
@@ -529,6 +531,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
             rooms={searchParams?.rooms || 1}
           />
           <AccommodationMap hotelData={hotelData} />
+         <AccommodationHotelDetail hotelData={accommodation}/>
         </div>
       </div>
 

@@ -90,7 +90,7 @@ const AccommodationInfoCard = ({
               </>
             ) : (
               <>
-                <Check className="h-3.5 w-3.5" />
+                {/* <Check className="h-3.5 w-3.5" /> */}
                 {/* Starting from · {nights} night{nights > 1 ? "s" : ""} */}
                 Total for {nights} night {nights > 1 ? "s " : ""},{ totalGuests +" Guests"}
               </>
@@ -113,7 +113,7 @@ const AccommodationInfoCard = ({
 
         {/* Selected Room */}
         {selectedRoom && (
-          <div className="mb-5 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-[#D3202D]/30 rounded-xl">
+          <div className="mb-2 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-[#D3202D]/30 rounded-xl">
             <div className="text-[#233BA0] font-semibold text-sm mb-1">
               {selectedRoom.roomType}
             </div>
