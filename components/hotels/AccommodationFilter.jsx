@@ -19,7 +19,7 @@ const DEFAULT_REGION = {
   id: 4352,
   region_id: 18196,
   region_name: "Singapore",
-  name: "Singapore, All Hotels",
+  name: "Singapore",
 };
 
 export default function AccommodationFilter({ onSearch }) {
@@ -33,14 +33,17 @@ export default function AccommodationFilter({ onSearch }) {
   const [stars, setStars] = useState("");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
+// selectedItem.type: 'region' | 'hotel'
 const [selectedItem, setSelectedItem] = useState({
-    ...DEFAULT_REGION,
-    type: 'region'
+  ...DEFAULT_REGION,
+  type: "region",
 });
 const [selectedRegion, setSelectedRegion] = useState(DEFAULT_REGION);
+
 const [search, setSearch] = useState(DEFAULT_REGION.name);
 
   // Debounce timer ref
@@ -61,17 +64,16 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     fetchNationalities();
   }, [fetchNationalities]);
 
- useEffect(() => {
-  //  if (debounceTimeoutRef.current) {
-  //     clearTimeout(debounceTimeoutRef.current);
-  //   }
-  if (search === DEFAULT_REGION.name) return; 
-
+useEffect(() => {
   if (debounceTimeoutRef.current) {
     clearTimeout(debounceTimeoutRef.current);
   }
 
-  const query = search.trim();
+  if (!isInputFocused) {
+    setShowDropdown(false);
+    return;
+  }
+  const query = search && search.trim() ? search.trim() : DEFAULT_REGION.region_name;
 
   if (!query) {
     setShowDropdown(false);
@@ -83,18 +85,12 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     setShowDropdown(true);
   }, 400);
 
-   // return () => {
-  //    if (debounceTimeoutRef.current) {
-   //     clearTimeout(debounceTimeoutRef.current);
-   //   }
-  //  };
-//  }, [search, fetchHotelsAndRegions]);
   return () => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
   };
-}, [search, fetchHotelsAndRegions]);
+}, [search, isInputFocused, fetchHotelsAndRegions]);
 
   // Client-side filtering of results (after API returns)
   const filtered = useMemo(() => {
@@ -176,6 +172,7 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     console.log("Selected Item:", item, "Type:", type);
     setSelectedItem({ ...item, type });
     setSearch(type === "hotel" ? item.title : item.region_name);
+    if (type === "region") setSelectedRegion(item);
     setShowDropdown(false);
   };
 
@@ -183,20 +180,24 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     const value = e.target.value;
     setSearch(value);
     if (!value.trim()) {
-   //  setSelectedItem(null);
-   // }
-      setSearch(DEFAULT_REGION.name);
-  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
-  return;
-}
-
+      setSearch("");
+      setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+      setSelectedRegion(DEFAULT_REGION);
+      return;
+    }
   };
 
   const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (!selectedItem) {
-    alert("Please select a hotel or destination from the dropdown");
+    setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+  }
+
+  const effectiveSelection = selectedItem || { ...DEFAULT_REGION, type: "region" };
+
+  if (!startDate || !endDate) {
+    alert("Please select both check-in and check-out dates");
     return;
   }
 
@@ -226,14 +227,12 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     ids: ''
   };
 
-  if (selectedItem.type === "hotel") {
-    searchPayload.hotel_id = selectedItem.stuba_id || false;
+  if (effectiveSelection.type === "hotel") {
+    searchPayload.hotel_id = effectiveSelection.stuba_id || false;
     searchPayload.region = false;
-    //if (selectedItem?.link_type_id != 9) {
-      searchPayload.ids = [selectedItem?.id];
-   // }
-  } else if (selectedItem.type === "region") {
-    searchPayload.region = selectedItem.region_id;
+    searchPayload.ids = [effectiveSelection?.id];
+  } else if (effectiveSelection.type === "region") {
+    searchPayload.region = effectiveSelection.region_id || DEFAULT_REGION.region_id;
     searchPayload.hotel_id = false;
   }
 
@@ -268,12 +267,26 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
             <input
               type="text"
               value={search}
-              readOnly
               onChange={handleInputChange}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
               placeholder="Search hotels or regions..."
               className="w-full bg-transparent outline-none text-base sm:text-lg"
               autoComplete="off"
             />
+            {search && search !== DEFAULT_REGION.name && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch(DEFAULT_REGION.name);
+                  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+                  setSelectedRegion(DEFAULT_REGION);
+                }}
+                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
             {/* {search && (
               <button
                 type="button"
