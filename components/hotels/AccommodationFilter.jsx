@@ -226,13 +226,12 @@ useEffect(() => {
     stars,
     ids: ''
   };
+  searchPayload.region = DEFAULT_REGION.region_id;
 
   if (effectiveSelection.type === "hotel") {
     searchPayload.hotel_id = effectiveSelection.stuba_id || false;
-    searchPayload.region = false;
     searchPayload.ids = [effectiveSelection?.id];
   } else if (effectiveSelection.type === "region") {
-    searchPayload.region = effectiveSelection.region_id || DEFAULT_REGION.region_id;
     searchPayload.hotel_id = false;
   }
 

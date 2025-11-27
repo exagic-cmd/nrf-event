@@ -16,7 +16,7 @@ const AccommodationHeader = ({ hotelData }) => {
     //   return hotelData.location;
     // }
     console.log('hotelData',hotelData)
-     return `${hotelData?.address}, ${hotelData?.city}, ${hotelData?.country}`;
+     return ` ${hotelData?.country}`;
     return hotelData?.address
     return "Location information not available";
   };
@@ -43,24 +43,32 @@ const AccommodationHeader = ({ hotelData }) => {
     return null;
   };
 
+  const renderStars = (count) => {
+    const stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push(<Star key={i} size={14} className="text-yellow-500 fill-yellow-500" />);
+    }
+    return stars;
+  };
+
+
+
   const starRating = getStarRating();
   const ratingDescription = getRatingDescription();
   const locationText = getLocationText();
 
   return (
-    <div className="mb-0 lg:mb-4 mt-6">
+    <div className="mb-0 lg:mb-2 mt-2">
       <div className="flex flex-wrap items-center gap-2 mb-2">
         {/* Star Rating Badge */}
         {starRating && (
-          <div className="flex items-center gap-1 bg-yellow-500 text-white px-2 py-1 rounded-md text-sm">
-            <Star size={14} />
-            <span>{starRating}</span>
-          </div>
+          <div className="flex items-center gap-1 px-2 py-1 rounded-md text-sm">
+             {renderStars(hotelData?.stars || rating?.score)}          </div>
         )}
         
         {/* Hotel Type Badge */}
         {hotelData?.category_name && (
-          <span className="bg-[#ffffff] text-black px-2 py-1 rounded-md text-sm">
+          <span className="bg-[#dadada] text-black px-2 py-1 rounded-md text-sm">
             {hotelData.category_name}
           </span>
         )}
@@ -74,7 +82,7 @@ const AccommodationHeader = ({ hotelData }) => {
       </div>
       
       {/* Hotel Title */}
-      <h1 className="text-xl md:text-3xl font-bold text-black mb-4">
+      <h1 className="text-xl md:text-3xl font-bold text-black mb-2">
         {hotelData?.title || hotelData?.name || "Accommodation"}
       </h1>
       

@@ -60,7 +60,7 @@ export default function Header() {
           try {
             if (typeof $helpers?.getGevmeRedirectURL === "function") {
               const url = $helpers.getGevmeRedirectURL();
-              if (url) window.location.assign(url);
+          //    if (url) window.location.assign(url);
             } else {
               console.error("helpers.getGevmeRedirectURL is not available");
             }
