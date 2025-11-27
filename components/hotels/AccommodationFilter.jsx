@@ -226,13 +226,12 @@ useEffect(() => {
     stars,
     ids: ''
   };
+  searchPayload.region = DEFAULT_REGION.region_id;
 
   if (effectiveSelection.type === "hotel") {
     searchPayload.hotel_id = effectiveSelection.stuba_id || false;
-    searchPayload.region = false;
     searchPayload.ids = [effectiveSelection?.id];
   } else if (effectiveSelection.type === "region") {
-    searchPayload.region = effectiveSelection.region_id || DEFAULT_REGION.region_id;
     searchPayload.hotel_id = false;
   }
 
@@ -258,7 +257,7 @@ useEffect(() => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-5 mt-2 lg:mt-8">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-5 mt-2 lg:mt-4">
       <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">

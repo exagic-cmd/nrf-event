@@ -6,6 +6,7 @@ import {
   Star, MapPin, Clock
 } from "lucide-react";
 import { getFullImageUrl } from "@/utils/imageService";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 
 // === STUBA VERSION: List of Rooms ===
@@ -23,6 +24,7 @@ const StubaRoomList = ({
 }) => {
   const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
+  const isMediumOrUp = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     // The logic to initialize from `selectedRoom` prop is difficult if `selectedRoom.id` is not unique.
@@ -98,12 +100,12 @@ const StubaRoomList = ({
   const getCancellationDisplay = (policy) => {
     const p = (policy || "").toLowerCase();
     if (p.includes("nonrefundable") || p.includes("non-refundable")) {
-      return { text: "Non-Refundable", color: "text-red-400", icon: <X className="w-4 h-4" />, desc: "No refund if cancelled", staticDate: "No" };
+      return { text: "Non-Refundable", color: "text-red-400", icon: <X className="lg:w-5 lg:h-5 h-3 w-3" />, desc: "No refund if cancelled", staticDate: "No" };
     }
     if (p.includes("refundable") || p.includes("free")) {
-      return { text: "Free Cancellation", color: "text-green-400", icon: <Check className="w-4 h-4" />, desc: "Cancel for free", staticDate: "SGD 0 until Nov 26" }; 
+      return { text: "Free Cancellation", color: "text-green-400", icon: <Check className="lg:w-5 lg:h-5 h-3 w-3" />, desc: "Cancel for free", staticDate: "SGD 0 until Nov 26" }; 
     }
-    return { text: policy || "Check Policy", color: "text-yellow-400", icon: <Shield className="w-4 h-4" />, desc: "See terms", staticDate: "Check Policy" };
+    return { text: policy || "Check Policy", color: "text-yellow-400", icon: <Shield className="lg:w-5 lg:h-5 h-3 w-3" />, desc: "See terms", staticDate: "Check Policy" };
   };
 
   const getMealDisplay = (mealType) => {
@@ -123,112 +125,168 @@ const StubaRoomList = ({
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm text-white bg-gray-800 px-4 py-2 rounded-full">
-            <Calendar className="w-4 h-4" />
+            <Calendar className="lg:w-5 lg:h-5 h-3 w-3" />
             <span>{nights} night{nights > 1 ? "s" : ""}</span>
           </div>
         </div>
 
         <div className="space-y-5">
           {Object.entries(groupedRooms).map(([roomTypeKey, rooms]) => (
-            <div key={roomTypeKey} className="bg-white rounded-2xl p-0 overflow-hidden">
+            <div key={roomTypeKey} className="bg-white rounded-2xl p-0 overflow-hidden border border-gray-200">
               
-              <div className="p-4 bg-gray-50 flex items-center gap-4 border-b border-gray-200">
-                 <div>
-                         <div className="flex gap-2">
-                           {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-20 h-16 rounded-lg object-cover mb-2" />}
-                         
-                    <h3 className="text-xl flex mt-4 font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
-                    
-                         </div>
-                         <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs text-gray-500">
-                      <span><Bed className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.bedDetails || rooms?.[0]?.mealType || getRoomBedDetails(roomTypeKey) || "Bed info"}</span>
-                      <span><Shield className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Smoking" : "Non-smoking"}</span>
-                      <span><Wifi className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Free Wifi" :  "Wifi"}</span>
-                      <span><CameraIcon className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "Safe" : "Safe"}</span>
-                      <span><Tv className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.nonSmoking === false ? "TV" : "TV"}</span>
-                      <span><BathIcon className="w-3 h-3 inline mr-1"/> {rooms?.[0]?.privateBathroom === false ? "Shared Bathroom" : "Private Bathroom"}</span>
+              <div className="bg-white relative  lg:border-b border-gray-200 p-0">
+                <div className="flex gap-4 ">
+                    <div className="flex-shrink-0">
+                        {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-32 h-24 object-cover" />}
                     </div>
-                  </div>
+                    <div>
+                        <h3 className="text-xl pt-3 font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
+                    </div>
+                </div>
+            
+                <div className="md:relative mt-4">
+                    <div className="flex md:absolute bottom-0 left-[145px] items-center gap-2 overflow-x-auto no-scrollbar pb-2 ">
+                        <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <Bed className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {rooms?.[0]?.bedDetails || rooms?.[0]?.mealType || getRoomBedDetails(roomTypeKey) || "Bed info"}
+                        </span>
+                        <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <Shield className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {rooms?.[0]?.nonSmoking === false ? "Smoking" : "Non-smoking"}
+                        </span>
+                        <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <Wifi className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {rooms?.[0]?.nonSmoking === false ? "Free Wifi" :  "Wifi"}
+                        </span>
+                        <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <CameraIcon className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {rooms?.[0]?.nonSmoking === false ? "Safe" : "Safe"}
+                        </span>
+                         <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <Tv className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {rooms?.[0]?.nonSmoking === false ? "TV" : "TV"}
+                        </span>
+                         <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <BathIcon className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {rooms?.[0]?.privateBathroom === false ? "Shared Bathroom" : "Private Bathroom"}
+                        </span>
+                    </div>
+                    <div className="absolute top-0 right-0 bottom-2 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none lg:hidden"></div>
+                </div>
+                <style jsx>{`
+                    .no-scrollbar::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .no-scrollbar {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+                `}</style>
               </div>
 
               {/* Rate Table Header */}
-              <div className="hidden lg:grid grid-cols-7 text-xs font-bold uppercase text-gray-500 bg-gray-100 border-b border-gray-200 py-3 px-4">
-                  <div className="col-span-2">Room</div>
-                  <div>Meals</div>
-                  <div>Cancellation</div>
-                  <div>NET Price</div>
-                  <div>Payment type</div>
-                  <div></div>
+              <div className="hidden lg:grid grid-cols-6 text-xs uppercase mt-2 text-black font-bold bg-[#dcdcdc] border-y border-gray-200">
+                  <div className="col-span-2 py-3 px-4 border-r border-gray-500">Room</div>
+                  <div className="py-3 px-4 border-r border-gray-500">Meals</div>
+                  <div className="py-3 px-4 border-r border-gray-500">Cancellation</div>
+                  <div className="py-3 px-4 border-r border-gray-500">NET Price</div>
+                  <div className="col-span-1 py-3 px-4"></div>
               </div>
 
               {/* Rate Items */}
-              <div className="space-y-0 divide-y divide-gray-200">
-                {rooms.map((room, index) => {
-                  const uniqueKey = `${room.id}-${index}`;
-                  const isSelected = internalSelectedRoomKey === uniqueKey;
-                  const cancellation = getCancellationDisplay(room.cancellationPolicy);
-                  const meal = getMealDisplay(room.mealType);
-                  const netPriceStatic = `${currency} ${formatedPrice(room.price)}`;
-                  const paymentTypeStatic = "By card"; // Sta
-                  const surchargeStatic = "No surcharge"; // Sta
+              {isMediumOrUp ? (
+                <div className="divide-y divide-gray-200">
+                  {rooms.map((room, index) => {
+                    const uniqueKey = `${room.id}-${index}`;
+                    const isSelected = internalSelectedRoomKey === uniqueKey;
+                    const cancellation = getCancellationDisplay(room.cancellationPolicy);
+                    const meal = getMealDisplay(room.mealType);
+                    const netPriceStatic = `${currency} ${formatedPrice(room.price)}`;
+                    const surchargeStatic = "No surcharge"; // Sta
 
-                  return (
-                    <div
-                      key={uniqueKey}
-                      
-                      className={`grid grid-cols-1 md:grid-cols-7 gap-2 lg:gap-4 items-center p-4 transition-all duration-200 ${
-                        isSelected
-                          ? "border-l-4 border-[#D3202D]" 
-                          : "bg-white hover:bg-gray-50"
-                      }`}
-                    >
-                      <div className="col-span-2 flex flex-col space-y-1">
-                          <div className="font-medium text-black">{getRoomDisplayName(roomTypeKey)}</div>
-                          <div className="text-xs text-gray-500">{room.roomCat || room.room_cat || ""}</div>
-                      </div>
-                      <div className="text-sm text-gray-700">
-                          {meal.text}
-                      </div> 
-                      <div className="text-sm text-gray-700 flex flex-col">
-                          <div>{cancellation.staticDate}</div>
-                      </div>
-                      <div className="text-sm text-black font-semibold flex flex-col">
-                          <div>{netPriceStatic}</div>
-                          <div className="text-[12px] text-gray-500">{surchargeStatic}</div>
-                      </div>
-                      <div className="flex flex-col items-center justify-between gap-2 md:gap-4 md:flex-row">
-                          <div className="text-xs text-green-700 font-medium whitespace-nowrap">
-                              {paymentTypeStatic} 
-                          </div>             
-                      </div>
-                      <div className="flex justify-end"> 
-                          <button
-                            onClick={() => handleRoomSelect(room, uniqueKey)}
-                            className={`px-6 py-2 rounded-lg font-bold text-sm transition-all w-full md:w-auto flex items-center justify-center whitespace-nowrap ${
-                              isSelected
-                                ? "bg-red-500 text-white shadow-md"
-                                : "bg-[#D3202D] text-white"
-                            }`}
-                          >
-                            {isSelected ? (
-                              <>
-                                <Check className="w-5 h-5 inline-block mr-1" />
-                                Selected
-                              </>
-                            ) : (
-                              "Choose"
-                            )}
-                          </button>
-                          </div>
-                      {roomMessages[uniqueKey] && (
-                        <div className="md:col-span-6 text-red-400 text-sm mt-2 text-center w-full">
-                          {roomMessages[uniqueKey]}
+                    return (
+                      <div
+                        key={uniqueKey}
+                        className={`grid grid-cols-6 items-center transition-all duration-200 ${
+                          isSelected ? "bg-red-50 border-l-4 border-red-500" : "bg-white hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="col-span-2 flex flex-col space-y-1 p-4 border-r border-gray-200">
+                            <div className="font-medium text-black">{getRoomDisplayName(roomTypeKey)}</div>
+                            <div className="text-xs text-black font-bold">{room.roomCat || room.room_cat || ""}</div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                        <div className="text-sm text-gray-800 p-4 border-r border-gray-200">
+                            {meal.text}
+                        </div> 
+                        <div className="text-sm text-gray-800 flex flex-col p-4 border-r border-gray-200">
+                            <div>{cancellation.staticDate}</div>
+                        </div>
+                        <div className="text-sm text-black font-semibold flex flex-col p-4">
+                            <div>{netPriceStatic}</div>
+                            <div className="text-[12px] text-gray-600">{surchargeStatic}</div>
+                        </div>
+                        <div className="flex justify-end p-4"> 
+                            <button
+                              onClick={() => handleRoomSelect(room, uniqueKey)}
+                              className={`px-6 py-2 rounded-lg font-bold text-sm transition-all w-full md:w-auto flex items-center justify-center whitespace-nowrap ${
+                                isSelected ? "bg-red-500 text-white shadow-md" : "bg-[#D3202D] text-white"
+                              }`}
+                            >
+                              {isSelected ? ( <><Check className="w-5 h-5 inline-block mr-1" /> Selected</> ) : ( "Choose" )}
+                            </button>
+                        </div>
+                        {roomMessages[uniqueKey] && ( <div className="col-span-6 text-red-400 text-sm mt-2 text-center w-full px-4 pb-2">{roomMessages[uniqueKey]}</div> )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex overflow-x-auto space-x-4 p-4 no-scrollbar">
+                  {rooms.map((room, index) => {
+                    const uniqueKey = `${room.id}-${index}`;
+                    const isSelected = internalSelectedRoomKey === uniqueKey;
+                    const cancellation = getCancellationDisplay(room.cancellationPolicy);
+                    const meal = getMealDisplay(room.mealType);
+                    const netPriceStatic = `${currency} ${formatedPrice(room.price)}`;
+                    const surchargeStatic = "No surcharge";
+                    return(
+                      <div key={uniqueKey} className={`flex-shrink-0 w-[280px] border rounded-xl transition-all ${isSelected ? "bg-red-50 border-red-300" : "bg-white border-gray-200"}`}>
+                        <div className="p-4 flex flex-col h-full">
+                          <div className="flex-grow space-y-3">
+                            <div className="pb-3 border-b border-gray-200">
+                              <div className="font-medium text-black">{room.roomCat || room.room_cat || getRoomDisplayName(roomTypeKey)}</div>
+                            </div>
+
+                            <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">
+                              <span className="font-medium text-gray-800">Meals</span>
+                              <span className="text-right">{meal.text}</span>
+                            </div>
+            
+                            <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">
+                              <span className="font-medium text-gray-800">Cancellation</span>
+                              <span className="text-right">{cancellation.staticDate}</span>
+                            </div>
+            
+                            <div className="pt-2">
+                                  <div className="text-right">
+                                    <div className="text-xl text-black font-bold">{netPriceStatic}</div>
+                                    <div className="text-xs text-gray-500">{surchargeStatic}</div>
+                                </div>
+                            </div>
+            
+                            {roomMessages[uniqueKey] && ( <div className="text-red-400 text-sm text-center w-full pt-2">{roomMessages[uniqueKey]}</div> )}
+                          </div>
+            
+                          <div className="pt-4 mt-auto">
+                              <button
+                                  onClick={() => handleRoomSelect(room, uniqueKey)}
+                                  className={`px-6 py-3 rounded-lg font-bold text-sm transition-all w-full flex items-center justify-center whitespace-nowrap ${
+                                      isSelected ? "bg-red-500 text-white shadow-md" : "bg-[#D3202D] text-white"
+                                  }`}
+                              >
+                                  {isSelected ? ( <><Check className="w-5 h-5 inline-block mr-1" /> Selected</> ) : ( "Choose" )}
+                              </button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           ))}
         </div>

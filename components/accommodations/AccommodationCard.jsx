@@ -43,7 +43,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   const rating = hotelData.rating ? JSON.parse(hotelData.rating) : null;
   
   // Parse amenities and convert to array
-  const amenities = hotelData?.amenities ? hotelData.amenities.split(',').map(s => s.trim()).filter(Boolean).slice(0, 3) : [];
+ // const amenities = hotelData?.amenities ? hotelData.amenities.split(',').map(s => s.trim()).filter(Boolean).slice(0, 3) : [];
 
   // Parse media to get images
   const media = Array.isArray(hotelData?.media) ? hotelData.media : [];

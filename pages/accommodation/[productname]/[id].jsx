@@ -11,12 +11,14 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
+import useRecentlyViewedStore from "@/store/useRecentlyViewedStore";
 import AccommodationHeader from "@/components/accommodations/AccommodationHeader";
 import AccommodationGallery from "@/components/accommodations/ImageGallery";
 import AccommodationInfoCard from "@/components/accommodations/AccommodationInfoCard";
 import AccommodationRooms from "@/components/accommodations/RoomTypes";
 import AccommodationMap from "@/components/accommodations/AccommodationMapSection";
 import AccommodationHotelDetail from "@/components/accommodations/AccommodationHotelDetail.jsx";
+import RecentlyViewed from "@/components/accommodations/RecentlyViewed.jsx";
 import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
 
@@ -31,7 +33,8 @@ export async function getServerSideProps({ locale }) {
 export default function AccommodationDetailPage() {
   const { t } = useTranslation(["common", "accommodation"]);
   const router = useRouter();
-  const { id: accommodationId, productname } = router.query;
+  const { id: accommodationId, productname, link_type_id } = router.query;
+  const urlLinkTypeId = link_type_id ? Number(link_type_id) : null;
   const { localizedReplace, localizedPush } = useLocalizedRouter();
   const [isNonStuba, setIsNonStuba] = useState(false);
 
@@ -44,6 +47,7 @@ export default function AccommodationDetailPage() {
 
   const { items, removeItem } = useCartStore();
   const { openDrawer, setDrawerContent } = useDrawerStore();
+  const addRecentlyViewed = useRecentlyViewedStore((state) => state.addRecentlyViewed);
 
   const [accommodation, setAccommodation] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -147,6 +151,7 @@ export default function AccommodationDetailPage() {
       stuba_id: hotelData.stuba_id,
       title: hotelData.title,
       name: hotelData.title,
+      
       description: hotelData.description,
       country: hotelData.country_name,
       city: hotelData.city_name,
@@ -264,10 +269,6 @@ useEffect(() => {
     setError(null);
 
     try {
-      const urlLinkTypeId = router.query.link_type_id
-        ? Number(router.query.link_type_id)
-        : null;
-
       console.log("URL link_type_id:", urlLinkTypeId, "ID:", accommodationId);
 
       // ——————————————————— NON-STUBA ———————————————————
@@ -453,6 +454,25 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   selectedRegion
 ]);
 
+useEffect(() => {
+  if (accommodation?.normalizedHotelData) {
+    const { id, title, image, starting_price, stars, rating } =
+      accommodation.normalizedHotelData;
+    addRecentlyViewed({
+      id: id,
+      name: title,
+      image: image,
+      price: starting_price,
+      rating: stars || rating?.rating || 0,
+      type: "accommodation",
+      link: router.asPath,
+      link_type_id: urlLinkTypeId,
+    });
+  }
+}, [accommodation, addRecentlyViewed, router.asPath]);
+
+
+
   if (loading) {
     return (
       <Layout>
@@ -490,27 +510,35 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
         </title>
       </Head>
 
-      <div className="min-h-screen bg-[#D0E9FF] text-black pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-[#D0E9FF] text-black pt-[80px] md:pt-16 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
-<div className="flex flex-col lg:flex-row justify-between gap-1">
-  <AccommodationHeader hotelData={hotelData} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 w-full gap-6 lg:gap-8"> {/* New grid container for main content and sidebar */}
+            <div className="lg:col-span-9"> {/* Main content area */}
+              {/* Accommodation Header and Info Card */}
+              <div className="flex flex-col bg-white p-2 rounded-2xl lg:flex-row justify-between gap-1"> {/* Removed max-w-6xl */}
+                <AccommodationHeader hotelData={hotelData} />
 
-  <AccommodationInfoCard
-    hotelData={hotelData}
-    startingPrice={hotelData.starting_price}
-    allRooms={accommodation.normalizedRoomData}
-    selectedRoom={selectedRoom}
-    currency={hotelData.currency}
-    onScrollToOptions={handleScrollToOptions}
-    onProceedBooking={handleProceedBooking}
-    nights={nights}
-    totalGuests={totalGuests}
-  />
-</div>
+                <AccommodationInfoCard
+                  hotelData={hotelData}
+                  startingPrice={hotelData.starting_price}
+                  allRooms={accommodation.normalizedRoomData}
+                  selectedRoom={selectedRoom}
+                  currency={hotelData.currency}
+                  onScrollToOptions={handleScrollToOptions}
+                  onProceedBooking={handleProceedBooking}
+                  nights={nights}
+                  totalGuests={totalGuests}
+                />
+              </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-1 w-full gap-6 lg:gap-8 mt-2">
-            <AccommodationGallery hotelData={accommodation} />
-        
+              {/* Accommodation Gallery */}
+              <div className="mt-2"> {/* This div previously had grid and col-span, now just a wrapper */}
+                <AccommodationGallery hotelData={accommodation} />
+              </div>
+            </div>
+            <div className="lg:col-span-3 mt-5 lg:mt-0"> {/* RecentlyViewed sidebar */}
+             <RecentlyViewed />
+           </div>
           </div>
         </div>
 

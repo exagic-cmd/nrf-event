@@ -74,28 +74,14 @@ const AccommodationInfoCard = ({
   const roomCountText = getRoomCountText();
 
   return (
-    <div className="lg:col-span-2">
-      <div className="bg-[#D0E9FF] px-0 lg:px-24 lg:flex-col justify-end  p-6 sticky top-4 ">
+    <div className="lg:col-span-1">
+      <div className="bg-white  lg:flex-col justify-end  py-2 sticky top-4 mr-0 lg:mr-2 ">
         {/* Price */}
-        <div className="mb-5">
+        <div className="mb-5 flex justify-end">
           <div className="text-lg lg:text-2xl font-bold text-[#D3202D] mb-1">
-            {formattedPrice(lowestPrice)}
+          <span className="text-sm md:text-md text-black">  Starting Price </span>{formattedPrice(lowestPrice)}
           </div>
-          <div className="text-black text-sm flex items-center gap-1">
-            {selectedRoom ? (
-              <>
-                <Bed className="h-3.5 w-3.5" />
-                Total for {nights} night{nights > 1 ? "s " : ""}
-               for { totalGuests +" Guests"}
-              </>
-            ) : (
-              <>
-                {/* <Check className="h-3.5 w-3.5" /> */}
-                {/* Starting from · {nights} night{nights > 1 ? "s" : ""} */}
-                Total for {nights} night {nights > 1 ? "s " : ""},{ totalGuests +" Guests"}
-              </>
-            )}
-          </div>
+          
 
           {/* {selectedRoom && (
             <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 text-[#233BA0] text-xs px-2 py-1 rounded-full">
@@ -165,7 +151,7 @@ const AccommodationInfoCard = ({
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-[#D3202D] text-lg lg:text-xl text-white lg:py-2 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-[#D3202D] text-lg lg:text-xl text-white lg:py-2 py-3 px-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>
