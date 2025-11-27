@@ -1,6 +1,7 @@
 // components/accommodations/booking/AccommodationBookNow.jsx
 import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
+import useUserStore from "@/store/useAuthStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore } from "@/store/useCartStore";
 import $helpers from "@/lib/helpers";
@@ -188,6 +189,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
 const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
   const { t } = useTranslation("accommodation");
   const { setJustAdded } = useDrawerStore();
+  const user = useUserStore((state) => state.user);
 
   const rooms = bookingData?.searchParams?.rooms || [];
   const nights = bookingData.nights || 1;
@@ -217,8 +219,28 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
   const [bookingResponse, setBookingResponse] = useState(null);
 
   useEffect(() => {
-    setGuestsByRoom(initGuestsByRoom());
-  }, [bookingData]);
+    const initialGuests = initGuestsByRoom();
+
+    // Pre-fill lead passenger details from auth store if available
+    if (user?.name && initialGuests.length > 0 && initialGuests[0].adults.length > 0) {
+      const nameParts = user.name.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      const leadGuest = initialGuests[0].adults[0];
+      leadGuest.title = "Mr"; // Default title
+      leadGuest.firstName = firstName;
+      leadGuest.lastName = lastName;
+    }
+
+    setGuestsByRoom(initialGuests);
+  }, [bookingData, user]);
+
+  // This useEffect is kept to re-initialize guests if bookingData changes,
+  // but the main logic is now combined above.
+  // useEffect(() => {
+  //   setGuestsByRoom(initGuestsByRoom());
+  // }, [bookingData]);
 
   const updateGuest = (roomIdx, type, guestIdx, field, value) => {
     setGuestsByRoom((prev) =>
@@ -486,158 +508,265 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
   return (
     <>
-      <div className="bg-white rounded-lg p-6">
-        <h2 className="text-md lg:text-xl font-bold text-black mb-6">Guest Information</h2>
+     <div className="bg-white rounded-lg p-6">
+  <h2 className="text-md lg:text-xl font-bold text-black mb-6">
+    Guest Information
+  </h2>
 
-        <form onSubmit={handleAddToCart} className="space-y-5">
-          {rooms.map((room, roomIdx) => {
-            const roomGuests = guestsByRoom[roomIdx] || { adults: [], children: [] };
-            const roomNumber = roomIdx + 1;
+  <form onSubmit={handleAddToCart} className="space-y-5">
+    {rooms.map((room, roomIdx) => {
+      const roomGuests = guestsByRoom[roomIdx] || { adults: [], children: [] };
+      const roomNumber = roomIdx + 1;
 
-            return (
-              <div key={roomIdx} className=" rounded-xl p-0 md:p-4 ">
-                <h3 className="text-sm md:text-lg font-bold text-black mb-5">
-                  Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
-                  {room.children?.length > 0 && `, ${room.children.length} Child${room.children.length > 1 ? "ren" : ""}`}
-                </h3>
+      return (
+        <div key={roomIdx} className="rounded-xl p-0 md:p-4">
+          <h3 className="text-lg font-bold text-black mb-5">
+            Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
+            {room.children?.length > 0 &&
+              `, ${room.children.length} Child${
+                room.children.length > 1 ? "ren" : ""
+              }`}
+          </h3>
 
-                {/* Adults */}
-                {roomGuests.adults.map((adult, i) => (
-                  <div key={`adult-${i}`} className="rounded-lg p-0 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-black text-sm font-medium mb-2">Title *</label>
-                      <select
-                        value={adult.title}
-                        onChange={(e) => updateGuest(roomIdx, "adults", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                        required
-                      >
-                        {TITLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-black text-sm font-medium mb-2">First Name *</label>
-                      <input
-                        type="text"
-                        value={adult.firstName}
-                        onChange={(e) => updateGuest(roomIdx, "adults", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-black text-sm font-medium mb-2">Last Name *</label>
-                      <input
-                        type="text"
-                        value={adult.lastName}
-                        onChange={(e) => updateGuest(roomIdx, "adults", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                        required
-                      />
-                    </div>
-                  </div>
-                ))}
-
-                {/* Children */}
-                {roomGuests.children.map((child, i) => (
-                  <div key={`child-${i}`} className="bg-[#D0E9FF] rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                    <div>
-                      <label className="block text-black text-sm font-medium mb-2">Title *</label>
-                      <select
-                        value={child.title}
-                        onChange={(e) => updateGuest(roomIdx, "children", i, "title", e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                        required
-                      >
-                        {TITLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-back text-sm font-medium mb-2">First Name *</label>
-                      <input
-                        type="text"
-                        value={child.firstName}
-                        onChange={(e) => updateGuest(roomIdx, "children", i, "firstName", e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-black text-sm font-medium mb-2">Last Name *</label>
-                      <input
-                        type="text"
-                        value={child.lastName}
-                        onChange={(e) => updateGuest(roomIdx, "children", i, "lastName", e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-black text-sm font-medium mb-2">Age</label>
-                      <input
-                        type="text"
-                        value={child.age}
-                        readOnly
-                        className="w-full px-3 py-2 bg-gray-300 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-
-          <div>
-            <label className="block text-blacktext-sm font-medium mb-2">
-              Special Requests (Optional)
-            </label>
-            <textarea
-              value={specialRequests}
-              onChange={(e) => setSpecialRequests(e.target.value)}
-              rows={4}
-              className="w-full px-3 py-2 bg-white text-black border border-gray-600 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 "
-              placeholder="Late check-in, extra bed, dietary needs, etc..."
-            />
-          </div>
-
-          {/* BUTTONS */}
-          {!showCartOptions ? (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#D3202D] text-white font-bold py-4 rounded-xl transition text-xl disabled:opacity-50 flex items-center justify-center gap-2"
+          {/* Adults */}
+          {roomGuests.adults.map((adult, i) => (
+            <div
+              key={`adult-${i}`}
+              className="bg-gray-100 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"
             >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {isNonStuba ? "Adding to Cart..." : "Validating Booking..."}
-                </>
-              ) : (
-                "Add to Cart"
-              )}
-            </button>
-          ) : (
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                onClick={handleContinueShopping}
-                disabled={loadingButton === "continue"}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 rounded-xl transition"
-              >
-                {loadingButton === "continue" ? "Loading..." : "Continue Shopping"}
-              </button>
-              <button
-                type="button"
-                onClick={handleViewCart}
-                disabled={loadingButton === "checkout"}
-                className="flex-1 bg-[#D3202D] text-white font-bold py-4 rounded-xl transition"
-              >
-                {loadingButton === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
-              </button>
+              {/* Title */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  Title {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                </label>
+                <select
+                  value={adult.title}
+                  onChange={(e) =>
+                    updateGuest(roomIdx, "adults", i, "title", e.target.value)
+                  }
+                  className="w-full px-3 py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                  required={i === 0}
+                >
+                  {TITLE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* First Name */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  First Name {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                </label>
+                <input
+                  type="text"
+                  value={adult.firstName}
+                  onChange={(e) =>
+                    updateGuest(
+                      roomIdx,
+                      "adults",
+                      i,
+                      "firstName",
+                      e.target.value
+                    )
+                  }
+                  className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${
+                    roomIdx === 0 && i === 0 && user?.name
+                      ? "bg-gray-300"
+                      : "bg-white"
+                  }`}
+                  required={i === 0}
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  Last Name {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                </label>
+                <input
+                  type="text"
+                  value={adult.lastName}
+                  onChange={(e) =>
+                    updateGuest(roomIdx, "adults", i, "lastName", e.target.value)
+                  }
+                  className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${
+                    roomIdx === 0 && i === 0 && user?.name
+                      ? "bg-gray-300"
+                      : "bg-white"
+                  }`}
+                  required={i === 0}
+                />
+              </div>
             </div>
-          )}
-        </form>
-      </div>
+          ))}
+
+          {/* Children */}
+          {roomGuests.children.map((child, i) => (
+            <div
+              key={`child-${i}`}
+              className="bg-gray-200 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
+            >
+              {/* Title */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  Title
+                </label>
+                <select
+                  value={child.title}
+                  onChange={(e) =>
+                    updateGuest(roomIdx, "children", i, "title", e.target.value)
+                  }
+                  className="w-full px-3 py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                >
+                  {TITLE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* First Name */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  value={child.firstName}
+                  onChange={(e) =>
+                    updateGuest(
+                      roomIdx,
+                      "children",
+                      i,
+                      "firstName",
+                      e.target.value
+                    )
+                  }
+                  className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  value={child.lastName}
+                  onChange={(e) =>
+                    updateGuest(
+                      roomIdx,
+                      "children",
+                      i,
+                      "lastName",
+                      e.target.value
+                    )
+                  }
+                  className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                />
+              </div>
+
+              {/* Age */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-2">
+                  Age
+                </label>
+                <input
+                  type="text"
+                  value={child.age}
+                  readOnly
+                  className="w-full px-3 py-2 bg-gray-300 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none cursor-not-allowed"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    })}
+
+    {/* Special Requests */}
+    <div>
+      <label className="block text-black text-sm font-medium mb-2">
+        Special Requests (Optional)
+      </label>
+      <textarea
+        value={specialRequests}
+        onChange={(e) => setSpecialRequests(e.target.value)}
+        rows={4}
+        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+        placeholder="Late check-in, extra bed, dietary needs, etc..."
+      />
+    </div>
+
+{/* BUTTONS (RIGHT ALIGNED) */}
+<div className="w-full flex justify-end">
+  {!showCartOptions ? (
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      className="
+        w-full sm:w-auto
+        bg-[#D3202D] text-white 
+        font-semibold text-base lg:px-10
+        py-3 px-6 rounded-lg 
+        transition disabled:opacity-50 
+        flex items-center justify-center gap-2
+      "
+    >
+      {isSubmitting ? (
+        <>
+          <Loader2 className="w-4 h-4 animate-spin" />
+          {isNonStuba ? "Adding to Cart..." : "Validating Booking..."}
+        </>
+      ) : (
+        "Add to Cart"
+      )}
+    </button>
+  ) : (
+    <div className="flex flex-col sm:flex-row justify-end gap-3">
+      <button
+        type="button"
+        onClick={handleContinueShopping}
+        disabled={loadingButton === "continue"}
+        className="
+          flex-1 sm:flex-none
+          bg-gray-100 hover:bg-gray-200 
+          text-gray-800 
+          font-semibold text-base lg:px-10
+          py-3 px-6 rounded-lg 
+          transition
+        "
+      >
+        {loadingButton === "continue" ? "Loading..." : "Continue Shopping"}
+      </button>
+
+      <button
+        type="button"
+        onClick={handleViewCart}
+        disabled={loadingButton === "checkout"}
+        className="
+          flex-1 sm:flex-none
+          bg-[#D3202D] text-white 
+          font-semibold text-base lg:px-10
+          py-3 px-6 rounded-lg 
+          transition
+        "
+      >
+        {loadingButton === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
+      </button>
+    </div>
+  )}
+</div>
+
+
+  </form>
+</div>
+
 
       {/* MODAL ONLY FOR STUBA */}
       {!isNonStuba && (

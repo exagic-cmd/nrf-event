@@ -134,8 +134,8 @@ const StubaRoomList = ({
           {Object.entries(groupedRooms).map(([roomTypeKey, rooms]) => (
             <div key={roomTypeKey} className="bg-white rounded-2xl p-0 overflow-hidden border border-gray-200">
               
-              <div className="bg-white relative lg:border-b border-gray-200 p-0">
-                <div className="flex gap-4">
+              <div className="bg-white relative  lg:border-b border-gray-200 p-0">
+                <div className="flex gap-4 ">
                     <div className="flex-shrink-0">
                         {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-32 h-24 object-cover" />}
                     </div>
@@ -179,7 +179,7 @@ const StubaRoomList = ({
               </div>
 
               {/* Rate Table Header */}
-              <div className="hidden lg:grid grid-cols-6 text-xs uppercase mt-2 text-white font-bold bg-[#2D3137] border-y border-gray-200">
+              <div className="hidden lg:grid grid-cols-6 text-xs uppercase mt-2 text-black font-bold bg-[#dcdcdc] border-y border-gray-200">
                   <div className="col-span-2 py-3 px-4 border-r border-gray-500">Room</div>
                   <div className="py-3 px-4 border-r border-gray-500">Meals</div>
                   <div className="py-3 px-4 border-r border-gray-500">Cancellation</div>
@@ -209,15 +209,15 @@ const StubaRoomList = ({
                             <div className="font-medium text-black">{getRoomDisplayName(roomTypeKey)}</div>
                             <div className="text-xs text-black font-bold">{room.roomCat || room.room_cat || ""}</div>
                         </div>
-                        <div className="text-sm text-gray-700 p-4 border-r border-gray-200">
+                        <div className="text-sm text-gray-800 p-4 border-r border-gray-200">
                             {meal.text}
                         </div> 
-                        <div className="text-sm text-gray-500 flex flex-col p-4 border-r border-gray-200">
+                        <div className="text-sm text-gray-800 flex flex-col p-4 border-r border-gray-200">
                             <div>{cancellation.staticDate}</div>
                         </div>
                         <div className="text-sm text-black font-semibold flex flex-col p-4">
                             <div>{netPriceStatic}</div>
-                            <div className="text-[12px] text-black font-bold">{surchargeStatic}</div>
+                            <div className="text-[12px] text-gray-600">{surchargeStatic}</div>
                         </div>
                         <div className="flex justify-end p-4"> 
                             <button
@@ -235,52 +235,54 @@ const StubaRoomList = ({
                   })}
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
+                <div className="flex overflow-x-auto space-x-4 p-4 no-scrollbar">
                   {rooms.map((room, index) => {
                     const uniqueKey = `${room.id}-${index}`;
                     const isSelected = internalSelectedRoomKey === uniqueKey;
                     const cancellation = getCancellationDisplay(room.cancellationPolicy);
                     const meal = getMealDisplay(room.mealType);
                     const netPriceStatic = `${currency} ${formatedPrice(room.price)}`;
-                    const surchargeStatic = "No surcharge"; // Sta
+                    const surchargeStatic = "No surcharge";
                     return(
-                        <div key={uniqueKey} className={`p-4 transition-all ${isSelected ? "bg-red-50" : "bg-white"}`}>
-                            <div className="space-y-3">
-                                <div className="pb-3 border-b border-gray-200">
-                                    <div className="font-medium text-black">{room.roomCat || room.room_cat || getRoomDisplayName(roomTypeKey)}</div>
-                                </div>
+                      <div key={uniqueKey} className={`flex-shrink-0 w-[280px] border rounded-xl transition-all ${isSelected ? "bg-red-50 border-red-300" : "bg-white border-gray-200"}`}>
+                        <div className="p-4 flex flex-col h-full">
+                          <div className="flex-grow space-y-3">
+                            <div className="pb-3 border-b border-gray-200">
+                              <div className="font-medium text-black">{room.roomCat || room.room_cat || getRoomDisplayName(roomTypeKey)}</div>
+                            </div>
 
-                                <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">
-                                    <span className="font-medium text-gray-800">Meals</span>
-                                    <span>{meal.text}</span>
-                                </div>
-                
-                                <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">
-                                    <span className="font-medium text-gray-800">Cancellation Policy</span>
-                                    <span>{cancellation.staticDate}</span>
-                                </div>
-                
-                                <div className="pt-2 border-b border-gray-200 pb-3">
-                                     <div className="text-right">
-                                        <div className="text-xl text-black font-bold">{netPriceStatic}</div>
-                                        <div className="text-xs text-gray-500">{surchargeStatic}</div>
-                                    </div>
-                                </div>
-                
-                                {roomMessages[uniqueKey] && ( <div className="text-red-400 text-sm text-center w-full">{roomMessages[uniqueKey]}</div> )}
-                
-                                <div className="pt-2">
-                                    <button
-                                        onClick={() => handleRoomSelect(room, uniqueKey)}
-                                        className={`px-6 py-3 rounded-lg font-bold text-sm transition-all w-full flex items-center justify-center whitespace-nowrap ${
-                                            isSelected ? "bg-red-500 text-white shadow-md" : "bg-[#D3202D] text-white"
-                                        }`}
-                                    >
-                                        {isSelected ? ( <><Check className="w-5 h-5 inline-block mr-1" /> Selected</> ) : ( "Choose" )}
-                                    </button>
+                            <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">
+                              <span className="font-medium text-gray-800">Meals</span>
+                              <span className="text-right">{meal.text}</span>
+                            </div>
+            
+                            <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">
+                              <span className="font-medium text-gray-800">Cancellation</span>
+                              <span className="text-right">{cancellation.staticDate}</span>
+                            </div>
+            
+                            <div className="pt-2">
+                                  <div className="text-right">
+                                    <div className="text-xl text-black font-bold">{netPriceStatic}</div>
+                                    <div className="text-xs text-gray-500">{surchargeStatic}</div>
                                 </div>
                             </div>
+            
+                            {roomMessages[uniqueKey] && ( <div className="text-red-400 text-sm text-center w-full pt-2">{roomMessages[uniqueKey]}</div> )}
+                          </div>
+            
+                          <div className="pt-4 mt-auto">
+                              <button
+                                  onClick={() => handleRoomSelect(room, uniqueKey)}
+                                  className={`px-6 py-3 rounded-lg font-bold text-sm transition-all w-full flex items-center justify-center whitespace-nowrap ${
+                                      isSelected ? "bg-red-500 text-white shadow-md" : "bg-[#D3202D] text-white"
+                                  }`}
+                              >
+                                  {isSelected ? ( <><Check className="w-5 h-5 inline-block mr-1" /> Selected</> ) : ( "Choose" )}
+                              </button>
+                          </div>
                         </div>
+                      </div>
                     )
                   })}
                 </div>

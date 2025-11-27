@@ -7,6 +7,14 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import Layout from "@/components/layout/Layout";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import AccommodationBookNow from "@/components/accommodations/booking/AccommodationBookNow";
+import {
+  Building,
+  BedDouble,
+  Utensils,
+  Calendar,
+  Moon,
+  DoorOpen,
+} from "lucide-react";
 
 export default function AccommodationBookingPage() {
   const router = useRouter();
@@ -45,11 +53,9 @@ export default function AccommodationBookingPage() {
       setIsNonStuba(nonStuba);
 
       if (nonStuba) {
-        // NON-STUBA: Allow access without validation
-        setAllowed(true);
+        setAllowed(true); // Non-Stuba always allowed
       } else {
-        // STUBA: Require proper flow
-        setAllowed(!!data.hotelData && !!data.selectedRoom);
+        setAllowed(!!data.hotelData && !!data.selectedRoom); // Stuba requires full flow
       }
     } catch (err) {
       console.error("Invalid booking data:", err);
@@ -59,12 +65,9 @@ export default function AccommodationBookingPage() {
     setCheckingAccess(false);
   }, []);
 
-  // Redirect only for Stuba if not allowed
   useEffect(() => {
     if (!allowed && !checkingAccess && !isNonStuba) {
-      const timer = setTimeout(() => {
-        localizedReplace("/accommodation");
-      }, 1200);
+      const timer = setTimeout(() => localizedReplace("/accommodation"), 1200);
       return () => clearTimeout(timer);
     }
   }, [allowed, checkingAccess, isNonStuba, localizedReplace]);
@@ -89,52 +92,117 @@ export default function AccommodationBookingPage() {
     );
   }
 
-  // Parse booking data
-  const bookingData = JSON.parse(sessionStorage.getItem("accommodationBookingData") || "{}");
+  // ----- BOOKING DATA -----
+  const bookingData = JSON.parse(
+    sessionStorage.getItem("accommodationBookingData") || "{}"
+  );
+
   const hotel = bookingData.hotelData || {};
   const selectedRoom = bookingData.selectedRoom || {};
 
+  // NEW VALUES ADDED HERE
+  const nights = bookingData?.nights || 1;
+  const rooms = bookingData?.rooms || 1;
+
   return (
     <Layout>
-      <div className="min-h-screen bg-[#D0E9FF] text-black pt-20 pb-12">
+      <div className="min-h-screen bg-[#D0E9FF] text-black pt-20 mt-2 lg: mt-6 pb-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8">Book {hotel?.title || "Hotel"}</h1>
+          <h1 className="text-xl lg:text-3xl font-bold mb-8">
+            Book {hotel?.title || "Hotel"}
+          </h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Booking Form */}
             <div className="lg:col-span-2">
-              <AccommodationBookNow 
-  isNonStuba={isNonStuba}
-  bookingData={bookingData}
-/>
+              <AccommodationBookNow
+                isNonStuba={isNonStuba}
+                bookingData={bookingData}
+              />
             </div>
 
-            {/* Summary Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-[#D3202D] text-white rounded-lg p-6 sticky top-24">
-                <h3 className="text-xl font-semibold mb-4">Booking Summary</h3>
-                <div className="space-y-3 text-sm">
-                  <div><strong>Hotel:</strong> {hotel?.title}</div>
-                  <div><strong>Room:</strong> {selectedRoom.roomType || "Not selected"}</div>
-                  <div><strong>Bed:</strong> {selectedRoom.mealType || "Room Only"}</div>
-                  <div><strong>Dates:</strong> {bookingData.checkIn} to {bookingData.checkOut}</div>
-                  <div><strong>Nights:</strong> {bookingData.nights}</div>
-                  {/* {isNonStuba && (
-                    <div className="text-xs text-green-400 mt-2">
-                      Direct booking (no validation)
-                    </div>
-                  )} */}
-                  <div className="pt-3 border-t border-gray-50">
-                    <div className="flex justify-between">
-                      <span>Total</span>
-                      <span className="text-md text-white lg:text-lg font-bold text-[#D3202D]">
-                        {hotel?.currency} {Number(selectedRoom.price || 0).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+   {/* --- BOOKING SUMMARY BOX --- */}
+<div className="
+  bg-[#D3202D] text-white rounded-2xl 
+  p-4 sm:p-5 
+  sticky top-24 shadow-xl border border-white/10 
+  max-h-[70vh]             /* Prevent full-screen takeover */
+  overflow-y-auto          /* Scroll only inside card if needed */
+  small-scrollbar
+">
+
+  <h3 className="text-xl font-bold mb-4 sm:mb-5 tracking-tight">
+    Booking Summary
+  </h3>
+
+  <div className="space-y-4">
+
+    {/* HOTEL */}
+    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
+      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
+        <Building className="w-3 h-3" />
+      </div>
+      <div>
+        <p className="text-[9px] opacity-70 leading-tight">Hotel</p>
+        <p className="text-sm font-semibold leading-tight">{hotel?.title}</p>
+      </div>
+    </div>
+
+    {/* ROOM DETAILS (Type, Count, Nights) */}
+    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
+      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
+        <BedDouble className="w-3 h-3" />
+      </div>
+      <div>
+        <p className="text-[9px] opacity-70 leading-tight">Room Details</p>
+        <p className="text-sm font-semibold leading-tight">
+          {selectedRoom.roomType} ({bookingData.searchParams?.rooms.length || 1} Room{ (bookingData.searchParams?.rooms.length || 1) > 1 ? 's' : ''}, {bookingData.nights} Night{bookingData.nights > 1 ? 's' : ''})
+        </p>
+      </div>
+    </div>
+
+    {/* MEAL PLAN */}
+    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
+      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
+        <Utensils className="w-3 h-3" />
+      </div>
+      <div>
+        <p className="text-[9px] opacity-70 leading-tight">Meal Plan</p>
+        <p className="text-sm font-semibold leading-tight">
+          {selectedRoom.mealType || "Room Only"}
+        </p>
+      </div>
+    </div>
+
+    {/* DATES */}
+    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
+      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
+        <Calendar className="w-3 h-3" />
+      </div>
+      <div>
+        <p className="text-[9px] opacity-70 leading-tight">Dates</p>
+        <p className="text-sm font-semibold leading-tight">
+          {bookingData.checkIn} → {bookingData.checkOut}
+        </p>
+      </div>
+    </div>
+
+    {/* ---- TOTAL PRICE ---- */}
+    <div className="pt-4 mt-2 border-t border-white/20">
+      <div className="flex justify-between items-center">
+        <span className="text-base font-semibold">Total</span>
+ 
+        {/* PRICE WITHOUT DECIMALS */}
+        <span className="text-xl font-bold">
+          {hotel?.currency} {Math.round(Number(selectedRoom.price || 0))}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
           </div>
         </div>
       </div>
