@@ -1,18 +1,29 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   MapPin,
   Building,
   X,
   ArrowLeftRight,
   Search,
+  ChevronDown,
 } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import AccommodationFilter from "./AccommodationFilter";
 import { useCartStore } from "@/store/useCartStore";
 import { useOrderStore } from "@/store/useOrderStore";
+
+const dayTourPlaceholders = [
+  "Search attractions like Marina Bay Sands",
+  "Try Merlion Park or Gardens by the Bay",
+  "Search for Sentosa Island attractions",
+  "Chinatown Heritage Centre",
+  "Universal Studios Singapore",
+  "Search temples like Buddha Tooth Relic Temple",
+  "Clarke Quay Riverside",
+];
 
 export default function SearchFilterCard({
   filterActiveTab,
@@ -51,6 +62,10 @@ export default function SearchFilterCard({
   const [pickupQuery, setPickupQuery] = useState("");
   const [dropoffQuery, setDropoffQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [showTripTypeDropdown, setShowTripTypeDropdown] = useState(false);
+  const tripTypeDropdownRef = useRef(null);
+
 
   // Searchable dropdowns
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
@@ -77,6 +92,29 @@ export default function SearchFilterCard({
       selectedCity?.title || selectedCity?.city_name || selectedCity?.name || ""
     );
   }, [selectedCity]);
+
+  // Effect for rotating placeholder
+  useEffect(() => {
+    if (filterActiveTab === 3) {
+      const interval = setInterval(() => {
+        setPlaceholderIndex(prevIndex => (prevIndex + 1) % dayTourPlaceholders.length);
+      }, 3000); // Change every 3 seconds
+      return () => clearInterval(interval);
+    }
+  }, [filterActiveTab]);
+  
+  // Click outside handler for trip type dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+        if (tripTypeDropdownRef.current && !tripTypeDropdownRef.current.contains(event.target)) {
+            setShowTripTypeDropdown(false);
+        }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [tripTypeDropdownRef]);
 
   // Load data
   useEffect(() => {
@@ -306,21 +344,43 @@ export default function SearchFilterCard({
            {/* ====== TRANSFERS ====== */}
            {filterActiveTab === 2 && (
              <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
-               <div className="flex items-center gap-6 px-2 pt-1">
-                 <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("one-way")}>
-                   <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "one-way" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
-                   One way
-                 </label>
-                 <label className="flex items-center gap-2 text-sm font-medium cursor-pointer" onClick={() => setTripType("round-trip")}>
-                   <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full ring-2 ${tripType === "round-trip" ? "ring-[#33A1FD] bg-[#D0E9FF]" : "ring-gray-300 bg-white"}`} />
-                   Round trip
-                 </label>
-               </div>
-     
-               <div className="mt-3 grid grid-cols-1 md:grid-cols-12 gap-3">
+               <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                 {/* Trip Type */}
+                 <div className="md:col-span-2 relative" ref={tripTypeDropdownRef}>
+                   <button
+                     type="button"
+                     onClick={() => setShowTripTypeDropdown(!showTripTypeDropdown)}
+                     className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center justify-between gap-2 h-full cursor-pointer"
+                   >
+                     <ArrowLeftRight className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+                     <span className="flex-grow text-left text-sm font-medium">
+                       {tripType === 'one-way' ? 'One Way' : 'Round Trip'}
+                     </span>
+                     <ChevronDown className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${showTripTypeDropdown ? 'rotate-180' : ''}`} />
+                   </button>
+
+                   {showTripTypeDropdown && (
+                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                       <button
+                         type="button"
+                         onClick={() => { setTripType('one-way'); setShowTripTypeDropdown(false); }}
+                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
+                       >
+                         One Way
+                       </button>
+                       <button
+                         type="button"
+                         onClick={() => { setTripType('round-trip'); setShowTripTypeDropdown(false); }}
+                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
+                       >
+                         Round Trip
+                       </button>
+                     </div>
+                   )}
+                 </div>
                  {/* Pick-up */}
-                 <div className="md:col-span-5 relative">
-                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+                 <div className="md:col-span-4 relative">
+                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2 h-full">
                      <MapPin className="h-5 w-5 text-[#D3202D]" />
                      <input
                        type="text"
@@ -362,8 +422,8 @@ export default function SearchFilterCard({
                  </div> */}
      
                  {/* Drop-off */}
-                 <div className="md:col-span-5 relative">
-                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+                 <div className="md:col-span-4 relative">
+                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2 h-full">
                      <Building className="h-5 w-5 text-[#D3202D]" />
                      <input
                        type="text"
@@ -406,7 +466,7 @@ export default function SearchFilterCard({
                  <div className="md:col-span-2 flex items-stretch">
                    <button
                      type="submit"
-                     className="w-full self-end h-auto rounded-lg bg-[#D3202D] text-white font-semibold px-3 py-2.5 hover:bg-[#D3202D] transition shadow"
+                     className="w-full h-full rounded-lg bg-[#D3202D] text-white font-semibold px-3 py-2.5 hover:bg-[#D3202D] transition shadow"
                      disabled={isLoading}
                    >
                      {isLoading ? "Searching..." : "Search"}
@@ -558,7 +618,7 @@ export default function SearchFilterCard({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  placeholder="Search for tours..."
+                  placeholder={filterActiveTab === 3 ? dayTourPlaceholders[placeholderIndex] : "Search for tours..."}
                   className="w-full bg-transparent text-base outline-none placeholder:text-gray-400"
                 />
                 {searchQuery && (
