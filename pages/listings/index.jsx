@@ -123,8 +123,8 @@ function ListingsPage() {
 
   return (
     <Layout>
-      <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#D0E9FF]">
-        <div className="flex flex-col lg:flex-row gap-6 px-6">
+      <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#f4f4f4]">
+        <div className="flex flex-col lg:flex-row gap-3 px-6">
           {searchCategory === "transfer" && (
             <div className="h-fit md:sticky top-24 self-start z-20">
               <TransferSearchFilter
@@ -140,7 +140,7 @@ function ListingsPage() {
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
             <div className="h-fit md:sticky top-24 self-start z-20">
               {/* Filter Sidebar (Sticky) */}
-              <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
+              <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-50">
                 {!isLoading && searchResults.length > 0 && (
                   <FilterSidebar />
                 )}
@@ -151,7 +151,7 @@ function ListingsPage() {
           {(searchCategory === "accommodation" || searchCategory === "hotels") && (
           <div className="h-fit md:sticky top-24 self-start z-20">
             {/* Filter Sidebar (Sticky) */}
-            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-80">
+            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
               {!accommodationLoading && accommodations && accommodations.length > 0 && (
                 <FilterSidebar mode="accommodation" />
               )}
@@ -168,7 +168,7 @@ function ListingsPage() {
   searchCategory === "day-tours" ||
   searchCategory === "accommodation" ||
   searchCategory === "hotels") && (
-  <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
+  <div className="lg:w-1/5 h-fit sticky top-24 self-start z-10">
     <GoogleMap
       center={{ lat: 1.3521, lng: 103.8198 }}
       zoom={12}
