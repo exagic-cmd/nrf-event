@@ -257,7 +257,7 @@ useEffect(() => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-6 mt-2 lg:mt-4">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-6">
       <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">

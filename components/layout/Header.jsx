@@ -106,7 +106,7 @@ export default function Header() {
       </button>
       {userMenuOpen && (
         <div
-          className={`absolute right-0 top-12 bg-[#D3202D] shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
+          className={`absolute right-0 top-12 bg-[#D3202D] text-white shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
             isMobile ? "w-44" : "w-48"
           }`}
         >
