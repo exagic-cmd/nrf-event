@@ -1,26 +1,92 @@
 import React, { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import { MapPin, Star, Wifi, Car, Utensils } from "lucide-react";
+import { MapPin, Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, SwimmingPool } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import SvgLoader2 from "@/components/common/Loader2Svg";
 
 function AccommodationCard({ accommodation, category = "accommodation" }) {
+
+   const hotelData = accommodation.Hotel_Data;
+  const results = accommodation?.Result
+    ? (Array.isArray(accommodation.Result) ? accommodation.Result : [accommodation.Result])
+    : [];
+    
   const { localizedPush } = useLocalizedRouter();
   const { t } = useTranslation("accommodation");
   const { items } = useCartStore();
+  const { searchParams } = useAccommodationsStore();
 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Extract hotel data from the new API structure
-  const hotelData = accommodation.Hotel_Data;
-  const results = accommodation?.Result
-    ? (Array.isArray(accommodation.Result) ? accommodation.Result : [accommodation.Result])
-    : [];
-  //console.log("###############", hotelData?.amenities);
+  // Get the "Popular" amenity
+  const popularAmenity = Array.isArray(hotelData?.amenities)
+    ? hotelData.amenities.find((a) => a.name === "Popular")
+    : null;
 
-  // Find the lowest price from all room results across all Result entries.
+  // Parse descriptions safely and normalize to array of strings
+  let descriptions = [];
+  const rawDescriptions = popularAmenity?.pivot?.descriptions;
+  if (rawDescriptions) {
+    if (Array.isArray(rawDescriptions)) {
+      descriptions = rawDescriptions.map((d) => (typeof d === "string" ? d : String(d)));
+    } else if (typeof rawDescriptions === "string") {
+      try {
+        const parsed = JSON.parse(rawDescriptions);
+        if (Array.isArray(parsed)) descriptions = parsed.map((d) => (typeof d === "string" ? d : String(d)));
+        else if (typeof parsed === "string") descriptions = parsed.split(",").map((s) => s.trim()).filter(Boolean);
+        else if (parsed && typeof parsed === "object") descriptions = Object.values(parsed).map((v) => String(v));
+      } catch (e) {
+        // Not a JSON string, try comma-split
+        descriptions = rawDescriptions.split(",").map((s) => s.trim()).filter(Boolean);
+      }
+    } else if (typeof rawDescriptions === "object") {
+      descriptions = Object.values(rawDescriptions).map((v) => String(v));
+    }
+  }
+
+  const iconComponentMap = {
+    "Free Internet": Wifi,
+    "Transfer": Car,
+    "Parking": ParkingCircle,
+    "Suitable for children": Baby,
+    "Swimming Pool": SwimmingPool,
+  };
+
+  const iconComponentMapLower = Object.keys(iconComponentMap).reduce((acc, key) => {
+    acc[key.toLowerCase()] = iconComponentMap[key];
+    return acc;
+  }, {});
+
+  // Helper to normalize description strings (remove brackets/quotes/extra spaces)
+  const normalizeDesc = (d) => {
+    if (!d && d !== 0) return "";
+    if (typeof d === "object") {
+      // pick a reasonable string from object
+      return String(d.name ?? d.label ?? d.text ?? Object.values(d).join(" ")).trim();
+    }
+    let s = String(d).trim();
+    // remove wrapping brackets and quotes and extra whitespace
+    s = s.replace(/^[\[\]\s"']+|[\[\]\s"']+$/g, "");
+    return s;
+  };
+
+  // Safe icon renderer: if the icon component exists, render it, otherwise render a small dot placeholder
+  const renderIconSafe = (IconComp, props = {}) => {
+    if (IconComp && typeof IconComp === "function") return <IconComp {...props} />;
+    return <span className={`inline-block ${props.className || "w-3 h-3"} bg-gray-500 rounded-full mr-2`} />;
+  };
+
+  const roomsArr = Array.isArray(searchParams?.rooms) ? searchParams.rooms : (typeof searchParams?.rooms === 'number' ? new Array(Number(searchParams.rooms)).fill({}) : [{ adult: 1, children: [] }]);
+      const roomsCount = Array.isArray(searchParams?.rooms) ? searchParams.rooms.length : (Number(searchParams?.rooms) || roomsArr.length);
+      const totalAdults = roomsArr.reduce((sum, r) => sum + (Number(r?.adult) || 0), 0) || 0;
+      const totalChildren = roomsArr.reduce((sum, r) => {
+        if (Array.isArray(r?.children)) return sum + r.children.length;
+        return sum + (Number(r?.children) || 0);
+      }, 0) || 0;
+
   const allRoomPrices = [];
   // Filter out any falsy result entries and iterate safely
   const validResults = results.filter(Boolean);
@@ -98,11 +164,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
       {/* Card */}
       <div
-        className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden p-2 sm:p-3 flex flex-col md:flex-row gap-3 cursor-pointer"
-        role="button"
-        tabIndex={0}
-        onClick={handleCardClick}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleCardClick(); }}
+        className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3"
       >
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
@@ -111,11 +173,11 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         )}
 
         {/* Image */}
-        <div className="relative w-full md:w-[150px] flex-shrink-0 flex justify-center items-center">
+        <div className="relative w-full md:w-[300px] flex-shrink-0 flex justify-center items-center">
           <img
            src={$helpers.getEnv('CLOUDINARY_BASE_URL') + mainImage}
             alt={hotelData.title}
-            className="object-cover h-[120px] w-full md:w-[180px] rounded-lg"
+            className="object-cover h-[235px] w-full md:w-[300px]"
           />
 
           {/* Star Rating Badge */}
@@ -128,26 +190,101 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         </div>
 
         {/* Info Section */}
-        <div className="flex-1 flex flex-col justify-between">
+        <div className="flex-1 flex flex-col justify-between pr-2.5">
           <div>
            <div className="flex flex-col justify-between my-1">
-             <h2 className="font-bold text-sm lg:text-md line-clamp-1">{hotelData.title || hotelData.product_title}</h2>
+             <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D]">{hotelData.title || hotelData.product_title}</h2>
             
             {/* Location and Rating */}
             <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
               {(address || hotelData.country_name) && (
                 <div className="flex items-center gap-1">
-                  <MapPin className="text-[#2176FF]" size={12} />
-                  <span className="text-[#233BA0]">{hotelData.country_name}</span>
+                  <MapPin className="" size={12} />
+                  <span className="">{hotelData.country_name}</span>
                 </div>
               )}
             </div>
+            <div className="flex items-center justify-between gap-1 mt-2">
+              <ul>
+                <li className="text-[12px]">1 km from the Singapore center</li>
+                <li className="text-[12px]">196 m from Telok Ayer</li>
+              </ul>
+              <div className="flex gap-1 text-gray-700">
+    <Bed className="w-5 h-5" />
+    <Bath className="w-5 h-5" />
+    <Wifi className="w-5 h-5" />
+    <Tv className="w-5 h-5" />
+    <Coffee className="w-5 h-5" />
+  </div>
+            </div>
            </div>
+            {/* Room Info Section */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-[#f5f5f5] p-2 rounded">
 
-            {/* Description */}
-            <p className="text-xs text-gray-700 line-clamp-2 mt-1">
-              {hotelData.description || hotelData.short_desc }
-            </p>
+  {/* First Column: Guests */}
+  <div>
+    {(() => {
+      // derive counts from searchParams
+      
+
+      return (
+        <>
+          <p className="font-semibold">{roomsCount} room{roomsCount !== 1 ? 's' : ''}</p>
+          <p className="text-gray-700 text-[12px]">For {totalAdults} adult{totalAdults !== 1 ? 's' : ''} and {totalChildren} child{totalChildren !== 1 ? 'ren' : ''}</p>
+        </>
+      );
+    })()}
+  </div>
+
+  {/* Second Column: Policies */}
+<div>
+  <ul className="space-y-1 text-gray-700 text-[12px]">
+  {(() => {
+    const descArray = Array.isArray(descriptions) 
+      ? descriptions 
+      : (descriptions ? [descriptions] : []);
+
+    const visible = descArray.slice(0, 2);
+    const hiddenCount = descArray.length - 2;
+
+    return (
+      <>
+      {visible.map((rawDesc, i) => {
+        const desc = normalizeDesc(rawDesc);
+        const IconComp = iconComponentMapLower[desc.toLowerCase()];
+
+        return (
+        <li key={i} className="flex items-center">
+          {renderIconSafe(IconComp, { className: "w-2 h-2 text-gray-600 mr-2" })}
+          {desc}
+        </li>
+        );
+      })}
+
+      {/* Show "+X more" if there are hidden items */}
+      {hiddenCount > 0 && (
+        <li 
+        className="flex items-center text-gray-500 text-xs cursor-help"
+        title={descArray.slice(2).map(d => normalizeDesc(d)).join(', ')}
+        >
+        <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
+        +{hiddenCount} more
+        </li>
+      )}
+      </>
+    );
+  })()}
+</ul>
+</div>
+
+  {/* Third Column: Price */}
+  <div className="text-right">
+    <p className="text-lg font-bold text-primary"> {formatPrice(lowestPrice)} {hotelData?.currency || accommodation.currency || 'USD'}</p>
+    <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p>
+  </div>
+
+</div>
+
 
             {/* Room Types Preview */}
                   {validResults.length > 0 && (
@@ -199,23 +336,27 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
           </div>
 
           {/* Bottom Section */}
-          <div className="flex justify-between items-end mt-1">
-            <div>
-              {/* Price display */}
-              <div className="flex items-center gap-2">
-                <p className="text-base font-bold text-[#D3202D]">
-                  {formatPrice(lowestPrice)} {hotelData?.currency || accommodation.currency || 'USD'}
-                </p>
-              </div>
-              
-              {/* Room count and per night info */}
-              {/* <div className="text-xs text-gray-500 mt-1">
-                <span>{results.length} room type{results.length !== 1 ? 's' : ''} available</span>
-                <span className="mx-1">•</span>
-                <span>per stay</span>
-              </div> */}
-            </div>
-          </div>
+<div className="flex justify-between items-end mt-1">
+  {/* Left side (empty for now) */}
+  <div></div>
+
+  {/* Right side button */}
+  <button
+    type="button"
+    onClick={handleCardClick}
+    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer"
+  >
+    {isLoading ? (
+      <span className="flex items-center gap-2">
+        <SvgLoader2 className="w-4 h-4" />
+        {t("common.loading")}
+      </span>
+    ) : (
+      "Show all rooms"
+    )}
+  </button>
+</div>
+
         </div>
       </div>
     </>

@@ -130,7 +130,7 @@ function AccommodationList() {
     }
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {paginatedAccommodations.map((accommodation) => (
           <AccommodationCard
             key={accommodation.id}
@@ -143,9 +143,9 @@ function AccommodationList() {
   };
 
   return (
-    <div ref={accommodationSectionRef} className="space-y-6">
+    <div ref={accommodationSectionRef} className="space-y-4">
       {searchParams && (
-        <div className="rounded-xl py-3 px-4 bg-gray-50">
+        <div className="rounded-xl py-3 px-4 bg-white">
           <p className="text-lg font-semibold">
             {isLoading
               ? "Searching..."
