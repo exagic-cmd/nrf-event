@@ -146,22 +146,10 @@ export default function HomePage() {
 
   return (
     <div className="bg-background">
-      <section className="relative md:min-h-[75vh] min-h-[55vh] flex items-center justify-center">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 z-0">
-          {event?.event?.title}
-          <div
-            className="absolute inset-0 bg-cover min-w-full"
-            style={{
-              backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763653733/External%20Links/form_BG.jpg')`,
-            }}
-          />
-          <div className="absolute inset-0 bg-black/10" />
-        </div>
-          <div className="absolute inset-0 bg-black/10" />
-        </div>
+      <section className="relative pb-24 md:pb-32">
+      
 
-        <div className="relative z-10 w-full px-4 lg:px-8 mt-[4rem] mb-[1rem] lg:mt-0">
+        <div className="absolute -top-12 lg:-top-16 min-w-full z-10">
           {/* Set favicon to event banner when available */}
           {event?.event?.banner && (
             <Head>

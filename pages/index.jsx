@@ -63,17 +63,19 @@ export default function LandingPage() {
   }
   return (
     <Layout className=" ">
-      <div className="bg-[#233BA0]  pt-16">
+   <div>
+       <div className="bg-[#233BA0]  pt-16">
         <ImageSlider />
       </div>
  < Herosection/>
 
+   </div>
         {/* ottom Gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-32"></div>
+   
 
         {/* Transfer Benefits Section */}
         {/* <CountdownTimer /> */}
-
+     <ReviewsSection />
         <TransferBenefitsSection />
         {/* Reviews Section */}
         {/* <ReviewsSection /> */}

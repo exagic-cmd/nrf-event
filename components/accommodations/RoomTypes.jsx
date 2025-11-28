@@ -206,8 +206,10 @@ const StubaRoomList = ({
                         }`}
                       >
                         <div className="col-span-2 flex flex-col space-y-1 p-4 border-r border-gray-200">
-                            <div className="font-medium text-black">{getRoomDisplayName(roomTypeKey)}</div>
-                            <div className="text-xs text-black font-bold">{room.roomCat || room.room_cat || ""}</div>
+                            {/* <div className="font-medium text-black">{getRoomDisplayName(roomTypeKey)}</div> */}
+                          
+                            <div className="text-sm text-black ">{room.roomCat || room.room_cat || ""} size bed</div>
+                              <div className="text-sm text-black "> Non-Smoking</div>
                         </div>
                         <div className="text-sm text-gray-800 p-4 border-r border-gray-200">
                             {meal.text}
@@ -248,7 +250,7 @@ const StubaRoomList = ({
                         <div className="p-4 flex flex-col h-full">
                           <div className="flex-grow space-y-3">
                             <div className="pb-3 border-b border-gray-200">
-                              <div className="font-medium text-black">{room.roomCat || room.room_cat || getRoomDisplayName(roomTypeKey)}</div>
+                              <div className="font-medium text-black">{room.roomCat || room.room_cat || getRoomDisplayName(roomTypeKey)} </div>
                             </div>
 
                             <div className="flex justify-between items-center text-sm pb-3 border-b border-gray-200">

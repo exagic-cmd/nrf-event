@@ -320,10 +320,10 @@ export default function SearchFilterCard({
     <button
   type="button"
   onClick={() => onSetTab?.(tab.id)}
-  className={`p-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-md font-semibold transition ${
+  className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
     filterActiveTab === tab.id
-      ? "bg-[#D3202D] text-white sm:py-3.5"
-      : "bg-[#D0E9FF] text-black "
+      ? "bg-[#D3202D] text-white sm:py-2.5"
+      : "bg-[#E6E6E6] text-black "
   }`}
 >
   {tab.name}
@@ -333,7 +333,7 @@ export default function SearchFilterCard({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-wrap gap-1 lg:gap-3">
         {filterTabs
           ?.filter((t) => [4, 3, 2].includes(t.id))
           .map((t) => (
