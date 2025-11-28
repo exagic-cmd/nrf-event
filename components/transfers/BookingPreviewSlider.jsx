@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { getFullImageUrl } from "@/utils/imageService";
-import { ChevronLeft, ChevronRight, Luggage, User, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Luggage, User, ChevronDown, ChevronUp, BedDouble, Moon, Calendar } from "lucide-react";
 import { format } from "date-fns";
 
 const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
@@ -87,6 +87,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
   const adultCount = item?.adults || item?.pax || 0;
   const childCount = item?.child || 0;
+  const totalGuests = isAccommodation ? (item.adult_count + item.child_count) : (adultCount + childCount);
   const date = details.date || item.selectedDate;
 
   // Overall total
@@ -166,46 +167,58 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
       {/* ACCOMMODATION PREVIEW */}
       {isAccommodation ? (
-        <div className="rounded-lg bg-gray-50 p-3">
-          <div className="flex gap-3">
-            <div className="w-[70%]">
-              <img
-                src={image || "/default-hotel.png"}
-                alt={title}
-                className="w-full h-32 object-cover rounded-lg"
-              />
-            </div>
-            <div className="w-[30%] flex flex-col justify-between h-32">
-              <div className="text-xs text-gray-600 flex flex-col gap-1 justify-end items-end">
-                <span>
-                  {formatDate(item.checkIn)} – {formatDate(item.checkOut)}
-                </span>
-                <span>{item.nights} {t("nights", { ns: "accommodation" })}</span>
-                <span>{item.adult_count + item.child_count} {t("guests", { ns: "accommodation" })}</span>
-              </div>
-            </div>
+        <div className="flex flex-col gap-2">
+          <div className="bg-gray-50 p-2 rounded-lg">
+            <img
+              src={image || "/default-hotel.png"}
+              alt={title}
+              className="w-80 h-36 object-cover rounded-md"
+            />
           </div>
 
-          <div className="mt-3 space-y-1 text-xs text-gray-700">
-            <p><strong>{t("Room", { ns: "accommodation" })}:</strong> {item.roomType}</p>
-            <p><strong>{t("Bed", { ns: "accommodation" })}:</strong> {item.mealType}</p>
-            {item.specialRequests && (
+          <div className="mt-3 space-y-1.5 text-xs">
+            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+              <span className="font-medium text-gray-600 flex items-center gap-1.5">
+                <BedDouble size={14} /> {item.roomType}
+              </span>
+              <span className="text-sm text-gray-800 font-medium text-right">
+                x{item.hotel_info?.roomsDetails?.length || 1} {t("room", { ns: "accommodation" })}
+              </span>
+            </div>
+            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+              <span className="font-medium text-gray-600 flex items-center gap-1.5">
+                <Moon size={14} /> {item.nights} {t("nights", { ns: "accommodation" })}
+              </span>
+              <span className="font-medium text-gray-600 flex items-center gap-1.5">
+                <User size={14} /> {totalGuests} {t("guests", { ns: "accommodation" })}
+              </span>
+            </div>
+            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+              <span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> {t("Dates", { ns: "accommodation" })}</span>
+              <span className="text-sm text-gray-800 font-medium text-right">{formatDate(item.check_in)} → {formatDate(item.check_out)}</span>
+            </div>
+            {/* <div className="flex justify-between items-center bg-white p-1.5 rounded">
+              <span className="font-medium text-gray-600">{t("Bed Type", { ns: "accommodation" })}</span>
+              <span className="font-semibold text-gray-800 text-right">{item.mealType}</span>
+            </div> */}
+
+            {item.special_request && (
               <p className="italic text-gray-500">
                 {t("specialRequests", { ns: "accommodation" })}: {item.specialRequests}
               </p>
             )}
           </div>
 
-          <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
+          <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold"> {basePrice.toFixed(2)} SGD</span>
+            <span className="text-[#D3202D] font-semibold"> {Math.round(basePrice)} SGD</span>
           </div>
         </div>
       ) : isTransfer ? (
         /* TRANSFER PREVIEW (unchanged) */
         <>
           <div className="flex gap-0 items-start rounded bg-gray-50 p-1 px-3">
-            <div className="w-[70%]">
+            <div className="w-80 h-36">
               <img src={image} alt={title} className="w-full h-32 object-contain rounded-lg" />
             </div>
 
@@ -221,7 +234,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
               <div className="flex flex-col items-end justify-end text-xs text-gray-500">
                 {item?.vehicle?.price && (
-                  <span className="text-[#D3202D] font-medium">{item.vehicle.price} SGD</span>
+                  <span className="text-[#D3202D] font-medium">{Math.round(item.vehicle.price)} SGD</span>
                 )}
                 {date && <span>{date}</span>}
               </div>
@@ -246,7 +259,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                       )}
                       {addon.title}
                       <span className="text-gray-400 text-xs">(x{addon.quantity})</span>
-                    </span>
+                    </span> 
                     <span className="text-sm text-gray-800 font-medium">{addon.total} SGD</span>
                   </li>
                 ))}
@@ -283,52 +296,45 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                 {t("Surcharges")} {surchargeScope}
               </span>
               <span>
-                {pickupSurcharge > 0 && `${pickupSurcharge} `}
+                {pickupSurcharge > 0 && `${Math.round(pickupSurcharge)} `}
                 {pickupSurcharge > 0 && returnSurcharge > 0 && " + "}
-                {returnSurcharge > 0 && `${returnSurcharge} `} SGD
+                {returnSurcharge > 0 && `${Math.round(returnSurcharge)} `} SGD
               </span>
             </p>
           )}
         </>
       ) : (
         /* DAY TOUR PREVIEW (unchanged) */
-        <div className="rounded-lg bg-gray-50 p-3">
-          <div className="flex gap-3">
-            <div className="w-[70%]">
-              <img src={image} alt={title} className="w-full h-32 object-cover rounded-lg" />
-            </div>
-            <div className="w-[30%] flex flex-col justify-between h-32">
-              <div></div>
-              <div className="text-xs text-gray-600 flex flex-col gap-1 justify-end items-end">
-                {date && <span className="flex items-center gap-1">{date}</span>}
+        <div className="flex flex-col gap-2">
+          <img
+            src={image}
+            alt={title}
+            className="w-80 h-36 object-cover rounded-lg"
+          />
+          <div className="space-y-1.5 text-xs">
+            {date && (
+              <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                <span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> Date</span>
+                <span className="text-sm text-gray-800 font-medium">{date}</span>
               </div>
-            </div>
-          </div>
-
-          <div className="mt-2">
-            <ul className="space-y-1">
-              {adultCount > 0 && (
-                <li className="flex justify-between items-center text-sm bg-gray-50 rounded-lg px-2 py-2">
-                  <span className="text-gray-700 text-xs flex items-center gap-2">
-                    <User size={12} /> {t("adult")}
-                  </span>
-                  <span className="text-sm text-gray-800 font-medium">x{adultCount}</span>
-                </li>
-              )}
-              {childCount > 0 && (
-                <li className="flex justify-between items-center text-sm bg-gray-50 rounded-lg px-2 py-2">
-                  <span className="text-gray-700 text-xs flex items-center gap-2">
-                    <User size={12} /> {t("child")}
-                  </span>
-                  <span className="text-sm text-gray-800 font-medium">x{childCount}</span>
-                </li>
-              )}
-            </ul>
+            )}
+            {adultCount > 0 && (
+              <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                <span className="font-medium text-gray-600 flex items-center gap-1.5"><User size={14} /> {t("adult")}</span>
+                <span className="text-sm text-gray-800 font-medium">x{adultCount}</span>
+              </div>
+            )}
+            {childCount > 0 && (
+              <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                <span className="font-medium text-gray-600 flex items-center gap-1.5"><User size={14} /> {t("child")}</span>
+                <span className="text-sm text-gray-800 font-medium">x{childCount}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D]">{basePrice || "0"} SGD</span>
+            <span className="text-[#D3202D]">{Math.round(basePrice) || "0"} SGD</span>
           </div>
         </div>
       )}
@@ -337,7 +343,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       <div className="pt-2 flex flex-col justify-between text-md font-normal">
         <div className="flex border-t mt-2 pt-2 justify-between text-lg font-semibold">
           <span>{t("total_all_items")}</span>
-          <span className="text-[#D3202D]">{overallTotal.toFixed(2)} SGD</span>
+          <span className="text-[#D3202D]">{Math.round(overallTotal)} SGD</span>
         </div>
       </div>
     </div>
