@@ -320,10 +320,10 @@ export default function SearchFilterCard({
     <button
   type="button"
   onClick={() => onSetTab?.(tab.id)}
-  className={`p-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-md font-semibold transition ${
+  className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
     filterActiveTab === tab.id
-      ? "bg-[#D3202D] text-white sm:py-3.5"
-      : "bg-[#D0E9FF] text-black "
+      ? "bg-[#D3202D] text-white sm:py-2.5"
+      : "bg-[#E6E6E6] text-black "
   }`}
 >
   {tab.name}
@@ -333,7 +333,7 @@ export default function SearchFilterCard({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-wrap gap-1 lg:gap-3">
         {filterTabs
           ?.filter((t) => [4, 3, 2].includes(t.id))
           .map((t) => (
@@ -353,7 +353,7 @@ export default function SearchFilterCard({
                      className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center justify-between gap-2 h-full cursor-pointer"
                    >
                      <ArrowLeftRight className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
-                     <span className="flex-grow text-left text-sm font-medium">
+                     <span className="flex-grow text-left text-base sm:text-lg font-medium">
                        {tripType === 'one-way' ? 'One Way' : 'Round Trip'}
                      </span>
                      <ChevronDown className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${showTripTypeDropdown ? 'rotate-180' : ''}`} />
@@ -387,7 +387,7 @@ export default function SearchFilterCard({
                        value={pickupQuery}
                        placeholder="Pick-up point (e.g. Airport)"
                        onChange={(e) => onPickupChange(e.target.value)}
-                       className="w-full bg-transparent placeholder:text-gray-400 text-base outline-none"
+                       className="w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none"
                      />
                      {pickupQuery && (
                        <button type="button" onClick={() => onPickupChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear pick-up">
@@ -431,7 +431,7 @@ export default function SearchFilterCard({
                        onChange={(e) => onDropoffChange(e.target.value)}
                        placeholder="Drop-off point (e.g. Hotel)"
                        disabled={!selectedPickup && !dropoffQuery}
-                       className="w-full bg-transparent placeholder:text-gray-400 text-base outline-none disabled:text-gray-400"
+                       className="w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none disabled:text-gray-400"
                      />
                      {dropoffQuery && (
                        <button type="button" onClick={() => onDropoffChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear drop-off">
@@ -466,7 +466,7 @@ export default function SearchFilterCard({
                  <div className="md:col-span-2 flex items-stretch">
                    <button
                      type="submit"
-                     className="w-full h-full rounded-lg bg-[#D3202D] text-white font-semibold px-3 py-2.5 hover:bg-[#D3202D] transition shadow"
+                     className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
                      disabled={isLoading}
                    >
                      {isLoading ? "Searching..." : "Search"}
@@ -619,7 +619,7 @@ export default function SearchFilterCard({
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   placeholder={filterActiveTab === 3 ? dayTourPlaceholders[placeholderIndex] : "Search for tours..."}
-                  className="w-full bg-transparent text-base outline-none placeholder:text-gray-400"
+                  className="w-full bg-transparent text-base outline-none py-0.5 placeholder:text-gray-400"
                 />
                 {searchQuery && (
                   <button
@@ -661,7 +661,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="w-full self-end h-auto rounded-xl bg-[#D3202D] text-white font-semibold px-3 py-2.5 hover:bg-[#D3202D] transition shadow"
+                className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
                 disabled={isLoading}
               >
                 {isLoading ? "Searching..." : "Search"}

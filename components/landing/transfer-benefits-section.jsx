@@ -2,7 +2,7 @@
 
 import { useTranslation } from "next-i18next";
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 import {
   Card,
@@ -44,7 +44,7 @@ export function TransferBenefitsSection() {
         const results = await fetchSearchResults({
           category_id: 3,
           is_b2c_only: 1,
-          is_active:1,
+          is_active: 1,
         });
 
         if (results?.length) {
@@ -74,78 +74,123 @@ export function TransferBenefitsSection() {
   };
 
   return (
-    <section className="w-full py-6 md:py-12 bg-[#D0E9FF] text-[#D3202D]">
-      <div className="container px-4 md:px-6 mx-auto max-w-7xl">
+    <section className="w-full py-12 md:py-16">
+      <div className="container relative  min-w-full px-3 md:px-8 lg:px-12">
         
-
-        {isLoadingDay ? (
-          <p className="text-center text-[#D3202D]">Loading top day tours...</p>
-        ) : (
-          <>
-          <div className="text-center mb-p">
-          <h2 className="font-bold tracking-tighter text-md md:text-xl">
-            Top Day Tours
-          </h2>
-          <p className="mt-2 max-w-2xl mb-1 text-sm md:text-md mx-auto">
-            Explore our hand-picked selection of top-rated day tours.
-          </p>
-        </div>
-          <div className="relative">
-            <div
-              ref={scrollContainerRef}
-              className="flex overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-hide pb-1"
-            >
-              {topDayTours.map((tour) => (
-                <Card
-                  key={tour.id}
-                  onClick={() => handleCardClick(tour)}
-                  className="flex-shrink-0 w-80 bg-[#233BA0] border border-gray-700 rounded-xl cursor-pointer snap-start"
-                >
-                  <CardHeader className="p-0">
-                    <img
-                      src={
-                        `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${tour.image}` ||
-                        "/placeholder.jpg"
-                      }
-                      alt={tour.product_title}
-                      className="w-full h-48 object-cover rounded-t-xl"
-                    />
-                  </CardHeader>
-
-                  <CardContent className="p-2">
-                    <CardTitle className="text-sm lg:text-md mb-2 font-normal line-clamp-2 text-white transition-colors">
-                      {tour.product_title}
-                    </CardTitle>
-<div className="flex justify-between text-white font-semibold">
-  <p className="">{tour?.starting_price} SGD</p>
-<p>{tour?.category_name}</p>
-</div>
-                    {/* <CardDescription className="text-sm text-white line-clamp-3">
-                      {tour.short_desc || "Explore amazing experiences!"}
-                    </CardDescription> */}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* LEFT ARROW */}
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              Top Day Tours
+            </h2>
+            <p className="text-[#D3202D] font-semibold text-sm md:text-base tracking-wide">
+              EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
+            </p>
+          </div>
+          
+          {/* Navigation Arrows */}
+          <div className="hidden md:flex gap-2 mt-4 md:mt-0">
             <button
               onClick={() => scroll("left")}
-              className="absolute top-1/2 left-0 -translate-y-1/2 p-2 bg-black/60 rounded-full text-white hover:bg-[#D3202D] hover:text-black transition-all"
+              className="p-2 bg-gray-300 rounded-full text-gray-700 hover:bg-gray-400 transition-all"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={20} />
             </button>
-
-            {/* RIGHT ARROW */}
             <button
               onClick={() => scroll("right")}
-              className="absolute top-1/2 right-0 -translate-y-1/2 p-2 bg-black/60 rounded-full text-white hover:bg-[#D3202D] hover:text-black transition-all"
+              className="p-2 bg-[#D3202D] rounded-full text-white hover:bg-red-700 transition-all"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={20} />
             </button>
           </div>
-          </>
+        </div>
+
+        {/* Loading State */}
+        {isLoadingDay ? (
+          <p className="text-center text-gray-600">Loading top day tours...</p>
+        ) : (
+          <div className="relative">
+            {/* Scrollable Container */}
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto gap-6 snap-x snap-mandatory scrollbar-hide pb-4"
+            >
+              {topDayTours.map((tour) => (
+                <div
+                  key={tour.id}
+                 
+                  className="flex-shrink-0 w-full md:w-96 cursor-pointer snap-start group"
+                >
+                  {/* Card Container */}
+                  <div className=" rounded-2xl h-[426px] md:h-[446px] lg:w-[385px] ">
+                    
+                    {/* Image Container */}
+                    <div className="relative h-56 md:h-64 overflow-hidden">
+                      <img
+                        src={
+                          `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${tour.image}` ||
+                          "/placeholder.jpg"
+                        }
+                        alt={tour.product_title}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                      
+                      {/* Rating Badge */}
+                      <div className="absolute top-3 right-3 bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md">
+                        <Star size={16} className="text-yellow-400 fill-yellow-400" />
+                        <span className="font-semibold text-white text-sm">5.0</span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="py-4">
+                      {/* Title */}
+                      <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1">
+                        {tour.product_title}
+                      </h3>
+                      
+                      {/* Subtitle */}
+                      <p className="text-gray-600 text-sm mb-3">
+                        ({tour.category_name})
+                      </p>
+
+                      {/* Description */}
+                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+                        {tour.short_desc || "Explore amazing experiences!"}
+                      </p>
+
+                      {/* Footer */}
+                      <div className="flex items-center bg-[#F7F7F780] rounded-xl py-3 px-1 justify-between">
+                        <p className="text-2xl font-bold text-gray-900">
+                          {tour?.starting_price} <span className="text-base">SGD</span>
+                        </p>
+                        <button  onClick={() => handleCardClick(tour)} className="bg-[#D3202D] hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                          See More
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
+
+        {/* Navigation Arrows for Small Screens (Bottom Center) */}
+        <div className="flex justify-center gap-2 mt-0 md:hidden">
+          <button
+            onClick={() => scroll("left")}
+            className="p-2 bg-gray-300 rounded-full text-gray-700 hover:bg-gray-400 transition-all"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="p-2 bg-[#D3202D] rounded-full text-white hover:bg-red-700 transition-all"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
       </div>
     </section>
   );

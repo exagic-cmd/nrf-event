@@ -207,7 +207,7 @@ const executeBookTransfer = () => {
     addons: (selectedAddons.pickup || []).map((a) => ({
       addon_id: a.addon_id,
       rate: a.rate,
-      quantity: a.quantity,
+      qty: a.quantity,
       total: a.total,
       title: a.title,   // pass title
       image: a.image,   // pass image
@@ -216,7 +216,7 @@ const executeBookTransfer = () => {
   addons_round: (selectedAddons.return || []).map((a) => ({
     addon_id: a.addon_id,
     rate: a.rate,
-    quantity: a.quantity,
+    qty: a.quantity,
     total: a.total,
     title: a.title,   // pass title
     image: a.image,   // pass image
@@ -323,7 +323,7 @@ const handleUpdate = () => {
     addons: (selectedAddons.pickup || []).map((a) => ({
       addon_id: a.addon_id,
       rate: a.rate,
-      quantity: a.quantity,
+      qty: a.quantity,
       total: a.total,
       title: a.title,   
       image: a.image,   
@@ -332,7 +332,7 @@ const handleUpdate = () => {
   addons_round: (selectedAddons.return || []).map((a) => ({
     addon_id: a.addon_id,
     rate: a.rate,
-    quantity: a.quantity,
+    qty: a.quantity,
     total: a.total,
     title: a.title,   
     image: a.image,   

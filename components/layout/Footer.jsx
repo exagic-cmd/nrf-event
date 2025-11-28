@@ -53,19 +53,20 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#D3202D] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-2 py-2">
+    <footer className=" text-black">
+      <hr />
+      <div className="max-w-full mx-4 lg:mx-16 px-4 sm:px-6 lg:px-2 py-2">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Logo and Description */}
           <div className="space-y-2">
             <LocalizedLink href="/">
               <img
-                src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763616810/External%20Links/Desktop.png"
-                alt="Logo"
+                src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642543/External%20Links/Desktop_red.png"
+       alt="Logo"
                 className="h-12 w-auto"
               />
             </LocalizedLink>
-            <p className="text-sm text-gray-200 max-w-xs">
+            <p className="text-sm text-black max-w-xs">
               {event?.event?.short_desc}
             </p>
           </div>
@@ -102,7 +103,7 @@ const Footer = () => {
                       aria-label={social.ariaLabel}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white hover:text-white transition-colors"
+                      className=" text-[#D3202D]  hover:text-black transition-colors"
                     >
                       {social.icon}
                     </a>

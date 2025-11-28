@@ -167,7 +167,7 @@ export default function AccommodationBookingPage() {
         <Utensils className="w-3 h-3" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight">Meal Plan</p>
+        <p className="text-[9px] opacity-70 leading-tight">Bed Type</p>
         <p className="text-sm font-semibold leading-tight">
           {selectedRoom.mealType || "Room Only"}
         </p>

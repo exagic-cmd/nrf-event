@@ -257,7 +257,7 @@ useEffect(() => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-5 mt-2 lg:mt-4">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-6">
       <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
         <div className="md:col-span-3 relative">
@@ -311,33 +311,7 @@ useEffect(() => {
                   <p className="mt-2 text-xs sm:text-sm">Searching...</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2">
-                  <div>
-                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
-                      Destinations
-                    </h6>
-                    {filtered.regions.length > 0 ? (
-                      filtered.regions.map((region) => (
-                        <button
-                          key={region.id}
-                          type="button"
-                          onMouseDown={(e) => {
-                              e.preventDefault();     // ❗ prevents input blur
-                              handleSelection(region, "region");
-                            }}
-                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
-                        >
-                          <MapPin className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                          <span className="truncate">{region.region_name}</span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        No destinations found
-                      </div>
-                    )}
-                  </div>
-                  <div>
+                <div>
                     <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
                       Hotels
                     </h6>
@@ -362,7 +336,6 @@ useEffect(() => {
                       </div>
                     )}
                   </div>
-                </div>
               )}
             </div>
           )}
@@ -651,7 +624,7 @@ useEffect(() => {
       <div className="col-span-2">
           <button
             type="submit"
-            className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
+            className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-[11px] active:bg-[#D3202D] transition touch-manipulation"
           >
             Search
           </button>
@@ -660,7 +633,7 @@ useEffect(() => {
      
      
        </div>
-         <div className="flex items-center justify-end gap-1 mt-4">
+         <div className="flex justify-end gap-1 mt-3">
             <span className="text-xs text-gray-400">Powered by </span>
             <img className="h-5 w-auto" src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763694508/External%20Links/toureast_logo.png" alt="Toureast Logo" />
           </div>
