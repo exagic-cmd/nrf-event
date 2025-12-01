@@ -4,7 +4,7 @@ import { Users, Briefcase, Crown, Star } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useCartStore } from "@/store/useCartStore";
-import SvgLoader2 from "@/components/common/Loader2Svg";
+import SvgLoader from "@/components/common/LoaderSvg";
 
 function TransfersCard({ car, category = "transfer" }) {
   const { localizedPush } = useLocalizedRouter();
@@ -83,7 +83,7 @@ function TransfersCard({ car, category = "transfer" }) {
     <>
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#CC9A55]">
           <div className="bg-white p-6 rounded-lg shadow-xl text-center">
             <p className="mb-4">{t("card.modal.alreadyInCart")}</p>
             <button
@@ -97,85 +97,93 @@ function TransfersCard({ car, category = "transfer" }) {
       )}
 
       {/* Card */}
-      <div
-        className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden p-2 flex flex-col md:flex-row gap-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
-        role="button"
-        tabIndex={0}
-        onClick={handleBookNow}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") handleBookNow();
-        }}
-        aria-label={`Open ${car.name} details`}
-      >
-        {isLoading && (
-          <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
-            <SvgLoader2 />
+<div
+  className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden flex flex-col md:flex-row gap-4 hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
+>
+  {isLoading && (
+    <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
+      <SvgLoader />
+    </div>
+  )}
+
+  {/* Image */}
+  <div className="relative w-full md:w-[300px] flex-shrink-0 flex justify-center items-center">
+    <img
+      src={car.image}
+      alt={car.name}
+      className="object-cover h-[190px] w-full md:w-[300px]"
+    />
+
+    {car.feature_type_id === 1 && (
+      <span className="absolute top-1 left-0 flex items-center gap-1 px-1 py-1 text-xs font-semibold text-white rounded-md bg-black">
+        <Crown size={12} />
+        <span>Premium</span>
+      </span>
+    )}
+  </div>
+
+  {/* Info Section */}
+  <div className="flex-1 flex flex-col justify-between pr-2.5 pl-2.5 py-3">
+    <div>
+      <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D]">{car.name}</h2>
+      {car.subtitle && (
+        <p className="text-sm text-gray-600 mb-1">{car.subtitle}</p>
+      )}
+      <p className="text-sm text-gray-700 line-clamp-2 mt-2">
+        {car.desc || car.description}
+      </p>
+
+      {/* Rating (for daytour / accommodation) */}
+      {(category === "daytour" || category === "accommodation") &&
+        car.rating && (
+          <div className="flex items-center mt-2 text-yellow-500 text-sm">
+            <Star size={14} className="mr-1" />
+            <span>{car.rating}</span>
           </div>
         )}
 
-        {/* Image */}
-        <div className="relative w-full md:w-[180px] flex-shrink-0 flex justify-center items-center">
-          <img
-            src={car.image}
-            alt={car.name}
-            className="object-contain h-[120px] w-full md:w-[180px] rounded-lg"
-          />
+      {/* Features */}
+      {car.features && car.features.length > 0 && (
+        <ul className="text-xs text-gray-500 mt-2 list-disc list-inside">
+          {car.features.slice(0, 3).map((f, idx) => (
+            <li key={idx}>{f}</li>
+          ))}
+        </ul>
+      )}
+    </div>
 
-          {car.feature_type_id === 1 && (
-            <span className="absolute top-1 left-0 flex items-center gap-1 px-1 py-1 text-xs font-semibold text-white rounded-md bg-black">
-              <Crown size={12} />
-              <span>Premium</span>
-            </span>
-          )}
-        </div>
-
-        {/* Info Section */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div>
-            <h2 className="font-bold text-sm lg:text-md">{car.name}</h2>
-            {car.subtitle && (
-              <p className="text-sm text-gray-600 mb-1">{car.subtitle}</p>
-            )}
-            <p className="text-sm text-gray-700 line-clamp-2">
-              {car.desc || car.description}
-            </p>
-
-            {/* Rating (for daytour / accommodation) */}
-            {(category === "daytour" || category === "accommodation") &&
-              car.rating && (
-                <div className="flex items-center mt-2 text-yellow-500 text-sm">
-                  <Star size={14} className="mr-1" />
-                  <span>{car.rating}</span>
-                </div>
-              )}
-
-            {/* Features */}
-            {car.features && car.features.length > 0 && (
-              <ul className="text-xs text-gray-500 mt-2 list-disc list-inside">
-                {car.features.slice(0, 3).map((f, idx) => (
-                  <li key={idx}>{f}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Bottom Section */}
-          <div className="flex justify-between items-end mt-3">
-            <div>
-              {hasPromo && (
-                <p className="text-sm text-gray-400 line-through">
-                  {formatPrice(car.originalPrice)} SGD
-                </p>
-              )}
-              <p className="text-lg font-bold text-[#D3202D]">
-                {formatPrice(car.price)} SGD
-              </p>
-            </div>
-
-            {/* Card is clickable — removed separate Book/View button and is_active gating */}
-          </div>
-        </div>
+    {/* Bottom Section */}
+    <div className="flex justify-between items-end mt-3">
+      <div>
+        {hasPromo && (
+          <p className="text-sm text-gray-400 line-through">
+            {formatPrice(car.originalPrice)} SGD
+          </p>
+        )}
+        <p className="text-lg font-bold text-[#D3202D]">
+          {formatPrice(car.price)} SGD
+        </p>
       </div>
+
+      {/* Book Now Button */}
+      <button
+        type="button"
+        onClick={handleBookNow}
+        className="rounded-lg bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition cursor-pointer"
+      >
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <SvgLoader className="w-4 h-4" />
+            {t("common.loading")}
+          </span>
+        ) : (
+          "Book Now"
+        )}
+      </button>
+    </div>
+  </div>
+</div>
+
     </>
   );
 }

@@ -46,7 +46,7 @@ useEffect(() => {
   return (
     <Layout>
       {!showRegister ? (
-        <div className="min-h-screen bg-[#D0E9FF] w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="min-h-screen bg-[#f4f4f4] w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
           <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg w-full max-w-5xl h-[559px] overflow-hidden">
             {/* Left: Sign-in Form */}
             <div className="w-full h-full md:w-1/2 m-2">

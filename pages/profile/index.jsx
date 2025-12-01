@@ -121,7 +121,7 @@ const UserProfileScreen = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-[#f4f4f4]">
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -151,7 +151,7 @@ const UserProfileScreen = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 {/* Profile Header */}
-                <div className="bg-gradient-to-br from-[#D3202D] to-[#eca94c] px-6 pt-2 text-white relative">
+                <div className="bg-gradient-to-br from-[#D3202D] to-[#ffbbbb] px-6 pt-2 text-white relative">
                   <div className="relative flex flex-col items-center">
                     <div className="relative">
                       <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl font-bold mb-4">
@@ -176,7 +176,7 @@ const UserProfileScreen = () => {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           user?.user_status === "registered"
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-blue-100 text-blue-700"
                             : "bg-gray-100 text-gray-700"
                         }`}
                       >
@@ -189,8 +189,8 @@ const UserProfileScreen = () => {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           user?.verification_status === "verified"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-red-100 text-red-700"
                         }`}
                       >
                         {user?.verification_status === "verified"

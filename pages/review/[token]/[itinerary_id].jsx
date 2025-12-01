@@ -156,7 +156,7 @@ if (result?.success && result?.message?.toLowerCase()?.includes("success")) {
     );
 if (successMessage)
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#f4f4f4] bg-opacity-50 p-4">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full text-center">
         <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#D3202D]">
           {t("success.title", { defaultValue: "Thank you!" })}
@@ -166,7 +166,7 @@ if (successMessage)
         </p>
         <button
           onClick={() => router.push("/order")}
-          className="px-6 py-2 bg-[#D3202D] text-white rounded-lg hover:bg-[#b88a4a]"
+          className="px-6 py-2 bg-[#D3202D] text-white rounded-lg "
         >
           {t("button.back")}
         </button>
@@ -195,14 +195,14 @@ if (successMessage)
     );
 
   return (
-    <div className="min-h-screen lg:mt-20 md:mt-12 mt-12 bg-black">
+    <div className="min-h-screen lg:mt-20 md:mt-12 mt-12 bg-[#f4f4f4]">
       <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
         {/* Back button */}
         <button
           onClick={onBack ? onBack : () => router.push("/order")}
           className="flex items-center mt-2  gap-2 text-gray-100 hover:text-[#D3202D] mb-6 transition-colors"
         >
-          <ArrowLeft size={20} /> {t("button.backToTrips")}
+          <ArrowLeft size={20} /> {t("button.back")}
         </button>
 
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden p-6 sm:p-8 md:p-12">
@@ -316,7 +316,7 @@ if (successMessage)
                 {storeLoading ? t("button.submitting") : t("button.submit")}
               </button>
             ) : (
-              <p className="text-[#cb913f] font-semibold flex-1 text-center self-center">
+              <p className="bg-[#D3202D] font-semibold flex-1 text-center self-center">
                 {t("alreadySubmitted")}
               </p>
             )}

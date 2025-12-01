@@ -309,7 +309,7 @@ const startingPrice = apiData.starting_price || ""
   if (isNavigating) {
     return (
       <Layout>
-        <div className="flex bg-[#D0E9FF] items-center justify-center min-h-screen">
+        <div className="flex bg-[#f4f4f4] items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -319,7 +319,7 @@ const startingPrice = apiData.starting_price || ""
   if (!showContent || isLanguageLoading) {
     return (
       <Layout>
-        <div className="flex bg-[#D0E9FF] items-center justify-center min-h-screen">
+        <div className="flex bg-[#f4f4f4] items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -401,25 +401,26 @@ const handleVariantSelect = async (variant) => {
     <Layout>
     <TourDetailHead basicInfo={apiData} productname={productname} productid={productid} />
 
-      <div className="min-h-screen bg-[#D0E9FF] text-black w-full pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-[#f4f4f4] text-black w-full pt-[80px] md:pt-10 pb-12">
         <div className="relative overflow-hidden">
           <div className="px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-8">
             <TourHeader apiData={apiData} />
    <TourHighlights apiData={apiData} />
   
-            <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8">
-              <ImageGallery
-                apiData={apiData}
-                currentImageIndex={currentImageIndex}
-                setCurrentImageIndex={setCurrentImageIndex}
-              />
-
-              <TourInfoCard
-                apiData={apiData}
-                onScrollToOptions={scrollToTourOptions}
-                onProceedBooking={handleProceedBooking}
-              />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+              <div className="lg:col-span-3"> 
+                <ImageGallery
+                  apiData={apiData}
+                />
+              </div>
+              <div className="lg:col-span-1"> 
+                <TourInfoCard
+                  apiData={apiData}
+                  onScrollToOptions={scrollToTourOptions}
+                  onProceedBooking={handleProceedBooking}
+                />
+              </div>
+            </div>
           </div>
         </div>
 

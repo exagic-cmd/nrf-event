@@ -379,7 +379,7 @@ const handleReturnModalConfirm = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen flex justify-center items-center bg-[#D0E9FF]">
+        <div className="min-h-screen flex justify-center items-center bg-[#f4f4f4]">
          <Loading2Svg/>
         </div>
       </Layout>
@@ -389,7 +389,7 @@ const handleReturnModalConfirm = () => {
   if (!selectedTransfer) {
     return (
       <Layout>
-         <div className="min-h-screen bg-[#D0E9FF] flex items-center justify-center">
+         <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
         <div className="text-center">
           <div className="text-[#D3202D] text-xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-white mb-2">
@@ -413,8 +413,8 @@ const handleReturnModalConfirm = () => {
 
   return (
     <Layout>
-     <div className="bg-[#D0E9FF] pb-6 md:pb-14">
-       <div className="min-h-screen bg-[#D0E9FF] mt-16 p-4 max-w-7xl mx-auto">
+     <div className="bg-[#f4f4f4] pb-6 md:pb-14">
+       <div className="min-h-screen bg-[#f4f4f4] mt-16 p-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:hidden space-y-4">
             <div className="order-1">

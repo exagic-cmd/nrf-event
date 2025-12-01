@@ -64,7 +64,7 @@ function TransfersList() {
 
   return (
     <div ref={vehicleSectionRef} className="space-y-4">
-      <div className="rounded-xl py-3 px-4 bg-gray-50">
+      <div className="rounded-xl py-3 px-4 bg-white">
         <p className="text-lg font-semibold">{t('results.showingTransfers')}</p>
       </div>
 

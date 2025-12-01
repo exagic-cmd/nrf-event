@@ -18,9 +18,10 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 const DEFAULT_REGION = {
   id: 4352,
   region_id: 18196,
-  region_name: "Singapore",
-  name: "Singapore",
+  region_name: "",
+  name: "",
 };
+
 
 export default function AccommodationFilter({ onSearch }) {
   // const [search, setSearch] = useState("");
@@ -257,89 +258,10 @@ useEffect(() => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow p-3 sm:p-4 md:p-6 md:pb-6">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-3 sm:p-4 md:p-6 md:pb-6">
       <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
-        <div className="md:col-span-3 relative">
-          <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
-            <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
-            <input
-              type="text"
-              value={search}
-              onChange={handleInputChange}
-              onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
-              placeholder="Search hotels or regions..."
-              className="w-full bg-transparent outline-none text-base sm:text-lg"
-              autoComplete="off"
-            />
-            {search && search !== DEFAULT_REGION.name && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearch(DEFAULT_REGION.name);
-                  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
-                  setSelectedRegion(DEFAULT_REGION);
-                }}
-                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-            {/* {search && (
-              <button
-                type="button"
-              onClick={() => {
-  setSearch(DEFAULT_REGION.name);
-  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
-  setShowDropdown(false);
-}}
-
-                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )} */}
-          </div>
-
-          {/* Dropdown with Loading - Mobile Full Width */}
-          {showDropdown && (
-            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg max-h-64 sm:max-h-80 overflow-auto">
-              {isLoading ? (
-                <div className="px-4 py-6 sm:py-8 text-center text-gray-500">
-                  <div className="inline-block animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-2 border-gray-300 border-t-yellow-500"></div>
-                  <p className="mt-2 text-xs sm:text-sm">Searching...</p>
-                </div>
-              ) : (
-                <div>
-                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
-                      Hotels
-                    </h6>
-                    {filtered.hotels.length > 0 ? (
-                      filtered.hotels.map((hotel) => (
-                        <button
-                          key={hotel.id}
-                          type="button"
-                          onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleSelection(hotel, "hotel");
-                            }}
-                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
-                        >
-                          <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                          <span className="truncate">{hotel.title}</span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        No hotels found
-                      </div>
-                    )}
-                  </div>
-              )}
-            </div>
-          )}
-        </div>
+    
           {/* Date Range Picker - SINGLE */}
 <div className="md:col-span-4 relative">
           <div className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2">
@@ -355,7 +277,7 @@ useEffect(() => {
               className="w-full bg-transparent outline-none cursor-pointer"
               wrapperClassName="w-full"
               dateFormat="MMM d, yyyy"
-              monthsShown={isDesktop ? 2 : 1}
+              monthsShown={1}
               showPopperArrow={false}
               onCalendarOpen={handleCalendarOpen}
               customInput={
@@ -564,7 +486,86 @@ useEffect(() => {
             </div>
           )}
         </div>
+    <div className="md:col-span-3 relative">
+          <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+            <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+            <input
+              type="text"
+              value={search}
+              onChange={handleInputChange}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
+              placeholder="Search hotels or regions..."
+              className="w-full bg-transparent outline-none text-base sm:text-lg"
+              autoComplete="off"
+            />
+            {search && search !== DEFAULT_REGION.name && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch(DEFAULT_REGION.name);
+                  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+                  setSelectedRegion(DEFAULT_REGION);
+                }}
+                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            {/* {search && (
+              <button
+                type="button"
+              onClick={() => {
+  setSearch(DEFAULT_REGION.name);
+  setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+  setShowDropdown(false);
+}}
 
+                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )} */}
+          </div>
+
+          {/* Dropdown with Loading - Mobile Full Width */}
+          {showDropdown && (
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg max-h-64 sm:max-h-80 overflow-auto">
+              {isLoading ? (
+                <div className="px-4 py-6 sm:py-8 text-center text-gray-500">
+                  <div className="inline-block animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-2 border-gray-300 border-t-yellow-500"></div>
+                  <p className="mt-2 text-xs sm:text-sm">Searching...</p>
+                </div>
+              ) : (
+                <div>
+                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
+                      Hotels
+                    </h6>
+                    {filtered.hotels.length > 0 ? (
+                      filtered.hotels.map((hotel) => (
+                        <button
+                          key={hotel.id}
+                          type="button"
+                          onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSelection(hotel, "hotel");
+                            }}
+                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                        >
+                          <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                          <span className="truncate">{hotel.title}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        No hotels found
+                      </div>
+                    )}
+                  </div>
+              )}
+            </div>
+          )}
+        </div>
         {/* Search Button */}
         {/* <div className="md:flex hidden">
           <button

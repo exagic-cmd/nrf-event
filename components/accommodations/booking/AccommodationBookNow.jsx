@@ -509,7 +509,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
   return (
     <>
      <div className="bg-white rounded-lg p-6">
-  <h2 className="text-md lg:text-xl font-bold text-black mb-6">
+  <h2 className="font-bold text-md lg:text-md text-black mb-6">
     Guest Information
   </h2>
 
@@ -519,8 +519,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       const roomNumber = roomIdx + 1;
 
       return (
-        <div key={roomIdx} className="rounded-xl p-0 md:p-4">
-          <h3 className="text-lg font-bold text-black mb-5">
+        <div key={roomIdx} className="rounded-lg p-0 md:p-4">
+          <h3 className="font-bold text-md lg:text-md text-black mb-5">
             Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
             {room.children?.length > 0 &&
               `, ${room.children.length} Child${
@@ -532,19 +532,19 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
           {roomGuests.adults.map((adult, i) => (
             <div
               key={`adult-${i}`}
-              className="bg-gray-100 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"
+              className="bg-gray-100  p-2 grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               {/* Title */}
               <div>
                 <label className="block text-black text-sm font-medium mb-2">
-                  Title {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                   {roomIdx === 0 && i === 0 ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
                 </label>
                 <select
                   value={adult.title}
                   onChange={(e) =>
                     updateGuest(roomIdx, "adults", i, "title", e.target.value)
                   }
-                  className="w-full px-3 py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                  className="w-full px-3 h-[42px] py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
                   required={i === 0}
                 >
                   {TITLE_OPTIONS.map((o) => (
@@ -558,10 +558,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
               {/* First Name */}
               <div>
                 <label className="block text-black text-sm font-medium mb-2">
-                  First Name {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                 {roomIdx === 0 && i === 0 ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   type="text"
+                  placeholder="First Name"
                   value={adult.firstName}
                   onChange={(e) =>
                     updateGuest(
@@ -584,10 +585,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
               {/* Last Name */}
               <div>
                 <label className="block text-black text-sm font-medium mb-2">
-                  Last Name {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                  {roomIdx === 0 && i === 0 ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   type="text"
+                  placeholder="Last Name"
                   value={adult.lastName}
                   onChange={(e) =>
                     updateGuest(roomIdx, "adults", i, "lastName", e.target.value)

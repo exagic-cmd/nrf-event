@@ -132,7 +132,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
                         itinerary_id: item.id,
                       })
                     }
-                    className="flex-1 bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#cb913f] transition-colors text-sm"
+                    className="flex-1 bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1  transition-colors text-sm"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     <span>{t("details")}</span>

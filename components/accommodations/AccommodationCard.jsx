@@ -5,6 +5,7 @@ import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import SvgLoader2 from "@/components/common/Loader2Svg";
+import LoaderSvg from "@/components/common/LoaderSvg";
 
 function AccommodationCard({ accommodation, category = "accommodation" }) {
 
@@ -168,7 +169,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       >
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
-            <SvgLoader2 />
+            <LoaderSvg />
           </div>
         )}
 
@@ -190,7 +191,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         </div>
 
         {/* Info Section */}
-        <div className="flex-1 flex flex-col justify-between pr-2.5">
+        <div className="flex-1 flex flex-col justify-between pr-2.5 pl-2.5">
           <div>
            <div className="flex flex-col justify-between my-1">
              <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D]">{hotelData.title || hotelData.product_title}</h2>
@@ -219,7 +220,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
             </div>
            </div>
             {/* Room Info Section */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-[#f5f5f5] p-2 rounded">
+<div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-[#f5f5f5] p-2 rounded">
 
   {/* First Column: Guests */}
   <div>
@@ -280,7 +281,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   {/* Third Column: Price */}
   <div className="text-right">
     <p className="text-lg font-bold text-primary"> {formatPrice(lowestPrice)} {hotelData?.currency || accommodation.currency || 'USD'}</p>
-    <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p>
+    {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
 
 </div>
@@ -336,26 +337,37 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
           </div>
 
           {/* Bottom Section */}
-<div className="flex justify-between items-end mt-1">
-  {/* Left side (empty for now) */}
-  <div></div>
+<div className="flex items-end mt-1">
+  {/* Left side: price (mobile only) */}
+  <div className="block md:hidden mr-auto">
+    <p className="text-lg font-bold text-primary">
+      {formatPrice(lowestPrice)}{" "}
+      {hotelData?.currency || accommodation.currency || "USD"}
+    </p>
+    <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
+      for a night for {totalAdults} adults and {totalChildren} children
+    </p>
+  </div>
 
   {/* Right side button */}
   <button
     type="button"
     onClick={handleCardClick}
-    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer"
+    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto"
   >
     {isLoading ? (
       <span className="flex items-center gap-2">
-        <SvgLoader2 className="w-4 h-4" />
+        <LoaderSvg className="w-4 h-4" />
         {t("common.loading")}
       </span>
     ) : (
-      "Show all rooms"
+      "Book Now"
     )}
   </button>
 </div>
+
+
+
 
         </div>
       </div>

@@ -82,7 +82,7 @@ const AccommodationHeader = ({ hotelData }) => {
       </div>
       
       {/* Hotel Title */}
-      <h1 className="text-xl md:text-3xl font-bold text-black mb-2">
+      <h1 className="text-lg font-semibold text-black mb-2">
         {hotelData?.title || hotelData?.name || "Accommodation"}
       </h1>
       

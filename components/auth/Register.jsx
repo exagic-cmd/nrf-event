@@ -67,7 +67,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
+    <div className="min-h-screen bg-[#f4f4f4] w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
       <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg w-full max-w-5xl h-[559px] overflow-hidden">
         {/* Left: Banner */}
         <div className="hidden md:block md:w-1/2 justify-items-center">
@@ -182,7 +182,7 @@ export default function RegisterPage() {
               className={`w-full bg-[#D3202D] text-white  p-3 rounded-md transition-colors ${
                 loading
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[#cb913f]"
+                  : "hover:bg-[#D3202D]"
               }`}
             >
               {loading ? t("registering") : t("register")}
