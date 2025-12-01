@@ -5,6 +5,7 @@ import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import SvgLoader2 from "@/components/common/Loader2Svg";
+import LoaderSvg from "@/components/common/LoaderSvg";
 
 function AccommodationCard({ accommodation, category = "accommodation" }) {
 
@@ -168,7 +169,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       >
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
-            <SvgLoader2 />
+            <LoaderSvg />
           </div>
         )}
 
@@ -356,7 +357,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   >
     {isLoading ? (
       <span className="flex items-center gap-2">
-        <SvgLoader2 className="w-4 h-4" />
+        <LoaderSvg className="w-4 h-4" />
         {t("common.loading")}
       </span>
     ) : (

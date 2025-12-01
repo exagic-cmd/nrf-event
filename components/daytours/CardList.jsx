@@ -56,7 +56,7 @@ const { productfeature, fetchProductFeature } = useProductFeature();
   return (
     <div className="space-y-4 md:12 sm:4 lg:mx-44">
       {/* View Switcher */}
-      <div className="rounded-xl py-3 px-4 bg-gray-50">
+      <div className="rounded-xl py-3 px-4 bg-white">
         <div className="flex justify-between items-center">
           <p className="text-md md:text-lg font-normal md:font-semibold">
             {t("search.searchTours")}: {tours.length}

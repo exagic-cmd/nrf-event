@@ -78,7 +78,7 @@ const AccommodationInfoCard = ({
       <div className="bg-white  lg:flex-col justify-end  py-2 sticky top-4 mr-0 lg:mr-2 ">
         {/* Price */}
         <div className="mb-5 flex justify-end">
-          <div className="text-lg lg:text-2xl font-bold text-[#D3202D] mb-1">
+          <div className="text-lg lg:text-2xl text-[#D3202D] mb-1">
           <span className="text-sm md:text-md text-black">  Starting Price </span>{formattedPrice(lowestPrice)}
           </div>
           
@@ -151,7 +151,7 @@ const AccommodationInfoCard = ({
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-[#D3202D] text-lg lg:text-xl text-white lg:py-2 py-3 px-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-[#D3202D]  text-white lg:py-2 py-3 px-2 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>

@@ -36,7 +36,7 @@ const StubaRoomList = ({
   if (!allRooms.length) {
     return (
       <div className="px-4 sm:px-6 lg:px-12 py-8">
-        <h2 className="text-2xl font-bold text-black mb-6">Available Rooms</h2>
+        <h2 className="text-lg font-semibold text-black mb-6">Available Rooms</h2>
         <div className="text-gray-400 text-center py-12 bg-gray-800 rounded-xl border border-gray-700">
           <div className="text-lg mb-2">No rooms available</div>
           <div className="text-sm">Try different dates or check back later</div>
@@ -119,7 +119,7 @@ const StubaRoomList = ({
       <div className="">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-[#233BA0] mb-1">Available Rooms</h2>
+            <h2 className="text-lg font-semibold text-[#233BA0] mb-1">Available Rooms</h2>
             <p className="text-black ">
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
             </p>
@@ -140,7 +140,7 @@ const StubaRoomList = ({
                         {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-32 h-24 object-cover" />}
                     </div>
                     <div>
-                        <h3 className="text-xl pt-3 font-bold text-black">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
+                        <h3 className="font-bold text-md lg:text-md line-clamp-1 text-black pt-3">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
                     </div>
                 </div>
             
@@ -179,7 +179,7 @@ const StubaRoomList = ({
               </div>
 
               {/* Rate Table Header */}
-              <div className="hidden lg:grid grid-cols-6 text-xs uppercase mt-2 text-black font-bold bg-[#dcdcdc] border-y border-gray-200">
+              <div className="hidden lg:grid grid-cols-6 text-xs uppercase text-black font-bold bg-[#dcdcdc] border-y border-gray-200">
                   <div className="col-span-2 py-3 px-4 border-r border-gray-500">Room</div>
                   <div className="py-3 px-4 border-r border-gray-500">Meals</div>
                   <div className="py-3 px-4 border-r border-gray-500">Cancellation</div>
