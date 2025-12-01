@@ -26,7 +26,7 @@ const ConfirmDeleteModal = ({ itemTitle, onCancel, onConfirm }) => {
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-[#CC9A55] text-white rounded "
+            className="px-4 py-2 bg-[#D3202D] text-white rounded "
           >
             {t("delete")}
           </button>

@@ -89,10 +89,10 @@ export default function RecommendedProducts() {
   };
 
   return (
-    <section className="relative w-full py-2 md:py-4 bg-[#D0E9FF]">
+    <section className="relative w-full py-2 md:py-4 bg-[#f4f4f4]">
       {/* Loader Overlay */}
       {loading && (
-        <div className="absolute inset-0 z-50 flex justify-center items-center bg-[#D0E9FF] pointer-events-none">
+        <div className="absolute inset-0 z-50 flex justify-center items-center bg-[#f4f4f4] pointer-events-none">
           <SvgLoader2 />
         </div>
       )}
