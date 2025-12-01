@@ -18,13 +18,13 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
   const tourFeatures = [
     ...(apiData.duration ? [{
       icon: Clock,
-      title: t("duration"),
+      // title: t("duration"),
       desc: `${apiData.duration} ${t("hours")}`
     }] : []),
 
     ...(apiData.tourtype ? [{
       icon: Mountain,
-      title: t("tour_type"),
+     // title: t("tour_type"),
       desc: apiData.tourtype === "Private Tour"
         ? t("privateTour", "Private Tour")
         : t("shareTour", "Share Tour")
@@ -32,13 +32,13 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
 
     ...(apiData.guide_tour ? [{
       icon: UserCheck,
-      title: t("guide"),
+     // title: t("guide"),
       desc: apiData.guide_tour === "yes" ? t("guided") : t("no_guide")
     }] : []),
 
     ...(apiData.guidelanguage ? [{
       icon: Globe,
-      title: t("language"),
+     // title: t("language"),
       desc: t("english")
     }] : []),
 

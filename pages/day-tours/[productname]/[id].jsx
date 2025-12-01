@@ -407,19 +407,20 @@ const handleVariantSelect = async (variant) => {
             <TourHeader apiData={apiData} />
    <TourHighlights apiData={apiData} />
   
-            <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8">
-              <ImageGallery
-                apiData={apiData}
-                currentImageIndex={currentImageIndex}
-                setCurrentImageIndex={setCurrentImageIndex}
-              />
-
-              <TourInfoCard
-                apiData={apiData}
-                onScrollToOptions={scrollToTourOptions}
-                onProceedBooking={handleProceedBooking}
-              />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+              <div className="lg:col-span-3"> 
+                <ImageGallery
+                  apiData={apiData}
+                />
+              </div>
+              <div className="lg:col-span-1"> 
+                <TourInfoCard
+                  apiData={apiData}
+                  onScrollToOptions={scrollToTourOptions}
+                  onProceedBooking={handleProceedBooking}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
