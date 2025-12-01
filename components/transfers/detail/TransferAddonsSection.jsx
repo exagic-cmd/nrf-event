@@ -182,7 +182,7 @@ const formatDate = (dateString) => {
                     toggleAddon(addon);
                   }}
                   disabled={disabled}
-                  className="px-4 py-1.5 bg-[#D3202D] hover:bg-[#B88A45] text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
+                  className="px-4 py-1.5 bg-[#D3202D]  text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
                   {t("add")}
                 </button>
@@ -272,7 +272,7 @@ const formatDate = (dateString) => {
                   toggleAddon(addon);
                 }}
                 disabled={disabled}
-                className="w-full bg-[#D3202D] hover:bg-[#B88A45] text-white py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="w-full bg-[#D3202D]  text-white py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
               >
                 {t("add", "Add")}
               </button>

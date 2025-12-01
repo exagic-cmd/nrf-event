@@ -476,7 +476,7 @@ useEffect(() => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex bg-[#D0E9FF] items-center justify-center min-h-screen">
+        <div className="flex bg-[#f4f4f4] items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -510,7 +510,7 @@ useEffect(() => {
         </title>
       </Head>
 
-      <div className="min-h-screen bg-[#D0E9FF] text-black pt-[80px] md:pt-16 pb-12">
+      <div className="min-h-screen bg-[#f4f4f4] text-black pt-[80px] md:pt-16 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 w-full gap-6 lg:gap-8"> {/* New grid container for main content and sidebar */}
             <div className="lg:col-span-9"> {/* Main content area */}

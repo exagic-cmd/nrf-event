@@ -106,34 +106,28 @@ export default function AccommodationBookingPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#D0E9FF] text-black pt-20 mt-2 lg: mt-6 pb-12">
+      <div className="min-h-screen bg-[#f4f4f4] text-black pt-20 mt-2 lg: mt-6 pb-12">
         <div className="max-w-7xl mx-auto px-4">
           <h1 className="text-xl lg:text-3xl font-bold mb-8">
             Book {hotel?.title || "Hotel"}
           </h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Booking Form */}
-            <div className="lg:col-span-2">
-              <AccommodationBookNow
-                isNonStuba={isNonStuba}
-                bookingData={bookingData}
-              />
-            </div>
-
-   {/* --- BOOKING SUMMARY BOX --- */}
-<div className="
-  bg-[#D3202D] text-white rounded-2xl 
-  p-4 sm:p-5 
-  sticky top-24 shadow-xl border border-white/10 
-  max-h-[70vh]             /* Prevent full-screen takeover */
-  overflow-y-auto          /* Scroll only inside card if needed */
-  small-scrollbar
-">
-
-  <h3 className="text-xl font-bold mb-4 sm:mb-5 tracking-tight">
-    Booking Summary
-  </h3>
+            {/* --- BOOKING SUMMARY BOX (Right side on Desktop, Top on Mobile) --- */}
+            <div
+              className="
+              bg-[#D3202D] text-white rounded-2xl 
+              p-4 sm:p-5 
+              lg:sticky lg:top-24 shadow-xl border border-white/10 
+              max-h-[70vh]             /* Prevent full-screen takeover */
+              overflow-y-auto          /* Scroll only inside card if needed */
+              small-scrollbar
+              lg:order-last            /* On large screens, move this to the end */
+            "
+            >
+              <h3 className="text-xl font-bold mb-4 sm:mb-5 tracking-tight">
+                Booking Summary
+              </h3>
 
   <div className="space-y-4">
 
@@ -199,7 +193,15 @@ export default function AccommodationBookingPage() {
       </div>
     </div>
   </div>
-</div>
+            </div>
+
+   
+            <div className="lg:col-span-2">
+              <AccommodationBookNow
+                isNonStuba={isNonStuba}
+                bookingData={bookingData}
+              />
+            </div>
 
 
 

@@ -25,7 +25,7 @@ function BaggagePassengerSelector({
           </div>
           <div
             className={`border border-[#D3202D] rounded-md p-4 ${
-              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-blue-100"
+              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-white"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -64,7 +64,7 @@ function BaggagePassengerSelector({
           </div>
           <div
             className={`border border-[#D3202D] rounded-md p-4 ${
-              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-blue-100"
+              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-white"
             }`}
           >
             <div className="flex items-center justify-between">
