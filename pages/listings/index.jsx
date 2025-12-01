@@ -126,7 +126,7 @@ function ListingsPage() {
       <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#f4f4f4]">
         <div className="flex flex-col lg:flex-row gap-3 px-6">
           {searchCategory === "transfer" && (
-            <div className="h-fit md:sticky top-24 self-start z-20">
+            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
               <TransferSearchFilter
                 onSearch={() => {}}
                 showModal={showSearchModal}
@@ -140,7 +140,7 @@ function ListingsPage() {
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
             <div className="h-fit md:sticky top-24 self-start z-20">
               {/* Filter Sidebar (Sticky) */}
-              <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-50">
+              <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
                 {!isLoading && searchResults.length > 0 && (
                   <FilterSidebar />
                 )}

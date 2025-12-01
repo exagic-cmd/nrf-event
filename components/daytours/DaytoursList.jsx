@@ -29,6 +29,7 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
     if (!activeData || !Array.isArray(activeData)) return [];
 
     return activeData.map((item) => {
+      console.log("Processing Daytour Item:", item);
       const basePrice = parseFloat(item.adult_price || item.starting_price);
       const promoPrice = parseFloat(item.final_promo_price || 0);
       const usePromo = promoPrice > 0 && promoPrice < basePrice;
@@ -51,6 +52,9 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
         originalPrice: usePromo ? basePrice : null,
         duration: item.tour_duration ? `${item.tour_duration} hours` : null,
         rating: 4.5,
+        tourtype: item.tour_type,
+        shareTour: item.share_tour,
+        guidelanguage: item.guide_language,
         reviews: 0,
         adultPrice: item.adult_price,
         childPrice: item.child_price,
@@ -94,7 +98,7 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
 
   return (
     <div ref={daytoursSectionRef} className="space-y-6">
-      <div className="rounded-xl py-3 px-4 bg-gray-50">
+      <div className="rounded-xl py-3 px-4 bg-white">
         <p className="text-lg font-semibold">
           Showing {sortedDaytours.length} Day Tours
           {filteredDaytours && filteredDaytours.length > 0 && (
