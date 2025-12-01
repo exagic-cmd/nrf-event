@@ -118,7 +118,7 @@ const DayTourBookingPage = () => {
   if (!allowed) {
     return (
       <Layout>
-        <div className="flex items-center bg-[#D0E9FF] justify-center pb-12 min-h-screen text-center px-4">
+        <div className="flex items-center bg-[#f4f4f4]justify-center pb-12 min-h-screen text-center px-4">
           <div>
              <h2 className="text-xl font-semibold text-black mb-2">{t("redirecting")}</h2>
             <p className="text-black">{t("redirectingMessage")}</p>
@@ -139,7 +139,7 @@ const DayTourBookingPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#D0E9FF] pb-12 pt-12 md:pt-20">
+      <div className="min-h-screen bg-[#f4f4f4] pb-12 pt-12 md:pt-20">
         <div className="max-w-7xl mx-auto px-1 md:px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">

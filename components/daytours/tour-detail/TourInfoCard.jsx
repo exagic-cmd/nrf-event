@@ -59,7 +59,7 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
     <div className="lg:col-span-2 space-y-4 sm:space-y-6">
       {/* Mobile Pricing Card */}
       <div className="hidden md:block
- bg-blue-50 p-4 rounded-xl border bordee-[#D3202D] mb-6">
+ bg-white p-4 rounded-xl border bordee-[#D3202D] mb-6">
         <div className="text-center">
           <div className="text-sm text-gray-600">{t("starting_from")}</div>
           <div className="my-2">
@@ -92,10 +92,10 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
           return (
             <div
               key={i}
-              className="flex items-center justify-between gap-2 p-3 bg-blue-50 rounded-lg shadow-sm border border-[#D3202D] flex-shrink-0 "
+              className="flex items-center justify-between gap-2 p-3 bg-white rounded-lg shadow-sm border border-[#D3202D] flex-shrink-0 "
             >       
               <div className="flex items-center gap-2">
-                <div className="bg-blue-50 p-2 rounded-lg">
+                <div className="bg-white p-2 rounded-lg">
                   <IconComponent size={14} className="text-[black]" />
                 </div>
                 <div className="font-medium text-sm text-black">{feature.title}</div>
