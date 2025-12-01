@@ -114,8 +114,8 @@ const TravelInfoPage = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-[#D0E9FF] mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="w-full bg-[#f4f4f4] mt-12">
+        <div className=" md:mx-8 mx-2 lg:mx-12 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
               <div className="flex justify-between items-center">
@@ -131,7 +131,7 @@ const TravelInfoPage = () => {
           )}
 <button
   onClick={() => router.push("/chat")} 
-  className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#D3202D] to-[#D0E9FF] text-white 
+  className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#D3202D] to-[#d78383] text-white 
              p-4 rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
   aria-label="Chat with AI"
 >
@@ -139,7 +139,7 @@ const TravelInfoPage = () => {
 </button>
 
           {weatherInfo ? (
-            <div className="relative mt-4 md:mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-[#D3202D] via-[#D0E9FF] to-[#2176FF] text-white shadow-2xl">
+            <div className="relative mt-4 md:mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-[#D3202D]  via-[#ffa3a3] to-[#D3202D] text-white shadow-2xl">
               <div className="absolute inset-0 bg-black opacity-10"></div>
 
               <div className="relative p-8 flex justify-between items-start lg:items-center">
@@ -212,7 +212,7 @@ const TravelInfoPage = () => {
     >
       <div className="flex gap-4 pb-4">
         {accommodations.map((acc) => (
-          <div key={acc.id} className="w-full ">
+          <div key={acc.id} className="flex-shrink-0">
             <AccommodationCard data={acc} goToDetail={handleViewDetails} />
           </div>
         ))}

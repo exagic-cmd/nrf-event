@@ -199,7 +199,7 @@ export default function Header() {
           {!token ? (
             <Link
               href="/login"
-              className="text-white bg-[#D3202D] py-2 px-5 sm:px-4 rounded-full text-sm sm:text-sm font-semibold hover:bg-gray-100 transition"
+              className="text-white bg-[#D3202D] py-2 px-5 sm:px-4 rounded-full text-sm sm:text-sm font-semibold hover:bg-gray-600 transition"
             >
               Login
             </Link>

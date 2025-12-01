@@ -102,7 +102,7 @@ const CartDrawerContent = () => {
                         ? item.productTitle
                         : item.vehicle?.vehicle_name || item.vehicle?.name || item.title || t("transfer")
                     }
-                    className="w-16 h-16 rounded-lg object-contain border"
+                    className="w-16 h-16 rounded-lg object-cover border"
                   />
 
                   <div className="flex-1">

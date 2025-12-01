@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getFullImageUrl } from "@/utils/imageService"
 import { useRouter } from "next/navigation"
 import { useState } from 'react'; 
+import { AlertCircle } from 'lucide-react';
 import LoaderSvg from '@/components/common/LoaderSvg'; 
 
 export default function AccommodationCard({ data }) {
@@ -11,6 +12,7 @@ export default function AccommodationCard({ data }) {
   const [isLoading, setIsLoading] = useState(false); 
 
   const formatDate = (date) => {
+
     if (!date) return '-';
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -28,7 +30,7 @@ export default function AccommodationCard({ data }) {
     return diffDays;
   };
 
-  const nights = calculateNights();
+ const nights = calculateNights();
   const hotelImage = accommodation?.pictures?.[0]?.image || '/placeholder.svg';
   const goToDetail = (order_id ,itinerary_id) => {
     setIsLoading(true); // Set loading to true
@@ -46,7 +48,7 @@ export default function AccommodationCard({ data }) {
       {/* Image Section */}
       <div className="relative h-40 w-full bg-gray-200">
         <Image
-          src={getFullImageUrl(hotelImage)}
+          src={getFullImageUrl(hotelImage)||"/placeholder.svg"}
           alt={accommodation?.hotel_name || 'Hotel'}
           layout="fill"
           objectFit="cover"
@@ -66,7 +68,7 @@ export default function AccommodationCard({ data }) {
 
         {/* Title + Nights on Right */}
         <div className="flex justify-between items-start gap-2">
-          <h2 className="text-sm font-bold text-gray-900 line-clamp-2 flex-1">
+          <h2 className="text-sm md:text-md font-bold text-gray-900 line-clamp-2 h-10 flex-1">
             {accommodation?.hotel_name || 'Hotel Name'}
           </h2>
 
@@ -80,7 +82,7 @@ export default function AccommodationCard({ data }) {
 
         {/* Address */}
         <div className="flex items-start gap-2">
-          <MapPin className="w-4 h-4 text-[#33A1FD] mt-0.5 flex-shrink-0" />
+          <MapPin className="w-4 h-4 text-[#D3202D] mt-0.5 flex-shrink-0" />
           <p className="text-xs text-gray-800 line-clamp-2">
             {accommodation?.hotel_address || 'Address not available'}
           </p>
@@ -89,8 +91,8 @@ export default function AccommodationCard({ data }) {
         {/* Meal Plan — Badge line */}
         {accommodation?.meal_plan && accommodation?.meal_plan !== 'Not Included' && (
           <div className="flex items-center gap-2">
-            <UtensilsCrossed className="w-4 h-4 text-[#33A1FD] flex-shrink-0" />
-            <span className="text-xs bg-gray-100 text-[#33A1FD]  px-2 py-0.5 rounded-full">
+            <UtensilsCrossed className="w-4 h-4 text-[#D3202D] flex-shrink-0" />
+            <span className="text-xs bg-gray-100 text-[#D3202D]  px-2 py-0.5 rounded-full">
               {accommodation?.meal_plan}
             </span>
           </div>
@@ -98,9 +100,9 @@ export default function AccommodationCard({ data }) {
 
         {/* Check-in / Check-out */}
         <div className="space-y-2  border-t border-gray-200">
-          <div className='flex items-center justify-between bg-blue-50 p-1 rounded gap-2'>
+          <div className='flex items-center justify-between bg-[#f4f4f4] p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-[#33A1FD]" />
+              <Calendar className="w-4 h-4 text-[#D3202D]" />
               <p className="text-xs font-semibold text-gray-900  tracking-wide">
                 Check-in
               </p>
@@ -113,9 +115,9 @@ export default function AccommodationCard({ data }) {
             </div>
           </div>
 
-          <div className='flex items-center justify-between bg-blue-50 p-1 rounded gap-2'>
+          <div className='flex items-center justify-between bg-[#f4f4f4] p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-[#33A1FD]" />
+              <Calendar className="w-4 h-4 text-[#D3202D]" />
               <p className="text-xs font-semibold text-gray-900  tracking-wide">
                 Check-out
               </p>
@@ -130,18 +132,29 @@ export default function AccommodationCard({ data }) {
         </div>
 
         {/* Action Button */}
-      <button
-          onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
-          className="w-full bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <LoaderSvg className="animate-spin h-5 w-5 text-white" />
-          ) : (
-            'View Details'
-          )}
-        </button>
+      {accommodation?.payment_status !== 'Paid' ? (
+        // Display "Awaiting Confirmation" message
+        <div className="flex items-center justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
+          <AlertCircle className="w-4 h-4 mr-2" />
+            Awaiting Confirmation
+        </div>
+      ) : (
+        // Display "View Details" button
+        <button
+            onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
+            className="w-full bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <LoaderSvg className="animate-spin h-5 w-5 text-white" />
+            ) : (
+              'View Details'
+            )}
+          </button>
+      )}
 
+
+      
       </div>
     </div>
   );

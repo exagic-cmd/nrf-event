@@ -82,7 +82,7 @@ export default function ForgotPasswordModals({ onClose }) {
             />
             <button
               onClick={handleStep1}
-              className="w-full bg-[#D3202D] text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
+              className="w-full bg-[#D3202D] text-white p-2 rounded  disabled:opacity-50"
               disabled={loading}
             >
               {loading ? t('sending') : t('sendEmail')}

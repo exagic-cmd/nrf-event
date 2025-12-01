@@ -193,7 +193,7 @@ const confirmCancel = (id, reason) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
         <LoadingSvg2 />
       </div>
     )
@@ -203,7 +203,7 @@ const confirmCancel = (id, reason) => {
     return (
       <ProtectedRoute>
         
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-black mb-2">
               {t("orderNotFound")}
@@ -240,7 +240,7 @@ const confirmCancel = (id, reason) => {
   return (
     <ProtectedRoute>
       
-      <div className="min-h-screen text-black  font-normal bg-[#D0E9FF]">
+      <div className="min-h-screen text-black  font-normal bg-[#f4f4f4]">
         {displayItineraries.map((it) => (
   <div key={it.id} className="relative">
 
@@ -253,7 +253,7 @@ const confirmCancel = (id, reason) => {
             query: { post: "true" },
           });
         }}
-        className="fixed bottom-6 right-6 bg-[#D3202D] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#b3843f] transition-colors z-50"
+        className="fixed bottom-6 right-6 bg-[#D3202D] text-white px-4 py-3 rounded-full shadow-lg  transition-colors z-50"
       >
      
          <span className="inline-flex items-center gap-1">
@@ -268,7 +268,7 @@ const confirmCancel = (id, reason) => {
        <div className="md:pt-24 pt-20">
          <button
  onClick={() => router.push("/order")}
-                  className="flex items-center gap-2 text-gray-100 hover:text-[#D3202D]  ml-3 md:ml-6 mb-6 transition-colors"
+                  className="flex items-center gap-2 text-[#D3202D] hover:text-[#D3202D]  ml-3 md:ml-6 mb-6 transition-colors"
                 >
                   <ArrowLeft size={20} /> {t("button.back")}
                 </button>
