@@ -78,7 +78,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
     );
 
   return (
-    <div className="bg-[#D0E9FF]">
+    <div>
       <div className="space-y-6 mt-12 font-sans text-gray-800  ">
         {/* desc*/}
         <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">

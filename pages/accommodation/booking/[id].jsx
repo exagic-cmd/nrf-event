@@ -108,7 +108,7 @@ export default function AccommodationBookingPage() {
     <Layout>
       <div className="min-h-screen bg-[#f4f4f4] text-black pt-20 mt-2 lg: mt-6 pb-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-xl lg:text-3xl font-bold mb-8">
+          <h1 className="text-lg font-semibold mb-8">
             Book {hotel?.title || "Hotel"}
           </h1>
 
@@ -132,50 +132,50 @@ export default function AccommodationBookingPage() {
   <div className="space-y-4">
 
     {/* HOTEL */}
-    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
-      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-        <Building className="w-3 h-3" />
+    <div className="flex items-center gap-2 p-2 bg-white rounded-xl">
+      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+        <Building className="w-3 h-3 text-black" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight">Hotel</p>
-        <p className="text-sm font-semibold leading-tight">{hotel?.title}</p>
+        <p className="text-[9px] opacity-70 leading-tight text-black">Hotel</p>
+        <p className="text-sm font-semibold leading-tight text-black">{hotel?.title}</p>
       </div>
     </div>
 
     {/* ROOM DETAILS (Type, Count, Nights) */}
-    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
-      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-        <BedDouble className="w-3 h-3" />
+    <div className="flex items-center gap-2 p-2 bg-white rounded-xl">
+      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+        <BedDouble className="w-3 h-3 text-black" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight">Room Details</p>
-        <p className="text-sm font-semibold leading-tight">
+        <p className="text-[9px] opacity-70 leading-tight text-black">Room Details</p>
+        <p className="text-sm font-semibold leading-tight text-black">
           {selectedRoom.roomType} ({bookingData.searchParams?.rooms.length || 1} Room{ (bookingData.searchParams?.rooms.length || 1) > 1 ? 's' : ''}, {bookingData.nights} Night{bookingData.nights > 1 ? 's' : ''})
         </p>
       </div>
     </div>
 
     {/* MEAL PLAN */}
-    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
-      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-        <Utensils className="w-3 h-3" />
+    <div className="flex items-center gap-2 p-2 bg-white rounded-xl">
+      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+        <Utensils className="w-3 h-3 text-black" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight">Bed Type</p>
-        <p className="text-sm font-semibold leading-tight">
+        <p className="text-[9px] opacity-70 leading-tight text-black">Bed Type</p>
+        <p className="text-sm font-semibold leading-tight text-black">
           {selectedRoom.mealType || "Room Only"}
         </p>
       </div>
     </div>
 
     {/* DATES */}
-    <div className="flex items-center gap-2 p-2 bg-white/10 rounded-xl">
-      <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-        <Calendar className="w-3 h-3" />
+    <div className="flex items-center gap-2 p-2 bg-white rounded-xl">
+      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+        <Calendar className="w-3 h-3 text-black" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight">Dates</p>
-        <p className="text-sm font-semibold leading-tight">
+        <p className="text-[9px] opacity-70 leading-tight text-black">Dates</p>
+        <p className="text-sm font-semibold leading-tight text-black">
           {bookingData.checkIn} → {bookingData.checkOut}
         </p>
       </div>
