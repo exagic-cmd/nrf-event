@@ -1,7 +1,9 @@
-// utils/slugify.js
-export function slugify(str) {
-  return str.toLowerCase().replace(/ /g, "-");
-}
-export function deslugify(str) {
-  return str.replace(/-/g, " ");
-}
+
+export const slugify = (text) => {
+  if (typeof text !== 'string' || text === null || text === undefined) {
+    return "";
+  }
+  return text.toLowerCase()
+    .replace(/\s+/g, "-") 
+    .replace(/[^\w-]+/g, ""); 
+};

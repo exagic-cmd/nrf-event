@@ -20,7 +20,6 @@ const StubaRoomList = ({
   totalRooms = 1,
   totalRoomsRequested = 1,
   selectedRoom = null,
-  img
 }) => {
   const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
@@ -136,8 +135,8 @@ const StubaRoomList = ({
               
               <div className="bg-white relative  lg:border-b border-gray-200 p-0">
                 <div className="flex gap-4 ">
-                    <div className="flex-shrink-0">
-                        {img && <img src={getFullImageUrl(img)} alt="Room thumbnail" className="w-32 h-24 object-cover" />}
+                    <div className="flex-shrink-0 w-32 h-24">
+                        {rooms?.[0]?.images?.[0]?.image && <img src={getFullImageUrl(rooms[0].images[0].image)} alt="Room thumbnail" className="w-full h-full object-cover" />}
                     </div>
                     <div>
                         <h3 className="font-bold text-md lg:text-md line-clamp-1 text-black pt-3">{totalRoomsRequested} &times; {getRoomDisplayName(roomTypeKey)}</h3>
@@ -309,7 +308,6 @@ const RoomTypes = ({
   onProceedBooking,
   roomsSearched,
   selectedRoom,
-  img,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
 console.log("romm",roomsToDisplay)
@@ -394,7 +392,6 @@ console.log("romm",roomsToDisplay)
       totalRooms={roomsCount}
       totalRoomsRequested={totalRoomsRequested}
       selectedRoom={selectedRoom}
-      img={img}
     />
   );
 };

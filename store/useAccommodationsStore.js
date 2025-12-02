@@ -16,6 +16,7 @@ export const useAccommodationsStore = create((set, get) => ({
   lastHotelQuoteId: null,
   hotelQuoteMap: {},
   isLoading: false,
+  accommodationFilters: null, 
   error: null,
 
   // Selected search context
@@ -184,40 +185,38 @@ export const useAccommodationsStore = create((set, get) => ({
 
     set({ isLoading: true, error: null });
     console.log("🔍 Fetching accommodations with payload:", searchPayload);
+
     try {
-      const apiPayload = {
-        hotel_id:
-          searchPayload.hotel_id === undefined || searchPayload.hotel_id === null
-            ? false
-            : searchPayload.hotel_id,
-        region: searchPayload.region || searchPayload.region_id || false,
-        nationality: searchPayload.nationality || "SG",
-        refund_policy: searchPayload.refund_policy || "all",
-        stars: searchPayload.stars || "0",
-        category_id: 4,
-        rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
-        nights:
-          searchPayload.nights ||
-          (searchPayload.start_date && searchPayload.end_date
-            ? Math.ceil(
-                (new Date(searchPayload.end_date) - new Date(searchPayload.start_date)) /
-                  (1000 * 60 * 60 * 24)
-              )
-            : 1),
-        start_date:
-        searchPayload.start_date || new Date().toISOString().split("T")[0],
-        end_date: searchPayload.end_date || null,
-        search: searchPayload.search || "",
-        visitor_id: searchPayload.visitor_id || $helpers.getVisitorId(),
-        ids: searchPayload.ids || '',
+      // Build the query string from the payload
+      const params = {
+        text: searchPayload.search || '',
+        start_date: searchPayload.start_date || new Date().toISOString().split("T")[0],
       };
+      if (searchPayload.end_date) {
+        params.end_date = searchPayload.end_date;
+      }
 
-      console.log("🧾 Final API Payload:", apiPayload);
+      const baseParams = new URLSearchParams(params).toString();
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`, {
-        method: "POST",
+      const rooms = searchPayload.rooms || [{ adult: 1, children: [] }];
+      const roomsParams = rooms.map((room, index) => {
+        const adultParam = `rooms[${index}][adult]=${room.adult}`;
+        let childrenParams = '';
+        if (room.children && room.children.length > 0) {
+          childrenParams = room.children.map(childAge => `rooms[${index}][children][]=${childAge}`).join('&');
+        }
+        return [adultParam, childrenParams].filter(Boolean).join('&');
+      }).join('&');
+
+      const queryString = [baseParams, roomsParams].filter(Boolean).join('&');
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/search?${queryString}`;
+
+      console.log("🧾 Final GET Request URL:", url);
+
+      const res = await fetch(url, {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiPayload),
+      //  body: JSON.stringify(apiPayload),
       });
       if (!res.ok) {
         const txt = await res.text().catch(() => null);
@@ -225,44 +224,39 @@ export const useAccommodationsStore = create((set, get) => ({
       }
 
       const data = await res.json();
-      if (!data.status){
-  alert(data.msg);
-  set({ isLoading: false, error: data.msg || "No results" });
-  return null; // ← Change from [] to null
-}
+      // Handle cases where the API call is successful but finds no results.
+      if (data.success === true && (!data.data || !data.data.accommodations || data.data.accommodations.length === 0)) {
+        console.log("✅ API returned success but no accommodations found.");
+        set({
+          accommodations: [],
+          searchResults: [],
+          filteredResults: [],
+          isLoading: false,
+          accommodationFilters: data?.data?.meta?.filters || null,
+          error: null,
+        });
+        return []; // Return an empty array to signify no results
+      }
 
       // Assume API returns accommodations in data.accommodations or data.data
-      const results = data?.accommodations || data?.data || data || [];
+      const results = data?.data?.accommodations || data?.accommodations || data?.data || data || [];
+      const filters = data?.data?.meta?.filters || null;
 
       // Normalize and enrich each result: attach hotelQuoteId and a normalized hotelId
       const enrichedResults = Array.isArray(results)
         ? results.map((r) => {
-            const quote = r?.["@attributes"]?.hotelQuoteId || r?.Hotel?.["@attributes"]?.hotelQuoteId || r?.Hotel_Data?.["@attributes"]?.hotelQuoteId || r?.Hotel_stuba_id || null;
-            const hotelId = r?.Hotel_Data?.stuba_id || r?.stuba_id || r?.hotel_id || r?.Hotel?.["@attributes"]?.id || r?.Hotel_stuba_id || null;
             return {
               ...r,
-              hotelQuoteId: quote || null,
-              hotelId: hotelId || null,
+              // Add any future normalization here if needed
+              hotelId: r.id, 
             };
           })
         : (results && typeof results === 'object'
             ? [{
                 ...results,
-                hotelQuoteId: results?.["@attributes"]?.hotelQuoteId || results?.Hotel?.["@attributes"]?.hotelQuoteId || null,
-                hotelId: results?.Hotel_Data?.stuba_id || results?.stuba_id || results?.Hotel?.["@attributes"]?.id || null,
+                hotelId: results.id,
               }]
             : []);
-
-      // Build a mapping of hotelId -> hotelQuoteId for all results
-      const quoteMap = (enrichedResults || []).reduce((acc, item) => {
-        if (item?.hotelId) acc[item.hotelId] = item.hotelQuoteId || acc[item.hotelId] || null;
-        return acc;
-      }, {});
-
-      // Determine lastHotelQuoteId (prefer top-level attribute, fallback to first result)
-      const topLevelQuote = data?.["@attributes"]?.hotelQuoteId || data?.data?.[0]?.["@attributes"]?.hotelQuoteId || null;
-      const firstResultQuote = enrichedResults[0]?.hotelQuoteId || null;
-      const hotelQuoteId = topLevelQuote || firstResultQuote || null;
 
       // Update store with enriched results and the extracted quote id(s)
       set((state) => ({
@@ -270,11 +264,10 @@ export const useAccommodationsStore = create((set, get) => ({
         searchResults: enrichedResults,
         filteredResults: enrichedResults,
         isLoading: false,
-        lastHotelQuoteId: hotelQuoteId || state.lastHotelQuoteId,
-        hotelQuoteMap: { ...(state.hotelQuoteMap || {}), ...quoteMap },
+        accommodationFilters: filters,
       }));
 
-      console.log("✅ Accommodations API Response:", data, "extracted hotelQuoteId:", hotelQuoteId, "quoteMap size:", Object.keys(quoteMap).length);
+      console.log("✅ Accommodations API Response:", data);
       return enrichedResults;
     } catch (err) {
       console.error("fetchAccommodations error:", err);

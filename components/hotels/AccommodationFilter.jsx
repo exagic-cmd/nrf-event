@@ -14,7 +14,7 @@ import {
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import LoaderSvg from "@/components/common/LoaderSvg";
 const DEFAULT_REGION = {
   id: 4352,
   region_id: 18196,
@@ -35,8 +35,9 @@ export default function AccommodationFilter({ onSearch }) {
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+ // const isDesktop = useMediaQuery("(min-width: 768px)");
 
 // selectedItem.type: 'region' | 'hotel'
 const [selectedItem, setSelectedItem] = useState({
@@ -192,15 +193,10 @@ useEffect(() => {
   e.preventDefault();
 
   if (!selectedItem) {
-    setSelectedItem({ ...DEFAULT_REGION, type: "region" });
+   setSelectedItem({ ...DEFAULT_REGION, type: "region", id: DEFAULT_REGION.id, region_id: DEFAULT_REGION.region_id });
   }
 
   const effectiveSelection = selectedItem || { ...DEFAULT_REGION, type: "region" };
-
-  if (!startDate || !endDate) {
-    alert("Please select both check-in and check-out dates");
-    return;
-  }
 
   if (!startDate || !endDate) {
     alert("Please select both check-in and check-out dates");
@@ -216,8 +212,7 @@ useEffect(() => {
     return `${y}-${m}-${day}`;
   };
 
-  const searchPayload = {
-    search,
+  const payload = {
     start_date: formatDate(startDate),
     end_date: formatDate(endDate),
     nights,
@@ -225,22 +220,34 @@ useEffect(() => {
     nationality,
     refund_policy: refund,
     stars,
-    ids: ''
+   
+    hotel_id: null,
+    region_id: null,
+    ids: [],
+    search_query: search,
   };
-  searchPayload.region = DEFAULT_REGION.region_id;
 
   if (effectiveSelection.type === "hotel") {
-    searchPayload.hotel_id = effectiveSelection.stuba_id || false;
-    searchPayload.ids = [effectiveSelection?.id];
+    payload.hotel_id = effectiveSelection.stuba_id; 
+    payload.ids = [effectiveSelection.id];
+    payload.region_id = effectiveSelection.region_id; 
   } else if (effectiveSelection.type === "region") {
-    searchPayload.hotel_id = false;
+    payload.region_id = effectiveSelection.region_id;
+    payload.hotel_id = null; 
+    payload.ids = [];
+  } else {
+
+    payload.hotel_id = null;
+    payload.region_id = null;
+    payload.ids = [];
   }
 
-  console.log("Search Payload:", searchPayload);
+  console.log("Search Payload:", payload);
 
   try {
+    setIsSearching(true);
     // This will now return [] if !data.status
-    const results = await setSearchParamsAndSearch(searchPayload);
+    const results = await setSearchParamsAndSearch(payload);
   if (!results || results.length === 0) {
       return;
     }
@@ -249,11 +256,13 @@ useEffect(() => {
       alert(error);
       return;
     }
-    if (onSearch) onSearch(searchPayload);
+    if (onSearch) onSearch(payload);
 
   } catch (err) {
     console.error("Search failed:", err);
     alert("An error occurred while searching. Please try again.");
+  } finally {
+    setIsSearching(false);
   }
 };
 
@@ -625,9 +634,14 @@ useEffect(() => {
       <div className="col-span-2">
           <button
             type="submit"
-            className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-[11px] active:bg-[#D3202D] transition touch-manipulation"
+            className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-[11px] active:bg-[#D3202D] transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
+            disabled={isSearching}
           >
-            Search
+            {isSearching ? (
+              <LoaderSvg />
+            ) : (
+              "Search"
+            )}
           </button>
          
       </div>

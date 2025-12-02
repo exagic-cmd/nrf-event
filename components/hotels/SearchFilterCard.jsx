@@ -14,6 +14,7 @@ import { useDaytoursStore } from "@/store/useDaytoursStore";
 import AccommodationFilter from "./AccommodationFilter";
 import { useCartStore } from "@/store/useCartStore";
 import { useOrderStore } from "@/store/useOrderStore";
+import LoaderSvg from "@/components/common/LoaderSvg";
 
 const dayTourPlaceholders = [
   "Search attractions like Marina Bay Sands",
@@ -343,7 +344,8 @@ export default function SearchFilterCard({
 <div className="min-h-[200px] transition-all duration-500 ease-in-out">
            {/* ====== TRANSFERS ====== */}
            {filterActiveTab === 2 && (
-             <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+             <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+               {isLoading && <LoaderSvg />}
                <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                  {/* Trip Type */}
                  <div className="md:col-span-2 relative" ref={tripTypeDropdownRef}>
@@ -467,9 +469,11 @@ export default function SearchFilterCard({
                    <button
                      type="submit"
                      className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
-                     disabled={isLoading}
+                   disabled={isLoading}                   
                    >
-                     {isLoading ? "Searching..." : "Search"}
+                     {isLoading ? (
+                      <LoaderSvg />
+                    ) : "Search"}
                    </button>
                  </div>
                  <div className="md:col-span-12 right-0 flex justify-end gap-1">
@@ -481,7 +485,8 @@ export default function SearchFilterCard({
            )}
       {/* ====== DAY TOURS ====== */}
       {filterActiveTab === 3 && (
-        <form onSubmit={handleSubmit} className="rounded-2xl bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+        <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+          {isLoading && <LoaderSvg />}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
 
             {/* COUNTRY */}
@@ -661,10 +666,12 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
+                className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
                 disabled={isLoading}
               >
-                {isLoading ? "Searching..." : "Search"}
+                {isLoading ? (
+                  <LoaderSvg />
+                ) : "Search"}
               </button>
             </div>
             <div className=" flex justify-end md:col-span-12 gap-1">
