@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "@/styles/globals.css";
 import Layout from "@/components/layout/Layout";
 import TransfersList from "@/components/transfers/TransfersList";
@@ -15,6 +15,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useSearchParams } from "next/navigation";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import AccommodationFilterSidebar from "@/components/accommodations/AccommodationFilterSidebar";
 import GoogleMap from "@/components/daytours/GoogleMap";
 
 function ListingsPage() {
@@ -37,10 +38,23 @@ function ListingsPage() {
     accommodations,
     filteredResults,
     isLoading: accommodationLoading,
+    accommodationFilters,
     fetchAccommodations,
+    applyAccommodationFilter,
   } = useAccommodationsStore();
 
-  // Detect search via URL
+
+  const handleFilterChange = useCallback((activeFilters) => {
+    applyAccommodationFilter((accommodation) => {
+      const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
+      const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(
+        (selectedAmenity) => accommodation.amenities?.includes(selectedAmenity)
+      );
+
+
+      return amenityMatch;
+    });
+  }, [applyAccommodationFilter]); 
   useEffect(() => {
     const searched = urlSearchParams.get("searched");
     const type = urlSearchParams.get("type");
@@ -71,6 +85,17 @@ function ListingsPage() {
       accommodationPayload
     ) {
       fetchAccommodations(accommodationPayload);
+      applyAccommodationFilter(() => true); // Reset filters to show all results initially
+
+      // Apply filter based on the payload if a specific hotel was searched
+      if (accommodationPayload.ids && accommodationPayload.ids.length > 0) {
+        const targetHotelId = accommodationPayload.ids[0]; // Assuming only one hotel ID is passed for specific search
+        applyAccommodationFilter((accommodation) => {
+          return accommodation.id === targetHotelId;
+        });
+      } else {
+        applyAccommodationFilter(() => true); // If no specific hotel ID in payload, reset to show all fetched results
+      }
     }
   }, [searchCategory, accommodationPayload, fetchAccommodations]);
 
@@ -86,7 +111,7 @@ function ListingsPage() {
       case "hotels":
         return (
           <AccommodationList
-            accommodations={accommodations}
+            accommodations={filteredResults} // Use filteredResults here
             isLoading={accommodationLoading}
           />
         );
@@ -138,67 +163,56 @@ function ListingsPage() {
           )}
 			 {/* Day Tours: Filter Sidebar + List */}
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
-            <div className="h-fit md:sticky top-24 self-start z-20">
-              {/* Filter Sidebar (Sticky) */}
-              <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
-                {!isLoading && searchResults.length > 0 && (
-                  <FilterSidebar />
-                )}
-              </div>
-            </div>
-          )}
-          { /* Accomodation: No sidebar for now */}
-          {(searchCategory === "accommodation" || searchCategory === "hotels") && (
-          <div className="h-fit md:sticky top-24 self-start z-20">
-            {/* Filter Sidebar (Sticky) */}
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
-              {!accommodationLoading && accommodations && accommodations.length > 0 && (
-                <FilterSidebar mode="accommodation" />
+              {!isLoading && searchResults.length > 0 && (
+                <FilterSidebar />
               )}
             </div>
-          </div>
           )}
 
-          {/* Center: Dynamic content */}
-          <div className="flex-1 flex flex-col lg:flex-row gap-6">
+          {/* Accomodation: Sidebar */}
+          {(searchCategory === "accommodation" || searchCategory === "hotels") && (
+            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
+              {!accommodationLoading && accommodations && accommodations.length > 0 && (
+                <AccommodationFilterSidebar
+                  filters={accommodationFilters}
+                  onFilterChange={handleFilterChange}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Center: List Content */}
+          <div className="flex-1">
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
 
-          {(searchCategory === "daytour" ||
-  searchCategory === "day-tours" ||
-  searchCategory === "accommodation" ||
-  searchCategory === "hotels") && (
-  <div className="lg:w-1/5 h-fit sticky top-24 self-start z-10">
-    <GoogleMap
-      center={{ lat: 1.3521, lng: 103.8198 }}
-      zoom={12}
-      width="100%"
-      height="550px"
-      className="rounded-lg shadow-lg"
-      markers={
-        // Day Tours: use searchResults
-        (searchCategory === "daytour" || searchCategory === "day-tours")
-          ? (searchResults || []).map((r) => ({
-              lat: r.latitude || r.lat || r?.location?.lat,
-              lng: r.longitude || r.lng || r?.location?.lng,
-              title: r.title || r.name || r.location_name || r.hotel_name || "",
-            }))
-          : // Accommodations: use filteredResults (NOT raw accommodations)
-            (filteredResults || []).map((a) => ({
-              lat: a?.Hotel_Data?.latitude || a?.latitude || a?.normalizedHotelData?.latitude,
-              lng: a?.Hotel_Data?.longitude || a?.longitude || a?.normalizedHotelData?.longitude,
-              title: a?.Hotel_Data?.title || a?.name || a?.title || a?.hotel_name || "",
-            }))
-      }
-    />
-  </div>
-)}
-
-          {searchCategory === "transfer" && (
-            <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-              {showFaqs && <Faqs />}
-            </div>
-          )}
+          {/* Right: Map or FAQs */}
+          <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
+            {(searchCategory === "daytour" || searchCategory === "day-tours" || searchCategory === "accommodation" || searchCategory === "hotels") && (
+              <GoogleMap
+                center={{ lat: 1.3521, lng: 103.8198 }}
+                zoom={12}
+                width="100%"
+                height="550px"
+                className="rounded-lg shadow-lg"
+                markers={
+                  (searchCategory === "daytour" || searchCategory === "day-tours")
+                    ? (searchResults || []).map((r) => ({
+                        lat: r.latitude || r.lat || r?.location?.lat,
+                        lng: r.longitude || r.lng || r?.location?.lng,
+                        title: r.title || r.name || r.location_name || r.hotel_name || "",
+                      }))
+                    : (filteredResults || []).map((a) => ({
+                        lat: a?.Hotel_Data?.latitude || a?.latitude || a?.normalizedHotelData?.latitude,
+                        lng: a?.Hotel_Data?.longitude || a?.longitude || a?.normalizedHotelData?.longitude,
+                        title: a?.Hotel_Data?.title || a?.name || a?.title || a?.hotel_name || "",
+                      }))
+                }
+              />
+            )}
+            {searchCategory === "transfer" && showFaqs && <Faqs />}
+          </div>
         </div>
       </div>
     </Layout>

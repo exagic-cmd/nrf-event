@@ -21,6 +21,7 @@ import AccommodationHotelDetail from "@/components/accommodations/AccommodationH
 import RecentlyViewed from "@/components/accommodations/RecentlyViewed.jsx";
 import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
+import { Hotel } from "lucide-react";
 
 export async function getServerSideProps({ locale }) {
   const translations = await serverSideTranslations(locale || "en", [
@@ -56,126 +57,78 @@ export default function AccommodationDetailPage() {
   const [alreadyModal, setAlreadyModal] = useState(false);
 
   const slugify = useCallback((text) => {
-    if (!text) return "";
-    return text
-      .toString()
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\p{L}\p{N}-]+/gu, "")
-      .replace(/--+/g, "-")
-      .replace(/^-+/, "")
-      .replace(/-+$/, "");
+    // Ensure text is a string before attempting operations
+    if (typeof text !== 'string' || text === null || text === undefined) {
+      return "";
+    }
+    return text.toLowerCase()
+      .replace(/\s+/g, "-")       // Replace spaces with -
+      .replace(/[^\w-]+/g, "");  // Remove all non-word chars
   }, []);
 
   // Normalize accommodation data function (keep your existing implementation)
   const normalizeAccommodationData = (data) => {
-  if (!data) return null;
+    if (!data || !data.hotel) return null;
 
-  const hotelData = data.Hotel_Data || data;
-  const results = data.Result || [];
+    const { hotel, rooms: roomData, meta } = data;
 
-  // ---------- 1. Build images ----------
-  let images = [];
-  try {
-    if (Array.isArray(hotelData.media)) {
-      images = hotelData.media.map(m => ({
-        url: m.image,
-        thumb: m.thumb || m.image,
-        type: m.type || "photo"
-      }));
-    }
-  } catch (e) {
-    console.warn("Failed to parse media:", e);
-  }
-
-  // ---------- 2. Parse optional JSON fields ----------
-  let address = hotelData?.address;
-  let region = {};
-  let rating = {};
-
-  try { if (hotelData.address) address = JSON.parse(hotelData.address); } catch {}
-  try { if (hotelData.region) region = JSON.parse(hotelData.region); } catch {}
-  try { if (hotelData.rating) rating = JSON.parse(hotelData.rating); } catch {}
-
-  // ---------- 3. Group rooms by Result.id ----------
-  const roomGroups = {};
-
-  results.forEach(result => {
-    const resultId = result["@attributes"]?.id;
-    if (!resultId) return;
-
-    const nights = Array.isArray(result.Room) ? result.Room : [result.Room].filter(Boolean);
-
-    // Extract common room type / meal from first night (they are the same for all nights)
-    const firstNight = nights[0];
-    const roomType = firstNight?.RoomType?.["@attributes"]?.text || "Standard Room";
-    const mealType = firstNight?.MealType?.["@attributes"]?.text || "Room Only";
-    const roomCode = firstNight?.RoomType?.["@attributes"]?.code;
-    const mealCode = firstNight?.MealType?.["@attributes"]?.code;
-    const cancellation = firstNight?.CancellationPolicyStatus || "NonRefundable";
-
-    // Sum all night prices
-    const totalAmt = nights.reduce((sum, night) => {
-      const amt = parseFloat(night?.Price?.["@attributes"]?.amt || 0);
-      return sum + amt;
-    }, 0);
-
-    roomGroups[resultId] = {
-      id: resultId,
-      roomType,
-      mealType,
-      price: totalAmt,
-      cancellationPolicy: cancellation,
-      roomCode,
-      mealCode,
-      rawNights: nights, // keep for debugging / future use
+    // 1. Normalize Hotel Data
+    const normalizedHotelData = {
+      id: hotel.id,
+      title: hotel.name,
+      name: hotel.name,
+      description: hotel.long_desc || hotel.short_desc,
+      country: hotel.country,
+      city: hotel.city,
+      address: hotel.address,
+      latitude: hotel.latitude,
+      longitude: hotel.longitude,
+      image: hotel.photos?.[0]?.image || "",
+      images: (hotel.photos || []).map(p => ({ url: p.image, thumb: p.image, type: 'photo' })),
+      stars: parseFloat(hotel.star_rating) || 0,
+      amenities: hotel.amenities || [],
+      review_count: 0, // Not in new API response
+      rating: { rating: parseFloat(hotel.star_rating) || 0 }, // Synthesize rating object
+      location: hotel.address || hotel.city,
     };
-  });
 
-  const normalizedRooms = Object.values(roomGroups);
+    // 2. Normalize Room Data
+    const normalizedRooms = (roomData || []).flatMap(room =>
+      (room.rate_plans || []).map(plan => ({
+        id: `${room.id}-${plan.id}`,
+        roomType: room.name,
+        roomCat: room.name,
+        mealType: plan.name,
+        price: plan.pricing.total,
+        cancellationPolicy: plan.cancellation_policy?.name || (plan.is_refundable ? "Refundable" : "Non-refundable"),
+        maxPax: room.max_adults + room.max_children,
+        isAvailable: true, // Assuming all returned rooms are available
+        canAccommodate: true, // Assuming API returns valid rooms
+        rawPricing: plan,
+        images: room.images,
+      }))
+    );
 
-  // ---------- 4. Find cheapest ROOM ----------
-  const startingPrice = normalizedRooms.length > 0
-    ? Math.min(...normalizedRooms.map(r => r.price))
-    : hotelData.price || 0;
+    // 3. Find the lowest price
+    const startingPrice = normalizedRooms.length > 0
+      ? Math.min(...normalizedRooms.map(r => r.price))
+      : 0;
 
-  const lowestPriceRoom = normalizedRooms.length > 0
-    ? normalizedRooms.reduce((low, r) => r.price < low.price ? r : low)
-    : null;
+    normalizedHotelData.starting_price = startingPrice;
+    normalizedHotelData.price = startingPrice;
 
-  // ---------- 5. Return normalized structure ----------
-  return {
-    ...data,
-    normalizedHotelData: {
-      id: hotelData.id,
-      stuba_id: hotelData.stuba_id,
-      title: hotelData.title,
-      name: hotelData.title,
-      
-      description: hotelData.description,
-      country: hotelData.country_name,
-      city: hotelData.city_name,
-      address,
-      latitude: hotelData.latitude,
-      longitude: hotelData.longitude,
-      image: hotelData.image,
-      images,
-      type: hotelData.type,
-      stars: hotelData.stars,
-      amenities: hotelData.amenities,
-      category_name: hotelData.category_name,
-      region,
-      rating,
-      starting_price: startingPrice,
-      price: startingPrice,
-      location: address || hotelData?.city_name || "",
-      review_count: 0,
-      features: hotelData.amenities ? hotelData.amenities.split(', ') : []
-    },
-    normalizedRoomData: normalizedRooms,
-    lowestPriceRoom,
+    const lowestPriceRoom = normalizedRooms.length > 0
+      ? normalizedRooms.reduce((low, r) => r.price < low.price ? r : low)
+      : null;
+
+    // 4. Return the complete, normalized structure
+    return {
+      ...data, // Keep original data for reference
+      normalizedHotelData,
+      normalizedRoomData: normalizedRooms,
+      lowestPriceRoom,
+    };
   };
-};
 
   // Handle room selection
   const handleRoomSelect = (room) => {
@@ -362,7 +315,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   // Do not auto-select the lowest price room; require explicit user selection
 
   // Slug fix
-  const actualSlug = slugify(fullData.normalizedHotelData.title || "accommodation");
+  const actualSlug = slugify(fullData.normalizedHotelData.title || "detial");
   if (productname !== actualSlug) {
     localizedReplace(
       { pathname: "/accommodation/[productname]/[id]", query: { link_type_id: urlLinkTypeId } },
@@ -378,21 +331,33 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       // ——————————————————— STUBA ———————————————————
       console.log("Stuba flow");
 
+      // Ensure there are valid search parameters for the API call
+      const hasSearchParams = searchParams && searchParams.start_date && searchParams.end_date;
+
+      const effectiveSearchParams = hasSearchParams ? searchParams : {
+        // Define a default payload if none exists
+        start_date: new Date().toISOString().split("T")[0],
+        end_date: new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0], // Default to 3 nights
+        rooms: [{ adult: 2, children: [] }],
+        nights: 3,
+        nationality: "SG",
+        refund_policy: "all",
+        stars: "0",
+      };
+
+      // If we created default params, update the store so the UI is consistent
+      if (!hasSearchParams) {
+        useAccommodationsStore.getState().setSearchParams(effectiveSearchParams);
+      }
+
       const payload = {
-        nationality: searchParams?.nationality || "SG",
-        nights: searchParams?.nights || 1,
-        refund_policy: searchParams?.refund_policy || "all",
-        region: false,
-        rooms: searchParams?.rooms || [{ adult: 2, children: [] }],
-        stars: searchParams?.stars || "0",
-        visitor_id: $helpers.getVisitorId(),
-        start_date: searchParams?.start_date || new Date().toISOString().split("T")[0],
-        end_date: searchParams?.end_date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
-        hotel_id: accommodationId,
+        start_date: effectiveSearchParams.start_date,
+        end_date: effectiveSearchParams.end_date,
+        rooms: effectiveSearchParams.rooms,
       };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/${accommodationId}/detail`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -401,33 +366,15 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       );
 
       if (!res.ok) throw new Error("Network error");
-      const data = await res.json();
+      const responseData = await res.json();
 
-      console.log("Fetched accommodation detail data:", data);
-
-      // ... find matched hotel, normalize ...
-      const results = data?.accommodations || data?.data || data || [];
-      let matched = null;
-      if (Array.isArray(results) && results.length > 0) {
-        matched = results.find((r) => {
-          const candidateId = r?.Hotel_Data?.id || r?.Hotel?.["@attributes"]?.id || r?.stuba_id || r?.hotel_id || null;
-          return candidateId && String(candidateId) === String(accommodationId);
-        }) || results[0];
-      } else if (results && typeof results === 'object') {
-        matched = results;
+      if (!responseData.success || !responseData.data) {
+        throw new Error(responseData.message || "Hotel data not found in response");
       }
 
-      if (!matched) throw new Error("Not found");
-
-      const normalizedData = normalizeAccommodationData(matched);
+      const normalizedData = normalizeAccommodationData(responseData.data);
       setAccommodation(normalizedData);
-      setIsNonStuba(false);
-
-      // Do not auto-select the lowest price room for Stuba flow; require explicit user selection
-
-  // Save quote ID (if present on matched result)
-  const quoteId = matched?.["@attributes"]?.hotelQuoteId || matched?.Hotel_Data?.["@attributes"]?.hotelQuoteId || matched?.hotelQuoteId || null;
-  if (quoteId) sessionStorage.setItem("hotelQuoteId", String(quoteId));
+      setIsNonStuba(true); // This is now the "non-stuba" flow
 
       // Slug (no link_type_id)
       const actualSlug = slugify(normalizedData.normalizedHotelData.title || "accommodation");
@@ -446,16 +393,10 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   };
 
   fetchAccommodationDetail();
-}, [
-  router.isReady,
-  accommodationId,
-  router.query.link_type_id,
-  searchParams,
-  selectedRegion
-]);
+}, [router.isReady, accommodationId]); // Simplified dependencies
 
 useEffect(() => {
-  if (accommodation?.normalizedHotelData) {
+  if (accommodation?.normalizedHotelData && accommodation.normalizedHotelData.title) { // Add check for title
     const { id, title, image, starting_price, stars, rating } =
       accommodation.normalizedHotelData;
     addRecentlyViewed({
@@ -556,8 +497,6 @@ useEffect(() => {
             onProceedBooking={handleProceedBooking}
             allotments={accommodation.allotments}
             selectedRoom={selectedRoom}
-            rooms={searchParams?.rooms || 1}
-            img={accommodation?.image}
           />
           <AccommodationMap hotelData={hotelData} />
          <AccommodationHotelDetail hotelData={accommodation}/>
