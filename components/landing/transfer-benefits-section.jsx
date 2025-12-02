@@ -1,7 +1,8 @@
 "use client";
 
+import LoaderSvg from "@/components/common/LoaderSvg";
 import { useTranslation } from "next-i18next";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 import {
@@ -24,6 +25,7 @@ export function TransferBenefitsSection() {
 
   const [topDayTours, setTopDayTours] = useState([]);
   const [isLoadingDay, setIsLoadingDay] = useState(true);
+  const [loadingTourId, setLoadingTourId] = useState(null);
 
   const benefits = t("transferBenefits.benefits", { returnObjects: true }) || [];
   const [current, setCurrent] = useState(0);
@@ -61,6 +63,7 @@ export function TransferBenefitsSection() {
   }, [fetchSearchResults]);
 
   const handleCardClick = (tour) => {
+    setLoadingTourId(tour.id);
     localizedPush(`/day-tours/detail/${tour.id}`);
   };
 
@@ -164,8 +167,16 @@ export function TransferBenefitsSection() {
                         <p className="text-2xl font-bold text-gray-900">
                           {tour?.starting_price} <span className="text-base">SGD</span>
                         </p>
-                        <button  onClick={() => handleCardClick(tour)} className="bg-[#D3202D] hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
-                          See More
+                        <button
+                          onClick={() => handleCardClick(tour)}
+                          className="bg-[#D3202D] hover:bg-red-700 text-white font-semibold py-2 px-2 rounded-lg transition-colors text-sm w-[120px] flex justify-center items-center"
+                          disabled={loadingTourId === tour.id}
+                        >
+                          {loadingTourId === tour.id ? (
+                            <LoaderSvg />
+                          ) : (
+                            "See More"
+                          )}
                         </button>
                       </div>
                     </div>

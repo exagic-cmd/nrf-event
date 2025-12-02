@@ -6,40 +6,16 @@ const ImageGallery = ({ hotelData }) => {
   const [showPreview, setShowPreview] = useState(false);
 
   const getImages = () => {
-    let images = [];
-    let rawImages = hotelData?.media;
-
-    if (typeof rawImages === "string") {
-      try {
-        rawImages = JSON.parse(rawImages);
-      } catch {
-        rawImages = null;
-      }
-    }
-
-    if (Array.isArray(rawImages)) {
-      images = rawImages.map((m) => ({
-        url: getFullImageUrl(m.image),
-        thumb: getFullImageUrl(m.image),
-      }));
-    }
-
-    if (images.length === 0 && hotelData?.image) {
-      images = [
-        {
-          url: getFullImageUrl(hotelData.image),
-          thumb: getFullImageUrl(hotelData.image),
-        },
-      ];
-    }
-
+    let images = hotelData?.normalizedHotelData?.images || [];
+    
     if (images.length === 0) {
-      images = [
-        { url: "/images/placeholder-hotel.jpg", thumb: "/images/placeholder-hotel.jpg" },
-      ];
+      return [{ url: "/images/placeholder-hotel.jpg", thumb: "/images/placeholder-hotel.jpg" }];
     }
 
-    return images;
+    return images.map(img => ({
+      url: getFullImageUrl(img.url),
+      thumb: getFullImageUrl(img.thumb),
+    }));
   };
 
   const getFullImageUrl = (path) => {
