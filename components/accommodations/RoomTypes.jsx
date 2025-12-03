@@ -42,19 +42,15 @@ const StubaRoomList = ({
   }
 
   const handleRoomSelect = (ratePlan, uniqueKey) => {
-    try {
-      const result = onRoomSelect ? onRoomSelect(ratePlan) : { ok: true };
+    const result = onRoomSelect ? onRoomSelect(ratePlan) : { ok: true };
 
-      const normalized = (result === true || result === undefined)
-        ? { ok: true }
-        : (typeof result === 'boolean' ? { ok: result } : result);
+    const normalized = (result === true || result === undefined)
+      ? { ok: true }
+      : (typeof result === 'boolean' ? { ok: result } : result);
 
-      if (!normalized.ok) {
-        setRoomMessages(prev => ({ ...prev, [uniqueKey]: normalized.message || 'This room is not available on your selected dates' }));
-        setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[uniqueKey]; return c; }), 5000);
-        return;
-      }
-
+    if (!normalized.ok) {
+      setRoomMessages(prev => ({ ...prev, [uniqueKey]: normalized.message || 'This room is not available on your selected dates' }));
+      setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[uniqueKey]; return c; }), 5000);
       setInternalSelectedRoomKey(uniqueKey);
 
       try {
@@ -64,10 +60,10 @@ const StubaRoomList = ({
       } catch (err) {
         console.error('onProceedBooking threw:', err);
       }
-    } catch (e) {
-      console.error('onRoomSelect handler threw:', e);
+      return;
     }
   };
+
 
   const getPricePerNightFormatted = (price) => {
       const validPrice = parseFloat(price);
