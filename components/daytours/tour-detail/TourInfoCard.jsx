@@ -95,7 +95,7 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking }) => {
               className="flex items-center justify-between gap-2 p-3 bg-white rounded-lg shadow-sm border border-[#D3202D] flex-shrink-0 "
             >       
               <div className="flex items-center gap-2">
-                <div className="bg-white p-2 rounded-lg">
+                <div className="bg-gray-100 p-2 rounded-lg">
                   <IconComponent size={14} className="text-[black]" />
                 </div>
                 <div className="font-medium text-sm text-black">{feature.title}</div>

@@ -17,6 +17,7 @@ import {
   Sparkles,
   Baby,
   Flame,
+  Image as ImageIcon,
 } from "lucide-react";
 
 const AccommodationHotelDetail = ({ hotelData }) => {
@@ -30,6 +31,12 @@ const AccommodationHotelDetail = ({ hotelData }) => {
     amenityItem: "Standard hotel amenity",
   };
 
+  const getFullImageUrl = (path) => {
+    if (!path || typeof path !== 'string') return null;
+    if (path.startsWith("http")) return path;
+    const base = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/";
+    return `${base}${path.replace(/^\//, "")}`;
+  };
   // --- Iconshere ---
   const amenityIcons = {
     Popular: <Flame size={20} className="text-orange-500" />,
@@ -47,29 +54,19 @@ const AccommodationHotelDetail = ({ hotelData }) => {
     default: <CheckCircle size={20} className="text-gray-500" />,
   };
 
-  const getAmenityIcon = (categoryName) => {
-    return amenityIcons[categoryName] || amenityIcons["default"];
+  const getAmenityIcon = (category) => {
+    const iconUrl = getFullImageUrl(category?.icon);
+    if (iconUrl) {
+      return <img src={iconUrl} alt={category.name} className="w-5 h-5 object-contain" />;
+    }
+    // Fallback to mapped icons if no URL
+    return amenityIcons[category?.name] || <ImageIcon size={20} className="text-gray-500" />;
   };
-  const product = hotelData || {};
+  const product = hotelData?.normalizedHotelData || {}; // Use normalized data directly
   const hasData = Object.keys(product).length > 0;
 
   const [isDescExpanded, setIsExpanded] = useState(false);
 
-  const getAmenityItems = (jsonString) => {
-    try {
-      if (!jsonString) return [];
-      let items = JSON.parse(jsonString);
-      if (typeof items === "string") {
-        items = JSON.parse(items);
-      }
-      return Array.isArray(items) ? items : [items];
-    } catch (e) {
-      console.error("Failed to parse amenity descriptions:", e, {
-        input: jsonString,
-      });
-      return [FALLBACKS.amenityItem];
-    }
-  };
   if (!hasData)
     return (
       <div className="p-8 text-center text-gray-500">
@@ -87,11 +84,16 @@ const AccommodationHotelDetail = ({ hotelData }) => {
           <div className="flex flex-col lg:flex-row gap-10">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-3 text-gray-900 text-sm font-semibold uppercase tracking-wide">
-                <MapPin size={16} />
+                <MapPin size={16} className="text-gray-500" />
                 <span>{product?.address || FALLBACKS.address}</span>
               </div>
 
               <div className="relative">
+                {/* {product.short_desc && (
+                  <p className="text-gray-800 text-[15px] font-medium leading-relaxed mb-4 italic bg-gray-50 p-3 rounded-md border-l-4 border-gray-200">
+                    {product.short_desc}
+                  </p>
+                )} */}
                 <div
                   className={`text-gray-800 text-[15px] leading-relaxed transition-all duration-300 ${
                     !isDescExpanded
@@ -99,10 +101,9 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                       : ""
                   }`}
                 >
-                  <p className="whitespace-pre-line">
-                    {product?.description &&
-                    product.description.trim().length > 0
-                      ? product.description
+                  <p className="whitespace-pre-line text-gray-700">
+                    {product?.long_desc && product.long_desc.trim().length > 0
+                      ? product.long_desc
                       : FALLBACKS.description}
                   </p>
                 </div>
@@ -154,15 +155,17 @@ const AccommodationHotelDetail = ({ hotelData }) => {
 
         {/*Amenties*/}
         {(() => {
-          let sortedAmenities = [];
-          if (product?.amenities?.length > 0) {
-            const popular = product.amenities.filter(
+          // Correctly access amenities from the normalized data
+          const amenities = product?.amenities || [];
+          let sortedAmenities = amenities;
+          if (amenities.length > 0) {
+            const popular = amenities.filter(
               (a) => a?.name === "Popular"
             );
-            const general = product.amenities.filter(
+            const general = amenities.filter(
               (a) => a?.name === "General"
             );
-            const others = product.amenities.filter(
+            const others = amenities.filter(
               (a) => a?.name !== "Popular" && a?.name !== "General"
             );
 
@@ -176,10 +179,8 @@ const AccommodationHotelDetail = ({ hotelData }) => {
               {sortedAmenities.length > 0 ? (
                 <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
                   {sortedAmenities.map((category, index) => {
-                    let subItems = getAmenityItems(
-                      category?.pivot?.descriptions
-                    );
-                    if (subItems.length === 0)
+                    let subItems = category?.descriptions || [];
+                    if (!Array.isArray(subItems) || subItems.length === 0)
                       subItems = [FALLBACKS.amenityItem];
                     const isPopular = category?.name === "Popular";
 
@@ -193,7 +194,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                         }`}
                       >
                         <div className="flex items-center gap-3 mb-4">
-                          {getAmenityIcon(category?.name)}
+                          {getAmenityIcon(category)}
                           <h3
                             className={`font-bold text-[16px] ${
                               isPopular ? "text-orange-600" : "text-gray-900"
@@ -206,13 +207,13 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                         <ul className="space-y-2.5">
                           {subItems.map((item, subIndex) => (
                             <li
-                              key={subIndex}
+                              key={item?.id || subIndex}
                               className="flex items-start text-[14px] text-gray-600 pl-1 group"
                             >
-                              <span className="mr-1.5 text-gray-300 text-[10px] mt-[0px] group-hover:text-blue-400 transition-colors">
+                              <span className="mr-2 text-gray-400 text-[10px] mt-1 group-hover:text-blue-400 transition-colors">
                                 ●
                               </span>
-                              <span className="leading-snug">{item}</span>
+                              <span className="leading-snug">{item?.text || item}</span>
                             </li>
                           ))}
                         </ul>

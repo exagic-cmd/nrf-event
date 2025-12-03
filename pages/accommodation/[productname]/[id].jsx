@@ -19,6 +19,7 @@ import AccommodationRooms from "@/components/accommodations/RoomTypes";
 import AccommodationMap from "@/components/accommodations/AccommodationMapSection";
 import AccommodationHotelDetail from "@/components/accommodations/AccommodationHotelDetail.jsx";
 import RecentlyViewed from "@/components/accommodations/RecentlyViewed.jsx";
+import NearbyLandmarks from "@/components/accommodations/NearbyLandmarks.jsx";
 import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
 import { Hotel } from "lucide-react";
@@ -77,7 +78,8 @@ export default function AccommodationDetailPage() {
       id: hotel.id,
       title: hotel.name,
       name: hotel.name,
-      description: hotel.long_desc || hotel.short_desc,
+      short_desc: hotel.short_desc,
+      long_desc: hotel.long_desc,
       country: hotel.country,
       city: hotel.city,
       address: hotel.address,
@@ -86,39 +88,55 @@ export default function AccommodationDetailPage() {
       image: hotel.photos?.[0]?.image || "",
       images: (hotel.photos || []).map(p => ({ url: p.image, thumb: p.image, type: 'photo' })),
       stars: parseFloat(hotel.star_rating) || 0,
-      amenities: hotel.amenities || [],
+      amenities: data.hotel.amenities || [], // Correctly pass amenities from the source
       review_count: 0, // Not in new API response
       rating: { rating: parseFloat(hotel.star_rating) || 0 }, // Synthesize rating object
       location: hotel.address || hotel.city,
     };
 
     // 2. Normalize Room Data
-    const normalizedRooms = (roomData || []).flatMap(room =>
-      (room.rate_plans || []).map(plan => ({
-        id: `${room.id}-${plan.id}`,
-        roomType: room.name,
-        roomCat: room.name,
-        mealType: plan.name,
+    const normalizedRooms = (roomData || []).map(room => {
+      const roomRatePlans = (room.rate_plans || []).map(plan => ({
+        id: `${room.id}-${plan.id}`, // Unique ID for the rate plan
+        roomTypeId: room.id, // Link back to the room type
+        roomTypeName: room.name, // Name of the room type (e.g., "Standard")
+        bedDetails: plan.bed_type?.name || room.beds?.[0]?.bed_type_title, // Use plan's bed_type if available, else room's
+        smokingType: plan.smoking_type,
+        mealType: plan.name, // Name of the rate plan, often includes meal info
+        mealPlanCode: plan.meal_plan_code,
         price: plan.pricing.total,
         cancellationPolicy: plan.cancellation_policy?.name || (plan.is_refundable ? "Refundable" : "Non-refundable"),
-        maxPax: room.max_adults + room.max_children,
-        isAvailable: true, // Assuming all returned rooms are available
-        canAccommodate: true, // Assuming API returns valid rooms
+        occupancyAdults: plan.occupancy_adults,
+        occupancyChildren: plan.occupancy_children,
+        isAvailable: true, // Assuming all returned rate plans are available
+        canAccommodate: true, // This will be checked later based on searchParams
         rawPricing: plan,
-        images: room.images,
-      }))
-    );
+        // Pass room-level images to each rate plan for easier access in StubaRoomList
+        images: (room.images || []).map(img => img.image),
+        view: room.view, // Pass room-level view
+      }));
+
+      return {
+        id: room.id,
+        name: room.name, // Room type name (e.g., "Executive King Suite")
+        size: room.size,
+        view: room.view,
+        images: (room.images || []).map(img => img.image),
+        bedDetails: room.beds?.[0]?.bed_type_title, // Room-level bed details
+        ratePlans: roomRatePlans, // Array of normalized rate plans for this room type
+      };
+    });
 
     // 3. Find the lowest price
     const startingPrice = normalizedRooms.length > 0
-      ? Math.min(...normalizedRooms.map(r => r.price))
+      ? Math.min(...normalizedRooms.flatMap(roomType => roomType.ratePlans).map(r => r.price))
       : 0;
 
     normalizedHotelData.starting_price = startingPrice;
     normalizedHotelData.price = startingPrice;
 
     const lowestPriceRoom = normalizedRooms.length > 0
-      ? normalizedRooms.reduce((low, r) => r.price < low.price ? r : low)
+      ? normalizedRooms.flatMap(roomType => roomType.ratePlans).reduce((low, r) => r.price < low.price ? r : low)
       : null;
 
     // 4. Return the complete, normalized structure
@@ -484,7 +502,7 @@ useEffect(() => {
         </div>
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-2">
-          <AccommodationRooms
+             <AccommodationRooms
             isNonStuba={isNonStuba}
             allRooms={accommodation.normalizedRoomData}
             normalizedRoomData={accommodation.normalizedRoomData}
@@ -498,8 +516,16 @@ useEffect(() => {
             allotments={accommodation.allotments}
             selectedRoom={selectedRoom}
           />
-          <AccommodationMap hotelData={hotelData} />
-         <AccommodationHotelDetail hotelData={accommodation}/>
+          <div className="grid grid-cols-1">
+            <AccommodationMap hotelData={hotelData} landmarks={accommodation?.hotel?.nearby_landmarks} />
+            <NearbyLandmarks
+              landmarks={accommodation?.hotel?.nearby_landmarks}
+              hotelLatitude={accommodation?.hotel?.latitude}
+              hotelLongitude={accommodation?.hotel?.longitude}
+            />
+          </div>
+          <AccommodationHotelDetail hotelData={accommodation}/>
+       
         </div>
       </div>
 

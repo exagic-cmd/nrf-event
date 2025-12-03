@@ -16,10 +16,12 @@ import { useSearchParams } from "next/navigation";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import AccommodationFilterSidebar from "@/components/accommodations/AccommodationFilterSidebar";
+import { Filter, X } from "lucide-react";
 import GoogleMap from "@/components/daytours/GoogleMap";
 
 function ListingsPage() {
   const [hasSearched, setHasSearched] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [isInitialSearch, setIsInitialSearch] = useState(true);
   const [searchCategory, setSearchCategory] = useState("transfer");
@@ -145,6 +147,7 @@ function ListingsPage() {
   };
 
   const showFaqs = hasSearched && searchCategory === "transfer";
+  const isAccommodationCategory = searchCategory === "accommodation" || searchCategory === "hotels";
 
   return (
     <Layout>
@@ -170,15 +173,28 @@ function ListingsPage() {
             </div>
           )}
 
-          {/* Accomodation: Sidebar */}
-          {(searchCategory === "accommodation" || searchCategory === "hotels") && (
-            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
+          {/* Accommodation: Filter Sidebar (Large Screens) */}
+          {isAccommodationCategory && (
+            <div className="hidden lg:block max-h-[calc(100vh-7rem)] overflow-y-auto md:sticky top-24 self-start z-20 w-full lg:w-56">
               {!accommodationLoading && accommodations && accommodations.length > 0 && (
                 <AccommodationFilterSidebar
                   filters={accommodationFilters}
                   onFilterChange={handleFilterChange}
                 />
               )}
+            </div>
+          )}
+
+        
+          {isAccommodationCategory && (
+            <div className="lg:hidden w-full mb-2 mt-4">
+              <button
+                onClick={() => setShowFilterModal(true)}
+                className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
+              >
+                <Filter size={20} />
+                Filter
+              </button>
             </div>
           )}
 
@@ -214,6 +230,32 @@ function ListingsPage() {
             {searchCategory === "transfer" && showFaqs && <Faqs />}
           </div>
         </div>
+
+        {/* Filter Modal for Small Screens */}
+        {showFilterModal && isAccommodationCategory && (
+          <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-bold">Filters</h2>
+              <button onClick={() => setShowFilterModal(false)} className="text-gray-600 hover:text-gray-900">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-4">
+              <AccommodationFilterSidebar
+                filters={accommodationFilters}
+                onFilterChange={handleFilterChange}
+              />
+            </div>
+            <div className="sticky bottom-0 bg-white p-4 border-t shadow-lg">
+              <button
+                onClick={() => setShowFilterModal(false)} 
+                className="w-full bg-[#D3202D] text-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300"
+              >
+                Show Results
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

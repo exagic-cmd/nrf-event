@@ -2,16 +2,16 @@
 
 import React, { useState, Children, useEffect } from "react";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
-
-const FilterSection = ({ title, children, defaultOpen = true }) => {
+const FilterSection = ({ title, children, defaultOpen = true, scrollable = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [showAll, setShowAll] = useState(false);
 
   const childArray = Children.toArray(children);
-  const hasMore = childArray.length > 3;
+  const initialItemCount = 5;
+  const hasMore = childArray.length > initialItemCount;
 
-  const itemsToShow = hasMore && !showAll ? childArray.slice(0, 3) : childArray;
-
+  const itemsToShow = hasMore && !showAll ? childArray.slice(0, initialItemCount) : childArray;
+  const containerClasses = scrollable ? "max-h-48 overflow-y-auto pr-2 scrollbar-thin" : "space-y-3";
   return (
     <div className="border-b border-gray-200 py-4">
       <button
@@ -22,11 +22,16 @@ const FilterSection = ({ title, children, defaultOpen = true }) => {
         {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </button>
       {isOpen && (
-        <div className="mt-4 space-y-3">
+        <div className={`mt-4 ${containerClasses}`}>
           {itemsToShow}
-          {hasMore && !showAll && (
+          {hasMore && !showAll && !scrollable && (
             <button onClick={() => setShowAll(true)} className="text-sm font-medium text-[#D3202D] hover:underline pt-2">
               Load More
+            </button>
+          )}
+          {hasMore && showAll && !scrollable && (
+            <button onClick={() => setShowAll(false)} className="text-sm font-medium text-[#D3202D] hover:underline pt-2">
+              Show Less
             </button>
           )}
         </div>
@@ -152,7 +157,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {Object.entries(amenitiesByCategory).map(([category, amenities]) => (
-        <FilterSection key={category} title={category}>
+        <FilterSection key={category} title={category} scrollable={amenities.length > 5}>
           {amenities.map((amenity) => (
             <Checkbox
               key={amenity.label}
@@ -166,7 +171,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       ))}
 
       {meal_plans && meal_plans.length > 0 && (
-        <FilterSection title="Meal Plan">
+        <FilterSection title="Meal Plan" scrollable={meal_plans.length > 5}>
           {meal_plans.map((plan) => (
             <Checkbox key={plan.code} label={plan.name || plan.code.replace('_', ' ')} count={plan.count} />
           ))}
@@ -174,7 +179,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {payment_types && payment_types.length > 0 && (
-        <FilterSection title="Payment Type">
+        <FilterSection title="Payment Type" scrollable={payment_types.length > 5}>
           {payment_types.map((type) => (
             <Checkbox key={type.value} label={(type.name || type.value).replace('_', ' ')} count={type.count} />
           ))}
@@ -182,7 +187,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {cancellation_policies && cancellation_policies.length > 0 && (
-        <FilterSection title="Cancellation Policy" defaultOpen={false}>
+        <FilterSection title="Cancellation Policy" defaultOpen={false} scrollable={cancellation_policies.length > 5}>
           {cancellation_policies.map((policy) => (
             <Checkbox key={policy.id} label={policy.name} count={policy.count} />
           ))}

@@ -10,7 +10,7 @@ const TourHeader = ({ apiData }) => {
     <>
       {/* Mobile Header */}
       <div className="block lg:hidden mb-6">
-        <h1 className="text-xl sm:text-2xl font-semibold text-white mb-2 leading-tight">
+        <h1 className="text-xl sm:text-2xl font-semibold text-black mb-2 leading-tight">
           {tourName}
         </h1>
         <div className="flex items-center text-gay-50 mb-4">

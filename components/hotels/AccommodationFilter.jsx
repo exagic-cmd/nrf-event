@@ -14,6 +14,7 @@ import {
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useEventStore } from "@/store/useEventStore";
 import LoaderSvg from "@/components/common/LoaderSvg";
 const DEFAULT_REGION = {
   id: 4352,
@@ -61,10 +62,23 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     setSearchParamsAndSearch,
   } = useAccommodationsStore();
 
+  const { event, FetchEvent } = useEventStore();
+
   // Fetch nationalities on mount
   useEffect(() => {
     fetchNationalities();
   }, [fetchNationalities]);
+
+  // Fetch event data on mount
+  useEffect(() => {
+    FetchEvent();
+  }, [FetchEvent]);
+
+  // Get booking date range from event store
+  const eventDetails = event?.event;
+  const productBookingStart = eventDetails?.product_booking_start ? new Date(eventDetails.product_booking_start) : null;
+  const productBookingEnd = eventDetails?.product_booking_end ? new Date(eventDetails.product_booking_end) : null;
+  const minSelectableDate = productBookingStart && productBookingStart > new Date() ? productBookingStart : new Date();
 
 useEffect(() => {
   if (debounceTimeoutRef.current) {
@@ -93,24 +107,6 @@ useEffect(() => {
     }
   };
 }, [search, isInputFocused, fetchHotelsAndRegions]);
-
-  // Client-side filtering of results (after API returns)
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-
-    const filteredHotels = hotels.filter((hotel) =>
-      hotel.title?.toLowerCase().includes(q)
-    );
-
-    const filteredRegions = regions.filter((region) =>
-      region.region_name?.toLowerCase().includes(q)
-    );
-
-    return {
-      hotels: filteredHotels,
-      regions: filteredRegions,
-    };
-  }, [search, hotels, regions]);
 
   const totalGuests = rooms.reduce(
     (sum, r) => sum + r.adult + r.children.length,
@@ -280,8 +276,9 @@ useEffect(() => {
               onChange={handleStartDateChange}
               startDate={startDate}
               endDate={endDate}
-              selectsRange
-              minDate={new Date()}
+              selectsRange              
+              minDate={minSelectableDate}
+              maxDate={productBookingEnd}
               placeholderText="Check-in - Check-out"
               className="w-full bg-transparent outline-none cursor-pointer"
               wrapperClassName="w-full"
@@ -376,7 +373,7 @@ useEffect(() => {
 
           {/* Guest Popup - Mobile Optimized */}
           {showGuestPopup && (
-            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto">
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto scrollbar-hide">
               {rooms.map((room, i) => (
                 <div key={i} className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b last:border-0 last:mb-0 last:pb-0">
                   <div className="flex justify-between items-center mb-3">
@@ -547,30 +544,36 @@ useEffect(() => {
                 </div>
               ) : (
                 <div>
-                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
-                      Hotels
-                    </h6>
-                    {filtered.hotels.length > 0 ? (
-                      filtered.hotels.map((hotel) => (
-                        <button
-                          key={hotel.id}
-                          type="button"
-                          onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleSelection(hotel, "hotel");
-                            }}
-                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
-                        >
-                          <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                          <span className="truncate">{hotel.title}</span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        No hotels found
+                  {Object.keys(hotels).length > 0 ? (
+                    Object.entries(hotels).map(([groupName, hotelList]) => (
+                      <div key={groupName}>
+                        <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize">
+                          {groupName.replace(/_/g, ' ')}
+                        </h6>
+                        {hotelList.length > 0 ? (
+                          hotelList.map((hotel) => (
+                            <button
+                              key={hotel.id}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleSelection(hotel, "hotel");
+                              }}
+                              className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                            >
+                              <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                              <span className="truncate">{hotel.title}</span>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-sm text-gray-500">No hotels in this category.</div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">No hotels found.</div>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -634,11 +637,11 @@ useEffect(() => {
       <div className="col-span-2">
           <button
             type="submit"
-            className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-[11px] active:bg-[#D3202D] transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
+            className="min-w-full h-[50px] sm:h-[54px] rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg active:bg-[#D3202D] transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
             disabled={isSearching}
           >
             {isSearching ? (
-              <LoaderSvg />
+              <LoaderSvg  className="h-full p-1"/>
             ) : (
               "Search"
             )}
