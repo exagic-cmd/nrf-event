@@ -376,7 +376,7 @@ useEffect(() => {
 
           {/* Guest Popup - Mobile Optimized */}
           {showGuestPopup && (
-            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto">
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto scrollbar-hide">
               {rooms.map((room, i) => (
                 <div key={i} className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b last:border-0 last:mb-0 last:pb-0">
                   <div className="flex justify-between items-center mb-3">
@@ -634,11 +634,11 @@ useEffect(() => {
       <div className="col-span-2">
           <button
             type="submit"
-            className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-[11px] active:bg-[#D3202D] transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
+            className="min-w-full h-[50px] sm:h-[54px] rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg active:bg-[#D3202D] transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
             disabled={isSearching}
           >
             {isSearching ? (
-              <LoaderSvg />
+              <LoaderSvg  className="h-full p-1"/>
             ) : (
               "Search"
             )}

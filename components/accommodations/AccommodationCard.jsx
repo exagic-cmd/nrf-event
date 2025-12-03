@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import { MapPin, Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, SwimmingPool, Dumbbell, Fan, Accessibility } from "lucide-react";
+import {  Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, SwimmingPool, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
@@ -44,14 +44,13 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         return sum + (Number(r?.children) || 0);
       }, 0) || 0;
   
-  // Directly access data from the accommodation prop
   const {
     id,
     name,
     address,
-    country,
+    accommodation_type,
     star_rating,
-    photo, // Assuming image might be added later
+    photo, 
     room,
     amenities,
   } = accommodation;
@@ -140,8 +139,8 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
             <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
               {address && (
                 <div className="flex items-center gap-1">
-                  <MapPin className="" size={12} />
-                  <span className="">{country}</span>
+                  <Hotel className="" size={12} />
+                  <span className="">{accommodation_type}</span>
                 </div>
               )}
             </div>
@@ -241,13 +240,10 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   <button
     type="button"
     onClick={handleCardClick}
-    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto"
+    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
   >
     {isLoading ? (
-      <span className="flex items-center gap-2">
-        <LoaderSvg className="w-4 h-4" />
-        {/* {t("common.loading")} */}
-      </span>
+      <LoaderSvg className="h-5 w-5" />
     ) : (
       "Book Now"
     )}
