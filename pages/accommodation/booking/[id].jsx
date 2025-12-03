@@ -7,6 +7,7 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import Layout from "@/components/layout/Layout";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import AccommodationBookNow from "@/components/accommodations/booking/AccommodationBookNow";
+import { formatPrice } from "@/utils/priceUtils";
 import {
   Building,
   BedDouble,
@@ -186,9 +187,9 @@ export default function AccommodationBookingPage() {
       <div className="flex justify-between items-center">
         <span className="text-base font-semibold">Total</span>
  
-        {/* PRICE WITHOUT DECIMALS */}
+     
         <span className="text-xl font-bold">
-          {hotel?.currency} {Math.round(Number(selectedRoom.price || 0))}
+          SGD {formatPrice(selectedRoom.price || 0)}
         </span>
       </div>
     </div>

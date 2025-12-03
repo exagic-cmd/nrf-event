@@ -112,7 +112,7 @@ const TimePickerField = ({
     {error && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
     {surchargeDetails?.amount && (
       <div className="text-sm text-orange-600 font-semibold col-span-2">
-        {t("form.surchargeApplied")}: {surchargeDetails.amount} SGD
+        {t("form.surchargeApplied")}: SGD {surchargeDetails.amount}
       </div>
     )}
   </FormField>

@@ -87,7 +87,7 @@ const AccommodationHeader = ({ hotelData }) => {
       </h1>
       
       {/* Location and Additional Info */}
-      <div className="flex flex-wrap items-center gap-4 text-[#2176FF]">
+      <div className="flex flex-wrap items-center gap-4 text-[#aaabad]">
         {/* Location */}
         {locationText && (
           <div className="flex items-center gap-1">

@@ -19,7 +19,7 @@ const BookingPriceTable = ({ id }) => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
           <span className="font-semibold text-sm text-green-600">SGD {promo}</span>
           <span className="line-through text-gray-400 text-xs">SGD {price}</span>
-          <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs px-1 py-1 w-fit mt-1 sm:mt-0">
+          <Badge variant="secondary" className="bg-gray-100 text-green-700 text-xs px-1 py-1 w-fit mt-1 sm:mt-0">
             {t("promo")}
           </Badge>
         </div>
@@ -98,7 +98,7 @@ const BookingPriceTable = ({ id }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {pricingList.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-orange-25 transition-colors duration-200 group">
+                    <tr key={item.id} className="transition-colors duration-200 group">
                       <td className="py-4 px-4">
                         <div className="w-8 h-8 flex items-center justify-center text-sm font-bold">
                           {index + 1}
@@ -107,12 +107,12 @@ const BookingPriceTable = ({ id }) => {
                       <td className="py-4 px-4">{item.min_pax}</td>
                       <td className="py-4 px-4">{item.max_pax}</td>
                       <td className="py-4 px-4">
-                        <div className="bg-green-50 rounded-lg p-2 inline-block min-w-fit">
+                        <div className="bg-gray-50 rounded-lg p-2 inline-block min-w-fit">
                           {renderPriceWithPromo(item.adult_price, item.adult_promo_price)}
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="bg-green-50 rounded-lg p-2 inline-block min-w-fit">
+                        <div className="bg-gray-50 rounded-lg p-2 inline-block min-w-fit">
                           {renderPriceWithPromo(item.child_price, item.child_promo_price)}
                         </div>
                       </td>

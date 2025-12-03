@@ -3,6 +3,7 @@ import { PlaneLanding, PlaneTakeoff } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useTranslation } from "next-i18next";
 import { getFullImageUrl } from "@/utils/imageService";
+import { formatPrice } from "@/utils/priceUtils";
 
 function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupLocation }) {
   const { t } = useTranslation("transfer");
@@ -108,7 +109,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("pickupSurcharge")}</span>
             <span className="text-sm font-medium text-gray-600">
-              +{Math.round(pickupAmount)} SGD
+             SGD +{Math.round(pickupAmount)} 
             </span>
           </div>
         )}
@@ -116,7 +117,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("returnSurcharge")}</span>
             <span className="text-sm font-medium text-gray-600">
-              +{Math.round(returnAmount)} SGD
+              SGD +{Math.round(returnAmount)}
             </span>
           </div>
         )}
@@ -124,14 +125,14 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("addons_total")}</span>
             <span className="text-sm font-medium text-gray-600">
-              +{Math.round(addonsTotal)} SGD
+             SGD +{Math.round(addonsTotal)} 
             </span>
           </div>
         )}
 
         <div className="flex justify-between items-center mt-4">
           <span className="md:text-xl text-md font-bold">{t("total")}</span>
-          <span className="md:text-xl text-md font-bold">{Math.round(finalTotal)} SGD</span>
+          <span className="md:text-xl text-md font-bold">SGD {formatPrice(finalTotal)} </span>
         </div>
       </div>
     </div>

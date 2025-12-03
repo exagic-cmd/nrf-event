@@ -345,7 +345,6 @@ export default function SearchFilterCard({
            {/* ====== TRANSFERS ====== */}
            {filterActiveTab === 2 && (
              <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
-               {isLoading && <LoaderSvg />}
                <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                  {/* Trip Type */}
                  <div className="md:col-span-2 relative" ref={tripTypeDropdownRef}>
@@ -486,7 +485,6 @@ export default function SearchFilterCard({
       {/* ====== DAY TOURS ====== */}
       {filterActiveTab === 3 && (
         <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
-          {isLoading && <LoaderSvg />}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
 
             {/* COUNTRY */}

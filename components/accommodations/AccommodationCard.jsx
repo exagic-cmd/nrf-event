@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import { MapPin, Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, SwimmingPool, Dumbbell, Fan, Accessibility } from "lucide-react";
+import {  Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, Waves, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import SvgLoader2 from "@/components/common/Loader2Svg";
 import LoaderSvg from "@/components/common/LoaderSvg";
+import { formatPrice } from "@/utils/priceUtils";
 import { getFullImageUrl } from "@/utils/imageService";
 function AccommodationCard({ accommodation, category = "accommodation" }) {
 
@@ -14,7 +15,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     internet: Wifi,
     transfer: Car,
     parking: CircleParking,
-    pool: SwimmingPool,
+    pool: Waves,
     gym: Dumbbell,
     restaurant: Utensils,
     bar: Utensils,
@@ -44,24 +45,18 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         return sum + (Number(r?.children) || 0);
       }, 0) || 0;
   
-  // Directly access data from the accommodation prop
   const {
     id,
     name,
     address,
-    country,
+    accommodation_type,
     star_rating,
-    photo, // Assuming image might be added later
+    photo, 
     room,
     amenities,
   } = accommodation;
 
   const lowestPrice = room?.base_price || 0;
-
-  const formatPrice = (value) => {
-    const num = Number(value);
-    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
-  };
 
   const handleCardClick = async () => {
     setIsLoading(true);
@@ -140,8 +135,8 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
             <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
               {address && (
                 <div className="flex items-center gap-1">
-                  <MapPin className="" size={12} />
-                  <span className="">{country}</span>
+                  <Hotel className="" size={12} />
+                  <span className="">{accommodation_type}</span>
                 </div>
               )}
             </div>
@@ -215,7 +210,11 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
   {/* Third Column: Price */}
   <div className="text-right">
-    <p className="text-lg font-bold text-primary"> {formatPrice(lowestPrice)} {room?.rate_plan?.currency || 'SGD'}</p>
+    <p className="text-lg font-bold text-primary">
+      {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
+     
+    </p>
+     <span className="text-xs text-gray-600 font-normal"> Per Room/night</span>
     {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
 
@@ -229,8 +228,8 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   {/* Left side: price (mobile only) */}
   <div className="block md:hidden mr-auto">
     <p className="text-lg font-bold text-primary">
-      {formatPrice(lowestPrice)}{" "}
-      {room?.rate_plan?.currency || 'SGD'}
+      {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
+      <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span>
     </p>
     <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
       for a night for {totalAdults} adults and {totalChildren} children
@@ -241,13 +240,10 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   <button
     type="button"
     onClick={handleCardClick}
-    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto"
+    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
   >
     {isLoading ? (
-      <span className="flex items-center gap-2">
-        <LoaderSvg className="w-4 h-4" />
-        {/* {t("common.loading")} */}
-      </span>
+      <LoaderSvg className="h-5 w-5" />
     ) : (
       "Book Now"
     )}
