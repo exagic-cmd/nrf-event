@@ -1,5 +1,6 @@
 // components/accommodations/AccommodationInfoCard.jsx
 import { Star, Check, MapPin, Clock, Bed } from "lucide-react";
+import { formatPrice } from "@/utils/priceUtils";
 import { useState, useEffect } from "react";
 
 const AccommodationInfoCard = ({
@@ -42,19 +43,6 @@ const AccommodationInfoCard = ({
     setAmenities(extract());
   }, [hotelData]);
 
-  const formatPrice = (price) => {
-    if (!price || price <= 0) return "Price on request";
-    return `${currency} ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
-  const formattedPrice = (price) => {
-      if (!price || price <= 0) return "Price on request";
-
-      const formattedPrice = Math.round(price).toLocaleString();
-
-      return `${currency} ${formattedPrice}`;
-  };
-
   const getRoomCountText = () => {
     if (!allRooms.length) return "No rooms available";
     return allRooms.length === 1 ? "1 room option" : `${allRooms.length} room options`;
@@ -77,11 +65,13 @@ const AccommodationInfoCard = ({
     <div className="lg:col-span-1">
       <div className="bg-white  lg:flex-col justify-end  py-2 sticky top-4 mr-0 lg:mr-2 ">
         {/* Price */}
-        <div className="mb-5 flex justify-end">
+        <div className="mb-0 flex justify-end">
           <div className="text-lg lg:text-2xl text-[#D3202D] mb-1">
-          <span className="text-sm md:text-md text-black">  Starting Price </span>{formattedPrice(lowestPrice)}
-          </div>
+          <span className="text-sm md:text-md text-black">  Starting Price </span>SGD {formatPrice(lowestPrice)}
           
+          </div>
+         
+            
 
           {/* {selectedRoom && (
             <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 text-[#233BA0] text-xs px-2 py-1 rounded-full">
@@ -96,9 +86,11 @@ const AccommodationInfoCard = ({
             </div>
           )} */}
         </div>
-
+ <div className="text-black text-sm flex items-center gap-1 mb-3">
+                for {nights} night {nights > 1 ? "s " : ""},{ totalGuests +" Guests"}   
+          </div>
         {/* Selected Room */}
-        {selectedRoom && (
+        {/* {selectedRoom && (
           <div className="mb-2 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-[#D3202D]/30 rounded-xl">
             <div className="text-[#233BA0] font-semibold text-sm mb-1">
               {selectedRoom.roomType}
@@ -113,7 +105,7 @@ const AccommodationInfoCard = ({
               </div>
             )}
           </div>
-        )}
+        )} */}
 
         {/* Highlights */}
         {/* {highlights.length > 0 && (
@@ -151,7 +143,7 @@ const AccommodationInfoCard = ({
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-[#D3202D]  text-white lg:py-2 py-3 px-2 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-[#D3202D]  text-white lg:py-3 font-semibold py-3 px-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>

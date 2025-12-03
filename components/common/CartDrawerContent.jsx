@@ -10,7 +10,7 @@ import { useProductStore } from "@/store/useProductStore";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-
+import { formatPrice } from "@/utils/priceUtils";
 const CartDrawerContent = () => {
   const { t } = useTranslation(["common", "accommodation"]);
   const { localizedPush } = useLocalizedRouter();
@@ -123,7 +123,7 @@ const CartDrawerContent = () => {
                         {/* Price */}
                       
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                           {Number(item.price).toFixed(2)} SGD
+                           SGD {formatPrice(item.price)}
                         </p>
                       </>
                     ) : item.vehicle ? (
@@ -149,7 +149,7 @@ const CartDrawerContent = () => {
                           {t("adult")}: {item?.adults || item?.pax} | {t("child")}: {item?.child || 0}
                         </p>
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                          {item.pricing?.total || item?.price || "0"} {item.currency || "SGD"}
+                        {item.currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")} 
                         </p>
                       </>
                     )}
@@ -209,7 +209,7 @@ const CartDrawerContent = () => {
               <div className="flex justify-between font-semibold text-base">
                 <span>{t("total")}</span>
                 <span>
-                  {total.toFixed(2)} {items[0]?.currency || "SGD"}
+                  {items[0]?.currency || "SGD"} {formatPrice(total)} 
                 </span>
               </div>
 

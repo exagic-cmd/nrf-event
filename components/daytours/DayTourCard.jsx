@@ -3,6 +3,7 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import { Clock, MapPin, Users, Star, Calendar } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
+import { formatPrice } from "@/utils/priceUtils";
 import SvgLoader from "@/components/common/LoaderSvg";
 
 function DaytourCard({ tour, category = "daytour" }) {
@@ -14,11 +15,6 @@ function DaytourCard({ tour, category = "daytour" }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const hasPromo = tour.originalPrice && tour.price < tour.originalPrice;
-  
-  const formatPrice = (value) => {
-    const num = Number(value);
-    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
-  };
 
   const handleBookNow = async () => {
     setIsLoading(true);
@@ -185,11 +181,11 @@ function DaytourCard({ tour, category = "daytour" }) {
       <div className="flex items-center gap-2">
         {hasPromo && (
           <p className="text-sm text-gray-400 line-through">
-            {formatPrice(tour.originalPrice)} {tour.currency || "SGD"}
+           {tour.currency || "SGD"} {formatPrice(tour.originalPrice)} 
           </p>
         )}
         <p className="text-lg font-bold text-[#D3202D]">
-          {formatPrice(tour.price)} {tour.currency || "SGD"}
+          {tour.currency || "SGD"} {formatPrice(tour.price)} 
         </p>
       </div>
     </div>

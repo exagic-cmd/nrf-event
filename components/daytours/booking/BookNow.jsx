@@ -14,7 +14,7 @@ import { Tag, Star, Clock } from "lucide-react";
 import { getFullImageUrl } from "@/utils/imageService";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useOrderStore } from "@/store/useOrderStore";
-
+import { formatPrice } from "@/utils/priceUtils";
 const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const { t } = useTranslation("daytour");
   const router = useRouter();
@@ -186,10 +186,10 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                     {productTitle}
                   </h3>
                   <Separator />
-                  <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
                     <Tag className="w-4 h-4 text-[]" />
                     <p className="font-medium text-gray-900">
-                      {t("startingFrom")} SGD {displayPrice}
+                      {t("startingFrom")} SGD {formatPrice(displayPrice)}
                     </p>
                   </div>
                 </div>

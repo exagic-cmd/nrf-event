@@ -5,7 +5,7 @@ import { useTranslation } from "next-i18next";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useCartStore } from "@/store/useCartStore";
 import SvgLoader from "@/components/common/LoaderSvg";
-
+import { formatPrice } from "@/utils/priceUtils";
 function TransfersCard({ car, category = "transfer" }) {
   const { localizedPush } = useLocalizedRouter();
   const { t } = useTranslation("transfer");
@@ -16,10 +16,7 @@ function TransfersCard({ car, category = "transfer" }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const hasPromo = car.originalPrice && car.price < car.originalPrice;
-  const formatPrice = (value) => {
-    const num = Number(value);
-    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
-  };
+
 
   // Debug: Check what's being stored
   useEffect(() => {
@@ -83,12 +80,12 @@ function TransfersCard({ car, category = "transfer" }) {
     <>
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#CC9A55]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100">
           <div className="bg-white p-6 rounded-lg shadow-xl text-center">
             <p className="mb-4">{t("card.modal.alreadyInCart")}</p>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-[#CC9A55] text-white px-4 py-2 rounded"
+              className="bg-[#D3202D] text-white px-4 py-2 rounded"
             >
               {t("common.close")}
             </button>
@@ -157,11 +154,11 @@ function TransfersCard({ car, category = "transfer" }) {
       <div>
         {hasPromo && (
           <p className="text-sm text-gray-400 line-through">
-            {formatPrice(car.originalPrice)} SGD
+           SGD {formatPrice(car.originalPrice)} 
           </p>
         )}
         <p className="text-lg font-bold text-[#D3202D]">
-          {formatPrice(car.price)} SGD
+          SGD {formatPrice(car.price)}
         </p>
       </div>
 

@@ -6,6 +6,7 @@ import {
   Star, MapPin, Clock
 } from "lucide-react";
 import { getFullImageUrl } from "@/utils/imageService";
+import { formatPrice } from "@/utils/priceUtils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 
@@ -68,13 +69,6 @@ const StubaRoomList = ({
     }
   };
 
-  const formatedPrice = (price) => {
-      const validPrice = parseFloat(price);
-      if (isNaN(validPrice)) return "0";
-
-      return Math.round(validPrice).toLocaleString("en-US");
-  };
-
   const getPricePerNightFormatted = (price) => {
       const validPrice = parseFloat(price);
       if (isNaN(validPrice) || validPrice === 0) return "0";
@@ -114,10 +108,7 @@ const StubaRoomList = ({
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
             </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-white bg-gray-800 px-4 py-2 rounded-full">
-            <Calendar className="lg:w-5 lg:h-5 h-3 w-3" />
-            <span>{nights} night{nights > 1 ? "s" : ""}</span>
-          </div>
+         
         </div>
 
         <div className="space-y-5">
@@ -130,7 +121,7 @@ const StubaRoomList = ({
                         {roomType.images?.[0] && <img src={getFullImageUrl(roomType.images[0])} alt="Room thumbnail" className="w-full h-full object-cover" />}
                     </div>
                     <div>
-                        <h3 className="font-bold text-md lg:text-md line-clamp-1 text-black pt-3">{totalRoomsRequested} &times; {roomType.name}</h3>
+                        <h3 className="font-bold text-md lg:text-md line-clamp-1 text-black pt-3">{totalRoomsRequested} &times; {roomType.name} <span className="bg-gray-100 text-black p-1 font-semi-bold text-sm rounded-full ml-2">{nights} night{nights > 1 ? "s" : ""}</span></h3> 
                      {roomType.view && <span className="text-sm font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
                            {roomType.view.replace('_', ' ')}
                         </span>}
@@ -185,8 +176,8 @@ const StubaRoomList = ({
                     const isSelected = internalSelectedRoomKey === uniqueKey;
                     const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                     const mealText = getMealDisplay(ratePlan.mealType);
-                    const netPriceStatic = `${currency} ${formatedPrice(ratePlan.price)}`;
-                    const surchargeStatic = "No surcharge"; // Sta
+                    const netPriceStatic = `${currency} ${formatPrice(ratePlan.price)}`;
+                    const surchargeStatic = ""; // Sta
 
                     return (
                       <div
@@ -231,7 +222,7 @@ const StubaRoomList = ({
                     const isSelected = internalSelectedRoomKey === uniqueKey;
                     const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                     const mealText = getMealDisplay(ratePlan.mealType);
-                    const netPriceStatic = `${currency} ${formatedPrice(ratePlan.price)}`;
+                    const netPriceStatic = `${currency} ${formatPrice(ratePlan.price)}`;
                     const surchargeStatic = "No surcharge";
                     return(
                       <div key={uniqueKey} className={`flex-shrink-0 w-[280px] border rounded-xl transition-all ${isSelected ? "bg-red-50 border-red-300" : "bg-white border-gray-200"}`}>

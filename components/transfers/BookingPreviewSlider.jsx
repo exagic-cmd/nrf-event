@@ -4,7 +4,7 @@ import { useTranslation } from "next-i18next";
 import { getFullImageUrl } from "@/utils/imageService";
 import { ChevronLeft, ChevronRight, Luggage, User, ChevronDown, ChevronUp, BedDouble, Moon, Calendar } from "lucide-react";
 import { format } from "date-fns";
-
+import { formatPrice } from "@/utils/priceUtils";
 const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
   const { t } = useTranslation(["daytour", "common", "accommodation"]);
   const [current, setCurrent] = useState(0);
@@ -211,7 +211,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold"> {Math.round(basePrice)} SGD</span>
+            <span className="text-[#D3202D] font-semibold">SGD {formatPrice(basePrice)}</span>
           </div>
         </div>
       ) : isTransfer ? (
@@ -234,7 +234,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
               <div className="flex flex-col items-end justify-end text-xs text-gray-500">
                 {item?.vehicle?.price && (
-                  <span className="text-[#D3202D] font-medium">{Math.round(item.vehicle.price)} SGD</span>
+                  <span className="text-[#D3202D] font-medium">SGD {formatPrice(item.vehicle.price)}</span>
                 )}
                 {date && <span>{date}</span>}
               </div>
@@ -260,7 +260,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                       {addon.title}
                       <span className="text-gray-400 text-xs">(x{addon.quantity})</span>
                     </span> 
-                    <span className="text-sm text-gray-800 font-medium">{addon.total} SGD</span>
+                    <span className="text-sm text-gray-800 font-medium">SGD {addon.total} </span>
                   </li>
                 ))}
               </ul>
@@ -296,9 +296,9 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                 {t("Surcharges")} {surchargeScope}
               </span>
               <span>
-                {pickupSurcharge > 0 && `${Math.round(pickupSurcharge)} `}
+                {pickupSurcharge > 0 && `${formatPrice(pickupSurcharge)} `}
                 {pickupSurcharge > 0 && returnSurcharge > 0 && " + "}
-                {returnSurcharge > 0 && `${Math.round(returnSurcharge)} `} SGD
+                SGD {returnSurcharge > 0 && `${formatPrice(returnSurcharge)} `}
               </span>
             </p>
           )}
@@ -334,7 +334,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D]">{Math.round(basePrice) || "0"} SGD</span>
+            <span className="text-[#D3202D]">SGD {formatPrice(basePrice) || "0"}</span>
           </div>
         </div>
       )}
@@ -343,7 +343,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       <div className="pt-2 flex flex-col justify-between text-md font-normal">
         <div className="flex border-t mt-2 pt-2 justify-between text-lg font-semibold">
           <span>{t("total_all_items")}</span>
-          <span className="text-[#D3202D]">{Math.round(overallTotal)} SGD</span>
+          <span className="text-[#D3202D]">SGD {formatPrice(overallTotal)}</span>
         </div>
       </div>
     </div>
