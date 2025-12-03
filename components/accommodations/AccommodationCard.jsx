@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import {  Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, SwimmingPool, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
+import {  Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, Waves, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
@@ -14,7 +14,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     internet: Wifi,
     transfer: Car,
     parking: CircleParking,
-    pool: SwimmingPool,
+    pool: Waves,
     gym: Dumbbell,
     restaurant: Utensils,
     bar: Utensils,

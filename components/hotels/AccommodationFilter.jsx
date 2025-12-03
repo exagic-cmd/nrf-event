@@ -14,6 +14,7 @@ import {
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useEventStore } from "@/store/useEventStore";
 import LoaderSvg from "@/components/common/LoaderSvg";
 const DEFAULT_REGION = {
   id: 4352,
@@ -61,10 +62,23 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
     setSearchParamsAndSearch,
   } = useAccommodationsStore();
 
+  const { event, FetchEvent } = useEventStore();
+
   // Fetch nationalities on mount
   useEffect(() => {
     fetchNationalities();
   }, [fetchNationalities]);
+
+  // Fetch event data on mount
+  useEffect(() => {
+    FetchEvent();
+  }, [FetchEvent]);
+
+  // Get booking date range from event store
+  const eventDetails = event?.event;
+  const productBookingStart = eventDetails?.product_booking_start ? new Date(eventDetails.product_booking_start) : null;
+  const productBookingEnd = eventDetails?.product_booking_end ? new Date(eventDetails.product_booking_end) : null;
+  const minSelectableDate = productBookingStart && productBookingStart > new Date() ? productBookingStart : new Date();
 
 useEffect(() => {
   if (debounceTimeoutRef.current) {
@@ -93,24 +107,6 @@ useEffect(() => {
     }
   };
 }, [search, isInputFocused, fetchHotelsAndRegions]);
-
-  // Client-side filtering of results (after API returns)
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-
-    const filteredHotels = hotels.filter((hotel) =>
-      hotel.title?.toLowerCase().includes(q)
-    );
-
-    const filteredRegions = regions.filter((region) =>
-      region.region_name?.toLowerCase().includes(q)
-    );
-
-    return {
-      hotels: filteredHotels,
-      regions: filteredRegions,
-    };
-  }, [search, hotels, regions]);
 
   const totalGuests = rooms.reduce(
     (sum, r) => sum + r.adult + r.children.length,
@@ -280,8 +276,9 @@ useEffect(() => {
               onChange={handleStartDateChange}
               startDate={startDate}
               endDate={endDate}
-              selectsRange
-              minDate={new Date()}
+              selectsRange              
+              minDate={minSelectableDate}
+              maxDate={productBookingEnd}
               placeholderText="Check-in - Check-out"
               className="w-full bg-transparent outline-none cursor-pointer"
               wrapperClassName="w-full"
@@ -547,30 +544,36 @@ useEffect(() => {
                 </div>
               ) : (
                 <div>
-                    <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0">
-                      Hotels
-                    </h6>
-                    {filtered.hotels.length > 0 ? (
-                      filtered.hotels.map((hotel) => (
-                        <button
-                          key={hotel.id}
-                          type="button"
-                          onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleSelection(hotel, "hotel");
-                            }}
-                          className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
-                        >
-                          <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                          <span className="truncate">{hotel.title}</span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        No hotels found
+                  {Object.keys(hotels).length > 0 ? (
+                    Object.entries(hotels).map(([groupName, hotelList]) => (
+                      <div key={groupName}>
+                        <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize">
+                          {groupName.replace(/_/g, ' ')}
+                        </h6>
+                        {hotelList.length > 0 ? (
+                          hotelList.map((hotel) => (
+                            <button
+                              key={hotel.id}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleSelection(hotel, "hotel");
+                              }}
+                              className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                            >
+                              <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                              <span className="truncate">{hotel.title}</span>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-sm text-gray-500">No hotels in this category.</div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">No hotels found.</div>
+                  )}
+                </div>
               )}
             </div>
           )}
