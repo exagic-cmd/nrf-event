@@ -170,10 +170,10 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
         </FilterSection>
       ))}
 
-      {meal_plans && meal_plans.length > 0 && (
-        <FilterSection title="Meal Plan" scrollable={meal_plans.length > 5}>
+      {meal_plans && meal_plans?.length > 0 && (
+        <FilterSection title="Meal Plan" scrollable={meal_plans?.length > 5}>
           {meal_plans.map((plan) => (
-            <Checkbox key={plan.code} label={plan.name || plan.code.replace('_', ' ')} count={plan.count} />
+            <Checkbox key={plan?.code} label={plan?.name || plan?.code?.replace('_', ' ')} count={plan?.count} />
           ))}
         </FilterSection>
       )}

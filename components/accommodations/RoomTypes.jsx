@@ -49,9 +49,9 @@ const StubaRoomList = ({
       : (typeof result === 'boolean' ? { ok: result } : result);
 
     if (!normalized.ok) {
-      setRoomMessages(prev => ({ ...prev, [uniqueKey]: normalized.message || 'This room is not available on your selected dates' }));
-      setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[uniqueKey]; return c; }), 5000);
-      setInternalSelectedRoomKey(uniqueKey);
+      //setRoomMessages(prev => ({ ...prev, [uniqueKey]: normalized.message || 'This room is not available on your selected dates' }));
+      //setTimeout(() => setRoomMessages(prev => { const c = { ...prev }; delete c[uniqueKey]; return c; }), 5000);
+      //setInternalSelectedRoomKey(uniqueKey);
 
       try {
         if (typeof onProceedBooking === 'function') {
@@ -119,7 +119,7 @@ const StubaRoomList = ({
                     <div>
                         <h3 className="font-bold text-md lg:text-md line-clamp-1 text-black pt-3">{totalRoomsRequested} &times; {roomType.name} <span className="bg-gray-100 text-black p-1 font-semi-bold text-sm rounded-full ml-2">{nights} night{nights > 1 ? "s" : ""}</span></h3> 
                      {roomType.view && <span className="text-sm font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
-                           {roomType.view.replace('_', ' ')}
+                           {typeof roomType.view === 'string' ? roomType.view.replace('_', ' ') : roomType.view}
                         </span>}
                     </div>
                 </div>
@@ -192,7 +192,7 @@ const StubaRoomList = ({
                         <div className="text-sm text-gray-800 flex flex-col p-4 border-r border-gray-200">
                             <div>{cancellation.staticDate}</div>
                         </div>
-                        <div className="text-sm text-black font-semibold flex flex-col p-4 border-r border-gray-200">
+                        <div className="text-sm text-black font-semibold text-end flex flex-col p-4 border-r border-gray-200">
                             <div>{netPriceStatic}</div>
                             <div className="text-[12px] text-gray-600">{surchargeStatic}</div>
                         </div>
@@ -238,11 +238,9 @@ const StubaRoomList = ({
                               <span className="text-right">{cancellation.staticDate}</span>
                             </div>
             
-                            <div className="pt-2">
-                                  <div className="text-right">
-                                    <div className="text-xl text-black font-bold">{netPriceStatic}</div>
-                                    <div className="text-xs text-gray-500">{surchargeStatic}</div>
-                                </div>
+                            <div className="flex justify-between items-baseline pt-2">
+                                <span className="font-medium text-gray-800">Price</span>
+                                <div className="text-right"><div className="text-xl text-black font-bold">{netPriceStatic}</div><div className="text-xs text-gray-500">{surchargeStatic}</div></div>
                             </div>
                             {roomMessages[uniqueKey] && ( <div className="text-red-400 text-sm text-center w-full pt-2">{roomMessages[uniqueKey]}</div> )}
                           </div>

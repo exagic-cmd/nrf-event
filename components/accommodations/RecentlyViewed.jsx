@@ -16,12 +16,12 @@ const RecentlyViewed = () => {
       <h3 className="text-lg font-bold mb-4">Recently Viewed</h3>
       <div className="grid grid-cols-1  gap-5">
         {recentlyViewed.map((item) => (
-          <Link
-            key={item.id}
-            href={`/accommodation/${slugify(item.name)}/${item.id}?link_type_id=${item.link_type_id}`}
-            passHref
-          >
-            <div className="flex bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+          // <Link
+          //   key={item.id}
+          //   href={`/accommodation/${slugify(item.name)}/${item.id}`}
+          //   passHref
+          // >
+            <div className="flex bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ">
               <div className="relative w-24 h-24 flex-shrink-0">
                 <Image
                   src={getFullImageUrl(item?.image) || '/placeholder.jpg'}
@@ -49,7 +49,7 @@ const RecentlyViewed = () => {
                 </div>
               </div>
             </div>
-          </Link>
+          // </Link>
         ))}
       </div>
     </div>
