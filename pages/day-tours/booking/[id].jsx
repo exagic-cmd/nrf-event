@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator"
 import { useTranslation } from "next-i18next"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import useLanguageStore from "@/store/useLanguageStore";
-
+import { formatPrice } from "@/utils/priceUtils";
 const slugify = (text) => {
     if (!text) return "";
     const processedText = text
@@ -176,14 +176,14 @@ const DayTourBookingPage = () => {
                       {/* Details Section */}
                       <div className="space-y-3">
                        
-                        <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Tag className="w-4 h-4 text-[#2176FF]" />
+                        <div className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
+                          <div className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center">
+                            <Tag className="w-4 h-4 text-[#595c61]" />
                           </div>
                           <div>
      <p className="text-xs text-gray-500 uppercase tracking-wide">{t("price")}</p>
                             <p className="font-medium text-gray-900">
-  {t("startingFrom")}  SGD { displayPrice }
+  {t("startingFrom")}  SGD {formatPrice(displayPrice)}
 </p>
                           </div>
                         </div>            

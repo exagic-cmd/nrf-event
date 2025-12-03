@@ -6,6 +6,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import SvgLoader2 from "@/components/common/Loader2Svg";
 import LoaderSvg from "@/components/common/LoaderSvg";
+import { formatPrice } from "@/utils/priceUtils";
 import { getFullImageUrl } from "@/utils/imageService";
 function AccommodationCard({ accommodation, category = "accommodation" }) {
 
@@ -56,11 +57,6 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   } = accommodation;
 
   const lowestPrice = room?.base_price || 0;
-
-  const formatPrice = (value) => {
-    const num = Number(value);
-    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
-  };
 
   const handleCardClick = async () => {
     setIsLoading(true);
@@ -214,7 +210,11 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
 
   {/* Third Column: Price */}
   <div className="text-right">
-    <p className="text-lg font-bold text-primary"> {formatPrice(lowestPrice)} {room?.rate_plan?.currency || 'SGD'}</p>
+    <p className="text-lg font-bold text-primary">
+      {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
+     
+    </p>
+     <span className="text-xs text-gray-600 font-normal"> Per Room/night</span>
     {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
 
@@ -228,8 +228,8 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   {/* Left side: price (mobile only) */}
   <div className="block md:hidden mr-auto">
     <p className="text-lg font-bold text-primary">
-      {formatPrice(lowestPrice)}{" "}
-      {room?.rate_plan?.currency || 'SGD'}
+      {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
+      <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span>
     </p>
     <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
       for a night for {totalAdults} adults and {totalChildren} children
