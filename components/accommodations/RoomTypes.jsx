@@ -20,6 +20,7 @@ const StubaRoomList = ({
   nights = 1,
   totalRoomsRequested = 1,
   selectedRoom = null,
+  amenities
 }) => {
   const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
@@ -125,24 +126,28 @@ const StubaRoomList = ({
                 </div>
             
                 <div className="md:relative mt-4">
-                    <div className="flex md:absolute bottom-0 left-[145px] items-center gap-2 overflow-x-auto no-scrollbar pb-2 ">
-                         <span className=" text-xs bg-gray-100 text-gray-800 font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-rap">
-                            <Bed className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> {roomType.name}
-                        </span>
-                        <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
-                            <Wifi className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> Wifi
-                        </span>
-                        <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
-                            <CameraIcon className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> Safe
-                        </span>
-                         <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
-                            <Tv className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> TV
-                        </span>
-                         <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
-                            <BathIcon className="w-4 h-4 md:w-6 md:h-6 text-gray-900"/> Private Bathroom
-                        </span>
-                    </div>
-                    <div className="absolute top-0 right-0 bottom-2 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none lg:hidden"></div>
+                  <div className="flex md:absolute bottom-0 left-[145px] items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+                    {amenities?.map((amenity) => (
+                      <div
+                        key={amenity.id || amenity.name}
+                        title={amenity.name}
+                        className="flex-shrink-0 bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap min-w-[88px]"
+                      >
+                        {amenity.icon ? (
+                          <img
+                            src={getFullImageUrl((amenity.icon || "").replace(/\\/g, "/"))}
+                            alt={amenity.name}
+                            className="w-4 h-4 object-contain"
+                          />
+                        ) : (
+                          <span className="inline-block w-4 h-4 rounded bg-gray-300/40" />
+                        )}
+                        <span className="truncate">{amenity.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* right gradient overlay for small screens to indicate more */}
+                  <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 lg:hidden bg-gradient-to-l from-white/0 to-white"></div>
                 </div>
                 <style jsx>{`
                     .no-scrollbar::-webkit-scrollbar {
@@ -284,6 +289,7 @@ const RoomTypes = ({
   onProceedBooking,
   roomsSearched,
   selectedRoom,
+  amenities,
 }) => {
   const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
   const { searchParams } = useAccommodationsStore();
@@ -367,6 +373,7 @@ const RoomTypes = ({
       totalRooms={roomsCount}
       totalRoomsRequested={totalRoomsRequested}
       selectedRoom={selectedRoom}
+      amenities={amenities}
     />
   );
 };

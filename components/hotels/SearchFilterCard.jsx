@@ -14,6 +14,7 @@ import { useDaytoursStore } from "@/store/useDaytoursStore";
 import AccommodationFilter from "./AccommodationFilter";
 import { useCartStore } from "@/store/useCartStore";
 import { useOrderStore } from "@/store/useOrderStore";
+import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import LoaderSvg from "@/components/common/LoaderSvg";
 
 const dayTourPlaceholders = [
@@ -31,6 +32,10 @@ export default function SearchFilterCard({
   filterTabs,
   onSetTab,
   onFilterTransfer,
+  initialSearchQuery,
+  onUpdateSearchQuery,
+  initialAccommodationText,
+  rooms, onUpdateRooms, stars, onUpdateStars, initialCheckinDate, initialCheckoutDate, onDatesUpdated,
 }) {
   const {
     pickupOptions,
@@ -56,14 +61,19 @@ export default function SearchFilterCard({
     fetchSearchResults,
     fetchSuggestedResults,
     suggestedResults,
+    searchQuery: daytourStoreSearchQuery, 
+    setSearchQuery: setDaytourStoreSearchQuery,
     setSuggestedResults,
     isLoading: daytoursLoading,
   } = useDaytoursStore();
 
+  const { daytourParams, setDaytourParams, transferParams } = useSearchValuesStore();
+
   const [pickupQuery, setPickupQuery] = useState("");
   const [dropoffQuery, setDropoffQuery] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || daytourParams.searchQuery || "");
+  const [accommodationSearchText, setAccommodationSearchText] = useState(initialAccommodationText || "");
+  const [placeholderIndex, setPlaceholderIndex] = useState(0); // For daytour placeholders
   const [showTripTypeDropdown, setShowTripTypeDropdown] = useState(false);
   const tripTypeDropdownRef = useRef(null);
 
@@ -84,6 +94,14 @@ export default function SearchFilterCard({
     updatePrefillDataFromCart(cartItems);
   }, [cartItems, updatePrefillDataFromCart]);
 
+  useEffect(() => {
+    if (filterActiveTab === 2) {
+      if (transferParams.pickup) setSelectedPickup(transferParams.pickup);
+      if (transferParams.dropoff) setSelectedDropoff(transferParams.dropoff);
+      if (transferParams.tripType) setTripType(transferParams.tripType);
+    }
+  }, [filterActiveTab, transferParams, setSelectedPickup, setSelectedDropoff, setTripType]);
+
   // Sync inputs
   useEffect(() => setPickupQuery(selectedPickup?.name || ""), [selectedPickup]);
   useEffect(() => setDropoffQuery(selectedDropoff?.name || ""), [selectedDropoff]);
@@ -93,6 +111,11 @@ export default function SearchFilterCard({
       selectedCity?.title || selectedCity?.city_name || selectedCity?.name || ""
     );
   }, [selectedCity]);
+
+  useEffect(() => {
+    if (initialSearchQuery !== undefined) setSearchQuery(initialSearchQuery);
+    else if (daytourParams.searchQuery !== undefined) setSearchQuery(daytourParams.searchQuery);
+  }, [initialSearchQuery, daytourParams.searchQuery]);
 
   // Effect for rotating placeholder
   useEffect(() => {
@@ -221,6 +244,8 @@ export default function SearchFilterCard({
 
   const handleSearchChange = async (value) => {
     setSearchQuery(value);
+    onUpdateSearchQuery?.(value);
+    setDaytourParams({ searchQuery: value }); // Update the correct store
     if (value.trim().length > 1) {
       await fetchSuggestedResults(value.trim());
     } else {
@@ -256,24 +281,28 @@ export default function SearchFilterCard({
     const categoryId = filterActiveTab === 3 ? 3 : 4;
     const categoryType = filterActiveTab === 3 ? 'daytour' : 'accommodation';
 
-    const payload = {
-      category_id: categoryId,
-      country_id: selectedCountry?.id || 1,
-      city_id: selectedCity?.id || 1,
-      name: searchQuery || "",
+    
+    const apiPayload = {
+      category_id: categoryId, 
+      country_id: selectedCountry?.id,
+      city_id: selectedCity?.id,
+      name: searchQuery,
       is_b2c_only: 1,
       is_active: true,
     };
 
     try {
-      await fetchSearchResults(payload);
+      await fetchSearchResults(apiPayload);
       const freshResults = useDaytoursStore.getState().searchResults;
 
+    
+      const finalSearchQuery = (freshResults && freshResults.length > 0) ? searchQuery : "";
+      
       setTimeout(() => {
         onFilterTransfer?.({
           country: selectedCountry,
           city: selectedCity,
-          search: searchQuery,
+          search: finalSearchQuery,
           results: freshResults,
           category: categoryType,
           category_id: categoryId,
@@ -307,6 +336,7 @@ export default function SearchFilterCard({
       handleTransferSearch();
     } else if (filterActiveTab === 3) {
       handleCategorySearch();
+    // Accommodation search is handled by AccommodationFilter's onSearch prop
     }
   };
 
@@ -319,16 +349,16 @@ export default function SearchFilterCard({
 
   const Pill = ({ tab }) => (
     <button
-  type="button"
-  onClick={() => onSetTab?.(tab.id)}
-  className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
-    filterActiveTab === tab.id
-      ? "bg-[#D3202D] text-white sm:py-2.5"
-      : "bg-[#E6E6E6] text-black "
-  }`}
->
-  {tab.name}
-</button>
+      type="button"
+      onClick={() => onSetTab?.(tab.id)}
+      className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
+        filterActiveTab === tab.id
+          ? "bg-[#D3202D] text-white sm:py-2.5"
+          : "bg-[#E6E6E6] text-black "
+      }`}
+    >
+      {tab.name}
+    </button>
 
   );
 
@@ -341,7 +371,7 @@ export default function SearchFilterCard({
             <Pill key={t.id} tab={t} />
           ))}
       </div>
-<div className="min-h-[200px] transition-all duration-500 ease-in-out">
+<div className="transition-all duration-500 ease-in-out">
            {/* ====== TRANSFERS ====== */}
            {filterActiveTab === 2 && (
              <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
@@ -629,6 +659,8 @@ export default function SearchFilterCard({
                     type="button"
                     onClick={() => {
                       setSearchQuery("");
+                      onUpdateSearchQuery?.("");
+                      setDaytourParams({ searchQuery: "" }); // Clear store
                       setSuggestedResults([]);
                     }}
                     className="ml-auto text-gray-400 hover:text-gray-600"
@@ -683,7 +715,13 @@ export default function SearchFilterCard({
 
       {/* ====== ACCOMMODATION ====== */}
       {filterActiveTab === 4 && (
-        <AccommodationFilter onSearch={handleAccommodationSearch} />
+        <AccommodationFilter 
+          onSearch={handleAccommodationSearch}
+          initialSearchText={accommodationSearchText}
+          initialCheckinDate={initialCheckinDate}
+          initialCheckoutDate={initialCheckoutDate}
+          initialRooms={rooms}
+        />
       )}
 </div>
       {/* ====== COMING SOON ====== */}

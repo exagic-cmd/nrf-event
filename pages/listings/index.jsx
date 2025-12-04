@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import "@/styles/globals.css";
 import Layout from "@/components/layout/Layout";
 import TransfersList from "@/components/transfers/TransfersList";
@@ -14,9 +14,13 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useSearchParams } from "next/navigation";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
+import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useSearchValuesStore } from "@/store/searchValues.store.js";
+import { useRouter } from "next/navigation";
+import SearchFilterCard from "@/components/hotels/SearchFilterCard";
 import AccommodationFilterSidebar from "@/components/accommodations/AccommodationFilterSidebar";
-import { Filter, X } from "lucide-react";
+import { Filter, X, ChevronDown } from "lucide-react";
 import GoogleMap from "@/components/daytours/GoogleMap";
 
 function ListingsPage() {
@@ -24,16 +28,94 @@ function ListingsPage() {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [isInitialSearch, setIsInitialSearch] = useState(true);
+  const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchCategory, setSearchCategory] = useState("transfer");
   const [searchParams, setSearchParams] = useState({});
   const { t } = useTranslation("common", "transfer");
   const urlSearchParams = useSearchParams();
+  const resultsRef = useRef(null);
+  const router = useRouter();
+
+  const [cardRooms, setCardRooms] = useState([{ adult: 2, children: [] }]);
+  const [cardStars, setCardStars] = useState("0");
+  const [cardCheckin, setCardCheckin] = useState(null);
+  const [cardCheckout, setCardCheckout] = useState(null);
+  const [cardSearchQuery, setCardSearchQuery] = useState(""); // For daytours
+  const [filterActiveTab, setFilterActiveTab] = useState(() => {
+    const t = urlSearchParams.get("type");
+    if (t === "accommodation" || t === "hotels") return 4;
+    if (t === "daytour" || t === "day-tours") return 3;
+    if (t === "transfer") return 2;
+    return 4;
+  });
+
+  const filterTabs = [
+    { id: 4, label: "hotels", name: "Accommodations" },
+    { id: 3, label: "day-tours", name: "DayTours" },
+    { id: 2, label: "transfer", name: "Transfers" },
+    { id: 1, label: "coming-soon", name: "Coming Soon" },
+    { id: 5, label: "search", name: "Search Text" },
+    { id: 8, label: "packages", name: "Package Tours" },
+  ];
+
+  const handleFilterFromCard = (payload) => {
+    if (filterActiveTab === 2) {
+      setTransferSearchParams({
+        pickup: payload.pickup,
+        dropoff: payload.dropoff,
+        tripType: payload.isTwoWay ? "round-trip" : "one-way",
+        returnDate: payload.returnDate || null,
+      });
+      router.push(`/listings?searched=true&type=transfer`);
+      setHasSearched(true);
+      setSearchCategory("transfer");
+      return;
+    }
+
+    if (filterActiveTab === 3) {
+      setSelectedCountry(payload.country);
+      setSelectedCity(payload.city);
+      setDaytourSearchQuery(payload.search);
+      router.push(`/listings?searched=true&type=daytour`);
+      setHasSearched(true);
+      setSearchCategory("daytour");
+      return;
+    }
+
+    if (filterActiveTab === 4) {
+      setAccommodationSearchParams(payload); // This will also trigger fetchAccommodations
+      router.push(`/listings?searched=true&type=accommodation`);
+      setHasSearched(true);
+      setSearchCategory("accommodation");
+      return;
+    }
+  };
 
   // Zustand stores
+  const {
+    transferParams: searchTransferParams,
+    daytourParams: searchDaytourParams,
+    accommodationParams: searchAccommodationParams,
+    setTransferParams: setSearchTransferParams,
+    setDaytourParams: setSearchDaytourParams,
+    setAccommodationParams: setSearchAccommodationParams,
+  } = useSearchValuesStore();
+
+  const {
+    setSelectedCountry: setDaytourSelectedCountry,
+    setSelectedCity: setDaytourSelectedCity,
+    searchQuery: daytourSearchQuery,
+    setSearchQuery: setDaytourSearchQuery,
+    selectedCountry: daytourSelectedCountry,
+    selectedCity: daytourSelectedCity,
+  } = useDaytoursStore();
+
   const {
     searchResults,
     isLoading,
   } = useDaytoursStore();
+
+  const { setSelectedCountry, setSelectedCity } = useDaytoursStore();
 
   const {
     searchParams: accommodationPayload,
@@ -43,7 +125,13 @@ function ListingsPage() {
     accommodationFilters,
     fetchAccommodations,
     applyAccommodationFilter,
+    setSearchParams: setAccommodationSearchParams,
   } = useAccommodationsStore();
+  
+  const {
+    setSelectedPickup, setSelectedDropoff, setTripType,
+    searchParams: transferSearchParams, setSearchParams: setTransferSearchParams
+  } = useTransferStore();
 
 
   const handleFilterChange = useCallback((activeFilters) => {
@@ -80,28 +168,81 @@ function ListingsPage() {
     }
   }, [urlSearchParams]);
 
-  // Fetch accommodations when payload is available
+  useEffect(() => {
+    const type = urlSearchParams.get("type");
+    if (!type) return;
+
+    if (type === "transfer") {
+      setSelectedPickup(searchTransferParams.pickup);
+      setSelectedDropoff(searchTransferParams.dropoff);
+      setTripType(searchTransferParams.tripType);
+    }
+
+    if (type === "daytour") {
+      setDaytourSelectedCountry(searchDaytourParams.country);
+      setDaytourSelectedCity(searchDaytourParams.city);
+      setCardSearchQuery(searchDaytourParams.searchQuery);
+    }
+
+    if (type === "accommodation") {
+      if (searchAccommodationParams.checkin) setCardCheckin(searchAccommodationParams.checkin);
+      else setCardCheckin(null);
+
+      if (searchAccommodationParams.checkout) setCardCheckout(searchAccommodationParams.checkout);
+      else setCardCheckout(null);
+
+      if (searchAccommodationParams.text) setCardSearchQuery(searchAccommodationParams.text);
+      else setCardSearchQuery("");
+
+      if (searchAccommodationParams.stars) setCardStars(searchAccommodationParams.stars);
+      else setCardStars("0");
+
+      if (searchAccommodationParams.rooms) {
+        try {
+         setCardRooms(searchAccommodationParams.rooms);
+        } catch (e) {
+          console.error("Error setting rooms from store:", e);
+          setCardRooms([{ adult: 2, children: [] }]); 
+        }
+      } else {
+        setCardRooms([{ adult: 2, children: [] }]); 
+      }
+    }
+  }, [
+    urlSearchParams,
+    setSelectedPickup, setSelectedDropoff, setTripType,
+    setDaytourSelectedCountry, setDaytourSelectedCity,
+    searchTransferParams, searchDaytourParams, searchAccommodationParams,
+  ]);
+
   useEffect(() => {
     if (
       (searchCategory === "accommodation" || searchCategory === "hotels") &&
       accommodationPayload
     ) {
       fetchAccommodations(accommodationPayload);
-      applyAccommodationFilter(() => true); // Reset filters to show all results initially
+      applyAccommodationFilter(() => true); 
 
-      // Apply filter based on the payload if a specific hotel was searched
+     
       if (accommodationPayload.ids && accommodationPayload.ids.length > 0) {
-        const targetHotelId = accommodationPayload.ids[0]; // Assuming only one hotel ID is passed for specific search
+        const targetHotelId = accommodationPayload.ids[0]; 
         applyAccommodationFilter((accommodation) => {
           return accommodation.id === targetHotelId;
         });
       } else {
-        applyAccommodationFilter(() => true); // If no specific hotel ID in payload, reset to show all fetched results
+        applyAccommodationFilter(() => true); 
       }
     }
   }, [searchCategory, accommodationPayload, fetchAccommodations]);
 
-  // Render the correct list
+  // Scroll to results on search completion
+  useEffect(() => {
+    if (hasSearched && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // We listen to changes in hasSearched and the main result lists
+  }, [hasSearched, searchResults, filteredResults]);
+
   const renderListComponent = () => {
     switch (searchCategory) {
       case "transfer":
@@ -113,7 +254,7 @@ function ListingsPage() {
       case "hotels":
         return (
           <AccommodationList
-            accommodations={filteredResults} // Use filteredResults here
+            accommodations={filteredResults} 
             isLoading={accommodationLoading}
           />
         );
@@ -152,6 +293,48 @@ function ListingsPage() {
   return (
     <Layout>
       <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#f4f4f4]">
+        <div className="px-6 mt-4">
+          {/* Collapsible Search Filter Toggle for Mobile */}
+          <div className="lg:hidden mb-2">
+            <button
+              onClick={() => setIsSearchFilterVisible(!isSearchFilterVisible)}
+              className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-md text-left"
+            >
+              <span className="font-semibold text-lg text-gray-800">Modify Search</span>
+              <ChevronDown
+                className={`h-6 w-6 text-gray-600 transition-transform duration-300 ${
+                  isSearchFilterVisible ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Search Filter Card Container */}
+          <div className={`lg:block ${isSearchFilterVisible ? "block" : "hidden"}`}>
+          <div className="min-h-[200px]">
+              <SearchFilterCard
+              filterActiveTab={filterActiveTab}
+              filterTabs={filterTabs}
+              onSetTab={(id) => setFilterActiveTab(id)}
+              onFilterTransfer={handleFilterFromCard}
+              rooms={cardRooms}
+              onUpdateRooms={setCardRooms}
+              stars={cardStars}
+              onUpdateStars={setCardStars}
+              initialCheckinDate={cardCheckin}
+              initialCheckoutDate={cardCheckout}
+              initialSearchQuery={cardSearchQuery}
+              initialAccommodationText={cardSearchQuery}
+              onUpdateSearchQuery={setCardSearchQuery}
+              onDatesUpdated={({ startDate, endDate }) => {
+                setCardCheckin(startDate);
+                setCardCheckout(endDate);
+              }}
+              items={[]} all_hotels={[]} regions={[]} onGetTerms={() => {}} onItemSelected={() => {}} onFilterSubmitted={handleFilterFromCard} toast={{ error: (msg) => alert(msg) }}
+            />
+          </div>
+          </div>
+        </div>
         <div className="flex flex-col lg:flex-row gap-3 px-6">
           {searchCategory === "transfer" && (
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
@@ -164,7 +347,7 @@ function ListingsPage() {
               />
             </div>
           )}
-			 {/* Day Tours: Filter Sidebar + List */}
+
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
               {!isLoading && searchResults.length > 0 && (
@@ -173,7 +356,7 @@ function ListingsPage() {
             </div>
           )}
 
-          {/* Accommodation: Filter Sidebar (Large Screens) */}
+
           {isAccommodationCategory && (
             <div className="hidden lg:block max-h-[calc(100vh-7rem)] overflow-y-auto md:sticky top-24 self-start z-20 w-full lg:w-56">
               {!accommodationLoading && accommodations && accommodations.length > 0 && (
@@ -187,7 +370,7 @@ function ListingsPage() {
 
         
           {isAccommodationCategory && (
-            <div className="lg:hidden w-full mb-2 mt-4">
+            <div className="lg:hidden w-full mb-2 mt-4 "ref={resultsRef}>
               <button
                 onClick={() => setShowFilterModal(true)}
                 className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
@@ -199,7 +382,7 @@ function ListingsPage() {
           )}
 
           {/* Center: List Content */}
-          <div className="flex-1">
+          <div className="flex-1" >
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
 

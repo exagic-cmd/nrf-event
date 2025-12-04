@@ -59,35 +59,31 @@ export const useAccommodationsStore = create((set, get) => ({
   },
 
   // Fetch hotels and regions
-  fetchHotelsAndRegions: async (searchTerm = "") => {
+  fetchHotelsAndRegions: async (payload) => {
     set({ isLoading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/get_terms`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/search-titles`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            term: searchTerm,
-            local: true,
-            caterogry_id: 4,
-          }),
+          body: JSON.stringify(payload || {}),
         }
       );
 
       if (!res.ok) throw new Error("Network response was not ok");
 
       const data = await res.json();
-      const hotelsList = data?.data || [];
-      const regionsList = data?.regions || [];
+      const tagsList = data?.data?.tags || [];
 
       set({
-        hotels: hotelsList,
-        regions: regionsList,
+        // The component expects the tag groups in the 'regions' state
+        regions: tagsList,
+        hotels: [], // Clear hotels as the new structure doesn't use it
         isLoading: false,
       });
 
-      return { hotels: hotelsList, regions: regionsList };
+      return { regions: tagsList };
     } catch (err) {
       console.error("fetchHotelsAndRegions error:", err);
       set({
