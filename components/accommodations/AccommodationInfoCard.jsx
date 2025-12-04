@@ -11,8 +11,8 @@ const AccommodationInfoCard = ({
   onScrollToOptions,
   onProceedBooking,
   selectedRoom = null,
-  nights = 1,
-  totalGuests = 1,
+  nights = 1, roomsCount = 1,
+ // hotelData?.meta?. = 1,
 }) => {
   const [lowestPrice, setLowestPrice] = useState(0);
   const [amenities, setAmenities] = useState([]);
@@ -86,9 +86,9 @@ const AccommodationInfoCard = ({
             </div>
           )} */}
         </div>
- <div className="text-black text-sm flex items-center gap-1 mb-3">
-                for {nights} night {nights > 1 ? "s " : ""},{ totalGuests +" Guests"}   
-          </div>
+ <div className="text-black text-sm flex justify-end gap-1 mb-3">
+                for {nights} night{nights > 1 ? "s" : ""}, {roomsCount} room{roomsCount > 1 ? "s" : ""}
+ </div>
         {/* Selected Room */}
         {/* {selectedRoom && (
           <div className="mb-2 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-[#D3202D]/30 rounded-xl">

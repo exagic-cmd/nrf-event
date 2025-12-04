@@ -54,7 +54,7 @@ console.log(order.email)
   }, [returnOrderId]);
 
   return (
-    <div className="p-10 mt-8 text-center min-h-screen bg-[#D0E9FF] relative">
+    <div className="p-6 mt-8 text-center min-h-screen bg-[#f4f4f4] relative">
       <button
         onClick={() => localizedPush('/')}
         className="fixed top-24 z-50 left-2 md:left-12  flex items-center gap-2 bg-white border border-[#D3202D] text-[#D3202D]  px-4 py-2 rounded-full transition-colors duration-300 shadow-md"
@@ -142,7 +142,7 @@ console.log(order.email)
             </p>
 
             {/* Help section with enhanced styling */}
-            <div className="bg-[#D0E9FF] p-6 rounded-2xl mb-8 relative overflow-hidden">
+            <div className="bg-bg-[#f4f4f4] p-6 rounded-2xl mb-8 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white via-transparent opacity-50 -skew-x-12 animate-pulse"></div>
               <div className="relative z-10">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">

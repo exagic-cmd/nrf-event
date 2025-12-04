@@ -29,7 +29,7 @@ export default function AccommodationFilter({ onSearch, initialSearchText = "", 
   const [showDropdown, setShowDropdown] = useState(false);
   const [startDate, setStartDate] = useState(initialCheckinDate ? new Date(initialCheckinDate) : null);
   const [endDate, setEndDate] = useState(initialCheckoutDate ? new Date(initialCheckoutDate) : null);
-  const [showGuestPopup, setShowGuestPopup] = useState(false);
+ const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [rooms, setRooms] = useState(initialRooms || [{ adult: 2, children: [] }]);
   const [nationality, setNationality] = useState("SG");
   const [stars, setStars] = useState("");
@@ -37,6 +37,7 @@ export default function AccommodationFilter({ onSearch, initialSearchText = "", 
   const [tempEndDate, setTempEndDate] = useState(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [childAgeToAdd, setChildAgeToAdd] = useState(1);
 
  // const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -144,11 +145,12 @@ useEffect(() => {
     setRooms(newRooms);
   };
 
-  const addChild = (i, age) => {
+  const addChild = (i) => {
     const newRooms = [...rooms];
     if (newRooms[i].children.length < 10) {
-      newRooms[i].children.push(age);
+      newRooms[i].children.push(childAgeToAdd);
     }
+    setChildAgeToAdd(1); // Reset for next addition
     setRooms(newRooms);
   };
 
@@ -483,15 +485,31 @@ useEffect(() => {
                     )}
 
                     {room.children.length < 10 && (
-                      <button
-                        type="button"
-                        onClick={() => addChild(i, 1)}
-                        className="w-full text-xs sm:text-sm text-blue-600 font-medium py-2 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 active:bg-blue-100 transition-colors touch-manipulation"
-                      >
-                        + Add Child ({10 - room.children.length} left)
-                      </button>
+ <div className="flex items-center gap-2 mt-2">
+                        <select
+                          value={childAgeToAdd}
+                          onChange={(e) => setChildAgeToAdd(parseInt(e.target.value))}
+                          className="w-full bg-white text-xs sm:text-sm border border-gray-300 rounded-md px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="" disabled>Select age</option>
+                          {Array.from({ length: 12 }, (_, index) => (
+                            <option key={index} value={index + 1}>
+                              {index + 1} year{index + 1 > 1 ? 's' : ''} old
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => addChild(i)}
+                          className="flex-shrink-0 text-xs sm:text-sm bg-gray-400 text-white font-medium py-1.5 px-3 rounded-md  transition-colors touch-manipulation"
+                        >
+                          Add
+                        </button>
+                      </div>
                     )}
                   </div>
+
+
                 </div>
               ))}
 
@@ -516,6 +534,7 @@ useEffect(() => {
         </div>
     <div className="md:col-span-3 relative">
           <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+
             <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
             <input
               type="text"
