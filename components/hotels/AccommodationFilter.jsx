@@ -24,13 +24,13 @@ const DEFAULT_REGION = {
 };
 
 
-export default function AccommodationFilter({ onSearch }) {
+export default function AccommodationFilter({ onSearch, initialSearchText = "", initialCheckinDate = null, initialCheckoutDate = null, initialRooms = null }) {
   // const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(initialCheckinDate ? new Date(initialCheckinDate) : null);
+  const [endDate, setEndDate] = useState(initialCheckoutDate ? new Date(initialCheckoutDate) : null);
   const [showGuestPopup, setShowGuestPopup] = useState(false);
-  const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
+  const [rooms, setRooms] = useState(initialRooms || [{ adult: 2, children: [] }]);
   const [nationality, setNationality] = useState("SG");
   const [stars, setStars] = useState("");
   const [refund, setRefund] = useState("all");
@@ -47,7 +47,7 @@ const [selectedItem, setSelectedItem] = useState({
 });
 const [selectedRegion, setSelectedRegion] = useState(DEFAULT_REGION);
 
-const [search, setSearch] = useState(DEFAULT_REGION.name);
+const [search, setSearch] = useState(initialSearchText || DEFAULT_REGION.name);
 
   // Debounce timer ref
   const debounceTimeoutRef = useRef(null);
@@ -79,6 +79,13 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
   const productBookingStart = eventDetails?.product_booking_start ? new Date(eventDetails.product_booking_start) : null;
   const productBookingEnd = eventDetails?.product_booking_end ? new Date(eventDetails.product_booking_end) : null;
   const minSelectableDate = productBookingStart && productBookingStart > new Date() ? productBookingStart : new Date();
+
+  useEffect(() => {
+    setStartDate(initialCheckinDate ? new Date(initialCheckinDate) : null);
+    setEndDate(initialCheckoutDate ? new Date(initialCheckoutDate) : null);
+    setRooms(initialRooms || [{ adult: 2, children: [] }]);
+    setSearch(initialSearchText || DEFAULT_REGION.name);
+  }, [initialCheckinDate, initialCheckoutDate, initialRooms, initialSearchText]);
 
 useEffect(() => {
   if (debounceTimeoutRef.current) {

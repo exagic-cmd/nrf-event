@@ -16,6 +16,7 @@ export const useDaytoursStore = create((set, get) => ({
   selectedCountry: null,
   currentCategory: null, // "daytour" | "accommodation"
   searchParams: null,
+  searchQuery: "",
 
   // Fetch countries & cities
   fetchCountriesCities: async () => {
@@ -133,6 +134,7 @@ export const useDaytoursStore = create((set, get) => ({
   setSelectedCity: (city) => set({ selectedCity: city }),
   setSelectedCountry: (country) => set({ selectedCountry: country }),
   setSearchResults: (results) => set({ searchResults: results, filteredResults: results }),
+  setSearchQuery: (query) => set({ searchQuery: query }),
   setSuggestedResults: (results) => set({ suggestedResults: results }),
   setCurrentCategory: (category) => set({ currentCategory: category }),
   setSearchParams: (params) =>
@@ -153,5 +155,6 @@ export const useDaytoursStore = create((set, get) => ({
       selectedCity: null,
       selectedCountry: null,
       currentCategory: null,
+      searchQuery: "",
     }),
 }));
