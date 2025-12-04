@@ -137,12 +137,23 @@ function ListingsPage() {
   const handleFilterChange = useCallback((activeFilters) => {
     applyAccommodationFilter((accommodation) => {
       const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
-      const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(
-        (selectedAmenity) => accommodation.amenities?.includes(selectedAmenity)
+      const hasSelectedRatings = activeFilters.ratings && activeFilters.ratings.length > 0;
+      const hasSelectedMealPlans = activeFilters.meal_plans && activeFilters.meal_plans.length > 0;
+
+      const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
+
+      const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every((selectedAmenity) =>
+        hotelData.amenities?.includes(selectedAmenity)
+      );
+const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
+        Math.floor(parseFloat(hotelData.star_rating))
       );
 
+      const mealPlanMatch = !hasSelectedMealPlans || activeFilters.meal_plans.includes(
+        accommodation.room?.rate_plan?.meal?.title
+      );
 
-      return amenityMatch;
+      return amenityMatch && ratingMatch && mealPlanMatch;
     });
   }, [applyAccommodationFilter]); 
   useEffect(() => {

@@ -182,8 +182,8 @@ export default function HomePage() {
       setSearchAccommodationParams({
         checkin: payload.start_date || payload.checkin || null,
         checkout: payload.end_date || payload.checkout || null,
-        rooms: payload.rooms || [{ adult: 1, children: [] }],
-        text: payload.search_query || payload.search || payload.text || "",
+        rooms: payload.rooms || [{ adult: 2, children: [] }], 
+        text: payload.search_query || "", 
         hotel_id: payload.hotel_id,
         region_id: payload.region_id,
         ids: payload.ids,

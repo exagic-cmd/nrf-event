@@ -54,7 +54,7 @@ console.log(order.email)
   }, [returnOrderId]);
 
   return (
-    <div className="p-10 mt-8 text-center min-h-screen bg-[#D0E9FF] relative">
+    <div className="p-6 mt-8 text-center min-h-screen bg-[#f4f4f4] relative">
       <button
         onClick={() => localizedPush('/')}
         className="fixed top-24 z-50 left-2 md:left-12  flex items-center gap-2 bg-white border border-[#D3202D] text-[#D3202D]  px-4 py-2 rounded-full transition-colors duration-300 shadow-md"

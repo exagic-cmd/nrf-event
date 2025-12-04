@@ -129,7 +129,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
   const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], meal_plans: [] });
 
   // Group amenities by their category (amenity_name)
-  const amenitiesByCategory = (general_amenities || []).reduce((acc, amenity) => {
+  const amenitiesByCategory = (general_amenities || []).reduce((acc, amenity) => {    
     const category = amenity.amenity_name || 'General';
     if (!acc[category]) {
       acc[category] = [];
@@ -139,6 +139,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
   }, {});
 
   const hasActiveFilters =
+
     activeFilters.ratings.length > 0 ||
     activeFilters.amenities.length > 0 ||
     activeFilters.meal_plans.length > 0;
