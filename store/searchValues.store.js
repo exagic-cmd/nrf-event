@@ -31,7 +31,7 @@ export const useSearchValuesStore = create(
       accommodationParams: {
         checkin: null,
         checkout: null,
-        rooms: [{ adult: 1, children: [] }],
+        rooms: [{ adult: 2, children: [] }],
         text: "",
         stars: "0",
         nationality: null,

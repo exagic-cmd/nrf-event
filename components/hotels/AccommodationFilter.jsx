@@ -104,7 +104,20 @@ useEffect(() => {
   }
 
   debounceTimeoutRef.current = setTimeout(() => {
-    fetchHotelsAndRegions(query);
+    const formatDate = (date) => {
+      if (!date) return null;
+      const d = new Date(date);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
+    fetchHotelsAndRegions({
+      term: query,
+      start_date: formatDate(startDate),
+      end_date: formatDate(endDate),
+      rooms: rooms,
+    });
     setShowDropdown(true);
   }, 400);
 
@@ -179,6 +192,7 @@ useEffect(() => {
     setSearch(type === "hotel" ? item.title : item.region_name);
     if (type === "region") setSelectedRegion(item);
     setShowDropdown(false);
+    setIsInputFocused(false);
   };
 
   const handleInputChange = (e) => {
@@ -368,7 +382,8 @@ useEffect(() => {
           <button
             type="button"
             onClick={() => setShowGuestPopup(!showGuestPopup)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            disabled={!startDate || !endDate}
           >
             <Users className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
             <span className="truncate flex-grow text-left">
@@ -505,11 +520,12 @@ useEffect(() => {
             <input
               type="text"
               value={search}
+              disabled={!startDate || !endDate}
               onChange={handleInputChange}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
               placeholder="Search hotels or regions..."
-              className="w-full bg-transparent outline-none text-base sm:text-lg"
+              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed"
               autoComplete="off"
             />
             {search && search !== DEFAULT_REGION.name && (
@@ -551,34 +567,34 @@ useEffect(() => {
                 </div>
               ) : (
                 <div>
-                  {Object.keys(hotels).length > 0 ? (
-                    Object.entries(hotels).map(([groupName, hotelList]) => (
-                      <div key={groupName}>
+                  {regions && regions.length > 0 ? (
+                    regions.map((tagGroup) => (
+                      <div key={tagGroup.tag}>
                         <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize">
-                          {groupName.replace(/_/g, ' ')}
+                          {tagGroup.tag}
                         </h6>
-                        {hotelList.length > 0 ? (
-                          hotelList.map((hotel) => (
+                        {tagGroup.accommodations && tagGroup.accommodations.length > 0 ? (
+                          tagGroup.accommodations.map((hotel) => (
                             <button
                               key={hotel.id}
                               type="button"
                               onMouseDown={(e) => {
                                 e.preventDefault();
-                                handleSelection(hotel, "hotel");
+                                handleSelection({ ...hotel, type: 'hotel' }, "hotel");
                               }}
                               className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                             >
                               <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                              <span className="truncate">{hotel.title}</span>
+                              <span className="truncate text-black">{hotel.title}</span>
                             </button>
                           ))
                         ) : (
-                          <div className="px-3 py-2 text-sm text-gray-500">No hotels in this category.</div>
+                          <div className="px-3 py-2 text-sm text-gray-500">No accommodations for this tag.</div>
                         )}
                       </div>
                     ))
                   ) : (
-                    <div className="px-3 py-2 text-sm text-gray-500">No hotels found.</div>
+                    <div className="px-3 py-4 text-center text-sm text-gray-500">No suggestions found.</div>
                   )}
                 </div>
               )}

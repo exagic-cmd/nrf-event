@@ -86,7 +86,7 @@ export default function HomePage() {
   ];
 
   // Hotels tab state
-  const [rooms, setRooms] = useState([{ adult: 1, children: [] }]);
+  const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
   const [stars, setStars] = useState("0");
   const [typeaheadItems, setTypeaheadItems] = useState([]);
   const toast = { error: (msg) => alert(msg) };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import "@/styles/globals.css";
 import Layout from "@/components/layout/Layout";
 import TransfersList from "@/components/transfers/TransfersList";
@@ -20,7 +20,7 @@ import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import { useRouter } from "next/navigation";
 import SearchFilterCard from "@/components/hotels/SearchFilterCard";
 import AccommodationFilterSidebar from "@/components/accommodations/AccommodationFilterSidebar";
-import { Filter, X } from "lucide-react";
+import { Filter, X, ChevronDown } from "lucide-react";
 import GoogleMap from "@/components/daytours/GoogleMap";
 
 function ListingsPage() {
@@ -28,13 +28,15 @@ function ListingsPage() {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [isInitialSearch, setIsInitialSearch] = useState(true);
+  const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchCategory, setSearchCategory] = useState("transfer");
   const [searchParams, setSearchParams] = useState({});
   const { t } = useTranslation("common", "transfer");
   const urlSearchParams = useSearchParams();
+  const resultsRef = useRef(null);
   const router = useRouter();
 
-  const [cardRooms, setCardRooms] = useState([{ adult: 1, children: [] }]);
+  const [cardRooms, setCardRooms] = useState([{ adult: 2, children: [] }]);
   const [cardStars, setCardStars] = useState("0");
   const [cardCheckin, setCardCheckin] = useState(null);
   const [cardCheckout, setCardCheckout] = useState(null);
@@ -200,10 +202,10 @@ function ListingsPage() {
          setCardRooms(searchAccommodationParams.rooms);
         } catch (e) {
           console.error("Error setting rooms from store:", e);
-          setCardRooms([{ adult: 1, children: [] }]); 
+          setCardRooms([{ adult: 2, children: [] }]); 
         }
       } else {
-        setCardRooms([{ adult: 1, children: [] }]); 
+        setCardRooms([{ adult: 2, children: [] }]); 
       }
     }
   }, [
@@ -232,6 +234,15 @@ function ListingsPage() {
       }
     }
   }, [searchCategory, accommodationPayload, fetchAccommodations]);
+
+  // Scroll to results on search completion
+  useEffect(() => {
+    if (hasSearched && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // We listen to changes in hasSearched and the main result lists
+  }, [hasSearched, searchResults, filteredResults]);
+
   const renderListComponent = () => {
     switch (searchCategory) {
       case "transfer":
@@ -282,27 +293,47 @@ function ListingsPage() {
   return (
     <Layout>
       <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#f4f4f4]">
-        <div className="px-6 min-h-[220px] mt-4 lg:min-h-[200px] ">
-          <SearchFilterCard
-            filterActiveTab={filterActiveTab}
-            filterTabs={filterTabs}
-            onSetTab={(id) => setFilterActiveTab(id)}
-            onFilterTransfer={handleFilterFromCard}
-            rooms={cardRooms}
-            onUpdateRooms={setCardRooms}
-            stars={cardStars}
-            onUpdateStars={setCardStars}
-            initialCheckinDate={cardCheckin}
-            initialCheckoutDate={cardCheckout}
-            initialSearchQuery={cardSearchQuery}
-            initialAccommodationText={cardSearchQuery}
-            onUpdateSearchQuery={setCardSearchQuery}
-            onDatesUpdated={({ startDate, endDate }) => {
-              setCardCheckin(startDate);
-              setCardCheckout(endDate);
-            }}
-            items={[]} all_hotels={[]} regions={[]} onGetTerms={() => {}} onItemSelected={() => {}} onFilterSubmitted={handleFilterFromCard} toast={{ error: (msg) => alert(msg) }}
-          />
+        <div className="px-6 mt-4">
+          {/* Collapsible Search Filter Toggle for Mobile */}
+          <div className="lg:hidden mb-2">
+            <button
+              onClick={() => setIsSearchFilterVisible(!isSearchFilterVisible)}
+              className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-md text-left"
+            >
+              <span className="font-semibold text-lg text-gray-800">Modify Search</span>
+              <ChevronDown
+                className={`h-6 w-6 text-gray-600 transition-transform duration-300 ${
+                  isSearchFilterVisible ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Search Filter Card Container */}
+          <div className={`lg:block ${isSearchFilterVisible ? "block" : "hidden"}`}>
+          <div className="min-h-[200px]">
+              <SearchFilterCard
+              filterActiveTab={filterActiveTab}
+              filterTabs={filterTabs}
+              onSetTab={(id) => setFilterActiveTab(id)}
+              onFilterTransfer={handleFilterFromCard}
+              rooms={cardRooms}
+              onUpdateRooms={setCardRooms}
+              stars={cardStars}
+              onUpdateStars={setCardStars}
+              initialCheckinDate={cardCheckin}
+              initialCheckoutDate={cardCheckout}
+              initialSearchQuery={cardSearchQuery}
+              initialAccommodationText={cardSearchQuery}
+              onUpdateSearchQuery={setCardSearchQuery}
+              onDatesUpdated={({ startDate, endDate }) => {
+                setCardCheckin(startDate);
+                setCardCheckout(endDate);
+              }}
+              items={[]} all_hotels={[]} regions={[]} onGetTerms={() => {}} onItemSelected={() => {}} onFilterSubmitted={handleFilterFromCard} toast={{ error: (msg) => alert(msg) }}
+            />
+          </div>
+          </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-3 px-6">
           {searchCategory === "transfer" && (
@@ -339,7 +370,7 @@ function ListingsPage() {
 
         
           {isAccommodationCategory && (
-            <div className="lg:hidden w-full mb-2 mt-4">
+            <div className="lg:hidden w-full mb-2 mt-4 "ref={resultsRef}>
               <button
                 onClick={() => setShowFilterModal(true)}
                 className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
@@ -351,7 +382,7 @@ function ListingsPage() {
           )}
 
           {/* Center: List Content */}
-          <div className="flex-1">
+          <div className="flex-1" >
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
 
