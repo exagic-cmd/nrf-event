@@ -142,7 +142,7 @@ console.log(order.email)
             </p>
 
             {/* Help section with enhanced styling */}
-            <div className="bg-[#D0E9FF] p-6 rounded-2xl mb-8 relative overflow-hidden">
+            <div className="bg-bg-[#f4f4f4] p-6 rounded-2xl mb-8 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white via-transparent opacity-50 -skew-x-12 animate-pulse"></div>
               <div className="relative z-10">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">
