@@ -2,13 +2,14 @@
 
 import React, { useState, Children, useEffect } from "react";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
-const FilterSection = ({ title, children, defaultOpen = true, scrollable = false }) => {
+const FilterSection = ({ title, children, defaultOpen = true, scrollable = false, hasLoadMore = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [showAll, setShowAll] = useState(false);
 
   const childArray = Children.toArray(children);
   const initialItemCount = 5;
-  const hasMore = childArray.length > initialItemCount;
+  // Use the explicit prop to decide if "Load More" is needed
+  const hasMore = hasLoadMore && childArray.length > initialItemCount;
 
   const itemsToShow = hasMore && !showAll ? childArray.slice(0, initialItemCount) : childArray;
   const containerClasses = scrollable ? "max-h-48 overflow-y-auto pr-2 scrollbar-thin" : "space-y-3";
@@ -128,7 +129,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
   const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], meal_plans: [] });
 
   // Group amenities by their category (amenity_name)
-  const amenitiesByCategory = (general_amenities || []).reduce((acc, amenity) => {
+  const amenitiesByCategory = (general_amenities || []).reduce((acc, amenity) => {    
     const category = amenity.amenity_name || 'General';
     if (!acc[category]) {
       acc[category] = [];
@@ -137,13 +138,21 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     return acc;
   }, {});
 
+  const hasActiveFilters =
+
+    activeFilters.ratings.length > 0 ||
+    activeFilters.amenities.length > 0 ||
+    activeFilters.meal_plans.length > 0;
+
   return (
     <div className="w-full rounded-xl bg-white p-4 shadow">
       <div className="flex items-center justify-between pb-4 border-b">
         <h2 className="text-lg font-bold text-gray-900">Filter By</h2>
-        <button onClick={clearAllFilters} className="text-sm font-medium text-[#D3202D] hover:underline">
-          Clear All
-        </button>
+        {hasActiveFilters && (
+          <button onClick={clearAllFilters} className="text-sm font-medium text-[#D3202D] hover:underline">
+            Clear All
+          </button>
+        )}
       </div>
 
       {rating && rating.length > 0 && (
@@ -157,7 +166,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {Object.entries(amenitiesByCategory).map(([category, amenities]) => (
-        <FilterSection key={category} title={category} scrollable={amenities.length > 5}>
+        <FilterSection key={category} title={category} scrollable={false} hasLoadMore={true}>
           {amenities.map((amenity) => (
             <Checkbox
               key={amenity.label}
@@ -171,7 +180,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       ))}
 
       {meal_plans && meal_plans?.length > 0 && (
-        <FilterSection title="Meal Plan" scrollable={meal_plans?.length > 5}>
+        <FilterSection title="Meal Plan" hasLoadMore={true}>
           {meal_plans.map((plan) => (
             <Checkbox key={plan?.code} label={plan?.name || plan?.code?.replace('_', ' ')} count={plan?.count} />
           ))}
@@ -179,7 +188,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {payment_types && payment_types.length > 0 && (
-        <FilterSection title="Payment Type" scrollable={payment_types.length > 5}>
+        <FilterSection title="Payment Type" hasLoadMore={true}>
           {payment_types.map((type) => (
             <Checkbox key={type.value} label={(type.name || type.value).replace('_', ' ')} count={type.count} />
           ))}
@@ -187,7 +196,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {cancellation_policies && cancellation_policies.length > 0 && (
-        <FilterSection title="Cancellation Policy" defaultOpen={false} scrollable={cancellation_policies.length > 5}>
+        <FilterSection title="Cancellation Policy" defaultOpen={false} hasLoadMore={true}>
           {cancellation_policies.map((policy) => (
             <Checkbox key={policy.id} label={policy.name} count={policy.count} />
           ))}

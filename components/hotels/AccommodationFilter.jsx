@@ -24,19 +24,20 @@ const DEFAULT_REGION = {
 };
 
 
-export default function AccommodationFilter({ onSearch }) {
+export default function AccommodationFilter({ onSearch, initialSearchText = "", initialCheckinDate = null, initialCheckoutDate = null, initialRooms = null }) {
   // const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [showGuestPopup, setShowGuestPopup] = useState(false);
-  const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
+  const [startDate, setStartDate] = useState(initialCheckinDate ? new Date(initialCheckinDate) : null);
+  const [endDate, setEndDate] = useState(initialCheckoutDate ? new Date(initialCheckoutDate) : null);
+ const [showGuestPopup, setShowGuestPopup] = useState(false);
+  const [rooms, setRooms] = useState(initialRooms || [{ adult: 2, children: [] }]);
   const [nationality, setNationality] = useState("SG");
   const [stars, setStars] = useState("");
   const [refund, setRefund] = useState("all");
   const [tempEndDate, setTempEndDate] = useState(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [childAgeToAdd, setChildAgeToAdd] = useState(1);
 
  // const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -47,7 +48,7 @@ const [selectedItem, setSelectedItem] = useState({
 });
 const [selectedRegion, setSelectedRegion] = useState(DEFAULT_REGION);
 
-const [search, setSearch] = useState(DEFAULT_REGION.name);
+const [search, setSearch] = useState(initialSearchText || DEFAULT_REGION.name);
 
   // Debounce timer ref
   const debounceTimeoutRef = useRef(null);
@@ -80,6 +81,13 @@ const [search, setSearch] = useState(DEFAULT_REGION.name);
   const productBookingEnd = eventDetails?.product_booking_end ? new Date(eventDetails.product_booking_end) : null;
   const minSelectableDate = productBookingStart && productBookingStart > new Date() ? productBookingStart : new Date();
 
+  useEffect(() => {
+    setStartDate(initialCheckinDate ? new Date(initialCheckinDate) : null);
+    setEndDate(initialCheckoutDate ? new Date(initialCheckoutDate) : null);
+    setRooms(initialRooms || [{ adult: 2, children: [] }]);
+    setSearch(initialSearchText || DEFAULT_REGION.name);
+  }, [initialCheckinDate, initialCheckoutDate, initialRooms, initialSearchText]);
+
 useEffect(() => {
   if (debounceTimeoutRef.current) {
     clearTimeout(debounceTimeoutRef.current);
@@ -97,7 +105,20 @@ useEffect(() => {
   }
 
   debounceTimeoutRef.current = setTimeout(() => {
-    fetchHotelsAndRegions(query);
+    const formatDate = (date) => {
+      if (!date) return null;
+      const d = new Date(date);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
+    fetchHotelsAndRegions({
+      term: query,
+      start_date: formatDate(startDate),
+      end_date: formatDate(endDate),
+      rooms: rooms,
+    });
     setShowDropdown(true);
   }, 400);
 
@@ -124,11 +145,12 @@ useEffect(() => {
     setRooms(newRooms);
   };
 
-  const addChild = (i, age) => {
+  const addChild = (i) => {
     const newRooms = [...rooms];
     if (newRooms[i].children.length < 10) {
-      newRooms[i].children.push(age);
+      newRooms[i].children.push(childAgeToAdd);
     }
+    setChildAgeToAdd(1); // Reset for next addition
     setRooms(newRooms);
   };
 
@@ -172,6 +194,7 @@ useEffect(() => {
     setSearch(type === "hotel" ? item.title : item.region_name);
     if (type === "region") setSelectedRegion(item);
     setShowDropdown(false);
+    setIsInputFocused(false);
   };
 
   const handleInputChange = (e) => {
@@ -361,7 +384,8 @@ useEffect(() => {
           <button
             type="button"
             onClick={() => setShowGuestPopup(!showGuestPopup)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            disabled={!startDate || !endDate}
           >
             <Users className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
             <span className="truncate flex-grow text-left">
@@ -461,15 +485,31 @@ useEffect(() => {
                     )}
 
                     {room.children.length < 10 && (
-                      <button
-                        type="button"
-                        onClick={() => addChild(i, 1)}
-                        className="w-full text-xs sm:text-sm text-blue-600 font-medium py-2 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 active:bg-blue-100 transition-colors touch-manipulation"
-                      >
-                        + Add Child ({10 - room.children.length} left)
-                      </button>
+ <div className="flex items-center gap-2 mt-2">
+                        <select
+                          value={childAgeToAdd}
+                          onChange={(e) => setChildAgeToAdd(parseInt(e.target.value))}
+                          className="w-full bg-white text-xs sm:text-sm border border-gray-300 rounded-md px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="" disabled>Select age</option>
+                          {Array.from({ length: 12 }, (_, index) => (
+                            <option key={index} value={index + 1}>
+                              {index + 1} year{index + 1 > 1 ? 's' : ''} old
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => addChild(i)}
+                          className="flex-shrink-0 text-xs sm:text-sm bg-gray-400 text-white font-medium py-1.5 px-3 rounded-md  transition-colors touch-manipulation"
+                        >
+                          Add
+                        </button>
+                      </div>
                     )}
                   </div>
+
+
                 </div>
               ))}
 
@@ -494,15 +534,17 @@ useEffect(() => {
         </div>
     <div className="md:col-span-3 relative">
           <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+
             <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
             <input
               type="text"
               value={search}
+              disabled={!startDate || !endDate}
               onChange={handleInputChange}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
               placeholder="Search hotels or regions..."
-              className="w-full bg-transparent outline-none text-base sm:text-lg"
+              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed"
               autoComplete="off"
             />
             {search && search !== DEFAULT_REGION.name && (
@@ -544,34 +586,34 @@ useEffect(() => {
                 </div>
               ) : (
                 <div>
-                  {Object.keys(hotels).length > 0 ? (
-                    Object.entries(hotels).map(([groupName, hotelList]) => (
-                      <div key={groupName}>
+                  {regions && regions.length > 0 ? (
+                    regions.map((tagGroup) => (
+                      <div key={tagGroup.tag}>
                         <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize">
-                          {groupName.replace(/_/g, ' ')}
+                          {tagGroup.tag}
                         </h6>
-                        {hotelList.length > 0 ? (
-                          hotelList.map((hotel) => (
+                        {tagGroup.accommodations && tagGroup.accommodations.length > 0 ? (
+                          tagGroup.accommodations.map((hotel) => (
                             <button
                               key={hotel.id}
                               type="button"
                               onMouseDown={(e) => {
                                 e.preventDefault();
-                                handleSelection(hotel, "hotel");
+                                handleSelection({ ...hotel, type: 'hotel' }, "hotel");
                               }}
                               className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
                             >
                               <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                              <span className="truncate">{hotel.title}</span>
+                              <span className="truncate text-black">{hotel.title}</span>
                             </button>
                           ))
                         ) : (
-                          <div className="px-3 py-2 text-sm text-gray-500">No hotels in this category.</div>
+                          <div className="px-3 py-2 text-sm text-gray-500">No accommodations for this tag.</div>
                         )}
                       </div>
                     ))
                   ) : (
-                    <div className="px-3 py-2 text-sm text-gray-500">No hotels found.</div>
+                    <div className="px-3 py-4 text-center text-sm text-gray-500">No suggestions found.</div>
                   )}
                 </div>
               )}

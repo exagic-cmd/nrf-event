@@ -19,6 +19,8 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ new import
+import { useDaytoursStore } from "@/store/useDaytoursStore";
+import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import { useRouter } from "next/navigation";
 import { getFullImageUrl } from "@/utils/imageService";
 import { useTranslation } from "next-i18next";
@@ -43,9 +45,16 @@ export default function HomePage() {
     setSearchParams,
    // fetchVehicles,
     resetTransferStore,
+    searchTransfers,
   } = useTransferStore();
 
-  const { setSearchParams: setAccommodationSearchParams } = useAccommodationsStore(); // ✅
+  const { setSearchParams: setAccommodationSearchParams, setSearchParamsAndSearch } = useAccommodationsStore();
+  const { fetchSearchResults } = useDaytoursStore();
+  const {
+    setTransferParams: setSearchTransferParams,
+    setDaytourParams: setSearchDaytourParams,
+    setAccommodationParams: setSearchAccommodationParams,
+  } = useSearchValuesStore();
 
   // useEffect(() => {
   //   resetTransferStore();
@@ -77,7 +86,7 @@ export default function HomePage() {
   ];
 
   // Hotels tab state
-  const [rooms, setRooms] = useState([{ adult: 1, children: [] }]);
+  const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
   const [stars, setStars] = useState("0");
   const [typeaheadItems, setTypeaheadItems] = useState([]);
   const toast = { error: (msg) => alert(msg) };
@@ -86,6 +95,7 @@ export default function HomePage() {
   const handleSetTab = (id) => setFilterActiveTab(id);
   const handleDatesUpdated = ({ startDate, endDate }) => {};
   const handleUpdateRooms = (updated) => setRooms(updated);
+  const handleUpdateSearchQuery = (query) => {}; 
   const handleGetTerms = async (query) => {};
   const handleItemSelected = (item) => {};
   const handleFilterSubmitted = (payload) => {};
@@ -98,47 +108,93 @@ export default function HomePage() {
         return;
       }
 
-      setSelectedPickup(payload.pickup);
-      setSelectedDropoff(payload.dropoff);
-      setTripType(payload.isTwoWay ? "round-trip" : "one-way");
-      setSearchParams({
+      
+      try {
+        const transferResults = await searchTransfers({
+          pickup_point_id: payload.pickup?.id,
+          dropoff_point_id: payload.dropoff?.id,
+          is_two_way: payload.isTwoWay ? "round-trip" : "one-way",
+         
+        });
+
+      } catch (err) {
+        console.error("transfer quick search failed", err);
+      }
+
+     
+      setSearchTransferParams({
         pickup: payload.pickup,
         dropoff: payload.dropoff,
         tripType: payload.isTwoWay ? "round-trip" : "one-way",
         returnDate: payload.returnDate || null,
       });
-
-      router.push("/listings?searched=true&type=transfer");
+      router.push(`/listings?searched=true&type=transfer`);
       return;
     }
 
-    // 🏖️ DAY TOURS
     if (filterActiveTab === 3) {
       const { country, city, search } = payload;
 
-      // if (!country || !city) {
-      //   alert("Please select both country and city");
-      //   return;
-      // }
+      try {
+        const results = await fetchSearchResults({
+          category_id: 3,
+          country_id: country?.id,
+          city_id: city?.id,
+          name: search,
+        });
 
-      const params = new URLSearchParams({
-        searched: "true",
-        type: "daytour",
-        category_id: String(filterActiveTab),
-        country_id: String(country?.id) || 1,
-        city_id: String(city?.id) || 1,
-      });
-      if (search) params.append("name", search);
+        
+        const finalSearchQuery = (results && results.length > 0) ? search : "";
 
-      router.push(`/listings?${params.toString()}`);
+        
+        setSearchDaytourParams({
+          country,
+          city,
+          searchQuery: finalSearchQuery,
+        });
+
+      } catch (err) {
+        console.error("daytour quick search failed", err);
+        
+        setSearchDaytourParams({ country, city, searchQuery: search });
+      }
+
+      router.push(`/listings?searched=true&type=daytour`);
       return;
     }
 
-    // 🏨 ACCOMMODATIONS
     if (filterActiveTab === 4) {
-    router.push(`/listings?searched=true&type=accommodation`);
-  }
+      try {
+  
+        const results = await setSearchParamsAndSearch(payload);
+        if (!results || (Array.isArray(results) && results.length === 0)) {
+          setNoResults({
+            category: "accommodation",
+            message: "No accommodations found for the selected filters and dates. Try changing the date range or room configuration.",
+            payload,
+          });
+          return;
+        }
+      } catch (err) {
+        console.error("accommodation quick search failed", err);
+      }
+
+      setSearchAccommodationParams({
+        checkin: payload.start_date || payload.checkin || null,
+        checkout: payload.end_date || payload.checkout || null,
+        rooms: payload.rooms || [{ adult: 2, children: [] }], 
+        text: payload.search_query || "", 
+        hotel_id: payload.hotel_id,
+        region_id: payload.region_id,
+        ids: payload.ids,
+      });
+    
+      router.push(`/listings?searched=true&type=accommodation`);
+      return;
+    }
   };
+
+  const [noResults, setNoResults] = useState(null);
 
   const handleUpdateStars = (value) => setStars(value);
   const handleUpdateRefund = (value) => {};
@@ -161,7 +217,7 @@ export default function HomePage() {
           )}
           <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 max-w-full ">
             <div className="flex w-full lg:mx-0 justify-center">
-              <Card className="w-full max-w-7xl flex justify-center items-center p-0 bg-transparent border-0 shadow-none">
+              <Card className="min-h-[200px] w-full max-w-7xl flex justify-center items-center p-0 bg-transparent border-0 shadow-none">
                 <SearchFilterCard
                   filterActiveTab={filterActiveTab}
                   filterTabs={filterTabs}
@@ -176,6 +232,7 @@ export default function HomePage() {
                   stars={stars}
                   onUpdateStars={handleUpdateStars}
                   onUpdateRefund={handleUpdateRefund}
+                  onUpdateSearchQuery={handleUpdateSearchQuery} // Pass placeholder handler
                   onNationalitySelected={handleNationalitySelected}
                   onDatesUpdated={handleDatesUpdated}
                   onSearch={() => {}}
@@ -185,7 +242,32 @@ export default function HomePage() {
                 />
               </Card>
             </div>
-          </div>
+            {noResults && (
+              <div className="w-full flex justify-center mt-4">
+                <div className="max-w-7xl w-full bg-yellow-50 border border-yellow-200 rounded p-4">
+                  <p className="text-sm text-yellow-800">{noResults.message}</p>
+                  <div className="mt-3 flex gap-2">
+                    <Button onClick={() => setNoResults(null)}>Adjust filters</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const cat = noResults.category;
+                        if (cat === "accommodation") {
+                          router.push(`/listings?searched=true&type=accommodation`);
+                        } else if (cat === "daytour") {
+                          router.push(`/listings?searched=true&type=daytour`);
+                        } else {
+                          router.push(`/listings?searched=true&type=transfer`);
+                        }
+                      }}
+                    >
+                      See listings anyway
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </div>
         </div>
       </section>
     </div>

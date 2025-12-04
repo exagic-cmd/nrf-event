@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import useRecentlyViewedStore from '@/store/useRecentlyViewedStore';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getFullImageUrl } from "@/utils/imageService";
 import { slugify } from "../../utils/slugify";
 import { formatPrice } from "@/utils/priceUtils";
+import LoaderSvg from "@/components/common/LoaderSvg";
 const RecentlyViewed = () => {
   const { recentlyViewed } = useRecentlyViewedStore();
+  const [loadingItemId, setLoadingItemId] = useState(null);
 
   if (!recentlyViewed || recentlyViewed.length === 0) return null;
 
@@ -15,12 +18,16 @@ const RecentlyViewed = () => {
     <div className="w-full pb-4 pt-4  px-4 hidden lg:block">
       <h3 className="text-lg font-bold mb-4">Recently Viewed</h3>
       <div className="grid grid-cols-1  gap-5">
-        {recentlyViewed.map((item) => (
-          // <Link
-          //   key={item.id}
-          //   href={`/accommodation/${slugify(item.name)}/${item.id}`}
-          //   passHref
-          // >
+        {recentlyViewed.map((item) => {
+          const isLoading = loadingItemId === item.id;
+          return (
+            <div key={item.id} className="relative">
+              <Link
+                href={`/accommodation/${slugify(item.name)}/${item.id}`}
+                passHref
+                legacyBehavior
+              >
+              <a onClick={() => setLoadingItemId(item.id)}>
             <div className="flex bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ">
               <div className="relative w-24 h-24 flex-shrink-0">
                 <Image
@@ -49,8 +56,15 @@ const RecentlyViewed = () => {
                 </div>
               </div>
             </div>
-          // </Link>
-        ))}
+              </a>
+              </Link>
+              {isLoading && (
+                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-2xl z-10">
+                  <LoaderSvg className="w-12 h-12" />
+                </div>
+              )}
+            </div>
+          )})}
       </div>
     </div>
   );

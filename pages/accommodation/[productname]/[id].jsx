@@ -349,22 +349,16 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       // ——————————————————— STUBA ———————————————————
       console.log("Stuba flow");
 
-      // Ensure there are valid search parameters for the API call
-      const hasSearchParams = searchParams && searchParams.start_date && searchParams.end_date;
+      let effectiveSearchParams = searchParams;
 
-      const effectiveSearchParams = hasSearchParams ? searchParams : {
-        // Define a default payload if none exists
-        start_date: new Date().toISOString().split("T")[0],
-        end_date: new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0], // Default to 3 nights
-        rooms: [{ adult: 2, children: [] }],
-        nights: 3,
-        nationality: "SG",
-        refund_policy: "all",
-        stars: "0",
-      };
-
-      // If we created default params, update the store so the UI is consistent
-      if (!hasSearchParams) {
+      // If searchParams are missing, create a default and update the store
+      if (!searchParams || !searchParams.start_date || !searchParams.end_date) {
+        effectiveSearchParams = {
+          start_date: new Date().toISOString().split("T")[0],
+          end_date: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0], // Default to 2 nights
+          rooms: [{ adult: 2, children: [] }],
+          nationality: "SG",
+        };
         useAccommodationsStore.getState().setSearchParams(effectiveSearchParams);
       }
 
@@ -460,6 +454,7 @@ useEffect(() => {
   const roomData = accommodation.normalizedRoomData;
   const nights = searchParams?.nights || 1;
   const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => sum + (Number(r.adult) || 0) + (Array.isArray(r.children) ? r.children.length : 0), 0) || 1;
+  const roomsCount = accommodation?.meta?.rooms_raw?.length || accommodation?.meta?.rooms_count || 1;
 
   return (
     <Layout>
@@ -486,7 +481,7 @@ useEffect(() => {
                   onScrollToOptions={handleScrollToOptions}
                   onProceedBooking={handleProceedBooking}
                   nights={nights}
-                  totalGuests={totalGuests}
+                  roomsCount={roomsCount}
                 />
               </div>
 
@@ -503,6 +498,7 @@ useEffect(() => {
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-2">
              <AccommodationRooms
+             amenities={accommodation?.hotel?.amenities }
             isNonStuba={isNonStuba}
             allRooms={accommodation.normalizedRoomData}
             normalizedRoomData={accommodation.normalizedRoomData}
