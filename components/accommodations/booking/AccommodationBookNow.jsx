@@ -360,6 +360,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      roomType: bookingData.selectedRoom?.name || "",
       Guests: roomGuests,
     }));
 
@@ -376,7 +377,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const totalChildren = rooms.reduce((s, r) => s + (r.children?.length || 0), 0);
     const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
     const totalPrice = (unitPrice * nights).toFixed(2);
-
+    
     const cartItem = {
       product_id: hotelId,
       tourId: hotelId,
@@ -390,8 +391,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       check_in: bookingData.checkIn,
       check_out: bookingData.checkOut,
       nights,
-      roomType: bookingData.selectedRoom?.roomType || "",
-      mealType: bookingData.selectedRoom?.mealType || "",
+      roomType: bookingData.selectedRoom?.name || "",
+      mealType: bookingData.selectedRoom?.mealPlanCode ||  bookingData.selectedRoom?.mealType || '',
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
       hotel_info: {
         id: hotelId,
@@ -431,6 +432,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      roomType: bookingData.selectedRoom?.name || "",
       Guests: roomGuests,
     }));
 
@@ -463,7 +465,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       check_in: bookingData.checkIn,
       check_out: bookingData.checkOut,
       nights,
-      roomType: bookingData.selectedRoom?.roomType || "",
+      roomType: bookingData.selectedRoom?.name || bookingData.selectedRoom?.roomType || "",
       mealType: bookingData.selectedRoom?.mealType || "",
       quoteId: bookingData.selectedRoom?.id || null,
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
