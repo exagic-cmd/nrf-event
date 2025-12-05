@@ -85,40 +85,40 @@ export default function FilterSidebar({ mode = "daytour" }) {
 
     const seen = new Set<string>(); // to avoid duplicates
 
-    // source.forEach((item) => {
-    //   keys.forEach((key) => {
-    //     if (key === "amenities") {
-    //       const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
-    //       const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
-    //       parts.forEach(part => {
-    //         const norm = normalizeValue(part);
-    //         if (norm && !seen.has(norm)) {
-    //           seen.add(norm);
-    //           result[key].push(part); // store original for display
-    //         }
-    //       });
-    //     } else {
-    //       const values = item[key];
-    //       if (Array.isArray(values)) {
-    //         values.forEach(v => {
-    //           const str = String(v);
-    //           const norm = normalizeValue(str);
-    //           if (norm && !seen.has(norm)) {
-    //             seen.add(norm);
-    //             result[key].push(str);
-    //           }
-    //         });
-    //       } else if (values === 0 || values) {
-    //         const str = String(values);
-    //         const norm = normalizeValue(str);
-    //         if (norm && !seen.has(norm)) {
-    //           seen.add(norm);
-    //           result[key].push(str);
-    //         }
-    //       }
-    //     }
-    //   });
-    // });
+    source.forEach((item) => {
+      keys.forEach((key) => {
+        if (key === "amenities") {
+          const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
+          const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+          parts.forEach(part => {
+            const norm = normalizeValue(part);
+            if (norm && !seen.has(norm)) {
+              seen.add(norm);
+              result[key].push(part); // store original for display
+            }
+          });
+        } else {
+          const values = item[key];
+          if (Array.isArray(values)) {
+            values.forEach(v => {
+              const str = String(v);
+              const norm = normalizeValue(str);
+              if (norm && !seen.has(norm)) {
+                seen.add(norm);
+                result[key].push(str);
+              }
+            });
+          } else if (values === 0 || values) {
+            const str = String(values);
+            const norm = normalizeValue(str);
+            if (norm && !seen.has(norm)) {
+              seen.add(norm);
+              result[key].push(str);
+            }
+          }
+        }
+      });
+    });
 
     // Sort alphabetically
     Object.keys(result).forEach(k => {
