@@ -94,7 +94,30 @@ const StubaRoomList = ({
     if (m.includes("full board") || m.includes("fb")) return "Full Board";
     return "Room Only";
   };
+const calculatePrices = (ratePlan) => {
+  const quantity = totalRoomsRequested || 1;
+  const nightsCount = nights || 1;
 
+  // Use promo_price if exists and > 0, otherwise fallback to price
+  const basePricePerNight = Number(ratePlan.promo_price ?? 0) > 0 
+    ? Number(ratePlan.promo_price) 
+    : Number(ratePlan.price || 0);
+
+  const originalPricePerNight = Number(ratePlan.price || 0);
+
+  const totalOriginal = originalPricePerNight * quantity * nightsCount;
+  const totalPayable = basePricePerNight * quantity * nightsCount;
+
+  const hasDiscount = totalOriginal > totalPayable;
+
+  return {
+    totalOriginal,
+    totalPayable,
+    hasDiscount,
+    formattedOriginal: formatPrice(totalOriginal),
+    formattedPayable: formatPrice(totalPayable),
+  };
+};
   return (
     <div id="room-types-section" className="py-2">
       <div className="">
@@ -177,9 +200,11 @@ const StubaRoomList = ({
                     const isSelected = internalSelectedRoomKey === uniqueKey;
                     const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                     const mealText = getMealDisplay(ratePlan.mealType);
-                    const netPriceStatic = `${currency} ${formatPrice(ratePlan.price)}`;
+                    const { totalOriginal, totalPayable, hasDiscount, formattedOriginal, formattedPayable } = calculatePrices(ratePlan);
+const netPriceStatic = `${currency} ${formattedPayable}`;
+const originalPriceDisplay = hasDiscount ? formattedOriginal : null;
                     const surchargeStatic = ""; // Sta
-
+                    console.log("ratePlan:##########", ratePlan);
                     return (
                       <div
                         key={uniqueKey}
@@ -198,9 +223,21 @@ const StubaRoomList = ({
                             <div>{cancellation.staticDate}</div>
                         </div>
                         <div className="text-sm text-black font-semibold text-end flex flex-col p-4 border-r border-gray-200">
-                            <div>{netPriceStatic}</div>
-                            <div className="text-[12px] text-gray-600">{surchargeStatic}</div>
-                        </div>
+  <div className="flex items-center justify-end gap-2">
+    {hasDiscount && (
+      <span className="text-gray-500 line-through text-sm">
+        {currency} {formattedOriginal}
+      </span>
+    )}
+    <span className={hasDiscount ? "text-green-600" : ""}>
+      {currency} {formattedPayable}
+    </span>
+  </div>
+   {/* <div className="text-[12px] text-gray-600 text-right mt-1">
+    {totalRoomsRequested} × {nights} night{nights > 1 ? "s" : ""}
+    {hasDiscount && " (Promo Applied)"}
+  </div> */}
+</div>
                         <div className="flex justify-end p-4"> 
                             <button // Changed room to ratePlan
                               onClick={() => handleRoomSelect(ratePlan, uniqueKey)}
@@ -223,7 +260,7 @@ const StubaRoomList = ({
                     const isSelected = internalSelectedRoomKey === uniqueKey;
                     const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                     const mealText = getMealDisplay(ratePlan.mealType);
-                    const netPriceStatic = `${currency} ${formatPrice(ratePlan.price)}`;
+                    const { totalOriginal, totalPayable, hasDiscount, formattedOriginal, formattedPayable } = calculatePrices(ratePlan);
                     const surchargeStatic = "No surcharge";
                     return(
                       <div key={uniqueKey} className={`flex-shrink-0 w-[280px] border rounded-xl transition-all ${isSelected ? "bg-red-50 border-red-300" : "bg-white border-gray-200"}`}>
@@ -244,9 +281,22 @@ const StubaRoomList = ({
                             </div>
             
                             <div className="flex justify-between items-baseline pt-2">
-                                <span className="font-medium text-gray-800">Price</span>
-                                <div className="text-right"><div className="text-xl text-black font-bold">{netPriceStatic}</div><div className="text-xs text-gray-500">{surchargeStatic}</div></div>
-                            </div>
+  <span className="font-medium text-gray-800">Total Price</span>
+  <div className="text-right">
+    {hasDiscount && (
+      <div className="text-sm text-gray-500 line-through">
+        {currency} {formattedOriginal}
+      </div>
+    )}
+    <div className={`text-xl font-bold ${hasDiscount ? 'text-green-600' : 'text-black'}`}>
+      {currency} {formattedPayable}
+    </div>
+    {/* <div className="text-xs text-gray-500">
+      {totalRoomsRequested} room{nights > 1 ? "s" : ""} × {nights} night{nights > 1 ? "s" : ""}
+      {hasDiscount && " • Promo price"}
+    </div> */}
+  </div>
+</div>
                             {roomMessages[uniqueKey] && ( <div className="text-red-400 text-sm text-center w-full pt-2">{roomMessages[uniqueKey]}</div> )}
                           </div>
             
