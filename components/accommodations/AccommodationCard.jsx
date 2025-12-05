@@ -56,7 +56,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     amenities,
   } = accommodation;
 
-  const lowestPrice = room?.base_price || 0;
+  const lowestPrice = (room?.base_price)*(searchParams?.rooms?.length || 1)*(searchParams?.nights || 1)  || 0;
 
   const handleCardClick = async () => {
     setIsLoading(true);
@@ -214,7 +214,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
      
     </p>
-     <span className="text-xs text-gray-600 font-normal"> Per Room/night</span>
+     <span className="text-xs text-gray-600 font-normal"> for {searchParams?.nights || 1} night{(searchParams?.nights || 1) !== 1 ? 's' : ''}</span>
     {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
 
