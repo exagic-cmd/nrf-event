@@ -360,6 +360,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      roomType: bookingData.selectedRoom?.name || "",
       Guests: roomGuests,
     }));
 
@@ -376,7 +377,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const totalChildren = rooms.reduce((s, r) => s + (r.children?.length || 0), 0);
     const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
     const totalPrice = (unitPrice * nights).toFixed(2);
-
+    
     const cartItem = {
       product_id: hotelId,
       tourId: hotelId,
@@ -390,8 +391,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       check_in: bookingData.checkIn,
       check_out: bookingData.checkOut,
       nights,
-      roomType: bookingData.selectedRoom?.roomType || "",
-      mealType: bookingData.selectedRoom?.mealType || "",
+      roomType: bookingData.selectedRoom?.name || "",
+      mealType: bookingData.selectedRoom?.mealPlanCode ||  bookingData.selectedRoom?.mealType || '',
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
       hotel_info: {
         id: hotelId,
@@ -431,6 +432,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
       ...(bookingData.selectedRoom || {}),
       roomTypeId: idx + 1,
+      roomType: bookingData.selectedRoom?.name || "",
       Guests: roomGuests,
     }));
 
@@ -463,7 +465,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       check_in: bookingData.checkIn,
       check_out: bookingData.checkOut,
       nights,
-      roomType: bookingData.selectedRoom?.roomType || "",
+      roomType: bookingData.selectedRoom?.name || bookingData.selectedRoom?.roomType || "",
       mealType: bookingData.selectedRoom?.mealType || "",
       quoteId: bookingData.selectedRoom?.id || null,
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
@@ -537,7 +539,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
               {/* Title */}
               <div>
                 <label className="block text-black text-sm font-medium mb-2">
-                   {roomIdx === 0 && i === 0 ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                   {roomIdx === 0 && i === 0 ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
                 </label>
                 <select
                   value={adult.title}
@@ -545,7 +547,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                     updateGuest(roomIdx, "adults", i, "title", e.target.value)
                   }
                   className="w-full px-3 h-[42px] py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                  required={i === 0}
+                  required={roomIdx === 0 && i === 0}
                 >
                   {TITLE_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>
@@ -558,7 +560,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
               {/* First Name */}
               <div>
                 <label className="block text-black text-sm font-medium mb-2">
-                 {roomIdx === 0 && i === 0 ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                 {roomIdx === 0 && i === 0 ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   type="text"
@@ -578,14 +580,14 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                       ? "bg-gray-300"
                       : "bg-white"
                   }`}
-                  required={i === 0}
+                  required={roomIdx === 0 && i === 0}
                 />
               </div>
 
               {/* Last Name */}
               <div>
                 <label className="block text-black text-sm font-medium mb-2">
-                  {roomIdx === 0 && i === 0 ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {i === 0 && <span className="text-red-500">*</span>}
+                  {roomIdx === 0 && i === 0 ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   type="text"
@@ -599,7 +601,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                       ? "bg-gray-300"
                       : "bg-white"
                   }`}
-                  required={i === 0}
+                  required={roomIdx === 0 && i === 0}
                 />
               </div>
             </div>

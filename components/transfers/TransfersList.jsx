@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import { useTranslation } from 'next-i18next';
 import TransfersCard from "@/components/transfers/TransfersCard";
 import Pagination from "@/components/common/Pagination";
@@ -10,9 +10,7 @@ function TransfersList() {
   const { t } = useTranslation('transfer');
   const [sortBy, setSortBy] = useState("cheapest");
   const [currentPage, setCurrentPage] = useState(1);
-  const { searchResults, isLoading } = useTransferStore();
-
-  const vehicleSectionRef = useRef(null);
+  const { searchResults, isLoading } = useTransferStore(); 
 
   const carsData = useMemo(() => {
     return searchResults.map(item => {
@@ -39,17 +37,6 @@ function TransfersList() {
     });
   }, [searchResults, t]);
 
-  useEffect(() => {
-  if (searchResults.length > 0 && vehicleSectionRef.current) {
-    const element = vehicleSectionRef.current;
-    const yOffset = -100; 
-    const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-
-    window.scrollTo({ top: y, behavior: "smooth" });
-  }
-}, [searchResults]);
-
-
   const sortedCars = useMemo(() => {
     const sortableCars = [...carsData];
     return sortableCars.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
@@ -63,7 +50,7 @@ function TransfersList() {
   );
 
   return (
-    <div ref={vehicleSectionRef} className="space-y-4">
+    <div className="space-y-4">
       <div className="rounded-xl py-3 px-4 bg-white">
         <p className="text-lg font-semibold">{t('results.showingTransfers')}</p>
       </div>

@@ -41,6 +41,7 @@ function ListingsPage() {
   const [cardCheckin, setCardCheckin] = useState(null);
   const [cardCheckout, setCardCheckout] = useState(null);
   const [cardSearchQuery, setCardSearchQuery] = useState(""); // For daytours
+  const [cardAccommodationText, setCardAccommodationText] = useState(""); // For accommodations
   const [filterActiveTab, setFilterActiveTab] = useState(() => {
     const t = urlSearchParams.get("type");
     if (t === "accommodation" || t === "hotels") return 4;
@@ -60,12 +61,14 @@ function ListingsPage() {
 
   const handleFilterFromCard = (payload) => {
     if (filterActiveTab === 2) {
-      setTransferSearchParams({
+      const newTransferParams = {
         pickup: payload.pickup,
         dropoff: payload.dropoff,
         tripType: payload.isTwoWay ? "round-trip" : "one-way",
         returnDate: payload.returnDate || null,
-      });
+      };
+      setSearchTransferParams(newTransferParams); 
+      setTransferSearchParams(newTransferParams); 
       router.push(`/listings?searched=true&type=transfer`);
       setHasSearched(true);
       setSearchCategory("transfer");
@@ -76,6 +79,7 @@ function ListingsPage() {
       setSelectedCountry(payload.country);
       setSelectedCity(payload.city);
       setDaytourSearchQuery(payload.search);
+      setSearchDaytourParams({ country: payload.country, city: payload.city, search: payload.search });
       router.push(`/listings?searched=true&type=daytour`);
       setHasSearched(true);
       setSearchCategory("daytour");
@@ -89,6 +93,8 @@ function ListingsPage() {
       setSearchCategory("accommodation");
       return;
     }
+
+    console.log("handleFilterFromCard payload:", payload);
   };
 
   // Zustand stores
@@ -113,6 +119,7 @@ function ListingsPage() {
   const {
     searchResults,
     isLoading,
+    fetchDaytours,
   } = useDaytoursStore();
 
   const { setSelectedCountry, setSelectedCity } = useDaytoursStore();
@@ -130,7 +137,8 @@ function ListingsPage() {
   
   const {
     setSelectedPickup, setSelectedDropoff, setTripType,
-    searchParams: transferSearchParams, setSearchParams: setTransferSearchParams
+    searchParams: transferSearchParams, setSearchParams: setTransferSearchParams,
+    fetchTransfers,
   } = useTransferStore();
 
 
@@ -139,6 +147,7 @@ function ListingsPage() {
       const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
       const hasSelectedRatings = activeFilters.ratings && activeFilters.ratings.length > 0;
       const hasSelectedMealPlans = activeFilters.meal_plans && activeFilters.meal_plans.length > 0;
+      const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
@@ -153,7 +162,13 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
         accommodation.room?.rate_plan?.meal?.title
       );
 
-      return amenityMatch && ratingMatch && mealPlanMatch;
+      const priceMatch = !hasPriceRange || (
+        (accommodation.room?.base_price || accommodation.price || 0) >= activeFilters.priceRange.min &&
+        (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
+      );
+
+
+      return amenityMatch && ratingMatch && mealPlanMatch && priceMatch;
     });
   }, [applyAccommodationFilter]); 
   useEffect(() => {
@@ -179,52 +194,42 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
     }
   }, [urlSearchParams]);
 
-  useEffect(() => {
+ useEffect(() => {
     const type = urlSearchParams.get("type");
-    if (!type) return;
-
     if (type === "transfer") {
       setSelectedPickup(searchTransferParams.pickup);
       setSelectedDropoff(searchTransferParams.dropoff);
       setTripType(searchTransferParams.tripType);
     }
+  }, [urlSearchParams, searchTransferParams]);
 
+  useEffect(() => {
+    const type = urlSearchParams.get("type");
     if (type === "daytour") {
       setDaytourSelectedCountry(searchDaytourParams.country);
       setDaytourSelectedCity(searchDaytourParams.city);
       setCardSearchQuery(searchDaytourParams.searchQuery);
     }
+  }, [urlSearchParams, searchDaytourParams]);
 
+  useEffect(() => {
+    const type = urlSearchParams.get("type");
     if (type === "accommodation") {
       if (searchAccommodationParams.checkin) setCardCheckin(searchAccommodationParams.checkin);
       else setCardCheckin(null);
-
       if (searchAccommodationParams.checkout) setCardCheckout(searchAccommodationParams.checkout);
       else setCardCheckout(null);
-
-      if (searchAccommodationParams.text) setCardSearchQuery(searchAccommodationParams.text);
-      else setCardSearchQuery("");
-
+      if (searchAccommodationParams.text) setCardAccommodationText(searchAccommodationParams.text);
+      else setCardAccommodationText("");
       if (searchAccommodationParams.stars) setCardStars(searchAccommodationParams.stars);
       else setCardStars("0");
-
       if (searchAccommodationParams.rooms) {
-        try {
-         setCardRooms(searchAccommodationParams.rooms);
-        } catch (e) {
-          console.error("Error setting rooms from store:", e);
-          setCardRooms([{ adult: 2, children: [] }]); 
-        }
+        setCardRooms(searchAccommodationParams.rooms);
       } else {
         setCardRooms([{ adult: 2, children: [] }]); 
       }
     }
-  }, [
-    urlSearchParams,
-    setSelectedPickup, setSelectedDropoff, setTripType,
-    setDaytourSelectedCountry, setDaytourSelectedCity,
-    searchTransferParams, searchDaytourParams, searchAccommodationParams,
-  ]);
+  }, [urlSearchParams, searchAccommodationParams]);
 
   useEffect(() => {
     if (
@@ -246,7 +251,39 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
     }
   }, [searchCategory, accommodationPayload, fetchAccommodations]);
 
-  // Scroll to results on search completion
+  useEffect(() => {
+    if (searchCategory === "transfer" && transferSearchParams && Object.keys(transferSearchParams).length > 0) {
+      fetchTransfers(transferSearchParams);
+    }
+  }, [searchCategory, transferSearchParams, fetchTransfers]);
+useEffect(() => {
+    const daytourParams = { country: daytourSelectedCountry, city: daytourSelectedCity, search: daytourSearchQuery };
+    if ((searchCategory === "daytour" || searchCategory === "day-tours") && (daytourParams.city || daytourParams.search)) {
+      fetchDaytours(daytourParams);
+    }
+  }, [searchCategory, daytourSelectedCountry, daytourSelectedCity, daytourSearchQuery, fetchDaytours]);
+
+useEffect(() => {
+    const type = urlSearchParams.get("type");
+   if (!hasSearched || isInitialSearch) return;
+
+    if (
+      (filterActiveTab === 4 && (type === "accommodation" || type === "hotels")) ||
+      (filterActiveTab === 3 && (type === "daytour" || type === "day-tours")) ||
+      (filterActiveTab === 2 && type === "transfer")
+    ) {
+      return;
+    }
+
+    if (filterActiveTab === 4 && Object.keys(searchAccommodationParams).length > 0) {
+      handleFilterFromCard(searchAccommodationParams);
+    } else if (filterActiveTab === 3 && Object.keys(searchDaytourParams).length > 0) {
+      handleFilterFromCard(searchDaytourParams);
+    } else if (filterActiveTab === 2 && Object.keys(searchTransferParams).length > 0) {
+      handleFilterFromCard(searchTransferParams);
+    }
+ }, [filterActiveTab, hasSearched, isInitialSearch]);
+
   useEffect(() => {
     if (hasSearched && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -255,7 +292,7 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
   }, [hasSearched, searchResults, filteredResults]);
 
   const renderListComponent = () => {
-    switch (searchCategory) {
+    switch (searchCategory) { 
       case "transfer":
         return <TransfersList searchParams={searchParams} />;
       case "daytour":
@@ -265,7 +302,7 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
       case "hotels":
         return (
           <AccommodationList
-            accommodations={filteredResults} 
+            accommodations={accommodations} 
             isLoading={accommodationLoading}
           />
         );
@@ -321,7 +358,7 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
           </div>
 
           {/* Search Filter Card Container */}
-          <div className={`lg:block ${isSearchFilterVisible ? "block" : "hidden"}`}>
+          <div className={`lg:block relative z-30 ${isSearchFilterVisible ? "block" : "hidden"}`}>
           <div className="min-h-[200px]">
               <SearchFilterCard
               filterActiveTab={filterActiveTab}
@@ -329,13 +366,14 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
               onSetTab={(id) => setFilterActiveTab(id)}
               onFilterTransfer={handleFilterFromCard}
               rooms={cardRooms}
+              initialRooms={cardRooms}
               onUpdateRooms={setCardRooms}
               stars={cardStars}
               onUpdateStars={setCardStars}
               initialCheckinDate={cardCheckin}
               initialCheckoutDate={cardCheckout}
-              initialSearchQuery={cardSearchQuery}
-              initialAccommodationText={cardSearchQuery}
+              initialSearchQuery={cardSearchQuery} // For daytours
+              initialAccommodationText={cardAccommodationText} // This is correct now
               onUpdateSearchQuery={setCardSearchQuery}
               onDatesUpdated={({ startDate, endDate }) => {
                 setCardCheckin(startDate);
@@ -351,8 +389,8 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
               <TransferSearchFilter
                 onSearch={() => {}}
-                showModal={showSearchModal}
-                setShowModal={setShowSearchModal}
+                //showModal={showSearchModal}
+               // setShowModal={setShowSearchModal}
                 forceSearch={isInitialSearch}
                 initialCategory={searchCategory}
               />
@@ -393,7 +431,7 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
           )}
 
           {/* Center: List Content */}
-          <div className="flex-1" >
+          <div className="flex-1" ref={resultsRef}>
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
 

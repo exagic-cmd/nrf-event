@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'next-i18next';
 import DaytourCard from "@/components/daytours/DayTourCard";
 import Pagination from "@/components/common/Pagination";
@@ -11,8 +11,6 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
   const { t } = useTranslation('daytour');
   const [currentPage, setCurrentPage] = useState(1);
   const { searchResults, filteredResults, isLoading } = useDaytoursStore();
-
-  const daytoursSectionRef = useRef(null);
 
   // Priority: filteredDaytours (from FilterSidebar) -> filteredResults (from store) -> searchResults
   const activeData = useMemo(() => {
@@ -70,13 +68,6 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
     });
   }, [activeData]);
 
-  useEffect(() => {
-    if (activeData && activeData.length > 0 && daytoursSectionRef.current) {
-      const y = daytoursSectionRef.current.getBoundingClientRect().top + window.scrollY - 100;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  }, [activeData]);
-
   // Reset to first page when filtered data changes
   useEffect(() => {
     setCurrentPage(1);
@@ -97,7 +88,7 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
   const showLoading = isLoading && !filteredDaytours;
 
   return (
-    <div ref={daytoursSectionRef} className="space-y-6">
+    <div className="space-y-6">
       <div className="rounded-xl py-3 px-4 bg-white">
         <p className="text-lg font-semibold">
           Showing {sortedDaytours.length} Day Tours
@@ -139,10 +130,11 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-10 text-gray-500">
-          {activeData && activeData.length > 0
-            ? `Found ${activeData.length} tours but none are active or processable`
-            : "No day tours found for your search criteria."}
+        <div className="text-center py-16 bg-white rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold text-gray-800">No Day Tours Found</h3>
+          <p className="text-gray-500 mt-2">
+            Please try adjusting your search criteria or filters.
+          </p>
         </div>
       )}
 

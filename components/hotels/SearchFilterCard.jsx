@@ -112,10 +112,15 @@ export default function SearchFilterCard({
     );
   }, [selectedCity]);
 
-  useEffect(() => {
-    if (initialSearchQuery !== undefined) setSearchQuery(initialSearchQuery);
-    else if (daytourParams.searchQuery !== undefined) setSearchQuery(daytourParams.searchQuery);
-  }, [initialSearchQuery, daytourParams.searchQuery]);
+  // useEffect(() => {
+  //   if (initialSearchQuery !== undefined) setSearchQuery(initialSearchQuery);
+  //   else if (daytourParams.searchQuery !== undefined) setSearchQuery(daytourParams.searchQuery);
+  // }, [initialSearchQuery, daytourParams.searchQuery]);
+
+  // // Sync accommodation text from parent
+  // useEffect(() => {
+  //   if (initialAccommodationText !== undefined) setAccommodationSearchText(initialAccommodationText);
+  // }, [initialAccommodationText]);
 
   // Effect for rotating placeholder
   useEffect(() => {
@@ -292,18 +297,25 @@ export default function SearchFilterCard({
     };
 
     try {
-      await fetchSearchResults(apiPayload);
-      const freshResults = useDaytoursStore.getState().searchResults;
+      // Perform initial search with the keyword
+      let results = await fetchSearchResults(apiPayload);
 
-    
-      const finalSearchQuery = (freshResults && freshResults.length > 0) ? searchQuery : "";
-      
+      // If no results and a search query was used, perform a fallback search
+      if (results.length === 0 && searchQuery) {
+        console.log("Daytour search with keyword failed, performing fallback...");
+        const fallbackPayload = { ...apiPayload, name: "" }; // Remove the keyword
+        results = await fetchSearchResults(fallbackPayload);
+      }
+
+      // Determine the final search query to persist
+      const finalSearchQuery = (results && results.length > 0 && !searchQuery) ? "" : searchQuery;
+
       setTimeout(() => {
         onFilterTransfer?.({
           country: selectedCountry,
           city: selectedCity,
           search: finalSearchQuery,
-          results: freshResults,
+          results: results,
           category: categoryType,
           category_id: categoryId,
           timestamp: Date.now(),

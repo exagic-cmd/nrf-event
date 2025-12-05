@@ -1,17 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AccommodationCard from "./AccommodationCard";
 import SvgLoader2 from "@/components/common/Loader2Svg";
 
 function AccommodationList({ accommodations, isLoading }) {
   const [visibleCount, setVisibleCount] = useState(3);
+  const INCREMENT_BY = 3;
+  const [showNoResults, setShowNoResults] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && accommodations && accommodations.length === 0) {
+      setShowNoResults(true);
+    } else {
+      setShowNoResults(false);
+    }
+  }, [accommodations, isLoading]);
 
   const handleLoadMore = () => {
-    setVisibleCount(accommodations.length);
-    
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    setVisibleCount((prevCount) =>
+      Math.min(prevCount + INCREMENT_BY, accommodations.length)
+    );
   };
 
   if (isLoading) {
@@ -22,11 +29,11 @@ function AccommodationList({ accommodations, isLoading }) {
     );
   }
 
-  if (!accommodations || accommodations.length === 0) {
+  if (showNoResults) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold">No Accommodations Found</h3>
-        <p className="text-gray-500 mt-2">Try adjusting your search or filters.</p>
+      <div className="text-center py-16 bg-white rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold text-gray-800">No accommodations found</h3>
+        <p className="text-gray-500 mt-2">Please try different dates, guest configurations, or filters.</p>
       </div>
     );
   }

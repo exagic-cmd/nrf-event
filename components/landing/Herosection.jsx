@@ -45,7 +45,7 @@ export default function HomePage() {
     setSearchParams,
    // fetchVehicles,
     resetTransferStore,
-    searchTransfers,
+    fetchTransfers,
   } = useTransferStore();
 
   const { setSearchParams: setAccommodationSearchParams, setSearchParamsAndSearch } = useAccommodationsStore();
@@ -54,6 +54,7 @@ export default function HomePage() {
     setTransferParams: setSearchTransferParams,
     setDaytourParams: setSearchDaytourParams,
     setAccommodationParams: setSearchAccommodationParams,
+    clearAllSearchParams,
   } = useSearchValuesStore();
 
   // useEffect(() => {
@@ -62,6 +63,11 @@ export default function HomePage() {
   // }, [resetTransferStore, fetchVehicles]);
 
  const [event, setEvent] = useState(null);
+
+  // Clear all persisted search values on initial load of the homepage
+  useEffect(() => {
+    clearAllSearchParams();
+  }, [clearAllSearchParams]);
 
   useEffect(() => {
     async function loadEvent() {
@@ -110,7 +116,7 @@ export default function HomePage() {
 
       
       try {
-        const transferResults = await searchTransfers({
+        const transferResults = await fetchTransfers({
           pickup_point_id: payload.pickup?.id,
           dropoff_point_id: payload.dropoff?.id,
           is_two_way: payload.isTwoWay ? "round-trip" : "one-way",
