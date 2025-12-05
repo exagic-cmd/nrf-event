@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, Children, useEffect } from "react";
+import React, { useState, Children, useEffect, useMemo } from "react";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
 const FilterSection = ({ title, children, defaultOpen = true, scrollable = false, hasLoadMore = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -93,7 +94,34 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     ratings: [],
     amenities: [],
     meal_plans: [],
+    priceRange: null,
   });
+
+  const { accommodations } = useAccommodationsStore();
+
+  // compute min/max price from accommodations list
+  const priceBounds = useMemo(() => {
+    if (!accommodations || accommodations.length === 0) return { min: 0, max: 0 };
+    let min = Infinity;
+    let max = -Infinity;
+    accommodations.forEach((acc) => {
+      const price = acc?.room?.base_price || acc?.price || acc?.min_price || 0;
+      const p = Number(price) || 0;
+      if (p < min) min = p;
+      if (p > max) max = p;
+    });
+    if (min === Infinity) min = 0;
+    if (max === -Infinity) max = 0;
+    return { min, max };
+  }, [accommodations]);
+
+  const [selectedMin, setSelectedMin] = useState(0);
+  const [selectedMax, setSelectedMax] = useState(0);
+
+  useEffect(() => {
+    setSelectedMin(priceBounds.min);
+    setSelectedMax(priceBounds.max);
+  }, [priceBounds.min, priceBounds.max]);
 
   useEffect(() => {
     onFilterChange(activeFilters);
@@ -126,7 +154,17 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     });
   };
 
-  const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], meal_plans: [] });
+  const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], meal_plans: [], priceRange: null });
+
+  const applyPriceRange = () => {
+    setActiveFilters((prev) => ({ ...prev, priceRange: { min: priceBounds.min, max: Number(selectedMax || 0) } }));
+  };
+
+  const clearPriceRange = () => {
+    setSelectedMin(priceBounds.min);
+    setSelectedMax(priceBounds.max);
+    setActiveFilters((prev) => ({ ...prev, priceRange: null }));
+  };
 
   // Group amenities by their category (amenity_name)
   const amenitiesByCategory = (general_amenities || []).reduce((acc, amenity) => {    
@@ -146,7 +184,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
 
   return (
     <div className="w-full rounded-xl bg-white p-4 shadow">
-      <div className="flex items-center justify-between pb-4 border-b">
+      <div className="sticky top-0 bg-white z-10 flex items-center justify-between pb-4 border-b">
         <h2 className="text-lg font-bold text-gray-900">Filter By</h2>
         {hasActiveFilters && (
           <button onClick={clearAllFilters} className="text-sm font-medium text-[#D3202D] hover:underline">
@@ -157,7 +195,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
 
       {rating && rating.length > 0 && (
         <FilterSection title="Star Rating">
-          <StarRatingFilter
+         <StarRatingFilter
             ratings={rating}
             activeRatings={activeFilters.ratings}
             onRatingChange={handleRatingChange}
@@ -165,9 +203,31 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
         </FilterSection>
       )}
 
+      {/* Price Range Filter */}
+      <FilterSection title="Price Range" defaultOpen={true} scrollable={false}>
+       <div className="space-y-4 pt-2">
+          <div className="relative">
+            <input
+              type="range"
+              min={priceBounds.min}
+              max={priceBounds.max > 0 ? priceBounds.max : 1000}
+              value={selectedMax}
+              onChange={(e) => setSelectedMax(Number(e.target.value))}
+              onMouseUp={applyPriceRange} // Apply when user releases the slider
+              onTouchEnd={applyPriceRange} // Apply for touch devices
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>{priceBounds.min}</span>
+              <span>{priceBounds.max > 0 ? priceBounds.max : 1000}</span>
+            </div>
+         </div>
+        </div>
+      </FilterSection>
+
       {Object.entries(amenitiesByCategory).map(([category, amenities]) => (
         <FilterSection key={category} title={category} scrollable={false} hasLoadMore={true}>
-          {amenities.map((amenity) => (
+         {amenities.map((amenity) => (
             <Checkbox
               key={amenity.label}
               label={amenity.label}
@@ -180,7 +240,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       ))}
 
       {meal_plans && meal_plans?.length > 0 && (
-        <FilterSection title="Meal Plan" hasLoadMore={true}>
+       <FilterSection title="Meal Plan" hasLoadMore={true}>
           {meal_plans.map((plan) => (
             <Checkbox key={plan?.code} label={plan?.name || plan?.code?.replace('_', ' ')} count={plan?.count} />
           ))}
@@ -188,7 +248,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {payment_types && payment_types.length > 0 && (
-        <FilterSection title="Payment Type" hasLoadMore={true}>
+       <FilterSection title="Payment Type" hasLoadMore={true}>
           {payment_types.map((type) => (
             <Checkbox key={type.value} label={(type.name || type.value).replace('_', ' ')} count={type.count} />
           ))}
@@ -196,8 +256,8 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       )}
 
       {cancellation_policies && cancellation_policies.length > 0 && (
-        <FilterSection title="Cancellation Policy" defaultOpen={false} hasLoadMore={true}>
-          {cancellation_policies.map((policy) => (
+       <FilterSection title="Cancellation Policy" defaultOpen={false} hasLoadMore={true}>
+         {cancellation_policies.map((policy) => (
             <Checkbox key={policy.id} label={policy.name} count={policy.count} />
           ))}
         </FilterSection>

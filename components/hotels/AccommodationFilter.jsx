@@ -24,7 +24,7 @@ const DEFAULT_REGION = {
 };
 
 
-export default function AccommodationFilter({ onSearch, initialSearchText = "", initialCheckinDate = null, initialCheckoutDate = null, initialRooms = null }) {
+export default function AccommodationFilter({ onSearch, initialSearchText = "", initialCheckinDate = null, initialCheckoutDate = null, initialRooms = null, onSearchTextChange }) {
   // const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [startDate, setStartDate] = useState(initialCheckinDate ? new Date(initialCheckinDate) : null);
@@ -67,9 +67,9 @@ const [search, setSearch] = useState(initialSearchText || DEFAULT_REGION.name);
   const { event, FetchEvent } = useEventStore();
 
   // Fetch nationalities on mount
-  useEffect(() => {
-    fetchNationalities();
-  }, [fetchNationalities]);
+  // useEffect(() => {
+  //   fetchNationalities();
+  // }, [fetchNationalities]);
 
   // Fetch event data on mount
   useEffect(() => {
@@ -196,6 +196,7 @@ useEffect(() => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearch(value);
+    onSearchTextChange?.(value); // Crucial: Update parent's state
     if (!value.trim()) {
       setSearch("");
       setSelectedItem({ ...DEFAULT_REGION, type: "region" });
@@ -240,6 +241,8 @@ useEffect(() => {
     region_id: null,
     ids: [],
     search_query: search,
+    text: search, 
+    text: search,
   };
 
   if (effectiveSelection.type === "hotel") {
@@ -249,11 +252,6 @@ useEffect(() => {
   } else if (effectiveSelection.type === "region") {
     payload.region_id = effectiveSelection.region_id;
     payload.hotel_id = null; 
-    payload.ids = [];
-  } else {
-
-    payload.hotel_id = null;
-    payload.region_id = null;
     payload.ids = [];
   }
 
@@ -526,9 +524,10 @@ useEffect(() => {
               value={search}
               onChange={handleInputChange}
               onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
-              placeholder="Search hotels or regions..."
-              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed disabled:text-gray-400"
+              onBlur={() => setTimeout(() => setIsInputFocused(false), 200)}
+              placeholder={!startDate || !endDate ? "" : "Search hotels or regions..."}
+              disabled={!startDate || !endDate}
+              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
               autoComplete="off"
             />
             {search && search !== DEFAULT_REGION.name && (
