@@ -41,6 +41,7 @@ function ListingsPage() {
   const [cardCheckin, setCardCheckin] = useState(null);
   const [cardCheckout, setCardCheckout] = useState(null);
   const [cardSearchQuery, setCardSearchQuery] = useState(""); // For daytours
+  const [cardAccommodationText, setCardAccommodationText] = useState(""); // For accommodations
   const [filterActiveTab, setFilterActiveTab] = useState(() => {
     const t = urlSearchParams.get("type");
     if (t === "accommodation" || t === "hotels") return 4;
@@ -202,8 +203,8 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
       if (searchAccommodationParams.checkout) setCardCheckout(searchAccommodationParams.checkout);
       else setCardCheckout(null);
 
-      if (searchAccommodationParams.text) setCardSearchQuery(searchAccommodationParams.text);
-      else setCardSearchQuery("");
+      if (searchAccommodationParams.text) setCardAccommodationText(searchAccommodationParams.text);
+      else setCardAccommodationText("");
 
       if (searchAccommodationParams.stars) setCardStars(searchAccommodationParams.stars);
       else setCardStars("0");
@@ -329,13 +330,14 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
               onSetTab={(id) => setFilterActiveTab(id)}
               onFilterTransfer={handleFilterFromCard}
               rooms={cardRooms}
+              initialRooms={cardRooms}
               onUpdateRooms={setCardRooms}
               stars={cardStars}
               onUpdateStars={setCardStars}
               initialCheckinDate={cardCheckin}
               initialCheckoutDate={cardCheckout}
-              initialSearchQuery={cardSearchQuery}
-              initialAccommodationText={cardSearchQuery}
+              initialSearchQuery={cardSearchQuery} // For daytours
+              initialAccommodationText={cardAccommodationText} // This is correct now
               onUpdateSearchQuery={setCardSearchQuery}
               onDatesUpdated={({ startDate, endDate }) => {
                 setCardCheckin(startDate);

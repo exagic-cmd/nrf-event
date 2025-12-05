@@ -37,7 +37,8 @@ export default function AccommodationFilter({ onSearch, initialSearchText = "", 
   const [tempEndDate, setTempEndDate] = useState(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [childAgeToAdd, setChildAgeToAdd] = useState(1);
+  const [childAges, setChildAges] = useState({});
+  const [showChildInput, setShowChildInput] = useState({});
 
  // const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -85,7 +86,7 @@ const [search, setSearch] = useState(initialSearchText || DEFAULT_REGION.name);
     setStartDate(initialCheckinDate ? new Date(initialCheckinDate) : null);
     setEndDate(initialCheckoutDate ? new Date(initialCheckoutDate) : null);
     setRooms(initialRooms || [{ adult: 2, children: [] }]);
-    setSearch(initialSearchText || DEFAULT_REGION.name);
+    setSearch(initialSearchText || "");
   }, [initialCheckinDate, initialCheckoutDate, initialRooms, initialSearchText]);
 
 useEffect(() => {
@@ -146,23 +147,20 @@ useEffect(() => {
   };
 
   const addChild = (i) => {
+    const ageToAdd = childAges[i] ?? 1;
     const newRooms = [...rooms];
     if (newRooms[i].children.length < 10) {
-      newRooms[i].children.push(childAgeToAdd);
+      newRooms[i].children.push(ageToAdd);
+      // Reset input for that room
+      setChildAges({ ...childAges, [i]: 1 });
+      setShowChildInput({ ...showChildInput, [i]: false });
     }
-    setChildAgeToAdd(1); // Reset for next addition
     setRooms(newRooms);
   };
 
   const removeChild = (i, childIndex) => {
     const newRooms = [...rooms];
     newRooms[i].children.splice(childIndex, 1);
-    setRooms(newRooms);
-  };
-
-  const updateChildAge = (i, childIndex, age) => {
-    const newRooms = [...rooms];
-    newRooms[i].children[childIndex] = age;
     setRooms(newRooms);
   };
 
@@ -176,23 +174,21 @@ useEffect(() => {
     }
   };
 
-  const handleCalendarOpen = () => {
-    if (startDate || endDate || tempEndDate) {
-      setStartDate(null);
-      setEndDate(null);
-      setTempEndDate(null);
-    }
-  };
-
   const handleEndDateChange = (date) => {
     setEndDate(date);
   };
 
   const handleSelection = (item, type) => {
     console.log("Selected Item:", item, "Type:", type);
-    setSelectedItem({ ...item, type });
-    setSearch(type === "hotel" ? item.title : item.region_name);
-    if (type === "region") setSelectedRegion(item);
+    setSelectedItem({ ...item, type });    
+    if (type === "hotel") {
+      setSearch(item.title);
+    } else if (type === "region") {
+      setSearch(item.region_name);
+      setSelectedRegion(item);
+    } else if (type === "tag") {
+      setSearch(item.tag);
+    }
     setShowDropdown(false);
     setIsInputFocused(false);
   };
@@ -268,7 +264,8 @@ useEffect(() => {
     // This will now return [] if !data.status
     const results = await setSearchParamsAndSearch(payload);
   if (!results || results.length === 0) {
-      return;
+    alert("No accommodations available for the selected dates or guest configuration. Please try different options.");
+    return;
     }
     const { error } = useAccommodationsStore.getState();
     if (error) {
@@ -308,7 +305,6 @@ useEffect(() => {
               dateFormat="MMM d, yyyy"
               monthsShown={1}
               showPopperArrow={false}
-              onCalendarOpen={handleCalendarOpen}
               customInput={
                 <div className="flex items-center justify-between w-full">
                   <span className="truncate font-medium">
@@ -385,7 +381,6 @@ useEffect(() => {
             type="button"
             onClick={() => setShowGuestPopup(!showGuestPopup)}
             className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            disabled={!startDate || !endDate}
           >
             <Users className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
             <span className="truncate flex-grow text-left">
@@ -444,69 +439,59 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base font-medium">Children</span>
-                      <span className="text-xs text-gray-500">
-                        {room.children.length}/10
-                      </span>
-                    </div>
-
-                    {room.children.length >= 1 && (
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2">
+                  <div>
+                    <div className="flex items-center gap-4 mb-2">
+                      <span className="text-sm sm:text-base font-medium flex-shrink-0">Children</span>
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 flex-grow">
                         {room.children.map((childAge, childIndex) => (
                           <div
                             key={childIndex}
                             className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-full px-2 py-1"
                           >
-                            <select
-                              value={childAge}
-                              onChange={(e) =>
-                                updateChildAge(i, childIndex, parseInt(e.target.value))
-                              }
-                              className="bg-transparent text-xs sm:text-sm border-none outline-none cursor-pointer min-w-0"
-                            >
-                              {Array.from({ length: 13 }, (_, index) => (
-                                <option key={index} value={index + 1}>
-                                  {index + 1}y
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              type="button"
-                              onClick={() => removeChild(i, childIndex)}
-                              className="w-4 h-4 rounded-full bg-red-400 text-white flex items-center justify-center hover:bg-red-500 active:bg-red-600 touch-manipulation flex-shrink-0"
-                            >
+                            <span className="text-xs sm:text-sm text-blue-800">{childAge}y</span>
+                            <button type="button" onClick={() => removeChild(i, childIndex)} className="w-4 h-4 rounded-full bg-red-400 text-white flex items-center justify-center hover:bg-red-500 active:bg-red-600 touch-manipulation flex-shrink-0">
                               <X className="h-2 w-2" />
                             </button>
                           </div>
                         ))}
                       </div>
-                    )}
-
-                    {room.children.length < 10 && (
- <div className="flex items-center gap-2 mt-2">
-                        <select
-                          value={childAgeToAdd}
-                          onChange={(e) => setChildAgeToAdd(parseInt(e.target.value))}
-                          className="w-full bg-white text-xs sm:text-sm border border-gray-300 rounded-md px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="" disabled>Select age</option>
-                          {Array.from({ length: 12 }, (_, index) => (
-                            <option key={index} value={index + 1}>
-                              {index + 1} year{index + 1 > 1 ? 's' : ''} old
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="button"
-                          onClick={() => addChild(i)}
-                          className="flex-shrink-0 text-xs sm:text-sm bg-gray-400 text-white font-medium py-1.5 px-3 rounded-md  transition-colors touch-manipulation"
-                        >
-                          Add
+                      {room.children.length < 10 && !showChildInput[i] && (
+                        <button type="button" onClick={() => setShowChildInput({ ...showChildInput, [i]: true })} className="text-xs sm:text-sm text-[#D3202D] font-medium flex-shrink-0">
+                          + Add Child
                         </button>
+                      )}
+                    </div>
+
+                    {showChildInput[i] && room.children.length < 10 && (
+                      <div className="flex items-center gap-3">
+                        <label className="text-xs text-gray-600 flex-shrink-0">Enter the child age:</label>
+                        <div className="relative flex-grow">
+                          <input
+                            type="number"
+                            min="0"
+                            max="18"
+                            value={childAges[i] ?? ''}
+                            onChange={(e) => {
+                              const age = e.target.value === '' ? '' : Math.max(0, Math.min(18, parseInt(e.target.value, 10) || 0));
+                              setChildAges({ ...childAges, [i]: age });
+                            }}
+                            placeholder="Age"
+                            className="w-full bg-white text-xs sm:text-sm border border-gray-300 rounded-md px-2 py-1.5 pr-16 outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => addChild(i)}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-[calc(100%-0.25rem)] text-xs bg-gray-500 hover:bg-gray-600 text-white font-medium px-3 rounded transition-colors touch-manipulation"
+                          >
+                            Add
+                          </button>
+                        </div>
                       </div>
                     )}
+
+                    {/* <div className="text-right text-xs text-gray-500 mt-1">
+                      {room.children.length}/10 children
+                    </div> */}
                   </div>
 
 
@@ -539,12 +524,11 @@ useEffect(() => {
             <input
               type="text"
               value={search}
-              disabled={!startDate || !endDate}
               onChange={handleInputChange}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
               placeholder="Search hotels or regions..."
-              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed"
+              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed disabled:text-gray-400"
               autoComplete="off"
             />
             {search && search !== DEFAULT_REGION.name && (
@@ -587,31 +571,60 @@ useEffect(() => {
               ) : (
                 <div>
                   {regions && regions.length > 0 ? (
-                    regions.map((tagGroup) => (
-                      <div key={tagGroup.tag}>
-                        <h6 className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize">
-                          {tagGroup.tag}
-                        </h6>
-                        {tagGroup.accommodations && tagGroup.accommodations.length > 0 ? (
-                          tagGroup.accommodations.map((hotel) => (
-                            <button
-                              key={hotel.id}
-                              type="button"
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                handleSelection({ ...hotel, type: 'hotel' }, "hotel");
-                              }}
-                              className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
-                            >
-                              <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                              <span className="truncate text-black">{hotel.title}</span>
-                            </button>
-                          ))
-                        ) : (
-                          <div className="px-3 py-2 text-sm text-gray-500">No accommodations for this tag.</div>
-                        )}
-                      </div>
-                    ))
+                    regions.map((tagGroup) =>
+                      (tagGroup.regions?.length > 0 || tagGroup.accommodations?.length > 0) && (
+                        <div key={tagGroup.tag} className="border-b last:border-b-0">
+                          <button
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSelection({ ...tagGroup, type: "tag" }, "tag");
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize hover:bg-gray-100"
+                          >
+                            {tagGroup.tag}
+                          </button>
+                          {/* Render Regions if available */}
+                          {tagGroup.regions && tagGroup.regions.length > 0 && (
+                            <div className="pl-2">
+                              {tagGroup.regions.map((region) => (
+                                <button
+                                  key={region.id || region.region_id}
+                                  type="button"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    handleSelection({ ...region, type: "region" }, "region");
+                                  }}
+                                  className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                                >
+                                  <MapPin className="h-4 w-4 text-[#D3202D] flex-shrink-0" />
+                                  <span className="truncate text-black">{region.region_name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          {/* Render Accommodations if available */}
+                          {tagGroup.accommodations && tagGroup.accommodations.length > 0 && (
+                            <div className="pl-2">
+                              {tagGroup.accommodations.map((hotel) => (
+                                <button
+                                  key={hotel.id}
+                                  type="button"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    handleSelection({ ...hotel, type: "hotel" }, "hotel");
+                                  }}
+                                  className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                                >
+                                  <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                                  <span className="truncate text-black">{hotel.title}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    )
                   ) : (
                     <div className="px-3 py-4 text-center text-sm text-gray-500">No suggestions found.</div>
                   )}
