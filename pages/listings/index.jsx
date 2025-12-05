@@ -285,7 +285,7 @@ useEffect(() => {
   }, [hasSearched, searchResults, filteredResults]);
 
   const renderListComponent = () => {
-    switch (searchCategory) {
+    switch (searchCategory) { 
       case "transfer":
         return <TransfersList searchParams={searchParams} />;
       case "daytour":
@@ -295,7 +295,7 @@ useEffect(() => {
       case "hotels":
         return (
           <AccommodationList
-            accommodations={filteredResults} 
+            accommodations={accommodations} 
             isLoading={accommodationLoading}
           />
         );
@@ -378,17 +378,17 @@ useEffect(() => {
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-3 px-6">
-          {/* {searchCategory === "transfer" && (
+          {searchCategory === "transfer" && (
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
               <TransferSearchFilter
                 onSearch={() => {}}
-                showModal={showSearchModal}
-                setShowModal={setShowSearchModal}
+                //showModal={showSearchModal}
+               // setShowModal={setShowSearchModal}
                 forceSearch={isInitialSearch}
                 initialCategory={searchCategory}
               />
             </div>
-          )} */}
+          )}
 
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
@@ -424,7 +424,7 @@ useEffect(() => {
           )}
 
           {/* Center: List Content */}
-          <div className="flex-1" >
+          <div className="flex-1" ref={resultsRef}>
             {hasSearched ? renderListComponent() : renderPlaceholder()}
           </div>
 
