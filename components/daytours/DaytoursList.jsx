@@ -139,10 +139,11 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-10 text-gray-500">
-          {activeData && activeData.length > 0
-            ? `Found ${activeData.length} tours but none are active or processable`
-            : "No day tours found for your search criteria."}
+        <div className="text-center py-16 bg-white rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold text-gray-800">No Day Tours Found</h3>
+          <p className="text-gray-500 mt-2">
+            Please try adjusting your search criteria or filters.
+          </p>
         </div>
       )}
 

@@ -94,7 +94,12 @@ function TransfersList() {
       ) : paginatedTransfers.length > 0 ? (
         paginatedTransfers.map((car) => <TransfersCard key={car.id} car={car} />)
       ) : (
-        <div className="text-center py-10 text-gray-500">{t('results.noTransfersFound')}</div>
+        <div className="text-center py-16 bg-white rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold text-gray-800">No Transfers Found</h3>
+          <p className="text-gray-500 mt-2">
+            Please try adjusting your search criteria.
+          </p>
+        </div>
       )}
 
       {!isLoading && totalPages > 1 && (
