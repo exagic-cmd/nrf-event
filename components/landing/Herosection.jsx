@@ -54,6 +54,7 @@ export default function HomePage() {
     setTransferParams: setSearchTransferParams,
     setDaytourParams: setSearchDaytourParams,
     setAccommodationParams: setSearchAccommodationParams,
+    clearAllSearchParams,
   } = useSearchValuesStore();
 
   // useEffect(() => {
@@ -62,6 +63,11 @@ export default function HomePage() {
   // }, [resetTransferStore, fetchVehicles]);
 
  const [event, setEvent] = useState(null);
+
+  // Clear all persisted search values on initial load of the homepage
+  useEffect(() => {
+    clearAllSearchParams();
+  }, [clearAllSearchParams]);
 
   useEffect(() => {
     async function loadEvent() {

@@ -112,15 +112,15 @@ export default function SearchFilterCard({
     );
   }, [selectedCity]);
 
-  useEffect(() => {
-    if (initialSearchQuery !== undefined) setSearchQuery(initialSearchQuery);
-    else if (daytourParams.searchQuery !== undefined) setSearchQuery(daytourParams.searchQuery);
-  }, [initialSearchQuery, daytourParams.searchQuery]);
+  // useEffect(() => {
+  //   if (initialSearchQuery !== undefined) setSearchQuery(initialSearchQuery);
+  //   else if (daytourParams.searchQuery !== undefined) setSearchQuery(daytourParams.searchQuery);
+  // }, [initialSearchQuery, daytourParams.searchQuery]);
 
-  // Sync accommodation text from parent
-  useEffect(() => {
-    if (initialAccommodationText !== undefined) setAccommodationSearchText(initialAccommodationText);
-  }, [initialAccommodationText]);
+  // // Sync accommodation text from parent
+  // useEffect(() => {
+  //   if (initialAccommodationText !== undefined) setAccommodationSearchText(initialAccommodationText);
+  // }, [initialAccommodationText]);
 
   // Effect for rotating placeholder
   useEffect(() => {
