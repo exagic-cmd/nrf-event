@@ -149,13 +149,20 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
         }
       },
 
-      searchTransfers: async (payload) => {
+      fetchTransfers: async (payload) => {
         set({ isLoading: true })
         try {
+          const apiPayload = {
+            tripType: payload.tripType,
+            returnDate: payload.returnDate,
+            pickup_point_id: payload.pickup?.id,
+            dropoff_point_id: payload.dropoff?.id,
+          };
+
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/search`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify(apiPayload),
           })
           const result = await res.json()
           set({ searchResults: result.results || [], isLoading: false })
