@@ -69,84 +69,118 @@ export default function AccommodationDetailPage() {
 
   // Normalize accommodation data function (keep your existing implementation)
   const normalizeAccommodationData = (data) => {
-    if (!data || !data.hotel) return null;
+  if (!data || !data.hotel) return null;
 
-    const { hotel, rooms: roomData, meta } = data;
+  const { hotel, rooms: roomData, meta } = data;
 
-    // 1. Normalize Hotel Data
-    const normalizedHotelData = {
-      id: hotel.id,
-      title: hotel.name,
-      name: hotel.name,
-      short_desc: hotel.short_desc,
-      long_desc: hotel.long_desc,
-      country: hotel.country,
-      city: hotel.city,
-      address: hotel.address,
-      latitude: hotel.latitude,
-      longitude: hotel.longitude,
-      image: hotel.photos?.[0]?.image || "",
-      images: (hotel.photos || []).map(p => ({ url: p.image, thumb: p.image, type: 'photo' })),
-      stars: parseFloat(hotel.star_rating) || 0,
-      amenities: data.hotel.amenities || [], // Correctly pass amenities from the source
-      review_count: 0, // Not in new API response
-      rating: { rating: parseFloat(hotel.star_rating) || 0 }, // Synthesize rating object
-      location: hotel.address || hotel.city,
+  // Helper: Calculate total payable and original price from per-night pricing
+  const calculateRatePlanPrice = (pricing) => {
+    const nights = pricing?.nights || [];
+    if (!Array.isArray(nights) || nights.length === 0) {
+      return {
+        total: Number(pricing?.total || 0),
+        original: Number(pricing?.total || 0),
+        hasDiscount: false,
+      };
+    }
+
+    let originalTotal = 0;
+    let discountedTotal = 0;
+
+    nights.forEach((night) => {
+      const price = Number(night.price || 0);
+      const promo = Number(night.promo_price || 0);
+      originalTotal += price;
+      discountedTotal += promo > 0 ? promo : price;
+    });
+
+    return {
+      total: discountedTotal,
+      original: originalTotal,
+      hasDiscount: discountedTotal < originalTotal,
     };
+  };
 
-    // 2. Normalize Room Data
-    const normalizedRooms = (roomData || []).map(room => {
-      const roomRatePlans = (room.rate_plans || []).map(plan => ({
-        id: `${room.id}-${plan.id}`, // Unique ID for the rate plan
-        roomTypeId: room.id, // Link back to the room type
-        roomTypeName: room.name, // Name of the room type (e.g., "Standard")
-        bedDetails: plan.bed_type?.name || room.beds?.[0]?.bed_type_title, // Use plan's bed_type if available, else room's
-        smokingType: plan.smoking_type,
-        mealType: plan.name, // Name of the rate plan, often includes meal info
-        mealPlanCode: plan.meal_plan_code,
-        price: plan.pricing.total,
-        cancellationPolicy: plan.cancellation_policy?.name || (plan.is_refundable ? "Refundable" : "Non-refundable"),
-        occupancyAdults: plan.occupancy_adults,
-        occupancyChildren: plan.occupancy_children,
-        isAvailable: true, // Assuming all returned rate plans are available
-        canAccommodate: true, // This will be checked later based on searchParams
-        rawPricing: plan,
-        // Pass room-level images to each rate plan for easier access in StubaRoomList
-        images: (room.images || []).map(img => img.image),
-        view: room.view, // Pass room-level view
-      }));
+  // 1. Normalize Hotel Data
+  const normalizedHotelData = {
+    id: hotel.id,
+    title: hotel.name,
+    name: hotel.name,
+    short_desc: hotel.short_desc,
+    long_desc: hotel.long_desc,
+    country: hotel.country,
+    city: hotel.city,
+    address: hotel.address,
+    latitude: hotel.latitude,
+    longitude: hotel.longitude,
+    image: hotel.photos?.[0]?.image || "",
+    images: (hotel.photos || []).map(p => ({ url: p.image, thumb: p.image, type: 'photo' })),
+    stars: parseFloat(hotel.star_rating) || 0,
+    amenities: data.hotel.amenities || [],
+    review_count: 0,
+    rating: { rating: parseFloat(hotel.star_rating) || 0 },
+    location: hotel.address || hotel.city,
+  };
+
+  // 2. Normalize Room Data
+  const normalizedRooms = (roomData || []).map(room => {
+    const roomRatePlans = (room.rate_plans || []).map(plan => {
+      const priceInfo = calculateRatePlanPrice(plan.pricing);
 
       return {
-        id: room.id,
-        name: room.name, // Room type name (e.g., "Executive King Suite")
-        size: room.size,
-        view: room.view,
+        id: `${plan.id}`,
+        roomTypeId: room.id,
+        roomTypeName: room.name,
+        name: plan.name, // e.g., "Standard Twin with breakfast"
+        bedDetails: plan.bed_type?.name || room.beds?.[0]?.bed_type_title,
+        smokingType: plan.smoking_type,
+        mealType: plan.meal?.title || plan.name,
+        mealPlanCode: plan.meal_plan_code,
+        price: priceInfo.total,           // ← This is the discounted price (payable)
+        originalPrice: priceInfo.original, // ← Original full price (for strikethrough)
+        hasDiscount: priceInfo.hasDiscount,
+        cancellationPolicy: plan.cancellation_policy?.name || (plan.is_refundable ? "Free Cancellation" : "Non-Refundable"),
+        occupancyAdults: plan.occupancy_adults,
+        occupancyChildren: plan.occupancy_children,
+        isAvailable: true,
+        canAccommodate: true,
+        rawPricing: plan,
         images: (room.images || []).map(img => img.image),
-        bedDetails: room.beds?.[0]?.bed_type_title, // Room-level bed details
-        ratePlans: roomRatePlans, // Array of normalized rate plans for this room type
+        view: room.view,
+        pricing: plan.pricing, // Keep full pricing for fallback
       };
     });
 
-    // 3. Find the lowest price
-    const startingPrice = normalizedRooms.length > 0
-      ? Math.min(...normalizedRooms.flatMap(roomType => roomType.ratePlans).map(r => r.price))
-      : 0;
-
-    normalizedHotelData.starting_price = startingPrice;
-    normalizedHotelData.price = startingPrice;
-
-    const lowestPriceRoom = normalizedRooms.length > 0
-      ? normalizedRooms.flatMap(roomType => roomType.ratePlans).reduce((low, r) => r.price < low.price ? r : low)
-      : null;
-
-    // 4. Return the complete, normalized structure
     return {
-      ...data, // Keep original data for reference
-      normalizedHotelData,
-      normalizedRoomData: normalizedRooms,
-      lowestPriceRoom,
+      id: room.id,
+      name: room.name,
+      size: room.size,
+      view: room.view,
+      images: (room.images || []).map(img => img.image),
+      bedDetails: room.beds?.[0]?.bed_type_title,
+      ratePlans: roomRatePlans,
     };
+  });
+
+  // 3. Find lowest payable price (discounted if available)
+  const allRatePlans = normalizedRooms.flatMap(r => r.ratePlans);
+  const validPrices = allRatePlans.map(r => r.price).filter(p => p > 0);
+  const startingPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+
+  normalizedHotelData.starting_price = startingPrice;
+  normalizedHotelData.price = startingPrice;
+
+  const lowestPriceRoom = allRatePlans.reduce((low, r) => 
+    (!low || r.price < low.price) ? r : low, null
+  );
+
+  return {
+    ...data,
+    normalizedHotelData,
+    normalizedRoomData: normalizedRooms,
+    lowestPriceRoom,
   };
+};
 
   // Handle room selection
   const handleRoomSelect = (room) => {

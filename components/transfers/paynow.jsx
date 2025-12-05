@@ -181,6 +181,7 @@ const PayNow = ({ totalPrice }) => {
           nationality: item.nationality,
           nights: item.nights || 1,
           region: item.region,
+          rate_type_id: item.selectedRoom?.id,
           roomsDetails: item.roomsDetails || [{
             roomTypeId: 1,
             id: item.selectedRoom?.id,
