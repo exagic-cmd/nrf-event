@@ -147,6 +147,7 @@ function ListingsPage() {
       const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
       const hasSelectedRatings = activeFilters.ratings && activeFilters.ratings.length > 0;
       const hasSelectedMealPlans = activeFilters.meal_plans && activeFilters.meal_plans.length > 0;
+      const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
@@ -161,7 +162,13 @@ const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
         accommodation.room?.rate_plan?.meal?.title
       );
 
-      return amenityMatch && ratingMatch && mealPlanMatch;
+      const priceMatch = !hasPriceRange || (
+        (accommodation.room?.base_price || accommodation.price || 0) >= activeFilters.priceRange.min &&
+        (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
+      );
+
+
+      return amenityMatch && ratingMatch && mealPlanMatch && priceMatch;
     });
   }, [applyAccommodationFilter]); 
   useEffect(() => {

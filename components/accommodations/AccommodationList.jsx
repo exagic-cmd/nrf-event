@@ -10,10 +10,8 @@ function AccommodationList({ accommodations, isLoading }) {
   useEffect(() => {
     if (!isLoading && accommodations && accommodations.length === 0) {
       setShowNoResults(true);
-      const timer = setTimeout(() => {
-        setShowNoResults(false);
-      }, 5000); // Hide after 5 seconds
-      return () => clearTimeout(timer);
+    } else {
+      setShowNoResults(false);
     }
   }, [accommodations, isLoading]);
 

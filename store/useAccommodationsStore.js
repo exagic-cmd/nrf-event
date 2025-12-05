@@ -185,7 +185,7 @@ export const useAccommodationsStore = create((set, get) => ({
     try {
       // Build the query string from the payload
       const params = {
-        text: searchPayload.search || '',
+        text: searchPayload.text || '',
         start_date: searchPayload.start_date || new Date().toISOString().split("T")[0],
       };
       if (searchPayload.end_date) {
