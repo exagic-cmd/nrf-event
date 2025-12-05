@@ -116,7 +116,7 @@ const CartDrawerContent = () => {
                         {/* Accommodation Details */}
                         <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
                           <p>
-                            <strong>{t("Room", { ns: "accommodation" })}:</strong> {item.roomType} | <strong>{t("Bed", { ns: "accommodation" })}:</strong> {item.mealType} | <strong>{t("Nights", { ns: "accommodation" })}:</strong> {item.nights} |  <strong>{t("Guests", { ns: "accommodation" })}:</strong> {item.adult_count + item.child_count}
+                          <strong>{t("Nights", { ns: "accommodation" })}:</strong> {item.nights} |  <strong>{t("Guests", { ns: "accommodation" })}:</strong> {item.adult_count + item.child_count}
                           </p>
                         </div>
 
