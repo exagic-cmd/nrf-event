@@ -170,6 +170,19 @@ export const useAccommodationsStore = create((set, get) => ({
 
   // Fetch accommodations search results
   fetchAccommodations: async (payload) => {
+
+    if (
+  !payload ||
+  !payload.start_date ||
+  payload.start_date === "" ||
+  !payload.end_date ||
+  payload.end_date === ""
+) {
+  console.warn("❌ fetchAccommodations skipped — missing dates:", payload);
+  set({ isLoading: false, error: "Missing start or end date" });
+  return [];
+}
+
     // If no payload provided, use existing searchParams
     const searchPayload = payload;
     console.log("🛎️ fetchAccommodations called with payload:", searchPayload);
@@ -186,7 +199,7 @@ export const useAccommodationsStore = create((set, get) => ({
       // Build the query string from the payload
       const params = {
         text: searchPayload.text || '',
-        start_date: searchPayload.start_date || new Date().toISOString().split("T")[0],
+        start_date: searchPayload.start_date,
       };
       if (searchPayload.end_date) {
         params.end_date = searchPayload.end_date;
