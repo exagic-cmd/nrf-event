@@ -144,6 +144,8 @@ export default function HomePage() {
       try {
         const results = await fetchSearchResults({
           category_id: 3,
+          is_b2c_only: 1,
+          is_active: true,
           country_id: country?.id,
           city_id: city?.id,
           name: search,

@@ -140,6 +140,8 @@ export const useDaytoursStore = create((set, get) => ({
           body: JSON.stringify({
             name: query,
             is_b2c_only: 1,
+            is_active: true,
+            category_id: 3, // Daytour category
           }),
         }
       );

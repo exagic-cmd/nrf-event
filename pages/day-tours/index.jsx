@@ -55,6 +55,7 @@ function DaytoursPage() {
       city_id: city?.id,
       name: search || "",
       is_b2c_only: 1,
+      is_active: true,
     };
 
     console.log("🧭 Manual Day Tours Search:", payload);
