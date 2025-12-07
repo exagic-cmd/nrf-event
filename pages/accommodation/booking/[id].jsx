@@ -103,7 +103,11 @@ export default function AccommodationBookingPage() {
 
   // NEW VALUES ADDED HERE
   const nights = bookingData?.nights || 1;
-  const rooms = bookingData?.rooms || 1;
+  const totalRoomsRequested = (bookingData?.searchParams?.rooms || []).length || 1;
+
+  // selectedRoom.price is already total for ALL nights for 1 room
+  // Multiply by number of rooms to get final total
+  const totalPrice = (selectedRoom.price || 0) * totalRoomsRequested;
 
   return (
     <Layout>
@@ -151,7 +155,7 @@ export default function AccommodationBookingPage() {
       <div>
         <p className="text-[9px] opacity-70 leading-tight text-black">Room Details</p>
         <p className="text-sm font-semibold leading-tight text-black">
-          {selectedRoom.roomType} ({bookingData.searchParams?.rooms.length || 1} Room{ (bookingData.searchParams?.rooms.length || 1) > 1 ? 's' : ''}, {bookingData.nights} Night{bookingData.nights > 1 ? 's' : ''})
+          {selectedRoom.roomType || selectedRoom.roomCat || selectedRoom.name} ({totalRoomsRequested} Room{totalRoomsRequested > 1 ? 's' : ''}, {nights} Night{nights > 1 ? 's' : ''})
         </p>
       </div>
     </div>
@@ -186,12 +190,13 @@ export default function AccommodationBookingPage() {
     <div className="pt-4 mt-2 border-t border-white/20">
       <div className="flex justify-between items-center">
         <span className="text-base font-semibold">Total</span>
- 
-     
         <span className="text-xl font-bold">
-          SGD {formatPrice(selectedRoom.price || 0)}
+          SGD {formatPrice(totalPrice)}
         </span>
       </div>
+      <p className="text-xs text-gray-600 mt-1 text-right">
+        {totalRoomsRequested} room{totalRoomsRequested > 1 ? 's' : ''} × {nights} night{nights > 1 ? 's' : ''}
+      </p>
     </div>
   </div>
             </div>

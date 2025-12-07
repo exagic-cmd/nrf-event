@@ -70,7 +70,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
   // Price logic
   const basePrice = isAccommodation
-    ? Number(item.price) || 0
+    ? Number(item.total) || 0  // Use item.total which includes all rooms × nights
     : isTransfer
     ? Number(item.vehicle?.final_promo_price) ||
       Number(item.vehicle?.promo_price) ||
@@ -96,7 +96,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
     const isTrans = !!i.vehicle;
 
     const itemBasePrice = isAcc
-      ? Number(i.price) || 0
+      ? Number(i.total) || 0  // Use item.total which includes all rooms × nights
       : isTrans
       ? Number(i.vehicle?.final_promo_price) ||
         Number(i.vehicle?.promo_price) ||

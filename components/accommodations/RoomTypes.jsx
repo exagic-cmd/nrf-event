@@ -164,12 +164,14 @@ const StubaRoomList = ({
                       const mealText = getMealDisplay(ratePlan.mealType || ratePlan.meal?.title);
 
                       // Use pre-calculated values from parent
-                      const totalPayable = Number(ratePlan.price || 0);
-                      const totalOriginal = Number(ratePlan.originalPrice || totalPayable);
+                      // ratePlan.price is already the TOTAL for ALL nights for 1 room (from normalizeAccommodationData)
+                      // We only need to multiply by totalRoomsRequested
+                      const totalPriceFor1Room = Number(ratePlan.price || 0);
+                      const originalPriceFor1Room = Number(ratePlan.originalPrice || totalPriceFor1Room);
                       const hasDiscount = ratePlan.hasDiscount === true;
 
-                      const finalPayable = totalPayable * totalRoomsRequested;
-                      const finalOriginal = totalOriginal * totalRoomsRequested;
+                      const finalPayable = totalPriceFor1Room * totalRoomsRequested;
+                      const finalOriginal = originalPriceFor1Room * totalRoomsRequested;
                       const savings = finalOriginal - finalPayable;
 
                       const displayPayable = `${currency} ${formatPrice(finalPayable)}`;
@@ -234,12 +236,14 @@ const StubaRoomList = ({
                       const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                       const mealText = getMealDisplay(ratePlan.mealType || ratePlan.meal?.title);
 
-                      const totalPayable = Number(ratePlan.price || 0);
-                      const totalOriginal = Number(ratePlan.originalPrice || totalPayable);
+                      // ratePlan.price is already the TOTAL for ALL nights for 1 room (from normalizeAccommodationData)
+                      // We only need to multiply by totalRoomsRequested
+                      const totalPriceFor1Room = Number(ratePlan.price || 0);
+                      const originalPriceFor1Room = Number(ratePlan.originalPrice || totalPriceFor1Room);
                       const hasDiscount = ratePlan.hasDiscount === true;
 
-                      const finalPayable = totalPayable * totalRoomsRequested;
-                      const finalOriginal = totalOriginal * totalRoomsRequested;
+                      const finalPayable = totalPriceFor1Room * totalRoomsRequested;
+                      const finalOriginal = originalPriceFor1Room * totalRoomsRequested;
                       const savings = finalOriginal - finalPayable;
 
                       const displayPayable = `${currency} ${formatPrice(finalPayable)}`;
