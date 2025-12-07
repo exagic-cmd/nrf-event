@@ -66,7 +66,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       setFormData((prev) => ({
         ...prev,
         date: prefillData.date || prev.date,
-        time: prefillData.pickup_time || prev.time,
+        time: "",
         hotel: prefillData.pickup_point || prev.hotel,
         adults: prefillData.total_adult || prev.adults,
         child: prefillData.total_child || prev.child,

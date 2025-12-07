@@ -325,7 +325,14 @@ setForm({
   </label>
   {form.date ? (
     (() => {
-      const dateStr = form.date;
+      const dateObj = form.date instanceof Date ? form.date : (form.date ? new Date(form.date + "T00:00:00") : null);
+      if (!dateObj || isNaN(dateObj.getTime())) {
+        return <div className="text-sm text-gray-400">{t("bookingForm.selectDate")}</div>;
+      }
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       const times = pickupTimesByDate[dateStr] || [];
       if (times.length === 0) {
         return (
@@ -334,15 +341,22 @@ setForm({
           </div>
         );
       }
-      // If only one time, preselect it
       if (times.length === 1 && form.time !== times[0]) {
-        setForm(prev => ({ ...prev, time: times[0] }));
-        onChange && onChange({ ...form, time: times[0], availableTimes: times });
+      setTimeout(() => {
+          const newFormState = { ...form, time: times[0] };
+          setForm(newFormState);
+          onChange?.(newFormState);
+        }, 0);
       }
 
       const timeToDate = (timeStr) => {
         if (!timeStr) return null;
-        const [hours, minutes] = timeStr.split(':');
+        const period = timeStr.match(/([AP]M)/);
+        let [hours, minutes] = timeStr.replace(/[AP]M/, '').split(':');
+        hours = parseInt(hours, 10);
+        if (period && period[0] === 'PM' && hours !== 12) {
+          hours += 12;
+        }
         const date = new Date();
         date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
         return date;
