@@ -18,15 +18,23 @@ const AccommodationInfoCard = ({
   const [amenities, setAmenities] = useState([]);
 
   useEffect(() => {
+    // Calculate total price for all rooms and all nights
+    // startingPrice is the total for ALL nights for 1 room
+    // We multiply by roomsCount to get the total for all requested rooms
+    let priceFor1Room = 0;
+
     if (selectedRoom) {
-      setLowestPrice(selectedRoom.price || 0);
+      priceFor1Room = selectedRoom.price || 0;
     } else if (allRooms.length > 0) {
       const min = Math.min(...allRooms.map(r => r.price || 0));
-      setLowestPrice(min > 0 ? min : startingPrice || 0);
+      priceFor1Room = min > 0 ? min : startingPrice || 0;
     } else {
-      setLowestPrice(startingPrice || 0);
+      priceFor1Room = startingPrice || 0;
     }
-  }, [allRooms, startingPrice, selectedRoom]);
+
+    // Multiply by number of rooms to get total
+    setLowestPrice(priceFor1Room * roomsCount);
+  }, [allRooms, startingPrice, selectedRoom, roomsCount]);
 
   useEffect(() => {
     const extract = () => {
@@ -87,7 +95,7 @@ const AccommodationInfoCard = ({
           )} */}
         </div>
  <div className="text-black text-sm flex justify-end gap-1 mb-3">
-                for {nights} night{nights > 1 ? "s" : ""}, {roomsCount} room{roomsCount > 1 ? "s" : ""}
+                for {roomsCount} room{roomsCount > 1 ? "s" : ""} × {nights} night{nights > 1 ? "s" : ""}
  </div>
         {/* Selected Room */}
         {/* {selectedRoom && (
