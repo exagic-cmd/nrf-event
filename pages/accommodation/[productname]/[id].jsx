@@ -488,7 +488,8 @@ useEffect(() => {
   const roomData = accommodation.normalizedRoomData;
   const nights = searchParams?.nights || 1;
   const totalGuests = (searchParams?.rooms || []).reduce((sum, r) => sum + (Number(r.adult) || 0) + (Array.isArray(r.children) ? r.children.length : 0), 0) || 1;
-  const roomsCount = accommodation?.meta?.rooms_raw?.length || accommodation?.meta?.rooms_count || 1;
+  // Use the number of rooms the user actually requested, not from meta
+  const roomsCount = (searchParams?.rooms || []).length || 1;
 
   return (
     <Layout>

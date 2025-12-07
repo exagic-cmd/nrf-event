@@ -375,9 +375,12 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
     const totalAdults = rooms.reduce((s, r) => s + (r.adult || 0), 0);
     const totalChildren = rooms.reduce((s, r) => s + (r.children?.length || 0), 0);
-    const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (unitPrice * nights).toFixed(2);
-    
+    const totalRoomsRequested = rooms.length || 1;
+
+    // bookingData.selectedRoom.price is already the total for ALL nights for 1 room
+    const priceFor1Room = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
+    const totalPrice = (priceFor1Room * totalRoomsRequested).toFixed(2);
+
     const cartItem = {
       product_id: hotelId,
       tourId: hotelId,
@@ -385,7 +388,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       productType: "accommodation",
       adult_count: totalAdults,
       child_count: totalChildren,
-      price: unitPrice,
+      price: priceFor1Room,
       total: Number(totalPrice),
       tour_date: bookingData.checkIn,
       check_in: bookingData.checkIn,
@@ -449,8 +452,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
     const totalAdults = rooms.reduce((s, r) => s + (r.adult || 0), 0);
     const totalChildren = rooms.reduce((s, r) => s + (r.children?.length || 0), 0);
-    const unitPrice = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (unitPrice * nights).toFixed(2);
+    const totalRoomsRequested = rooms.length || 1;
+
+    // bookingData.selectedRoom.price is already the total for ALL nights for 1 room
+    const priceFor1Room = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
+    const totalPrice = (priceFor1Room * totalRoomsRequested).toFixed(2);
 
     const cartItem = {
       product_id: hotelId,
@@ -459,7 +465,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       productType: "accommodation",
       adult_count: totalAdults,
       child_count: totalChildren,
-      price: unitPrice,
+      price: priceFor1Room,
       total: Number(totalPrice),
       tour_date: bookingData.checkIn,
       check_in: bookingData.checkIn,

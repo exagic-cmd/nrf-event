@@ -157,7 +157,7 @@ const PayNow = ({ totalPrice }) => {
         category_id: 4,
         adult_count: item.adult_count || item.guests || 0,
         child_count: item.child_count || 0,
-        total: item?.price ?? 0,
+        total: item?.total ?? 0,  // Use item.total which is already rooms × nights
         tour_date: item.tour_date || item.checkIn||"20-11-2025",
         check_in: item.check_in || item.checkIn,
         check_out: item.check_out || item.checkOut,
