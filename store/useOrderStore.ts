@@ -67,27 +67,41 @@ fetchWeatherInfo: async ( userId) => {
 
     set({ upcomingBookings: bookings, loading: false });
     if (bookings.length > 0 && bookings[0].itineraries?.length > 0) {
-      const firstOrder = bookings[0];
-      const firstItinerary = firstOrder.itineraries[0];
-
-      let pickupPoint = firstItinerary.pickup_point;
-      if (pickupPoint && (pickupPoint.toLowerCase().includes('changi airport') || pickupPoint.toLowerCase().includes('terminal'))) {
-        pickupPoint = firstItinerary.dropoff_point;
-      }
-
-      const prefillData = {
-        order_id: firstOrder.order_id,
-        itinerary_id: firstItinerary.id,
-        title: firstItinerary.title,
-        date: firstItinerary.date,
-        pickup_time: firstItinerary.pickup_time,
-        pickup_point: pickupPoint, 
-        total_adult: firstOrder.total_adult ?? 0,
-        total_child: firstOrder.total_child ?? 0,
+      const isUpcomingDate = (dateString) => {
+        if (!dateString) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const orderDate = new Date(dateString + "T00:00:00");
+        return orderDate >= today;
       };
 
-      set({ prefillData });
-      console.log("Prefill data automatically saved:", prefillData);
+      const firstOrder = bookings[0];
+      const firstItinerary = firstOrder.itineraries[0];
+      const orderDate = firstItinerary.date || firstOrder.checkin_date || "";
+
+      if (isUpcomingDate(orderDate)) {
+        let pickupPoint = firstItinerary.pickup_point;
+        if (pickupPoint && (pickupPoint.toLowerCase().includes('changi airport') || pickupPoint.toLowerCase().includes('terminal'))) {
+          pickupPoint = firstItinerary.dropoff_point;
+        }
+
+        const prefillData = {
+          order_id: firstOrder.order_id,
+          itinerary_id: firstItinerary.id,
+          title: firstItinerary.title,
+          date: orderDate,
+          pickup_time: firstItinerary.pickup_time,
+          pickup_point: pickupPoint, 
+          total_adult: firstOrder.total_adult ?? 0,
+          total_child: firstOrder.total_child ?? 0,
+        };
+
+        set({ prefillData });
+        console.log("Prefill data automatically saved for upcoming booking:", prefillData);
+      } else {
+        set({ prefillData: null });
+        console.log("No upcoming bookings found to prefill. Clearing data.");
+      }
     }
   } catch (err) {
     set({
@@ -252,7 +266,10 @@ cancelOrder: async (itineraryId, reason, accessCode) => {
       clearError: () => set({ error: null }),
 
 updatePrefillDataFromCart: (cartItems = []) => {
-  if (!Array.isArray(cartItems) || cartItems.length === 0) return;
+  if (!Array.isArray(cartItems) || cartItems.length === 0) {
+   set({ prefillData: null });
+    return;
+  }
 
   // ✅ find accommodation first
   const accommodation = cartItems.find(
