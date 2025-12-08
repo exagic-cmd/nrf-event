@@ -24,9 +24,9 @@ const AccommodationInfoCard = ({
     let priceFor1Room = 0;
 
     if (selectedRoom) {
-      priceFor1Room = selectedRoom.price || 0;
+      priceFor1Room = selectedRoom.pricing?.total_promo || 0;
     } else if (allRooms.length > 0) {
-      const min = Math.min(...allRooms.map(r => r.price || 0));
+      const min = Math.min(...allRooms.map(r => r.pricing?.total_promo || 0));
       priceFor1Room = min > 0 ? min : startingPrice || 0;
     } else {
       priceFor1Room = startingPrice || 0;

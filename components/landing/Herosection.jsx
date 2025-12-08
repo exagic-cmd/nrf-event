@@ -15,7 +15,7 @@ import {
   Ship,
   Train,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ new import
@@ -106,101 +106,69 @@ export default function HomePage() {
   const handleItemSelected = (item) => {};
   const handleFilterSubmitted = (payload) => {};
 
-  const handleFilterTransfer = async (payload) => {
-    // 🚗 TRANSFERS
-    if (filterActiveTab === 2) {
-      if (!payload?.pickup || !payload?.dropoff) {
-        alert("Please select both pickup and dropoff locations");
-        return;
-      }
+  const handleFilterTransfer = useCallback(async (payload) => {
+  // TRANSFERS TAB
+  if (payload.category === "transfer") {
+    const { pickup, dropoff, isTwoWay } = payload;
 
-      
-      try {
-        const transferResults = await fetchTransfers({
-          pickup_point_id: payload.pickup?.id,
-          dropoff_point_id: payload.dropoff?.id,
-          is_two_way: payload.isTwoWay ? "round-trip" : "one-way",
-         
-        });
-
-      } catch (err) {
-        console.error("transfer quick search failed", err);
-      }
-
-     
-      setSearchTransferParams({
-        pickup: payload.pickup,
-        dropoff: payload.dropoff,
-        tripType: payload.isTwoWay ? "round-trip" : "one-way",
-        returnDate: payload.returnDate || null,
-      });
-      router.push(`/listings?searched=true&type=transfer`);
+    if (!pickup?.id || !dropoff?.id) {
+      alert("Please select valid pickup and dropoff locations");
       return;
     }
 
-    if (filterActiveTab === 3) {
-      const { country, city, search } = payload;
+    // Save to persistent search store
+    setSearchTransferParams({
+      pickup,
+      dropoff,
+      tripType: isTwoWay ? "round-trip" : "one-way",
+    });
 
-      try {
-        const results = await fetchSearchResults({
-          category_id: 3,
-          is_b2c_only: 1,
-          is_active: true,
-          country_id: country?.id,
-          city_id: city?.id,
-          name: search,
-        });
+    // CORRECT: Use Zustand action properly — DO NOT await raw IDs!
+    useTransferStore.getState().fetchTransfers({
+      pickup,
+      dropoff,
+      tripType: isTwoWay ? "round-trip" : "one-way",
+      returnDate: null, // or get from date picker later
+    });
 
-        
-        const finalSearchQuery = (results && results.length > 0) ? search : "";
+    router.push(`/listings?searched=true&type=transfer`);
+    return;
+  }
 
-        
-        setSearchDaytourParams({
-          country,
-          city,
-          searchQuery: finalSearchQuery,
-        });
+  // DAYTOURS
+  if (payload.category === "daytour") {
+    const { country, city, search, results } = payload;
 
-      } catch (err) {
-        console.error("daytour quick search failed", err);
-        
-        setSearchDaytourParams({ country, city, searchQuery: search });
-      }
+    setSearchDaytourParams({
+      country,
+      city,
+      searchQuery: search || "",
+    });
 
-      router.push(`/listings?searched=true&type=daytour`);
-      return;
-    }
+    router.push(`/listings?searched=true&type=daytour`);
+    return;
+  }
 
-    if (filterActiveTab === 4) {
-      try {
-  
-        const results = await setSearchParamsAndSearch(payload);
-        if (!results || (Array.isArray(results) && results.length === 0)) {
-          setNoResults({
-            category: "accommodation",
-            message: "No accommodations found for the selected filters and dates. Try changing the date range or room configuration.",
-            payload,
-          });
-          return;
-        }
-      } catch (err) {
-        console.error("accommodation quick search failed", err);
-      }
+  // ACCOMMODATION
+  if (payload.category === "accommodation") {
+    try {
+      await setSearchParamsAndSearch(payload);
 
       setSearchAccommodationParams({
-        checkin: payload.start_date || payload.checkin || null,
-        checkout: payload.end_date || payload.checkout || null,
-        rooms: payload.rooms || [{ adult: 2, children: [] }], 
-        text: payload.search_query || "", 
+        checkin: payload.checkin,
+        checkout: payload.checkout,
+        rooms: payload.rooms,
+        text: payload.search_query || "",
         hotel_id: payload.hotel_id,
         region_id: payload.region_id,
-        ids: payload.ids,
       });
-    
+
       router.push(`/listings?searched=true&type=accommodation`);
-      return;
+    } catch (err) {
+      console.error("Accommodation search failed", err);
     }
-  };
+  }
+}, [router, setSearchTransferParams, setSearchDaytourParams, setSearchAccommodationParams, setSearchParamsAndSearch]);
 
   const [noResults, setNoResults] = useState(null);
 
@@ -227,6 +195,7 @@ export default function HomePage() {
             <div className="flex w-full lg:mx-0 justify-center">
               <Card className="min-h-[200px] w-full max-w-7xl flex justify-center items-center p-0 bg-transparent border-0 shadow-none">
                 <SearchFilterCard
+                isHomepage={true}
                   filterActiveTab={filterActiveTab}
                   filterTabs={filterTabs}
                   onSetTab={handleSetTab}
