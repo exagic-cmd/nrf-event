@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import SearchFilterCard from "@/components/hotels/SearchFilterCard";
 import AccommodationFilterSidebar from "@/components/accommodations/AccommodationFilterSidebar";
 import { Filter, X, ChevronDown } from "lucide-react";
+import AccommodationListMap from "@/components/accommodations/AccommodationListMap";
 import GoogleMap from "@/components/daytours/GoogleMap";
 
 function ListingsPage() {
@@ -458,26 +459,23 @@ useEffect(() => {
 
           {/* Right: Map or FAQs */}
           <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-            {(searchCategory === "daytour" || searchCategory === "day-tours" || searchCategory === "accommodation" || searchCategory === "hotels") && (
+            {(searchCategory === "daytour" || searchCategory === "day-tours") && (
               <GoogleMap
                 center={{ lat: 1.3521, lng: 103.8198 }}
                 zoom={12}
                 width="100%"
                 height="550px"
                 className="rounded-lg shadow-lg"
-                markers={
-                  (searchCategory === "daytour" || searchCategory === "day-tours")
-                    ? (searchResults || []).map((r) => ({
-                        lat: r.latitude || r.lat || r?.location?.lat,
-                        lng: r.longitude || r.lng || r?.location?.lng,
-                        title: r.title || r.name || r.location_name || r.hotel_name || "",
-                      }))
-                    : (filteredResults || []).map((a) => ({
-                        lat: a?.Hotel_Data?.latitude || a?.latitude || a?.normalizedHotelData?.latitude,
-                        lng: a?.Hotel_Data?.longitude || a?.longitude || a?.normalizedHotelData?.longitude,
-                        title: a?.Hotel_Data?.title || a?.name || a?.title || a?.hotel_name || "",
-                      }))
-                }
+                markers={(searchResults || []).map((r) => ({
+                  lat: r.latitude || r.lat || r?.location?.lat,
+                  lng: r.longitude || r.lng || r?.location?.lng,
+                  title: r.title || r.name || r.location_name || r.hotel_name || "",
+                }))}
+              />
+            )}
+            {isAccommodationCategory && filteredResults.length > 0 && (
+              <AccommodationListMap
+                accommodations={filteredResults}
               />
             )}
             {searchCategory === "transfer" && showFaqs && <Faqs />}

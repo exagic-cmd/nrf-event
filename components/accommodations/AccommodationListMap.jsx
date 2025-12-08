@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from "react";
-
+const getFullImageUrl = (relativePath) => {
+  if (!relativePath) return '';
+  return `https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1746530123/${relativePath}`;
+};
 const AccommodationListMap = ({ accommodations = [] }) => {
   const mapRef = useRef(null);
 
@@ -12,8 +15,14 @@ const AccommodationListMap = ({ accommodations = [] }) => {
         const lat = parseFloat(a?.Hotel_Data?.latitude || a?.latitude || a?.normalizedHotelData?.latitude || NaN);
         const lng = parseFloat(a?.Hotel_Data?.longitude || a?.longitude || a?.normalizedHotelData?.longitude || NaN);
         const title = a?.Hotel_Data?.title || a?.name || a?.title || a?.hotel_name || '';
+        const rating = parseFloat(a?.star_rating) || 0;
+        const imageUrl = a?.photo?.image ? getFullImageUrl(a.photo.image) : 'https://placehold.co/100x75?text=No+Image';
+
+        console.log('Hotel:', a.name, 'Raw Image Path:', a?.photo?.image, 'Constructed Image URL:', imageUrl);
+
         if (!isFinite(lat) || !isFinite(lng)) return null;
-        return { lat, lng, title };
+
+        return { lat, lng, title, imageUrl, rating };
       })
       .filter(Boolean);
 
@@ -29,6 +38,7 @@ const AccommodationListMap = ({ accommodations = [] }) => {
         });
 
         const bounds = new window.google.maps.LatLngBounds();
+        const infoWindow = new window.google.maps.InfoWindow();
 
         const markers = markersData.map((m) => {
           const marker = new window.google.maps.Marker({
@@ -38,13 +48,59 @@ const AccommodationListMap = ({ accommodations = [] }) => {
           });
           bounds.extend(marker.getPosition());
 
-          const info = new window.google.maps.InfoWindow({
-            content: `<div style="color:#000">${m.title || "Location"}</div>`,
-          });
+          let starsHtml = '';
+          if (m.rating > 0) {
+            for (let i = 0; i < 5; i++) {
+              starsHtml += `<span style="color: ${i < m.rating ? '#FFD700' : '#d3d3d3'};">★</span>`;
+            }
+          }
 
-          marker.addListener("click", () => {
-            info.open(map, marker);
-          });
+         const contentString = `
+  <div style="
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  ">
+    <img 
+      src="${m.imageUrl}" 
+      alt="${m.title}" 
+      style="
+        width: 90px; 
+        height: 70px; 
+        object-fit: cover; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      " 
+    />
+
+    <div style="display: flex; flex-direction: column; justify-content: center;">
+      <div style="
+        font-weight: 600; 
+        font-size: 13px; 
+        max-width: 160px; 
+        line-height: 1.3; 
+        margin-bottom: 5px;
+      ">
+        ${m.title || "Location"}
+      </div>
+
+      ${starsHtml ? `<div style="font-size: 12px; line-height: 1;">${starsHtml}</div>` : ""}
+    </div>
+  </div>
+`;
+
+
+          const openInfoWindow = () => {
+            infoWindow.setContent(contentString);
+            infoWindow.open(map, marker);
+          };
+
+          marker.addListener("mouseover", openInfoWindow);
+          marker.addListener("click", openInfoWindow);
 
           return marker;
         });
@@ -89,12 +145,8 @@ const AccommodationListMap = ({ accommodations = [] }) => {
   }, [accommodations]);
 
   return (
-    <div className="mb-6">
-      <div className="bg-gray-800 rounded-xl overflow-hidden">
-        <div className="aspect-[16/6] bg-gray-700">
-          <div ref={mapRef} className="w-full h-full" />
-        </div>
-      </div>
+    <div style={{ height: '550px' }} className="rounded-lg shadow-lg overflow-hidden">
+      <div ref={mapRef} className="w-full h-full" />
     </div>
   );
 };
