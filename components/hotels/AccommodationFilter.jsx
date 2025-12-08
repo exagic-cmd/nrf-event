@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useEventStore } from "@/store/useEventStore";
 import LoaderSvg from "@/components/common/LoaderSvg";
+import { useRouter } from "next/navigation";
 const DEFAULT_REGION = {
   id: 4352,
   region_id: 18196,
@@ -39,6 +40,7 @@ export default function AccommodationFilter({ onSearch, initialSearchText = "", 
   const [isSearching, setIsSearching] = useState(false);
   const [childAges, setChildAges] = useState({});
   const [showChildInput, setShowChildInput] = useState({});
+  const router = useRouter();
 
  // const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -274,6 +276,7 @@ useEffect(() => {
     alert("An error occurred while searching. Please try again.");
   } finally {
     setIsSearching(false);
+    router.push(`/listings?searched=true&type=accommodation`);
   }
 };
 
@@ -463,8 +466,8 @@ useEffect(() => {
                         <div className="relative flex-grow">
                           <input
                             type="number"
-                            min="0"
-                            max="18"
+                            min="1"
+                            max="12"
                             value={childAges[i] ?? ''}
                             onChange={(e) => {
                               const age = e.target.value === '' ? '' : Math.max(0, Math.min(18, parseInt(e.target.value, 10) || 0));
