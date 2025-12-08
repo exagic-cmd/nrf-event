@@ -123,8 +123,8 @@ export default function HomePage() {
       tripType: isTwoWay ? "round-trip" : "one-way",
     });
 
-    // CORRECT: Use Zustand action properly — DO NOT await raw IDs!
-    useTransferStore.getState().fetchTransfers({
+    // ✅ CORRECT: Use the destructured function from hook
+    fetchTransfers({
       pickup,
       dropoff,
       tripType: isTwoWay ? "round-trip" : "one-way",
@@ -168,7 +168,7 @@ export default function HomePage() {
       console.error("Accommodation search failed", err);
     }
   }
-}, [router, setSearchTransferParams, setSearchDaytourParams, setSearchAccommodationParams, setSearchParamsAndSearch]);
+}, [router, setSearchTransferParams, setSearchDaytourParams, setSearchAccommodationParams, setSearchParamsAndSearch, fetchTransfers]);
 
   const [noResults, setNoResults] = useState(null);
 
