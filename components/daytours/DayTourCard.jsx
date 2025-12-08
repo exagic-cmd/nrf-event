@@ -26,14 +26,15 @@ function DaytourCard({ tour, category = "daytour" }) {
 
       if (alreadyExists) {
         setShowModal(true);
+        setIsLoading(false); // Stop loading since we are just showing a modal
       } else {
         // Navigate to day tour details page
         localizedPush(`/day-tours/detail/${tour.id}`);
+        // Keep loader active until component unmounts on navigation
       }
     } catch (err) {
       console.error("Booking failed", err);
-    } finally {
-      setTimeout(() => setIsLoading(false), 400);
+      setIsLoading(false); // Stop loading on error
     }
   };
 
@@ -194,12 +195,12 @@ function DaytourCard({ tour, category = "daytour" }) {
     <button
       type="button"
       onClick={handleBookNow}
-      className="rounded-lg bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition cursor-pointer"
+      className="rounded-lg bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition cursor-pointer flex items-center justify-center min-w-[100px] min-h-[40px]"
     >
       {isLoading ? (
-        <span className="flex items-center gap-2">
+        <span className="flex items-center justify-center">
           <SvgLoader className="w-4 h-4" />
-          {t("common.loading")}
+          
         </span>
       ) : (
         "Book Now"

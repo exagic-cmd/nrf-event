@@ -16,6 +16,7 @@ export const useAccommodationsStore = create((set, get) => ({
   lastHotelQuoteId: null,
   hotelQuoteMap: {},
   isLoading: false,
+  isCheckingAvailability: false,
   accommodationFilters: null, 
   error: null,
 
@@ -466,6 +467,31 @@ checkNonStubaAvailability: async (productId, startDate, endDate) => {
     return { isFullyAvailable: true, allotments: [] }; // safe fallback
   }
 },
+
+  // New action to check availability before booking
+  checkAvailability: async (payload) => {
+    set({ isCheckingAvailability: true, error: null });
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/check-availability`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || 'Availability check failed');
+      }
+      
+      return data; // Should return { success: true, ... }
+    } catch (error) {
+      set({ error: error.message });
+      return { success: false, message: error.message };
+    } finally {
+      set({ isCheckingAvailability: false });
+    }
+  },
   // Suggestions for hotel/region search
   fetchSuggestedAccommodations: async (query) => {
     try {
