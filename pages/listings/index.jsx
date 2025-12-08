@@ -147,30 +147,51 @@ function ListingsPage() {
       const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
       const hasSelectedRatings = activeFilters.ratings && activeFilters.ratings.length > 0;
       const hasSelectedMealPlans = activeFilters.meal_plans && activeFilters.meal_plans.length > 0;
+      const hasSelectedPaymentTypes = activeFilters.payment_types && activeFilters.payment_types.length > 0;
+      const hasSelectedCancellation = activeFilters.cancellation_policies && activeFilters.cancellation_policies.length > 0;
+      const hasSelectedRoomAmenities = activeFilters.room_amenities && activeFilters.room_amenities.length > 0;
       const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
-      const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every((selectedAmenity) =>
-        hotelData.amenities?.includes(selectedAmenity)
-      );
-const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(
-        Math.floor(parseFloat(hotelData.star_rating))
-      );
+      // Create lookup maps for performance
+      const generalAmenitiesMap = new Map((accommodationFilters?.general_amenities || []).map(a => [a.id, a.label]));
+      const roomAmenitiesMap = new Map((accommodationFilters?.room_amenities || []).map(a => [a.id, a.name]));
+      const cancellationPolicyMap = new Map((accommodationFilters?.cancellation_policies || []).map(p => [p.id, p.name]));
 
-      const mealPlanMatch = !hasSelectedMealPlans || activeFilters.meal_plans.includes(
-        accommodation.room?.rate_plan?.meal?.title
-      );
+       const hotelAmenitiesSet = new Set(hotelData.amenities || []);
+
+      
+      const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(id => {
+        const amenityName = generalAmenitiesMap.get(id);
+        return amenityName && hotelAmenitiesSet.has(amenityName);
+      });
+
+      const roomAmenityMatch = !hasSelectedRoomAmenities || activeFilters.room_amenities.every(id => {
+        const amenityName = roomAmenitiesMap.get(id);
+        return amenityName && hotelAmenitiesSet.has(amenityName);
+      });
+
+      const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(Math.floor(parseFloat(hotelData.star_rating)));
+
+      const mealPlanMatch = !hasSelectedMealPlans || activeFilters.meal_plans.includes(accommodation.room?.rate_plan?.meal?.id);
+
+      const paymentTypeMatch = !hasSelectedPaymentTypes || activeFilters.payment_types.includes(accommodation.room?.rate_plan?.payment_type);
+      
+      const cancellationPolicyMatch = !hasSelectedCancellation || activeFilters.cancellation_policies.every(id => {
+        const policyName = cancellationPolicyMap.get(id)?.toLowerCase();
+        const isRefundable = accommodation.room?.rate_plan?.is_refundable;
+        return (policyName === 'no' && !isRefundable) || (policyName !== 'no' && isRefundable);
+      });
 
       const priceMatch = !hasPriceRange || (
         (accommodation.room?.base_price || accommodation.price || 0) >= activeFilters.priceRange.min &&
         (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
       );
 
-
-      return amenityMatch && ratingMatch && mealPlanMatch && priceMatch;
+      return amenityMatch && roomAmenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
     });
-  }, [applyAccommodationFilter]); 
+  }, [applyAccommodationFilter, accommodationFilters]); 
   useEffect(() => {
     const searched = urlSearchParams.get("searched");
     const type = urlSearchParams.get("type");
@@ -302,7 +323,7 @@ useEffect(() => {
       case "hotels":
         return (
           <AccommodationList
-            accommodations={accommodations} 
+            accommodations={filteredResults} 
             isLoading={accommodationLoading}
           />
         );

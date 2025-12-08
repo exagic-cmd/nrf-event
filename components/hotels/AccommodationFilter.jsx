@@ -166,13 +166,10 @@ useEffect(() => {
 
   const handleStartDateChange = (dates) => {
     const [start, end] = dates;
-    setStartDate(start);
-    setTempEndDate(end);
-    if (end) {
-      setEndDate(end);
-      setTempEndDate(null);
-    }
-  };
+     setStartDate(start);
+    setEndDate(end); 
+   };
+
 
   const handleEndDateChange = (date) => {
     setEndDate(date);
@@ -270,7 +267,7 @@ useEffect(() => {
       alert(error);
       return;
     }
-    if (onSearch) onSearch(payload);
+    // if (onSearch) onSearch(payload); // This is redundant as setSearchParamsAndSearch handles the search.
 
   } catch (err) {
     console.error("Search failed:", err);
