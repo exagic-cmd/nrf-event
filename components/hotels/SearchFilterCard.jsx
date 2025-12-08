@@ -50,6 +50,8 @@ export default function SearchFilterCard({
     tripType,
     setTripType,
     isLoading: transferLoading,
+    fetchTransfers,
+    setSearchParams,
   } = useTransferStore();
 
   const {
@@ -335,6 +337,21 @@ export default function SearchFilterCard({
     return;
   }
 
+  // Set search params in the store
+  setSearchParams({
+    pickup: selectedPickup,
+    dropoff: selectedDropoff,
+    tripType: tripType === "round-trip" ? "round-trip" : "one-way",
+  });
+
+  // Trigger the API call through the store
+  fetchTransfers({
+    pickup: selectedPickup,
+    dropoff: selectedDropoff,
+    tripType: tripType,
+  });
+
+  // Also call the parent callback if needed
   onFilterTransfer?.({
     category: 'transfer',         
     pickup: selectedPickup,
