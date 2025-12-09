@@ -6,6 +6,7 @@ import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import $helpers from "@/lib/helpers";
+import LoaderSvg from "@/components/common/LoaderSvg";
 
 import {
   Calendar, Home, Bed, Utensils, AlertCircle,
@@ -384,7 +385,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
     // bookingData.selectedRoom.price is already the total for ALL nights for 1 room
     const priceFor1Room = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (priceFor1Room * totalRoomsRequested).toFixed(2);
+    const totalPrice = (priceFor1Room).toFixed(2);
 
     const cartItem = {
       product_id: hotelId,
@@ -461,7 +462,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
 
     // bookingData.selectedRoom.price is already the total for ALL nights for 1 room
     const priceFor1Room = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (priceFor1Room * totalRoomsRequested).toFixed(2);
+    const totalPrice = (priceFor1Room).toFixed(2);
 
     const cartItem = {
       product_id: hotelId,
@@ -757,7 +758,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
           transition
         "
       >
-        {loadingButton === "continue" ? "Loading..." : "Continue Shopping"}
+        {loadingButton === "continue" ? (
+    <LoaderSvg />   
+  ) : (
+  "Continue Shopping")}
       </button>
 
       <button
@@ -772,7 +776,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
           transition
         "
       >
-        {loadingButton === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
+       {loadingButton === "checkout" ? (
+    <LoaderSvg />   
+  ) : (
+    "Proceed to Checkout"
+  )}
       </button>
     </div>
   )}

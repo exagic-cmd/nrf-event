@@ -56,7 +56,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     amenities,
   } = accommodation;
 
-  const lowestPrice = (room?.base_price)*(searchParams?.rooms?.length || 1)*(searchParams?.nights || 1)  || 0;
+  const lowestPrice = (room?.base_price)*(searchParams?.nights || 1)  || 0;
 
   const handleCardClick = async () => {
     setIsLoading(true);

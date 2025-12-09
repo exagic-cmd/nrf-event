@@ -35,7 +35,11 @@
 body {
   font-family: "Poppins", Arial, Helvetica, sans-serif;
 }
-
+.gm-style-iw-chr{
+      position: absolute;
+    right: -12px;
+    top: -9px;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
