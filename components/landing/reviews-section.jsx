@@ -14,7 +14,7 @@ export const ReviewsSection = () => {
         {/* LeftIntro Text */}
         <div className="md:col-span-1 space-y-3 text-center md:text-left">
           <p className="text-red-600 font-semibold tracking-wide">WHAT WE SERVE</p>
-          <h2 className=" text-xl md:text-2xl font-bold leading-snug text-gray-900">
+          <h2 className=" text-xl md:text-2xl font-bold pt-2 leading-snug text-gray-900">
             Top Values <br /> For You
           </h2>
           <p className="text-gray-500 text-sm pt-2">
