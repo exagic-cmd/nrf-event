@@ -117,7 +117,7 @@ const StubaRoomList = ({
                         {nights} night{nights > 1 ? "s" : ""}
                       </span>
                     </h3>
-                    {roomType.view && (
+                  {roomType.view && roomType.view !== "no_view" && (
                       <span className="text-sm font-medium px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 mt-2 inline-block">
                         {typeof roomType.view === 'string' ? roomType.view.replace('_', ' ') : roomType.view}
                       </span>

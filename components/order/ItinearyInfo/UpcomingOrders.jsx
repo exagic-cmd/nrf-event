@@ -87,7 +87,7 @@ const UpcomingOrders = ({ onViewDetails }) => {
             {/* Image */}
             <div className="relative flex-shrink-0 w-full md:h-40 md:w-44 h-40">
               <img
-                src={getItineraryImage(item) || "/placeholder.svg"}
+                src={getItineraryImage(item) || "public/placeholder.svg"}
                 alt={item.title || t("activity")}
                 className="w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-t-none"
               />

@@ -334,10 +334,10 @@ const confirmCancel = (id, reason) => {
             </div>
             <div>
               <p className="text-sm md:text-md font-semibold text-black">
-                {t("mealPlan", "Meal Plan")}
+                {t("mealPlan", "Bed Type")}
               </p>
               <p className="text-sm text-black">
-                {room.meal_plan} 
+                {room.meal_plan}
               </p>
             </div>
            </div>
@@ -548,15 +548,15 @@ const confirmCancel = (id, reason) => {
         </ul>
       </div>
     )}  
-      {(it?.category_id === 1 || it?.category_id === 3 ) && (
+      {/* {(it?.category_id === 1 || it?.category_id === 3 ) && (
   <TourRoute
   prod_id={it?.product_id}
   lang_id={2}
   colortext="#ffff"
   colorheading="#000000"
   noTour={true}
-/>
-)}
+/> 
+)} */}
 {it.arrival_map_image && (
   <div>
     <h3 className="text-lg font-semibold text-black mb-4">Arrival Map</h3>
