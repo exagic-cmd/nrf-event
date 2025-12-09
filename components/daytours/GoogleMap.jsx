@@ -25,6 +25,8 @@ const GoogleMap = ({
 
     const initMap = () => {
       try {
+          if (!mapRef.current) return;
+
         const map = new window.google.maps.Map(mapRef.current, {
           center: { lat: center.lat, lng: center.lng },
           zoom,
