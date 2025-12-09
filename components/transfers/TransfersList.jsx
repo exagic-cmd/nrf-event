@@ -6,11 +6,11 @@ import { useTransferStore } from "@/store/useTransferStore";
 import { getFullImageUrl } from "@/utils/imageService"
 const ITEMS_PER_PAGE = 8;
 
-function TransfersList() {
+function TransfersList({ searchPerformed }) {
   const { t } = useTranslation('transfer');
   const [sortBy, setSortBy] = useState("cheapest");
   const [currentPage, setCurrentPage] = useState(1);
-  const { searchResults, isLoading } = useTransferStore(); 
+  const { searchResults, isLoading } = useTransferStore();
 
   const carsData = useMemo(() => {
     return searchResults.map(item => {
@@ -51,9 +51,11 @@ function TransfersList() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl py-3 px-4 bg-white">
-        <p className="text-lg font-semibold">{t('results.showingTransfers')}</p>
-      </div>
+      {paginatedTransfers.length > 0 && (
+        <div className="rounded-xl py-3 px-4 bg-white">
+          <p className="text-lg font-semibold">{t('results.showingTransfers')}</p>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
@@ -81,7 +83,16 @@ function TransfersList() {
       ) : paginatedTransfers.length > 0 ? (
         paginatedTransfers.map((car) => <TransfersCard key={car.id} car={car} />)
       ) : (
-        <div className="text-center py-10 text-gray-500">{t('results.noTransfersFound')}</div>
+        <div className="text-center py-16 bg-white rounded-xl mx-auto shadow-md max-w-3xl ">
+          <h3 className="text-xl font-semibold text-gray-800">
+            {searchPerformed ? t('results.noTransfersFound') : "Please search for a transfer"}
+          </h3>
+          <p className="text-gray-500 mt-2">
+            {searchPerformed
+              ? "Please try different pick-up, drop-off, or dates."
+              : "Use the search filter above to find available transfers."}
+          </p>
+        </div>
       )}
 
       {!isLoading && totalPages > 1 && (

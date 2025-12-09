@@ -159,6 +159,7 @@ export default function AccommodationDetailPage() {
       images: (room.images || []).map(img => img.image),
       bedDetails: room.beds?.[0]?.bed_type_title,
       ratePlans: roomRatePlans,
+      amenities: room.amenities || [], // Add room-specific amenities
     };
   });
 
@@ -533,7 +534,7 @@ useEffect(() => {
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-2">
              <AccommodationRooms
-             amenities={accommodation?.hotel?.amenities }
+            // amenities={accommodation?.hotel?.amenities } // This was incorrect, room amenities are now part of the room object.
             isNonStuba={isNonStuba}
             allRooms={accommodation.normalizedRoomData}
             normalizedRoomData={accommodation.normalizedRoomData}
