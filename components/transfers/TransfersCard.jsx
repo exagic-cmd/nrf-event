@@ -171,7 +171,6 @@ function TransfersCard({ car, category = "transfer" }) {
         {isLoading ? (
           <span className="flex items-center gap-2">
             <SvgLoader className="w-4 h-4" />
-            {t("common.loading")}
           </span>
         ) : (
           "Book Now"
