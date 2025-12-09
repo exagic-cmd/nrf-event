@@ -4,7 +4,9 @@ import { useTranslation } from "next-i18next";
 import useUserStore from "@/store/useAuthStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore } from "@/store/useCartStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import $helpers from "@/lib/helpers";
+
 import {
   Calendar, Home, Bed, Utensils, AlertCircle,
   CheckCircle, XCircle, DollarSign, Info, Loader2
@@ -190,6 +192,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
   const { t } = useTranslation("accommodation");
   const { setJustAdded } = useDrawerStore();
   const user = useUserStore((state) => state.user);
+  const { checkAvailability } = useAccommodationsStore();
 
   const rooms = bookingData?.searchParams?.rooms || [];
   const nights = bookingData.nights || 1;
@@ -330,23 +333,25 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     setLoadingButton("addToCart");
     setIsSubmitting(true);
 
-    if (isNonStuba) {
-      // NON-STUBA: SKIP API, DIRECT ADD
-      addToCartDirectly();
-    } else {
-      // STUBA: VALIDATE + MODAL
-      const response = await callPreBookingAPI();
-      if (!response) {
-        setLoadingButton(null);
-        setIsSubmitting(false);
-        return;
-      }
-      setBookingResponse(response);
-      setModalOpen(true);
+    const availabilityPayload = {
+      start_date: bookingData.searchParams.start_date,
+      end_date: bookingData.searchParams.end_date,
+      rooms: bookingData.searchParams.rooms,
+      rate_plan_id: bookingData.selectedRoom.id,
+    };
+
+    const availabilityResult = await checkAvailability(availabilityPayload);
+
+    if (!availabilityResult.success) {
+      alert(availabilityResult.message || "This room is no longer available.");
+      setIsSubmitting(false);
+      setLoadingButton(null);
+      return;
     }
 
-    setLoadingButton(null);
-    setIsSubmitting(false);
+      addToCartDirectly();setShowCartOptions(true);
+    setLoadingButton(null); 
+    setIsSubmitting(false); 
   };
 
   // === DIRECT ADD TO CART (NON-STUBA) ===

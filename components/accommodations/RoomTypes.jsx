@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { getFullImageUrl } from "@/utils/imageService";
 import { formatPrice } from "@/utils/priceUtils";
+import LoaderSvg from "@/components/common/LoaderSvg";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 // === STUBA VERSION: List of Rooms (FINAL WORKING VERSION) ===
@@ -20,6 +21,7 @@ const StubaRoomList = ({
   amenities
 }) => {
   const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
+  const [loadingKey, setLoadingKey] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
   const isMediumOrUp = useMediaQuery("(min-width: 768px)");
 
@@ -40,22 +42,27 @@ const StubaRoomList = ({
   }
 
   const handleRoomSelect = (ratePlan, uniqueKey) => {
-    const result = onRoomSelect ? onRoomSelect(ratePlan) : { ok: true };
-    const normalized = (result === true || result === undefined)
-      ? { ok: true }
-      : (typeof result === 'boolean' ? { ok: result } : result);
+    setLoadingKey(uniqueKey); 
+     setTimeout(() => {
+      const result = onRoomSelect ? onRoomSelect(ratePlan) : { ok: true };
+      const normalized = (result === true || result === undefined)
+        ? { ok: true }
+        : (typeof result === 'boolean' ? { ok: result } : result);
 
-    if (!normalized.ok) {
-      try {
-        if (typeof onProceedBooking === 'function') {
-          onProceedBooking(ratePlan);
+      if (!normalized.ok) {
+        try {
+          if (typeof onProceedBooking === 'function') {
+            onProceedBooking(ratePlan);
+          }
+          setLoadingKey(null); 
+        } catch (err) {
+          console.error('onProceedBooking threw:', err);
+          setLoadingKey(null);
         }
-      } catch (err) {
-        console.error('onProceedBooking threw:', err);
+        return;
       }
-      return;
-    }
-    setInternalSelectedRoomKey(uniqueKey);
+      setInternalSelectedRoomKey(uniqueKey);
+    }, 200);
   };
 
   const getCancellationDisplay = (policy) => {
@@ -160,6 +167,7 @@ const StubaRoomList = ({
                     {roomType.ratePlans.map((ratePlan, index) => {
                       const uniqueKey = `${ratePlan.id}-${index}`;
                       const isSelected = internalSelectedRoomKey === uniqueKey;
+                      const isLoading = loadingKey === uniqueKey;
                       const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                       const mealText = getMealDisplay(ratePlan.mealType || ratePlan.meal?.title);
 
@@ -169,9 +177,8 @@ const StubaRoomList = ({
                       const totalPriceFor1Room = Number(ratePlan.price || 0);
                       const originalPriceFor1Room = Number(ratePlan.originalPrice || totalPriceFor1Room);
                       const hasDiscount = ratePlan.hasDiscount === true;
-
-                      const finalPayable = totalPriceFor1Room * totalRoomsRequested;
-                      const finalOriginal = originalPriceFor1Room * totalRoomsRequested;
+                      const finalPayable = Number(ratePlan?.pricing?.total_promo);
+                      const finalOriginal = Number(ratePlan?.pricing?.total);
                       const savings = finalOriginal - finalPayable;
 
                       const displayPayable = `${currency} ${formatPrice(finalPayable)}`;
@@ -210,13 +217,16 @@ const StubaRoomList = ({
                           <div className="p-4 text-right">
                             <button
                               onClick={() => handleRoomSelect(ratePlan, uniqueKey)}
-                              className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${
+                              disabled={isLoading}
+                              className={`px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center min-w-[110px] h-[40px] ${
                                 isSelected
                                   ? "bg-red-500 text-white shadow-md"
                                   : "bg-[#D3202D] text-white hover:bg-red-700"
-                              }`}
+                              } disabled:bg-gray-400 disabled:cursor-wait`}
                             >
-                              {isSelected ? (
+                              {isLoading ? (
+                                <LoaderSvg className="h-5 w-5" />
+                              ) : isSelected ? (
                                 <>Selected</>
                               ) : (
                                 "Choose"
@@ -233,6 +243,7 @@ const StubaRoomList = ({
                     {roomType.ratePlans.map((ratePlan, index) => {
                       const uniqueKey = `${ratePlan.id}-${index}`;
                       const isSelected = internalSelectedRoomKey === uniqueKey;
+                      const isLoading = loadingKey === uniqueKey;
                       const cancellation = getCancellationDisplay(ratePlan.cancellationPolicy);
                       const mealText = getMealDisplay(ratePlan.mealType || ratePlan.meal?.title);
 
@@ -292,13 +303,16 @@ const StubaRoomList = ({
                             <div className="pt-4 mt-auto">
                               <button
                                 onClick={() => handleRoomSelect(ratePlan, uniqueKey)}
-                                className={`w-full px-6 py-3 rounded-lg font-bold text-sm transition-all ${
+                                disabled={isLoading}
+                                className={`w-full px-6 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center h-[48px] ${
                                   isSelected
                                     ? "bg-red-500 text-white shadow-md"
                                     : "bg-[#D3202D] text-white hover:bg-red-700"
-                                }`}
+                                } disabled:bg-gray-400 disabled:cursor-wait`}
                               >
-                                {isSelected ? (
+                                {isLoading ? (
+                                  <LoaderSvg className="h-6 w-6" />
+                                ) : isSelected ? (
                                   <>Selected</>
                                 ) : (
                                   "Choose"

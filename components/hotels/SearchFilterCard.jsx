@@ -35,6 +35,7 @@ export default function SearchFilterCard({
   initialSearchQuery,
   onUpdateSearchQuery,
   initialAccommodationText,
+  isHomepage = false,
   rooms, onUpdateRooms, stars, onUpdateStars, initialCheckinDate, initialCheckoutDate, onDatesUpdated,
 }) {
   const {
@@ -49,6 +50,8 @@ export default function SearchFilterCard({
     tripType,
     setTripType,
     isLoading: transferLoading,
+    fetchTransfers,
+    setSearchParams,
   } = useTransferStore();
 
   const {
@@ -95,7 +98,7 @@ export default function SearchFilterCard({
   }, [cartItems, updatePrefillDataFromCart]);
 
   useEffect(() => {
-    if (filterActiveTab === 2) {
+    if (filterActiveTab === 2 && !isHomepage) {
       if (transferParams.pickup) setSelectedPickup(transferParams.pickup);
       if (transferParams.dropoff) setSelectedDropoff(transferParams.dropoff);
       if (transferParams.tripType) setTripType(transferParams.tripType);
@@ -329,18 +332,33 @@ export default function SearchFilterCard({
   };
 
   const handleTransferSearch = () => {
-    if (!selectedPickup || !selectedDropoff) {
-      alert("Please select both pick-up and drop-off locations");
-      return;
-    }
+  if (!selectedPickup || !selectedDropoff) {
+    alert("Please select both pick-up and drop-off locations");
+    return;
+  }
 
-    onFilterTransfer?.({
-      pickup: selectedPickup,
-      dropoff: selectedDropoff,
-      isTwoWay: tripType === "round-trip",
-      category: 'transfer'
-    });
-  };
+  // Set search params in the store
+  setSearchParams({
+    pickup: selectedPickup,
+    dropoff: selectedDropoff,
+    tripType: tripType === "round-trip" ? "round-trip" : "one-way",
+  });
+
+  // Trigger the API call through the store
+  fetchTransfers({
+    pickup: selectedPickup,
+    dropoff: selectedDropoff,
+    tripType: tripType,
+  });
+
+  // Also call the parent callback if needed
+  onFilterTransfer?.({
+    category: 'transfer',         
+    pickup: selectedPickup,
+    dropoff: selectedDropoff,
+    isTwoWay: tripType === "round-trip",
+  });
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();
