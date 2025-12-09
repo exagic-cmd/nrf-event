@@ -125,7 +125,7 @@ export function TransferBenefitsSection() {
                   className="flex-shrink-0 w-full md:w-96 cursor-pointer snap-start group"
                 >
                   {/* Card Container */}
-                  <div className=" rounded-2xl h-[426px] md:h-[446px] lg:w-[385px] ">
+                  <div className=" rounded-2xl h-[426px] md:h-[446px] lg:w-[380px] ">
                     
                     {/* Image Container */}
                     <div className="relative h-56 md:h-64 overflow-hidden">
