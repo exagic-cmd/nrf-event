@@ -18,7 +18,6 @@ const StubaRoomList = ({
   nights = 1,
   totalRoomsRequested = 1,
   selectedRoom = null,
-  amenities
 }) => {
   const [internalSelectedRoomKey, setInternalSelectedRoomKey] = useState(null);
   const [loadingKey, setLoadingKey] = useState(null);
@@ -129,7 +128,7 @@ const StubaRoomList = ({
                 {/* Amenities */}
                 <div className="mt-4">
                   <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-                    {amenities?.map((amenity) => (
+                    {roomType.amenities?.map((amenity) => (
                       <div
                         key={amenity.id || amenity.name}
                         title={amenity.name}
