@@ -212,6 +212,9 @@ function ListingsPage() {
       }
       setSearchParams(params);
     } else {
+    if (window.innerWidth < 1024) { 
+        setIsSearchFilterVisible(true);
+      }
       setShowSearchModal(true);
     }
   }, [urlSearchParams]);
@@ -222,6 +225,7 @@ function ListingsPage() {
       setSelectedPickup(searchTransferParams.pickup);
       setSelectedDropoff(searchTransferParams.dropoff);
       setTripType(searchTransferParams.tripType);
+      setTransferSearchParams(searchTransferParams); // <-- This is the fix
     }
   }, [urlSearchParams, searchTransferParams]);
 
@@ -274,10 +278,12 @@ function ListingsPage() {
   }, [searchCategory, accommodationPayload, fetchAccommodations]);
 
   useEffect(() => {
-    if (searchCategory === "transfer" && transferSearchParams && Object.keys(transferSearchParams).length > 0) {
+    // Only trigger transfer search if a search has been performed AND both pickup and dropoff are set.
+    if (hasSearched && searchCategory === "transfer" && transferSearchParams?.pickup && transferSearchParams?.dropoff) {
       fetchTransfers(transferSearchParams);
     }
-  }, [searchCategory, transferSearchParams, fetchTransfers]);
+  }, [searchCategory, transferSearchParams, fetchTransfers, hasSearched]);
+
 useEffect(() => {
     const daytourParams = { country: daytourSelectedCountry, city: daytourSelectedCity, search: daytourSearchQuery };
     if ((searchCategory === "daytour" || searchCategory === "day-tours") && (daytourParams.city || daytourParams.search)) {
@@ -312,11 +318,14 @@ useEffect(() => {
     }
     // We listen to changes in hasSearched and the main result lists
   }, [hasSearched, searchResults, filteredResults]);
-
+ const hasValidTransferSearch = hasSearched && searchTransferParams?.pickup && searchTransferParams?.dropoff;
   const renderListComponent = () => {
+   
+
     switch (searchCategory) { 
       case "transfer":
-        return <TransfersList searchParams={searchParams} />;
+        // Pass searchPerformed to show the correct placeholder
+        return <TransfersList searchParams={searchParams} searchPerformed={hasValidTransferSearch} />;
       case "daytour":
       case "day-tours":
         return <DaytoursList searchParams={searchParams} />;
@@ -326,6 +335,7 @@ useEffect(() => {
           <AccommodationList
             accommodations={filteredResults} 
             isLoading={accommodationLoading}
+            searchPerformed={hasSearched}
           />
         );
       default:
@@ -335,6 +345,8 @@ useEffect(() => {
 
   // Placeholders
   const renderPlaceholder = () => {
+    const hasValidTransferSearch = hasSearched && searchTransferParams?.pickup && searchTransferParams?.dropoff;
+
     switch (searchCategory) {
       case "daytour":
       case "day-tours":
@@ -352,12 +364,22 @@ useEffect(() => {
             <p className="text-gray-400">Enter your destination to find the perfect stay</p>
           </div>
         );
+      case "transfer":
+        if (hasValidTransferSearch) return renderListComponent(); // A search was attempted but had no results
+        // fallthrough for initial placeholder
       default:
-        return <TransferBookingPlaceholder />;
+        return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold text-gray-800">
+            { t('results.noTransfersFound') || "Please search for a transfer"}
+          </h3>
+          <p className="text-gray-500 mt-2">
+ Use the search filter above to find available transfers.
+          </p>
+        </div>);
     }
   };
 
-  const showFaqs = hasSearched && searchCategory === "transfer";
+  const showFaqs = hasSearched && searchCategory === "transfer" && searchResults.length > 0;
   const isAccommodationCategory = searchCategory === "accommodation" || searchCategory === "hotels";
 
   return (
@@ -407,7 +429,7 @@ useEffect(() => {
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-3 px-6">
-          {searchCategory === "transfer" && (
+          {searchCategory === "transfer" && hasValidTransferSearch && (
             <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
               <TransferSearchFilter
                 onSearch={() => {}}
@@ -478,7 +500,7 @@ useEffect(() => {
                 accommodations={filteredResults}
               />
             )}
-            {searchCategory === "transfer" && showFaqs && <Faqs />}
+            {searchCategory === "transfer" && hasValidTransferSearch &&  showFaqs && <Faqs />}
           </div>
         </div>
 

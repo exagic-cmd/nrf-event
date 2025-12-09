@@ -159,6 +159,7 @@ export default function AccommodationDetailPage() {
       images: (room.images || []).map(img => img.image),
       bedDetails: room.beds?.[0]?.bed_type_title,
       ratePlans: roomRatePlans,
+      amenities: room.amenities || [], // Add room-specific amenities
     };
   });
 
@@ -383,16 +384,28 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
       // ——————————————————— STUBA ———————————————————
       console.log("Stuba flow");
 
-      let effectiveSearchParams = searchParams;
+      const sessionPayloadKey = `accommodation_payload_${accommodationId}`;
+      let effectiveSearchParams = { ...searchParams };
 
       // If searchParams are missing, create a default and update the store
       if (!searchParams || !searchParams.start_date || !searchParams.end_date) {
-        effectiveSearchParams = {
-          start_date: new Date().toISOString().split("T")[0],
-          end_date: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0], // Default to 2 nights
-          rooms: [{ adult: 2, children: [] }],
-          nationality: "SG",
-        };
+        const savedPayload = sessionStorage.getItem(sessionPayloadKey);
+        if (savedPayload) {
+          console.log("Found saved payload in sessionStorage.");
+          const parsedPayload = JSON.parse(savedPayload);
+          effectiveSearchParams = {
+            ...parsedPayload,
+            nationality: "SG", // Ensure nationality is present
+          };
+        } else {
+          console.log("No search params or saved payload. Using default.");
+          effectiveSearchParams = {
+            start_date: new Date().toISOString().split("T")[0],
+            end_date: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0], // Default to 2 nights
+            rooms: [{ adult: 2, children: [] }],
+            nationality: "SG",
+          };
+        }
         useAccommodationsStore.getState().setSearchParams(effectiveSearchParams);
       }
 
@@ -401,6 +414,9 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
         end_date: effectiveSearchParams.end_date,
         rooms: effectiveSearchParams.rooms,
       };
+
+      // Save the payload to sessionStorage for reload persistence
+      sessionStorage.setItem(sessionPayloadKey, JSON.stringify(payload));
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/${accommodationId}/detail`,
@@ -533,7 +549,7 @@ useEffect(() => {
 
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-2">
              <AccommodationRooms
-             amenities={accommodation?.hotel?.amenities }
+            // amenities={accommodation?.hotel?.amenities } // This was incorrect, room amenities are now part of the room object.
             isNonStuba={isNonStuba}
             allRooms={accommodation.normalizedRoomData}
             normalizedRoomData={accommodation.normalizedRoomData}

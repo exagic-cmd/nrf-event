@@ -158,7 +158,7 @@
   "createdAt": "Created At",
   "goback": "Go Back",
   "verifying": "Verifying...",
-  "loginSuccess": "Login successful! Redirecting...",
+  "loginSuccess": "Verified successful! Redirecting...",
   "invalidOrExpired": "Invalid or expired code. Redirecting to login..."
 
 
