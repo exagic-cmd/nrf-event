@@ -1,5 +1,13 @@
 import React, { useEffect, useRef } from "react";
 
+const getFullImageUrl = (relativePath) => {
+  if (!relativePath) return "/images/placeholder-hotel.jpg"; // Use local placeholder
+  if (relativePath.startsWith("http")) return relativePath;
+
+  const base = (window.$helpers?.getEnv("CLOUDINARY_BASE_URL") || "").replace(/\/$/, "");
+  return `${base}/${relativePath.replace(/^\//, "")}`;
+};
+
 const AccommodationMapSection = ({ hotelData }) => {
   const mapRef = useRef(null);
 
@@ -7,6 +15,7 @@ const AccommodationMapSection = ({ hotelData }) => {
   const latitude = hotelData?.latitude ? parseFloat(hotelData.latitude) : null;
   const longitude = hotelData?.longitude ? parseFloat(hotelData.longitude) : null;
   const hotelName = hotelData?.title || hotelData?.name || "Accommodation";
+  const imageUrl = getFullImageUrl(hotelData?.image);
 
   useEffect(() => {
     // Don't run on server or without valid coordinates
@@ -21,10 +30,33 @@ const AccommodationMapSection = ({ hotelData }) => {
           gestureHandling: "auto",
         });
 
-        new window.google.maps.Marker({
+        const marker = new window.google.maps.Marker({
           position: { lat: latitude, lng: longitude },
           map,
           title: hotelName,
+        });
+
+        const infoWindow = new window.google.maps.InfoWindow();
+
+        const contentString = `
+         
+            <img
+              src="${imageUrl}"
+              alt="${hotelName}"
+              style="
+                width: 160px;
+                padding: 4px
+                height: 100px;
+                object-fit: cover;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              "
+            />
+            
+        `;
+        marker.addListener("click", () => {
+          infoWindow.setContent(contentString);
+          infoWindow.open(map, marker);
         });
       } catch (err) {
         console.error("AccommodationMapSection: failed to initialize map", err);
@@ -57,7 +89,7 @@ const AccommodationMapSection = ({ hotelData }) => {
     script.setAttribute("data-google-maps", "true");
     script.onload = initMap;
     document.head.appendChild(script);
-  }, [latitude, longitude, hotelName]);
+  }, [latitude, longitude, hotelName, imageUrl]);
 
   if (!latitude || !longitude) {
     return null; // Don't render anything if no coordinates

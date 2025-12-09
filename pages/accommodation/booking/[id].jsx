@@ -87,7 +87,7 @@ export default function AccommodationBookingPage() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen text-white">
-          Redirecting...
+           <LoaderSvg />
         </div>
       </Layout>
     );
@@ -107,7 +107,7 @@ export default function AccommodationBookingPage() {
 
   // selectedRoom.price is already total for ALL nights for 1 room
   // Multiply by number of rooms to get final total
-  const totalPrice = (selectedRoom.price || 0) * totalRoomsRequested;
+  const totalPrice = (selectedRoom.price || 0);
 
   return (
     <Layout>

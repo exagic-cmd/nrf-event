@@ -42,6 +42,7 @@ function ListingsPage() {
   const [cardCheckin, setCardCheckin] = useState(null);
   const [cardCheckout, setCardCheckout] = useState(null);
   const [cardSearchQuery, setCardSearchQuery] = useState(""); // For daytours
+  const [accommodationSortBy, setAccommodationSortBy] = useState("default"); // New state for accommodation sorting
   const [cardAccommodationText, setCardAccommodationText] = useState(""); // For accommodations
   const [filterActiveTab, setFilterActiveTab] = useState(() => {
     const t = urlSearchParams.get("type");
@@ -135,7 +136,6 @@ function ListingsPage() {
     applyAccommodationFilter,
     setSearchParams: setAccommodationSearchParams,
   } = useAccommodationsStore();
-  
   const {
     setSelectedPickup, setSelectedDropoff, setTripType,
     searchParams: transferSearchParams, setSearchParams: setTransferSearchParams,
@@ -263,19 +263,15 @@ function ListingsPage() {
       accommodationPayload
     ) {
       fetchAccommodations(accommodationPayload);
-      applyAccommodationFilter(() => true); 
-
-     
+      // Filters will be applied by handleFilterChange when activeFilters state changes in sidebar
       if (accommodationPayload.ids && accommodationPayload.ids.length > 0) {
         const targetHotelId = accommodationPayload.ids[0]; 
         applyAccommodationFilter((accommodation) => {
           return accommodation.id === targetHotelId;
         });
-      } else {
-        applyAccommodationFilter(() => true); 
       }
     }
-  }, [searchCategory, accommodationPayload, fetchAccommodations]);
+  }, [searchCategory, accommodationPayload, fetchAccommodations, applyAccommodationFilter]);
 
   useEffect(() => {
     // Only trigger transfer search if a search has been performed AND both pickup and dropoff are set.
@@ -336,6 +332,8 @@ useEffect(() => {
             accommodations={filteredResults} 
             isLoading={accommodationLoading}
             searchPerformed={hasSearched}
+            sortBy={accommodationSortBy}
+            setSortBy={setAccommodationSortBy}
           />
         );
       default:
@@ -368,14 +366,14 @@ useEffect(() => {
         if (hasValidTransferSearch) return renderListComponent(); // A search was attempted but had no results
         // fallthrough for initial placeholder
       default:
-        return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
-          <h3 className="text-xl font-semibold text-gray-800">
-            { t('results.noTransfersFound') || "Please search for a transfer"}
-          </h3>
-          <p className="text-gray-500 mt-2">
- Use the search filter above to find available transfers.
-          </p>
-        </div>);
+//         return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
+//           {/* <h3 className="text-xl font-semibold text-gray-800">
+//             { t('results.noTransfersFound') || "Please search for a transfer"}
+//           </h3> */}
+//           <p className="text-gray-500 mt-2">
+//  Use the search filter above to find available transfers.
+//           </p>
+//         </div>);
     }
   };
 
@@ -456,6 +454,8 @@ useEffect(() => {
                 <AccommodationFilterSidebar
                   filters={accommodationFilters}
                   onFilterChange={handleFilterChange}
+                  sortBy={accommodationSortBy}
+                  onSortChange={setAccommodationSortBy}
                 />
               )}
             </div>
@@ -517,6 +517,8 @@ useEffect(() => {
               <AccommodationFilterSidebar
                 filters={accommodationFilters}
                 onFilterChange={handleFilterChange}
+                sortBy={accommodationSortBy}
+                onSortChange={setAccommodationSortBy}
               />
             </div>
             <div className="sticky bottom-0 bg-white p-4 border-t shadow-lg">

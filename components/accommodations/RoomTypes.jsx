@@ -1,8 +1,8 @@
 // components/accommodations/RoomTypes.jsx
 import { useState, useEffect, useMemo } from "react";
-import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // Import Info icon
 import {
-  Check, X, Shield, Bed, BathIcon, CameraIcon, Wifi, Tv
+  Check, X, Shield, Bed, BathIcon, CameraIcon, Wifi, Tv, Info
 } from "lucide-react";
 import { getFullImageUrl } from "@/utils/imageService";
 import { formatPrice } from "@/utils/priceUtils";
@@ -117,7 +117,7 @@ const StubaRoomList = ({
                         {nights} night{nights > 1 ? "s" : ""}
                       </span>
                     </h3>
-                    {roomType.view && (
+                  {roomType.view && roomType.view !== "no_view" && (
                       <span className="text-sm font-medium px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 mt-2 inline-block">
                         {typeof roomType.view === 'string' ? roomType.view.replace('_', ' ') : roomType.view}
                       </span>
@@ -194,8 +194,21 @@ const StubaRoomList = ({
                             <div className="font-medium text-black">{ratePlan.name || ratePlan.mealType}</div>
                             <div className="text-sm text-gray-600 capitalize">{ratePlan.smokingType || "Non-Smoking"}</div>
                           </div>
-                          <div className="p-4 border-r border-gray-200 text-sm text-gray-800">{mealText}</div>
-                          <div className="p-4 border-r border-gray-200 text-sm text-gray-800">{cancellation.staticDate}</div>
+                          <div className="p-4 border-r border-gray-200 text-sm text-gray-800">
+                            {mealText}
+                          </div>
+                          <div className="p-4 border-r justify-between border-gray-200 text-sm text-gray-800 relative group flex items-center gap-1">
+                            <span className="cursor-pointer">
+                              {cancellation.staticDate}
+                            </span>
+                            <Info size={14} className="text-gray-400 cursor-pointer" />
+                            {ratePlan.rawPricing?.cancellation_policy?.description && (
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                                {ratePlan.rawPricing.cancellation_policy.description}
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-800"></div>
+                              </div>
+                            )}
+                          </div>
                           <div className="p-4 border-r border-gray-200 text-right">
                             <div className="flex items-center justify-end gap-2 flex-wrap">
                               {hasDiscount && (
@@ -213,7 +226,7 @@ const StubaRoomList = ({
                               </div>
                             )} */}
                           </div>
-                          <div className="p-4 text-right">
+                          <div className="p-4 text-right justify-items-end">
                             <button
                               onClick={() => handleRoomSelect(ratePlan, uniqueKey)}
                               disabled={isLoading}
@@ -277,7 +290,16 @@ const StubaRoomList = ({
                               </div>
                               <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
                                 <span className="font-medium text-gray-800">Cancellation</span>
-                                <span>{cancellation.staticDate}</span>
+                                <span className="relative group flex items-center gap-1">
+                                  <span className="cursor-pointer">{cancellation.staticDate}</span>
+                                  <Info size={14} className="text-gray-400 cursor-pointer" />
+                                  {ratePlan.rawPricing?.cancellation_policy?.description && (
+                                    <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                                      {ratePlan.rawPricing.cancellation_policy.description}
+                                      <div className="absolute top-full right-3 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-800"></div>
+                                    </div>
+                                  )}
+                                </span>
                               </div>
                               <div className="pt-2">
                                 <div className="text-right">

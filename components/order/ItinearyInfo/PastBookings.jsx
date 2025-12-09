@@ -76,7 +76,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
     if (firstImage?.image) {
       return getFullImageUrl(firstImage.image)
     }
-    return "/placeholder.svg"
+    return "public/placeholder.svg"
   }
 
   return (
