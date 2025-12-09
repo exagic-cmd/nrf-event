@@ -49,6 +49,25 @@ export const ReviewsSection = () => {
           </p>
         </div>
       </div>
+      
+                <div className="w-full my-8 px-2 lg:px-6 ">
+          
+                  <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="hidden lg:block w-full">
+                    <img
+                      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1765190391/External%20Links/TourEast_Banner_1080x350.png"
+                      alt="TourEast Banner Large"
+                      className="w-full h-auto rounded-lg shadow-md"
+                    />
+                  </a>
+                  {/* Small Banner */}
+                  <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="lg:hidden w-full">
+                    <img
+                      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1765190391/External%20Links/TourEast_Banner_350_x_350_px.png"
+                      alt="TourEast Banner Small"
+                      className="w-full h-auto rounded-lg shadow-md"
+                    />
+                  </a>
+                </div>
     </section>
   );
 };

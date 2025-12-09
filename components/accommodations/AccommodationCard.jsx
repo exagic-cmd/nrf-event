@@ -67,18 +67,16 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       );
 
       if (alreadyExists) {
-      setShowModal(true);
+        setShowModal(true);
+        setIsLoading(false);
       } else {
-      // Navigate to accommodation details page
-      localizedPush({
-        pathname: `/accommodation/detail/${id}`,
-        // No link_type_id in the new API, so we remove it
+        localizedPush({
+          pathname: `/accommodation/detail/${id}`,
         });
       }
     } catch (err) {
       console.error("Booking failed", err);
-    } finally {
-      setTimeout(() => setIsLoading(false), 400);
+      setIsLoading(false);
     }
   };
 

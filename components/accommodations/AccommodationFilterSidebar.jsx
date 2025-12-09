@@ -10,9 +10,9 @@ const FilterSection = ({ title, children, defaultOpen = true, scrollable = false
   const childArray = Children.toArray(children);
   const initialItemCount = 5;
   // Use the explicit prop to decide if "Load More" is needed
-  const hasMore = hasLoadMore && childArray.length > initialItemCount;
+  const canLoadMore = hasLoadMore && childArray.length > initialItemCount;
 
-  const itemsToShow = hasMore && !showAll ? childArray.slice(0, initialItemCount) : childArray;
+  const itemsToShow = canLoadMore && !showAll ? childArray.slice(0, initialItemCount) : childArray;
   const containerClasses = scrollable ? "max-h-48 overflow-y-auto pr-2 scrollbar-thin" : "space-y-3";
   return (
     <div className="border-b border-gray-200 py-4">
@@ -26,12 +26,12 @@ const FilterSection = ({ title, children, defaultOpen = true, scrollable = false
       {isOpen && (
         <div className={`mt-4 ${containerClasses}`}>
           {itemsToShow}
-          {hasMore && !showAll && !scrollable && (
+          {canLoadMore && !showAll && !scrollable && (
             <button onClick={() => setShowAll(true)} className="text-sm font-medium text-[#D3202D] hover:underline pt-2">
               Load More
             </button>
           )}
-          {hasMore && showAll && !scrollable && (
+          {canLoadMore && showAll && !scrollable && (
             <button onClick={() => setShowAll(false)} className="text-sm font-medium text-[#D3202D] hover:underline pt-2">
               Show Less
             </button>
@@ -51,7 +51,8 @@ const Checkbox = ({ label, count, checked, onChange }) => (
       className="h-4 w-4 rounded border-gray-300 text-[#D3202D] focus:ring-[#D3202D]"
     />
     <span className="text-sm text-gray-700 flex-grow">{label}</span>
-    <span className="text-xs text-gray-500">{count}</span>
+    {count > 0 && <span className="text-xs text-gray-500">{count}</span>}
+    {/* {count > 0 && <span className="text-xs text-gray-500">{count}</span>} */}
   </label>
 );
 
@@ -89,11 +90,64 @@ const StarRatingFilter = ({ ratings, activeRatings, onRatingChange }) => (
   </div>
 );
 
+const FILTER_CONFIG = {
+  rating: {
+    title: "Star Rating",
+    Component: StarRatingFilter,
+    getProps: (items, activeFilters, handler) => ({
+      ratings: items,
+      activeRatings: activeFilters.ratings,
+      onRatingChange: (value) => handler('ratings', value),
+    }),
+  },
+  general_amenities: {
+    title: "General Amenities",
+    defaultOpen: false,
+    handlerKey: 'amenities',
+    itemKey: 'id',
+    itemLabel: 'label',
+  },
+  room_amenities: {
+    title: "Room Amenities",
+    defaultOpen: false,
+    handlerKey: 'room_amenities',
+    itemKey: 'id',
+    itemLabel: 'name',
+  },
+  meal_plans: {
+    title: "Meal Plan",
+    handlerKey: 'meal_plans',
+    itemKey: 'id',
+    itemLabel: 'title',
+  },
+  payment_types: {
+    title: "Payment Type",
+    handlerKey: 'payment_types',
+    itemKey: 'value',
+    itemLabel: 'value',
+  },
+  cancellation_policies: {
+    title: "Cancellation Policy",
+    handlerKey: 'cancellation_policies',
+    itemKey: 'id',
+    itemLabel: 'name',
+  },
+  // Default config for any other filter type
+  default: {
+    handlerKey: (key) => key,
+    itemKey: 'id',
+    itemLabel: (item) => item.title || item.name || item.value,
+  },
+};
+
 export default function AccommodationFilterSidebar({ filters, onFilterChange }) {
   const [activeFilters, setActiveFilters] = useState({
     ratings: [],
     amenities: [],
-    meal_plans: [],
+    room_amenities: [],
+    meal_plans: [], // by code
+    payment_types: [], // by value
+    cancellation_policies: [], // by id
     priceRange: null,
   });
 
@@ -101,7 +155,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
 
   // compute min/max price from accommodations list
   const priceBounds = useMemo(() => {
-    if (!accommodations || accommodations.length === 0) return { min: 0, max: 0 };
+    if (!accommodations || accommodations.length === 0) return { min: 0, max: 1000 };
     let min = Infinity;
     let max = -Infinity;
     accommodations.forEach((acc) => {
@@ -110,8 +164,8 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
       if (p < min) min = p;
       if (p > max) max = p;
     });
-    if (min === Infinity) min = 0;
-    if (max === -Infinity) max = 0;
+    if (min === Infinity) min = 0; // fallback
+    if (max === -Infinity || max === 0) max = 1000; // fallback
     return { min, max };
   }, [accommodations]);
 
@@ -127,60 +181,36 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     onFilterChange(activeFilters);
   }, [activeFilters, onFilterChange]);
 
-  const {
-    rating,
-    general_amenities,
-    room_amenities,
-    meal_plans,
-    payment_types,
-    cancellation_policies,
-  } = filters || {};
-
-  const handleAmenityChange = (amenityId) => {
+  
+  const handleFilterArrayChange = (filterKey, value) => {
     setActiveFilters((prev) => {
-      const newAmenities = prev.amenities.includes(amenityId)
-        ? prev.amenities.filter((id) => id !== amenityId)
-        : [...prev.amenities, amenityId];
-      return { ...prev, amenities: newAmenities };
+      const currentValues = prev[filterKey] || [];
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter((v) => v !== value)
+        : [...currentValues, value];
+      return { ...prev, [filterKey]: newValues };
     });
   };
 
-  const handleRatingChange = (ratingValue) => {
-    setActiveFilters((prev) => {
-      const newRatings = prev.ratings.includes(ratingValue)
-        ? prev.ratings.filter((r) => r !== ratingValue)
-        : [...prev.ratings, ratingValue];
-      return { ...prev, ratings: newRatings };
-    });
-  };
-
-  const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], meal_plans: [], priceRange: null });
+  const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], room_amenities: [], meal_plans: [], payment_types: [], cancellation_policies: [], priceRange: null });
 
   const applyPriceRange = () => {
-    setActiveFilters((prev) => ({ ...prev, priceRange: { min: priceBounds.min, max: Number(selectedMax || 0) } }));
+    setActiveFilters((prev) => ({ ...prev, priceRange: { min: 0, max: Number(selectedMax || 0) } }));
   };
 
   const clearPriceRange = () => {
-    setSelectedMin(priceBounds.min);
+    setSelectedMin(0);
     setSelectedMax(priceBounds.max);
     setActiveFilters((prev) => ({ ...prev, priceRange: null }));
   };
 
-  // Group amenities by their category (amenity_name)
-  const amenitiesByCategory = (general_amenities || []).reduce((acc, amenity) => {    
-    const category = amenity.amenity_name || 'General';
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(amenity);
-    return acc;
-  }, {});
-
-  const hasActiveFilters =
-
-    activeFilters.ratings.length > 0 ||
-    activeFilters.amenities.length > 0 ||
-    activeFilters.meal_plans.length > 0;
+  const hasActiveFilters = useMemo(() => {
+    return Object.values(activeFilters).some(value => {
+      if (Array.isArray(value)) return value.length > 0;
+      if (value && typeof value === 'object') return Object.keys(value).length > 0;
+      return false;
+    });
+  }, [activeFilters]);
 
   return (
     <div className="w-full rounded-xl bg-white p-4 shadow">
@@ -193,24 +223,14 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
         )}
       </div>
 
-      {rating && rating.length > 0 && (
-        <FilterSection title="Star Rating">
-         <StarRatingFilter
-            ratings={rating}
-            activeRatings={activeFilters.ratings}
-            onRatingChange={handleRatingChange}
-          />
-        </FilterSection>
-      )}
-
-      {/* Price Range Filter */}
+      {/* Price Range Filter - Always present */}
       <FilterSection title="Price Range" defaultOpen={true} scrollable={false}>
        <div className="space-y-4 pt-2">
           <div className="relative">
             <input
               type="range"
-              min={priceBounds.min}
-              max={priceBounds.max > 0 ? priceBounds.max : 1000}
+              min="0"
+              max="1000"
               value={selectedMax}
               onChange={(e) => setSelectedMax(Number(e.target.value))}
               onMouseUp={applyPriceRange} // Apply when user releases the slider
@@ -218,50 +238,49 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>{priceBounds.min}</span>
-              <span>{priceBounds.max > 0 ? priceBounds.max : 1000}</span>
+              <span>SGD 0</span>
+              <span>SGD 1000</span>
             </div>
          </div>
         </div>
       </FilterSection>
 
-      {Object.entries(amenitiesByCategory).map(([category, amenities]) => (
-        <FilterSection key={category} title={category} scrollable={false} hasLoadMore={true}>
-         {amenities.map((amenity) => (
-            <Checkbox
-              key={amenity.label}
-              label={amenity.label}
-              count={amenity.count}
-              checked={activeFilters.amenities.includes(amenity.label)}
-              onChange={() => handleAmenityChange(amenity.label)}
-            />
-          ))}
-        </FilterSection>
-      ))}
+      {Object.entries(filters || {}).map(([key, items]) => {
+        if (!items || items.length === 0) return null;
 
-      {meal_plans && meal_plans?.length > 0 && (
-       <FilterSection title="Meal Plan" hasLoadMore={true}>
-          {meal_plans.map((plan) => (
-            <Checkbox key={plan?.code} label={plan?.name || plan?.code?.replace('_', ' ')} count={plan?.count} />
-          ))}
-        </FilterSection>
-      )}
+        const config = FILTER_CONFIG[key] || {};
+        const title = config.title || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-      {payment_types && payment_types.length > 0 && (
-       <FilterSection title="Payment Type" hasLoadMore={true}>
-          {payment_types.map((type) => (
-            <Checkbox key={type.value} label={(type.name || type.value).replace('_', ' ')} count={type.count} />
-          ))}
-        </FilterSection>
-      )}
+        if (config.Component) {
+          const { Component, getProps } = config;
+          return (
+            <FilterSection key={key} title={title} defaultOpen={config.defaultOpen !== false}>
+              <Component {...getProps(items, activeFilters, handleFilterArrayChange)} />
+            </FilterSection>
+          );
+        }
 
-      {cancellation_policies && cancellation_policies.length > 0 && (
-       <FilterSection title="Cancellation Policy" defaultOpen={false} hasLoadMore={true}>
-         {cancellation_policies.map((policy) => (
-            <Checkbox key={policy.id} label={policy.name} count={policy.count} />
-          ))}
-        </FilterSection>
-      )}
+        const handlerKey = config.handlerKey || FILTER_CONFIG.default.handlerKey(key);
+        const itemKeyProp = config.itemKey || FILTER_CONFIG.default.itemKey;
+
+        return (
+          <FilterSection key={key} title={title} hasLoadMore={items.length > 5} defaultOpen={config.defaultOpen}>
+            {items.map((item) => {
+              const itemLabel = typeof config.itemLabel === 'function' ? config.itemLabel(item) : item[config.itemLabel];
+              const itemKey = item[itemKeyProp] ?? item.value ?? item.id;
+              return (
+                <Checkbox
+                  key={itemKey}
+                  label={itemLabel}
+                  count={item.count}
+                  checked={(activeFilters[handlerKey] || []).includes(itemKey)}
+                  onChange={() => handleFilterArrayChange(handlerKey, itemKey)}
+                />
+              );
+            })}
+          </FilterSection>
+        );
+      })}
     </div>
   );
 }
