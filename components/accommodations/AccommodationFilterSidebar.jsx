@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Children, useEffect, useMemo } from "react";
+import React, { useState, Children, useEffect, useMemo, useCallback } from "react";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
 const FilterSection = ({ title, children, defaultOpen = true, scrollable = false, hasLoadMore = false }) => {
@@ -140,7 +140,7 @@ const FILTER_CONFIG = {
   },
 };
 
-export default function AccommodationFilterSidebar({ filters, onFilterChange }) {
+export default function AccommodationFilterSidebar({ filters, onFilterChange, sortBy, onSortChange }) {
   const [activeFilters, setActiveFilters] = useState({
     ratings: [],
     amenities: [],
@@ -150,7 +150,6 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     cancellation_policies: [], // by id
     priceRange: null,
   });
-
   const { accommodations } = useAccommodationsStore();
 
   // compute min/max price from accommodations list
@@ -177,11 +176,9 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     setSelectedMax(priceBounds.max);
   }, [priceBounds.min, priceBounds.max]);
 
-  useEffect(() => {
-    onFilterChange(activeFilters);
-  }, [activeFilters, onFilterChange]);
+  const memoizedOnFilterChange = useCallback(onFilterChange, [onFilterChange]);
+  useEffect(() => { memoizedOnFilterChange(activeFilters); }, [activeFilters, memoizedOnFilterChange]);
 
-  
   const handleFilterArrayChange = (filterKey, value) => {
     setActiveFilters((prev) => {
       const currentValues = prev[filterKey] || [];
@@ -192,25 +189,28 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
     });
   };
 
-  const clearAllFilters = () => setActiveFilters({ ratings: [], amenities: [], room_amenities: [], meal_plans: [], payment_types: [], cancellation_policies: [], priceRange: null });
-
-  const applyPriceRange = () => {
-    setActiveFilters((prev) => ({ ...prev, priceRange: { min: 0, max: Number(selectedMax || 0) } }));
+  const clearAllFilters = () => {
+    setActiveFilters({ ratings: [], amenities: [], room_amenities: [], meal_plans: [], payment_types: [], cancellation_policies: [], priceRange: null });
+    setSelectedMin(priceBounds.min);
+    setSelectedMax(priceBounds.max);
+    onSortChange("default");
   };
 
+  const applyPriceRange = () => {
+    setActiveFilters((prev) => ({ ...prev, priceRange: { min: priceBounds.min, max: Number(selectedMax || 0) } }));
+  };
   const clearPriceRange = () => {
-    setSelectedMin(0);
+    setSelectedMin(priceBounds.min);
     setSelectedMax(priceBounds.max);
     setActiveFilters((prev) => ({ ...prev, priceRange: null }));
   };
-
   const hasActiveFilters = useMemo(() => {
-    return Object.values(activeFilters).some(value => {
+    return sortBy !== 'default' || Object.values(activeFilters).some(value => {
       if (Array.isArray(value)) return value.length > 0;
       if (value && typeof value === 'object') return Object.keys(value).length > 0;
       return false;
     });
-  }, [activeFilters]);
+  }, [activeFilters, sortBy]);
 
   return (
     <div className="w-full rounded-xl bg-white p-4 shadow">
@@ -223,6 +223,23 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange }) 
         )}
       </div>
 
+      {/* Sort By Section */}
+      <div className="border-b border-gray-200 py-4">
+        <h3 className="text-md font-semibold text-gray-800 mb-3">Sort By</h3>
+        <div className="relative">
+          <select
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value)}
+            className="w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
+          >
+            <option value="default">Recommended</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="rating_desc">Rating: High to Low</option>
+          </select>
+          <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+        </div>
+      </div>
       {/* Price Range Filter - Always present */}
       <FilterSection title="Price Range" defaultOpen={true} scrollable={false}>
        <div className="space-y-4 pt-2">

@@ -7,9 +7,9 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked }) =>
         {tripType === 'round-trip'
     ? t("tripType.roundTrip")
     : t("tripType.oneWay")}
-          <div onClick={SearchClicked} className="justify-items-end cursor-pointer">
+          {/* <div onClick={SearchClicked} className="justify-items-end cursor-pointer">
             <p className="text-[#D3202D] text-xs font-semibold bg-gray-100 rounded-md p-1 ">{t('change')}</p>
-          </div>
+          </div> */}
         </div>
       )}
        {title && <p className="text-xs font-semibold text-gray-700 mb-1">{title}</p>}
