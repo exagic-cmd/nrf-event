@@ -10,32 +10,61 @@ function TransfersList({ searchPerformed }) {
   const { t } = useTranslation('transfer');
   const [sortBy, setSortBy] = useState("cheapest");
   const [currentPage, setCurrentPage] = useState(1);
-  const { searchResults, isLoading } = useTransferStore();
+  const { searchResults, isLoading, tripType } = useTransferStore();
 
   const carsData = useMemo(() => {
     return searchResults.map(item => {
-      const basePrice = parseFloat(item.final_price);
-      const promoPrice = parseFloat(item.final_promo_price);
-      const usePromo = promoPrice > 0;
+      const isTwoWay = tripType === "round-trip"; // Use tripType from store instead of item.is_two_way
+      
+      // Determine base and promo price based on trip type
+      let basePrice, promoPrice;
+      
+      if (isTwoWay) {
+        // For round trip - use two_way prices
+        basePrice = parseFloat(item.two_way_price || item.final_price);
+        promoPrice = parseFloat(item.two_way_promo_price || item.final_promo_price);
+      } else {
+        // For one way - use one way prices
+        basePrice = parseFloat(item.final_price);
+        promoPrice = parseFloat(item.final_promo_price);
+      }
+
+      // Check if promo price is valid and applicable
+      const usePromo = promoPrice > 0 && !isNaN(promoPrice) && promoPrice < basePrice;
       const priceToShow = usePromo ? promoPrice : basePrice;
 
       return {
-        ...item, 
+        ...item,
         id: item.id,
         name: item.vehicle_name,
         passengers: item.max_capacity,
         suitcases: item.capacity_with_luggage,
-        desc:item.description,
-        image:getFullImageUrl(item.vehicle_image),
+        desc: item.description,
+        image: getFullImageUrl(item.vehicle_image),
         price: priceToShow,
-        originalPrice: usePromo ? basePrice : null,
-        transferType: item.is_two_way ? t('transferType.roundTrip') : t('transferType.oneWay'),
+        originalPrice: usePromo ? basePrice : null, // Strikethrough original price if promo applies
+        transferType: isTwoWay ? t('transferType.roundTrip') : t('transferType.oneWay'),
+        tripType: isTwoWay ? "round-trip" : "one-way", // Add tripType to car object for reference
         features: [
           `${t('features.luggageCapacity')}: ${item.capacity_with_luggage}`,
+          isTwoWay 
+            ? t('transferType.roundTrip') 
+            : t('transferType.oneWay')
         ],
+        // Optional: expose raw prices for debugging or future use
+        _raw: {
+          isTwoWay,
+          basePrice,
+          promoPrice,
+          usePromo,
+          twoWayPrice: item.two_way_price,
+          twoWayPromoPrice: item.two_way_promo_price,
+          oneWayPrice: item.final_price,
+          oneWayPromoPrice: item.final_promo_price
+        }
       };
     });
-  }, [searchResults, t]);
+  }, [searchResults, t, tripType]);
 
   const sortedCars = useMemo(() => {
     const sortableCars = [...carsData];
