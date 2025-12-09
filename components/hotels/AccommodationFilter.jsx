@@ -25,7 +25,7 @@ const DEFAULT_REGION = {
 };
 
 
-export default function AccommodationFilter({ onSearch, initialSearchText = "", initialCheckinDate = null, initialCheckoutDate = null, initialRooms = null, onSearchTextChange }) {
+export default function AccommodationFilter({ onSearch, initialSearchText = "", initialCheckinDate = null, initialCheckoutDate = null, initialRooms = null, onSearchTextChange, isHomepage = false }) {
   // const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [startDate, setStartDate] = useState(initialCheckinDate ? new Date(initialCheckinDate) : null);
@@ -269,14 +269,16 @@ useEffect(() => {
       alert(error);
       return;
     }
-    // if (onSearch) onSearch(payload); // This is redundant as setSearchParamsAndSearch handles the search.
+    if (onSearch) onSearch(payload);
 
   } catch (err) {
     console.error("Search failed:", err);
     alert("An error occurred while searching. Please try again.");
   } finally {
-    setIsSearching(false);
-    router.push(`/listings?searched=true&type=accommodation`);
+    if (!isHomepage) {
+      setIsSearching(false);
+    }
+    if (isHomepage) router.push(`/listings?searched=true&type=accommodation`);
   }
 };
 

@@ -274,10 +274,12 @@ function ListingsPage() {
   }, [searchCategory, accommodationPayload, fetchAccommodations]);
 
   useEffect(() => {
-    if (searchCategory === "transfer" && transferSearchParams && Object.keys(transferSearchParams).length > 0) {
+    // Only trigger transfer search if a search has been performed AND both pickup and dropoff are set.
+    if (hasSearched && searchCategory === "transfer" && transferSearchParams?.pickup && transferSearchParams?.dropoff) {
       fetchTransfers(transferSearchParams);
     }
-  }, [searchCategory, transferSearchParams, fetchTransfers]);
+  }, [searchCategory, transferSearchParams, fetchTransfers, hasSearched]);
+
 useEffect(() => {
     const daytourParams = { country: daytourSelectedCountry, city: daytourSelectedCity, search: daytourSearchQuery };
     if ((searchCategory === "daytour" || searchCategory === "day-tours") && (daytourParams.city || daytourParams.search)) {
@@ -316,7 +318,8 @@ useEffect(() => {
   const renderListComponent = () => {
     switch (searchCategory) { 
       case "transfer":
-        return <TransfersList searchParams={searchParams} />;
+        // Pass searchPerformed to show the correct placeholder
+        return <TransfersList searchParams={searchParams} searchPerformed={hasSearched} />;
       case "daytour":
       case "day-tours":
         return <DaytoursList searchParams={searchParams} />;
@@ -326,6 +329,7 @@ useEffect(() => {
           <AccommodationList
             accommodations={filteredResults} 
             isLoading={accommodationLoading}
+            searchPerformed={hasSearched}
           />
         );
       default:
@@ -353,11 +357,18 @@ useEffect(() => {
           </div>
         );
       default:
-        return <TransferBookingPlaceholder />;
+        return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold text-gray-800">
+            { t('results.noTransfersFound') || "Please search for a transfer"}
+          </h3>
+          <p className="text-gray-500 mt-2">
+ Use the search filter above to find available transfers.
+          </p>
+        </div>);
     }
   };
 
-  const showFaqs = hasSearched && searchCategory === "transfer";
+  const showFaqs = hasSearched && searchCategory === "transfer" && searchResults.length > 0;
   const isAccommodationCategory = searchCategory === "accommodation" || searchCategory === "hotels";
 
   return (
