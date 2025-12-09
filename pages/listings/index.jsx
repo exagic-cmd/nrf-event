@@ -366,14 +366,14 @@ useEffect(() => {
         if (hasValidTransferSearch) return renderListComponent(); // A search was attempted but had no results
         // fallthrough for initial placeholder
       default:
-        return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
-          <h3 className="text-xl font-semibold text-gray-800">
-            { t('results.noTransfersFound') || "Please search for a transfer"}
-          </h3>
-          <p className="text-gray-500 mt-2">
- Use the search filter above to find available transfers.
-          </p>
-        </div>);
+//         return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
+//           {/* <h3 className="text-xl font-semibold text-gray-800">
+//             { t('results.noTransfersFound') || "Please search for a transfer"}
+//           </h3> */}
+//           <p className="text-gray-500 mt-2">
+//  Use the search filter above to find available transfers.
+//           </p>
+//         </div>);
     }
   };
 

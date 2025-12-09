@@ -226,7 +226,8 @@ const TravelInfoPage = () => {
   <LoadingSvg2 />
 ) : (
   <>
-    <UpcomingOrders
+   <div className=" sm-mx-2 lg:mx-12">
+     <UpcomingOrders
       orders={upcomingBookings}
       onOrderClick={() => {}}
       onViewDetails={handleViewDetails}
@@ -237,6 +238,7 @@ const TravelInfoPage = () => {
       onReviewClick={handleReviewClick}
       onDetailsClick={handleDetailsClick}
     />
+   </div>
     <Recommended />
   </>
 )}

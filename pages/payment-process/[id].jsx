@@ -97,9 +97,9 @@ console.log(order.email)
                     </div>
                     <div className="text-left">
                       <p className="text-sm text-gray-600">{t('callUs')}</p>
-                      <a href="tel:1546541321" className="font-semibold text-[#D3202D] hover:underline">
-                       1546541321
-                      </a>
+                      <a href={`tel:${event?.event?.phone}`} className="font-semibold text-[#D3202D]">
+                  {event?.event?.phone}
+                </a>
                     </div>
                   </div>
 
@@ -111,10 +111,10 @@ console.log(order.email)
                       </svg>
                     </div>
                     <div className="text-left">
-                      <p className="text-sm text-gray-600">{t('emailUs')}</p>
-                      <a href="mailto:contact@nrf.com" className="font-semibold text-[#D3202D] hover:underline">
-                        contact@nrf.com
-                      </a>
+                      <p className="te1xt-sm text-gray-600">{t('emailUs')}</p>
+                      <a href={`mailto:${event?.event?.email}`} className="font-semibold text-[#D3202D]">
+                  {event?.event?.email}
+                </a>
                     </div>
                   </div>
                 </div>
@@ -161,9 +161,9 @@ console.log(order.email)
                     </div>
                     <div className="text-left">
                       <p className="text-sm text-gray-600">{t('callUs')}</p>
-                      <a href="tel:1546541321" className="font-semibold text-[#D3202D] hover:underline">
-                       1546541321
-                      </a>
+                      <a href={`tel:${event?.event?.phone}`} className="font-semibold text-[#D3202D]">
+                  {event?.event?.phone}
+                </a>
                     </div>
                   </div>
 
@@ -176,9 +176,9 @@ console.log(order.email)
                     </div>
                     <div className="text-left">
                       <p className="text-sm text-gray-600">{t('emailUs')}</p>
-                      <a href="mailto:contact@nrf.com" className="font-semibold text-[#D3202D] hover:underline">
-                        contact@nrf.com
-                      </a>
+                      <a href={`mailto:${event?.event?.email}`} className="font-semibold text-[#D3202D]">
+                  {event?.event?.email}
+                </a>
                     </div>
                   </div>
                 </div>
