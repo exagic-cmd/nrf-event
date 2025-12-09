@@ -70,9 +70,10 @@ export default function SearchFilterCard({
     isLoading: daytoursLoading,
   } = useDaytoursStore();
 
-  const { daytourParams, setDaytourParams, transferParams } = useSearchValuesStore();
+  const { daytourParams, setDaytourParams, transferParams, accommodationParams, setAccommodationParams } = useSearchValuesStore();
 
   const [pickupQuery, setPickupQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [dropoffQuery, setDropoffQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || daytourParams.searchQuery || "");
   const [accommodationSearchText, setAccommodationSearchText] = useState(initialAccommodationText || "");
@@ -90,7 +91,7 @@ export default function SearchFilterCard({
   const [showPickupDropdown, setShowPickupDropdown] = useState(false);
   const [showDropoffDropdown, setShowDropoffDropdown] = useState(false);
 
-  const isLoading = transferLoading || daytoursLoading;
+  const isLoading = transferLoading || daytoursLoading || isSearching;
   const { prefillData, updatePrefillDataFromCart } = useOrderStore();
   const { items: cartItems } = useCartStore();
   useEffect(() => {
@@ -104,6 +105,16 @@ export default function SearchFilterCard({
       if (transferParams.tripType) setTripType(transferParams.tripType);
     }
   }, [filterActiveTab, transferParams, setSelectedPickup, setSelectedDropoff, setTripType]);
+
+  useEffect(() => {
+    if (transferParams.pickup) {
+      setPickupQuery(transferParams.pickup.name || "");
+    }
+    if (transferParams.dropoff) {
+      setDropoffQuery(transferParams.dropoff.name || "");
+    }
+  }, [transferParams]);
+
 
   // Sync inputs
   useEffect(() => setPickupQuery(selectedPickup?.name || ""), [selectedPickup]);
@@ -119,11 +130,6 @@ export default function SearchFilterCard({
   //   if (initialSearchQuery !== undefined) setSearchQuery(initialSearchQuery);
   //   else if (daytourParams.searchQuery !== undefined) setSearchQuery(daytourParams.searchQuery);
   // }, [initialSearchQuery, daytourParams.searchQuery]);
-
-  // // Sync accommodation text from parent
-  // useEffect(() => {
-  //   if (initialAccommodationText !== undefined) setAccommodationSearchText(initialAccommodationText);
-  // }, [initialAccommodationText]);
 
   // Effect for rotating placeholder
   useEffect(() => {
@@ -281,6 +287,7 @@ export default function SearchFilterCard({
   }, [selectedCountry, cityQuery]);
 
   const handleCategorySearch = async () => {
+    setIsSearching(true);
     // if (!selectedCountry || !selectedCity) {
     //   alert("Please select both country and city");
     //   return;
@@ -328,28 +335,29 @@ export default function SearchFilterCard({
       setSuggestedResults([]);
     } catch (error) {
       console.error("Search failed:", error);
+    } finally {
+      if (!isHomepage) setIsSearching(false);
     }
   };
 
-  const handleTransferSearch = () => {
+  const handleTransferSearch = async () => {
   if (!selectedPickup || !selectedDropoff) {
     alert("Please select both pick-up and drop-off locations");
     return;
   }
 
-  // Set search params in the store
-  setSearchParams({
-    pickup: selectedPickup,
-    dropoff: selectedDropoff,
-    tripType: tripType === "round-trip" ? "round-trip" : "one-way",
-  });
-
-  // Trigger the API call through the store
-  fetchTransfers({
-    pickup: selectedPickup,
-    dropoff: selectedDropoff,
-    tripType: tripType,
-  });
+  setIsSearching(true);
+  try {
+    // Trigger the API call through the store
+    await fetchTransfers({
+      pickup: selectedPickup,
+      dropoff: selectedDropoff,
+      tripType: tripType,
+    });
+  } catch (error) {
+    console.error("Transfer search failed:", error);
+  }
+  if (!isHomepage) setIsSearching(false);
 
   // Also call the parent callback if needed
   onFilterTransfer?.({
@@ -371,10 +379,21 @@ export default function SearchFilterCard({
   };
 
   const handleAccommodationSearch = (data) => {
+    setIsSearching(true);
+    setAccommodationParams(data);
     onFilterTransfer?.({
       category: "accommodation",
       ...data,
     });
+    // On the homepage, the search triggers a navigation, unmounting this component.
+    // On other pages, it filters results, so we need to keep the loading state until new data arrives.
+    if (isHomepage) {
+      // The component will unmount, so we don't need to manage the state further.
+    } else {
+      // On search results pages, we expect the parent to handle the loading state
+      // or for this component to remain mounted. We keep it searching.
+      setIsSearching(true);
+    }
   };
 
   const Pill = ({ tab }) => (
@@ -526,8 +545,7 @@ export default function SearchFilterCard({
                  {/* Search button */}
                  <div className="md:col-span-2 flex items-stretch">
                    <button
-                     type="submit"
-                     className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation"
+                     type="submit"                     className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
                    disabled={isLoading}                   
                    >
                      {isLoading ? (
@@ -726,7 +744,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
+                className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -747,10 +765,11 @@ export default function SearchFilterCard({
       {filterActiveTab === 4 && (
         <AccommodationFilter 
           onSearch={handleAccommodationSearch}
-          initialSearchText={accommodationSearchText}
-          initialCheckinDate={initialCheckinDate}
-          initialCheckoutDate={initialCheckoutDate}
-          initialRooms={rooms}
+          initialSearchText={accommodationParams.text || initialAccommodationText}
+          initialCheckinDate={accommodationParams.start_date || initialCheckinDate}
+          initialCheckoutDate={accommodationParams.end_date || initialCheckoutDate}
+          initialRooms={accommodationParams.rooms || rooms}
+          isHomepage={isHomepage}
         />
       )}
 </div>
