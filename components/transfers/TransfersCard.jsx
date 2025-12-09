@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import { Users, Briefcase, Crown, Star } from "lucide-react";
+import { Users, Briefcase, Crown, Star, ArrowRightLeft } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useCartStore } from "@/store/useCartStore";
@@ -16,6 +16,7 @@ function TransfersCard({ car, category = "transfer" }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const hasPromo = car.originalPrice && car.price < car.originalPrice;
+  const isTwoWay = car.tripType === "round-trip";
 
 
   // Debug: Check what's being stored
@@ -31,7 +32,7 @@ function TransfersCard({ car, category = "transfer" }) {
             item.tourId === car.id && // Use car.id instead of car.rawData.id
             item.searchParams?.pickup?.id === searchParams.pickup?.id &&
             item.searchParams?.dropoff?.id === searchParams.dropoff?.id &&
-            item.searchParams?.isTwoWay === searchParams.isTwoWay
+            item.tripType === car.tripType
         );
 
         if (alreadyExists) {
@@ -42,6 +43,7 @@ function TransfersCard({ car, category = "transfer" }) {
             ...car,  // Spread the entire car object
             price: car.price,
             originalPrice: car.originalPrice,
+            tripType: car.tripType,
             // Ensure we have all necessary fields
             id: car.id,
             name: car.name,
