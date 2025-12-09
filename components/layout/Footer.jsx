@@ -74,26 +74,53 @@ const Footer = () => {
           {/* Contact Information */}
           <div className="space-y-3">
             <h3 className="text-lg font-semibold">Contact Us</h3>
-            <div className="space-y-2 text-sm">
-              <p className="flex items-center">
-                <PhoneCall size={14} className="mr-3 flex-shrink-0" />
-                <span>{event?.event?.phone}</span>
-              </p>
-              <p className="flex items-center">
-                <Mail size={14} className="mr-3 flex-shrink-0" />
-                <span>{event?.event?.email}</span>
-              </p>
-              <p className="flex items-start">
-                <MapPin size={14} className="mr-3 mt-1 flex-shrink-0" />
-                <span>{event?.event?.location}</span>
-              </p>
+            <div className=" text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+             
+              <div className="space-y-1">
+                {/* <h4 className="font-semibold text-sm mb-1"></h4> */}
+                {event?.event?.phone && (
+                  <p className="flex items-center">
+                    <PhoneCall size={14} className="mr-3 flex-shrink-0" />
+                    <span>{event.event.phone}</span>
+                  </p>
+                )}
+                {event?.event?.email && (
+                  <p className="flex items-center">
+                    <Mail size={14} className="mr-3 flex-shrink-0" />
+                    <span>{event.event.email}</span>
+                  </p>
+                )}
+                {event?.event?.location && (
+                  <p className="flex items-start">
+                    <MapPin size={14} className="mr-3 mt-1 flex-shrink-0" />
+                    <span>{event.event.location}</span>
+                  </p>
+                )}
+              </div>
+            
+              <div className="space-y-1">
+               
+                <p className="flex items-center">
+                  <PhoneCall size={14} className="mr-3 flex-shrink-0" />
+                  <span>+65 9627 4682</span>
+                </p>
+                <p className="flex items-center">
+                  <Mail size={14} className="mr-3 flex-shrink-0" />
+                  <span>group@toureast.net</span>
+                </p>
+                {/* Static Address */}
+                <p className="flex items-start">
+                  <MapPin size={14} className="mr-3 mt-1 flex-shrink-0" />
+                  <span>Singapore</span>
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Social Media */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Follow Us</h3>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 ">
               {socialLinks.map(
                 (social) =>
                   social.href && (
