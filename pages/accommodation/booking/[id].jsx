@@ -25,6 +25,7 @@ export default function AccommodationBookingPage() {
   const [allowed, setAllowed] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [isNonStuba, setIsNonStuba] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
 
   const slugify = (text) => {
     if (!text) return "";
@@ -51,6 +52,7 @@ export default function AccommodationBookingPage() {
       const data = JSON.parse(stored);
       const nonStuba = data.isNonStuba === true;
 
+      setBookingData(data);
       setIsNonStuba(nonStuba);
 
       if (nonStuba) {
@@ -93,12 +95,8 @@ export default function AccommodationBookingPage() {
     );
   }
 
-  // ----- BOOKING DATA -----
-  const bookingData = JSON.parse(
-    sessionStorage.getItem("accommodationBookingData") || "{}"
-  );
-
-  const hotel = bookingData.hotelData || {};
+  if (!bookingData) return null; // Or a loading state
+  const hotel = bookingData?.hotelData || {};
   const selectedRoom = bookingData.selectedRoom || {};
 
   // NEW VALUES ADDED HERE
@@ -166,7 +164,7 @@ export default function AccommodationBookingPage() {
         <Utensils className="w-3 h-3 text-black" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight text-black">Bed Type</p>
+        <p className="text-[9px] opacity-70 leading-tight text-black">Meal Type</p>
         <p className="text-sm font-semibold leading-tight text-black">
           {selectedRoom.mealType || "Room Only"}
         </p>

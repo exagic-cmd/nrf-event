@@ -149,6 +149,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
     payment_types: [], // by value
     cancellation_policies: [], // by id
     priceRange: null,
+    searchText: "",
   });
   const { accommodations } = useAccommodationsStore();
 
@@ -190,7 +191,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   };
 
   const clearAllFilters = () => {
-    setActiveFilters({ ratings: [], amenities: [], room_amenities: [], meal_plans: [], payment_types: [], cancellation_policies: [], priceRange: null });
+    setActiveFilters({ ratings: [], amenities: [], room_amenities: [], meal_plans: [], payment_types: [], cancellation_policies: [], priceRange: null, searchText: "" });
     setSelectedMin(priceBounds.min);
     setSelectedMax(priceBounds.max);
     onSortChange("default");
@@ -240,6 +241,23 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
           <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
         </div>
       </div>
+
+      {/* Hotel Name Search */}
+      <FilterSection title="Hotel Name" defaultOpen={true}>
+        <div className="relative pt-2">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={activeFilters.searchText}
+            onChange={(e) => {
+              const { value } = e.target;
+              setActiveFilters(prev => ({ ...prev, searchText: value }));
+            }}
+            className="w-full border border-gray-300 rounded-lg py-2 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+          />
+        </div>
+      </FilterSection>
+
       {/* Price Range Filter - Always present */}
       <FilterSection title="Price Range" defaultOpen={true} scrollable={false}>
        <div className="space-y-4 pt-2">
@@ -263,7 +281,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
       </FilterSection>
 
       {Object.entries(filters || {}).map(([key, items]) => {
-        if (!items || items.length === 0) return null;
+        if (!items || items.length === 0 || key === 'room_amenities') return null;
 
         const config = FILTER_CONFIG[key] || {};
         const title = config.title || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());

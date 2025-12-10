@@ -342,6 +342,8 @@ const [pickupTrigger, setPickupTrigger] = useState(0);
 const [returnTrigger, setReturnTrigger] = useState(0);
 // add local loading states for each tracker
 const [pickupTracking, setPickupTracking] = useState(false);
+const [showPickupTimeWarning, setShowPickupTimeWarning] = useState(false);
+const [showReturnTimeWarning, setShowReturnTimeWarning] = useState(false);
 const [returnTracking, setReturnTracking] = useState(false);
 
   // Set default radio button selection on mount
@@ -552,10 +554,15 @@ const handleReturnTrack = async (flightNumber = null) => {
     })
   }
   error={errors?.pickupFlightScheduleTime}
-  disabled={true}
+  disabled={disabled}
   orangeColor={orangeColor}
   t={t}
 />
+  {showPickupTimeWarning && (
+    <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded-md mt-2 border border-amber-200">
+      {t("booking.flightTimeWarning", "The actual pickup time may be adjusted based on real-time flight data.")}
+    </p>
+  )}
 
 </div>
 
@@ -573,6 +580,7 @@ const handleReturnTrack = async (flightNumber = null) => {
         pickupFlightScheduleTime: flightTime, 
         pickupTime: new Date(`1970-01-01T${flightTime}`),
       });
+      setShowPickupTimeWarning(true);
     }
 
     onPickupTracked?.(true);
@@ -666,10 +674,15 @@ const handleReturnTrack = async (flightNumber = null) => {
     })
   }
   error={errors?.returnFlightScheduleTime}
-  disabled={true}
+  disabled={disabled}
   orangeColor={orangeColor}
   t={t}
 />
+    {showReturnTimeWarning && (
+    <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded-md mt-2 border border-amber-200">
+      {t("booking.flightTimeWarning", "This is the scheduled flight time. The actual pickup time may be adjusted based on real-time flight data.")}
+    </p>
+  )}
 
     </div>
 
@@ -687,6 +700,7 @@ const handleReturnTrack = async (flightNumber = null) => {
         returnFlightScheduleTime: flightTime,
         returnPickupTime: new Date(`1970-01-01T${flightTime}`),
       });
+      setShowReturnTimeWarning(true);
     }
 
     onReturnTracked?.(true);

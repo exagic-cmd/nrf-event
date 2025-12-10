@@ -152,6 +152,7 @@ function ListingsPage() {
       const hasSelectedCancellation = activeFilters.cancellation_policies && activeFilters.cancellation_policies.length > 0;
       const hasSelectedRoomAmenities = activeFilters.room_amenities && activeFilters.room_amenities.length > 0;
       const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
+      const hasSearchText = activeFilters.searchText && activeFilters.searchText.trim().length > 0;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
@@ -162,7 +163,12 @@ function ListingsPage() {
 
        const hotelAmenitiesSet = new Set(hotelData.amenities || []);
 
-      
+      const searchTextMatch = !hasSearchText || (
+        (hotelData.title || hotelData.name || "").toLowerCase().includes(activeFilters.searchText.toLowerCase())
+      );
+
+      if (!searchTextMatch) return false; // Early exit for performance
+
       const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(id => {
         const amenityName = generalAmenitiesMap.get(id);
         return amenityName && hotelAmenitiesSet.has(amenityName);
@@ -190,7 +196,7 @@ function ListingsPage() {
         (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
       );
 
-      return amenityMatch && roomAmenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
+      return searchTextMatch && amenityMatch && roomAmenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
     });
   }, [applyAccommodationFilter, accommodationFilters]); 
   useEffect(() => {

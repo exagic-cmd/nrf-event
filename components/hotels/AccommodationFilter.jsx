@@ -1,5 +1,6 @@
 // components/hotels/AccommodationFilter.jsx
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { toast, POSITION } from 'react-toastify';
 import {
   Search,
   X,
@@ -149,7 +150,7 @@ useEffect(() => {
   };
 
   const addChild = (i) => {
-    const ageToAdd = childAges[i] ?? 1;
+    const ageToAdd = childAges[i];
     const newRooms = [...rooms];
     if (newRooms[i].children.length < 10) {
       newRooms[i].children.push(ageToAdd);
@@ -214,7 +215,7 @@ useEffect(() => {
   const effectiveSelection = selectedItem || { ...DEFAULT_REGION, type: "region" };
 
   if (!startDate || !endDate) {
-    alert("Please select both check-in and check-out dates");
+    toast.error("Please select both check-in and check-out dates");
     return;
   }
 
@@ -261,19 +262,20 @@ useEffect(() => {
     // This will now return [] if !data.status
     const results = await setSearchParamsAndSearch(payload);
   if (!results || results.length === 0) {
-    alert("No accommodations available for the selected dates or guest configuration. Please try different options.");
+    toast.error("No options for selected dates/guests.");
+    toast.error("Try different dates or guest.");
     return;
     }
     const { error } = useAccommodationsStore.getState();
     if (error) {
-      alert(error);
-      return;
+       toast.error(error);
+       return;
     }
     if (onSearch) onSearch(payload);
 
   } catch (err) {
     console.error("Search failed:", err);
-    alert("An error occurred while searching. Please try again.");
+    toast.error("An error occurred while searching. Please try again.");
   } finally {
     if (!isHomepage) {
       setIsSearching(false);
@@ -472,7 +474,7 @@ useEffect(() => {
                             max="12"
                             value={childAges[i] ?? ''}
                             onChange={(e) => {
-                              const age = e.target.value === '' ? '' : Math.max(0, Math.min(18, parseInt(e.target.value, 10) || 0));
+                              const age = e.target.value === '' ? '' : Math.max(0, Math.min(12, parseInt(e.target.value, 10) || 0));
                               setChildAges({ ...childAges, [i]: age });
                             }}
                             placeholder="Age"
@@ -481,6 +483,7 @@ useEffect(() => {
                           <button
                             type="button"
                             onClick={() => addChild(i)}
+                            disabled={!childAges[i] || childAges[i] < 1}
                             className="absolute right-1 top-1/2 -translate-y-1/2 h-[calc(100%-0.25rem)] text-xs bg-gray-500 hover:bg-gray-600 text-white font-medium px-3 rounded transition-colors touch-manipulation"
                           >
                             Add
