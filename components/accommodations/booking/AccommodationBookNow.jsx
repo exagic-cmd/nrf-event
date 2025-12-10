@@ -219,12 +219,14 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCartOptions, setShowCartOptions] = useState(false);
   const [loadingButton, setLoadingButton] = useState(null);
+  const [errors, setErrors] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [bookingResponse, setBookingResponse] = useState(null);
 
   useEffect(() => {
     const initialGuests = initGuestsByRoom();
-
+    const storedData = JSON.parse(sessionStorage.getItem("accommodationBookingData"));
+    
     // Pre-fill lead passenger details from auth store if available
     if (user?.name && initialGuests.length > 0 && initialGuests[0].adults.length > 0) {
       const nameParts = user.name.split(' ');
@@ -237,14 +239,14 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       leadGuest.lastName = lastName;
     }
 
+    // If booking data with guest details exists in session, it means it was added to cart.
+    if (storedData?.guestDetailsByRoom) {
+      setGuestsByRoom(storedData.guestDetailsByRoom);
+      setShowCartOptions(true); // Show "Continue Shopping" / "Checkout" buttons
+    } else {
     setGuestsByRoom(initialGuests);
+    }
   }, [bookingData, user]);
-
-  // This useEffect is kept to re-initialize guests if bookingData changes,
-  // but the main logic is now combined above.
-  // useEffect(() => {
-  //   setGuestsByRoom(initGuestsByRoom());
-  // }, [bookingData]);
 
   const updateGuest = (roomIdx, type, guestIdx, field, value) => {
     setGuestsByRoom((prev) =>
@@ -260,6 +262,40 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
       )
     );
   };
+
+  const validateGuestInfo = () => {
+    const newErrors = {};
+    let isValid = true;
+    const nameRegex = /^[a-zA-Z\s'-]{2,}$/;
+
+    // Only the lead guest (Room 1, Adult 1) is mandatory
+    const leadGuest = guestsByRoom[0]?.adults[0];
+
+    if (!leadGuest) {
+      // This case should not happen if rooms are configured
+      return false;
+    }
+
+    if (!leadGuest.firstName || !leadGuest.firstName.trim()) {
+      newErrors.leadFirstName = "First name is required.";
+      isValid = false;
+    } else if (!nameRegex.test(leadGuest.firstName)) {
+      newErrors.leadFirstName = "Please enter a valid first name (letters only, min 2).";
+      isValid = false;
+    }
+
+    if (!leadGuest.lastName || !leadGuest.lastName.trim()) {
+      newErrors.leadLastName = "Last name is required.";
+      isValid = false;
+    } else if (!nameRegex.test(leadGuest.lastName)) {
+      newErrors.leadLastName = "Please enter a valid last name (letters only, min 2).";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
 
   // === STUBA: CALL PRE-BOOKING API ===
   const callPreBookingAPI = async () => {
@@ -334,6 +370,13 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     setLoadingButton("addToCart");
     setIsSubmitting(true);
 
+    if (!validateGuestInfo()) {
+      setIsSubmitting(false);
+      setLoadingButton(null);
+      // alert("Please fill in all required guest details correctly.");
+      return;
+    }
+
     const availabilityPayload = {
       start_date: bookingData.searchParams.start_date,
       end_date: bookingData.searchParams.end_date,
@@ -371,11 +414,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     }));
 
     const hotelId = bookingData.hotelData?.id || null;
-
-    updatedBookingData.hotelData = {
-      id: hotelId,
-      roomsDetails: roomsDetailsArray,
-    };
+    updatedBookingData.hotelData = bookingData.hotelData; // FIX: Preserve the original hotelData object
 
     sessionStorage.setItem("accommodationBookingData", JSON.stringify(updatedBookingData));
 
@@ -388,6 +427,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const totalPrice = (priceFor1Room).toFixed(2);
 
     const cartItem = {
+      productType: "accommodation",
       product_id: hotelId,
       tourId: hotelId,
       productTitle: bookingData.hotelData?.title || "",
@@ -446,13 +486,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     }));
 
     const hotelId = bookingData.hotelData?.id || null;
-
-    updatedBookingData.hotelData = {
-      id: hotelId,
-      roomsDetails: roomsDetailsArray,
-      request_response: bookingResponse?.apiResponse ?? null,
-      request: bookingResponse?.requestPayload ? { callPreBookingAPI: bookingResponse.requestPayload } : null,
-    };
+    updatedBookingData.hotelData = bookingData.hotelData; // FIX: Preserve the original hotelData object
 
     sessionStorage.setItem("accommodationBookingData", JSON.stringify(updatedBookingData));
 
@@ -592,8 +626,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                       ? "bg-gray-300"
                       : "bg-white"
                   }`}
-                  required={roomIdx === 0 && i === 0}
+                  readOnly={showCartOptions}
                 />
+                 {roomIdx === 0 && i === 0 && errors.leadFirstName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.leadFirstName}</p>
+                )}
               </div>
 
               {/* Last Name */}
@@ -613,8 +650,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                       ? "bg-gray-300"
                       : "bg-white"
                   }`}
-                  required={roomIdx === 0 && i === 0}
+                  readOnly={showCartOptions}
                 />
+                {roomIdx === 0 && i === 0 && errors.leadLastName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.leadLastName}</p>
+                )}
               </div>
             </div>
           ))}

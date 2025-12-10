@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useRecentlyViewedStore from '@/store/useRecentlyViewedStore';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -6,13 +6,16 @@ import { getFullImageUrl } from "@/utils/imageService";
 import { slugify } from "../../utils/slugify";
 import { formatPrice } from "@/utils/priceUtils";
 import LoaderSvg from "@/components/common/LoaderSvg";
-const RecentlyViewed = () => {
+const RecentlyViewed = ({ currentProductLink }) => {
   const { recentlyViewed } = useRecentlyViewedStore();
-  const [loadingItemId, setLoadingItemId] = useState(null);
+  const [loadingItemId, setLoadingItemId] = useState(null); 
 
+  // Reset loading state when the current product link changes
+  useEffect(() => {
+    setLoadingItemId(null);
+  }, [currentProductLink]);
+  
   if (!recentlyViewed || recentlyViewed.length === 0) return null;
-
-
 
   return (
     <div className="w-full pb-4 pt-4  px-4 hidden lg:block">
@@ -20,15 +23,20 @@ const RecentlyViewed = () => {
       <div className="grid grid-cols-1  gap-5">
         {recentlyViewed.map((item) => {
           const isLoading = loadingItemId === item.id;
+          const isActive = currentProductLink === item.link;
           return (
             <div key={item.id} className="relative">
               <Link
-                href={`/accommodation/${slugify(item.name)}/${item.id}`}
+                href={item.link || `/accommodation/${slugify(item.name)}/${item.id}`}
                 passHref
                 legacyBehavior
               >
-              <a onClick={() => setLoadingItemId(item.id)}>
-            <div className="flex bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ">
+              <a onClick={!isActive ? () => setLoadingItemId(item.id) : (e) => e.preventDefault()}>
+            <div className={`flex bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-200 ${
+              isActive 
+                ? 'border-2 border-[#D3202D] bg-slate-100/50 cursor-default opacity-70' 
+                : 'border-2 border-transparent hover:shadow-lg'
+            }`}>
               <div className="relative w-24 h-24 flex-shrink-0">
                 <Image
                   src={getFullImageUrl(item?.image) || '/placeholder.jpg'}

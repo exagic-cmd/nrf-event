@@ -542,7 +542,7 @@ useEffect(() => {
               </div>
             </div>
             <div className="lg:col-span-3 mt-5 lg:mt-0"> {/* RecentlyViewed sidebar */}
-             <RecentlyViewed />
+             <RecentlyViewed currentProductLink={router.asPath} />
            </div>
           </div>
         </div>

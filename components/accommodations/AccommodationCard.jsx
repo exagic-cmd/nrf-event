@@ -56,7 +56,7 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     amenities,
   } = accommodation;
 
-  const lowestPrice = (room?.base_price)*(searchParams?.nights || 1)  || 0;
+const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || 0;
 
   const handleCardClick = async () => {
     setIsLoading(true);
@@ -212,7 +212,9 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
       {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
      
     </p>
-     <span className="text-xs text-gray-600 font-normal"> for {searchParams?.nights || 1} night{(searchParams?.nights || 1) !== 1 ? 's' : ''}</span>
+   <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
+      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}, {roomsCount} room{roomsCount > 1 ? 's' : ''}
+    </p>
     {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
 
@@ -227,10 +229,10 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
   <div className="block md:hidden mr-auto">
     <p className="text-lg font-bold text-primary">
       {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
-      <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span>
+      {/* <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span> */}
     </p>
     <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
-      for a night for {totalAdults} adults and {totalChildren} children
+      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}, {roomsCount} room{roomsCount > 1 ? 's' : ''}
     </p>
   </div>
 

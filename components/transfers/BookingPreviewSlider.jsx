@@ -202,11 +202,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
               <span className="font-semibold text-gray-800 text-right">{item.mealType}</span>
             </div> */}
 
-            {item.special_request && (
+            {/* {item.special_request && (
               <p className="italic text-gray-500">
                 {t("specialRequests", { ns: "accommodation" })}: {item.specialRequests}
               </p>
-            )}
+            )} */}
           </div>
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
@@ -216,32 +216,25 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
         </div>
       ) : isTransfer ? (
         /* TRANSFER PREVIEW (unchanged) */
-        <>
-          <div className="flex gap-0 items-start rounded bg-gray-50 p-1 px-3">
-            <div className="w-80 h-36">
-              <img src={image} alt={title} className="w-full h-32 object-contain rounded-lg" />
-            </div>
-
-            <div className="w-[30%] flex flex-col justify-between h-32">
-              <div className="flex flex-col gap-2 pt-2">
+        <div className="flex flex-col gap-2">
+          <img src={image} alt={title} className="w-80 h-36 object-cover rounded-lg" />
+          <div className="space-y-1.5 text-xs">
+            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
                 <span className="flex items-end justify-end gap-1 text-sm text-gray-700">
                   <User className="w-4 h-4" /> {item?.passengers}
+                   <Luggage className="w-4 h-4" /> {item?.baggage}
+               
                 </span>
-                <span className="flex items-end justify-end gap-1 text-sm text-gray-700">
-                  <Luggage className="w-4 h-4" /> {item?.baggage}
-                </span>
-              </div>
-
-              <div className="flex flex-col items-end justify-end text-xs text-gray-500">
-                {item?.vehicle?.price && (
+                <span>
+                  {item?.vehicle?.price && (
                   <span className="text-[#D3202D] font-medium">SGD {formatPrice(item.vehicle.price)}</span>
                 )}
-                {date && <span>{date}</span>}
+                </span>
               </div>
-            </div>
+            {date && <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded"><span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> Date</span><span className="text-sm text-gray-800 font-medium">{date}</span></div>}
           </div>
 
-          {uniqueAddons.length > 0 && (
+           {(uniqueAddons.length > 0 || totalSurcharge > 0) && (
             <div className="mt-2">
               <ul className="space-y-1">
                 {(showAllAddons ? uniqueAddons : uniqueAddons.slice(0, 2)).map((addon, index) => (
@@ -263,9 +256,19 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                     <span className="text-sm text-gray-800 font-medium">SGD {addon.total} </span>
                   </li>
                 ))}
+                {showAllAddons && totalSurcharge > 0 && (
+                  <li className="flex justify-between items-center text-sm bg-gray-50 rounded-lg px-2 py-2">
+                    <span className="text-[#D3202D] text-xs font-medium flex items-center gap-2">
+                      {t("Surcharges")} {surchargeScope}
+                    </span>
+                    <span className="text-sm  font-medium">
+                      SGD {formatPrice(totalSurcharge)}
+                    </span>
+                  </li>
+                )}
               </ul>
               <div className="text-right">
-                {uniqueAddons.length > 3 && (
+                {(uniqueAddons.length > 2 || (uniqueAddons.length > 0 && totalSurcharge > 0)) && (
                   <>
                     {!showAllAddons ? (
                       <button
@@ -290,19 +293,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
             </div>
           )}
 
-          {totalSurcharge > 0 && (
-            <p className="text-xs text-[#D3202D] font-medium bg-gray-50 rounded-lg px-3 py-2 mt-1 flex justify-between items-center">
-              <span>
-                {t("Surcharges")} {surchargeScope}
-              </span>
-              <span>
-                {pickupSurcharge > 0 && `${formatPrice(pickupSurcharge)} `}
-                {pickupSurcharge > 0 && returnSurcharge > 0 && " + "}
-                SGD {returnSurcharge > 0 && `${formatPrice(returnSurcharge)} `}
-              </span>
-            </p>
-          )}
-        </>
+          <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
+            <span>{t("price")}</span>
+            <span className="text-[#D3202D] font-semibold">SGD {formatPrice(total)}</span>
+          </div>
+        </div>
       ) : (
         /* DAY TOUR PREVIEW (unchanged) */
         <div className="flex flex-col gap-2">

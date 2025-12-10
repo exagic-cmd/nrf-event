@@ -11,6 +11,8 @@ import { AlertCircle, Loader2, Lock, Eye, EyeClosed } from "lucide-react";
 import { redirectToAirwallexCheckout } from "@/utils/airwallex";
 import { stripePromise } from "@/lib/stripe";
 import { createCheckoutSession } from "@/lib/stripeApi";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Layout({ children }) {
   const { isOpen, drawerContent, closeDrawer } = useDrawerStore();
@@ -118,6 +120,7 @@ export default function Layout({ children }) {
         {drawerContent || <p>{t("noContentYet")}</p>}
       </SideDrawer>
       {!router.pathname.includes("booking") && <CartBubble />}
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
     </>
   );
 }
