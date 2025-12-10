@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useRecentlyViewedStore from '@/store/useRecentlyViewedStore';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,8 +8,13 @@ import { formatPrice } from "@/utils/priceUtils";
 import LoaderSvg from "@/components/common/LoaderSvg";
 const RecentlyViewed = ({ currentProductLink }) => {
   const { recentlyViewed } = useRecentlyViewedStore();
-  const [loadingItemId, setLoadingItemId] = useState(null);
+  const [loadingItemId, setLoadingItemId] = useState(null); 
 
+  // Reset loading state when the current product link changes
+  useEffect(() => {
+    setLoadingItemId(null);
+  }, [currentProductLink]);
+  
   if (!recentlyViewed || recentlyViewed.length === 0) return null;
 
   return (
@@ -26,7 +31,7 @@ const RecentlyViewed = ({ currentProductLink }) => {
                 passHref
                 legacyBehavior
               >
-              <a onClick={!isActive ? () => setLoadingItemId(item.id) : undefined}>
+              <a onClick={!isActive ? () => setLoadingItemId(item.id) : (e) => e.preventDefault()}>
             <div className={`flex bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-200 ${
               isActive 
                 ? 'border-2 border-[#D3202D] bg-slate-100/50 cursor-default opacity-70' 

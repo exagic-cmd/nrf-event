@@ -152,13 +152,12 @@ function ListingsPage() {
       const hasSelectedCancellation = activeFilters.cancellation_policies && activeFilters.cancellation_policies.length > 0;
       const hasSelectedRoomAmenities = activeFilters.room_amenities && activeFilters.room_amenities.length > 0;
       const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
-      const hasSearchText = activeFilters.searchText && activeFilters.searchText.trim().length > 0;
+      const hasSearchText = activeFilters.searchText && activeFilters.searchText.trim().length > 1;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
       // Create lookup maps for performance
       const generalAmenitiesMap = new Map((accommodationFilters?.general_amenities || []).map(a => [a.id, a.label]));
-      const roomAmenitiesMap = new Map((accommodationFilters?.room_amenities || []).map(a => [a.id, a.name]));
       const cancellationPolicyMap = new Map((accommodationFilters?.cancellation_policies || []).map(p => [p.id, p.name]));
 
        const hotelAmenitiesSet = new Set(hotelData.amenities || []);
@@ -167,15 +166,8 @@ function ListingsPage() {
         (hotelData.title || hotelData.name || "").toLowerCase().includes(activeFilters.searchText.toLowerCase())
       );
 
-      if (!searchTextMatch) return false; // Early exit for performance
-
       const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(id => {
         const amenityName = generalAmenitiesMap.get(id);
-        return amenityName && hotelAmenitiesSet.has(amenityName);
-      });
-
-      const roomAmenityMatch = !hasSelectedRoomAmenities || activeFilters.room_amenities.every(id => {
-        const amenityName = roomAmenitiesMap.get(id);
         return amenityName && hotelAmenitiesSet.has(amenityName);
       });
 
@@ -196,7 +188,7 @@ function ListingsPage() {
         (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
       );
 
-      return searchTextMatch && amenityMatch && roomAmenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
+      return searchTextMatch && amenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
     });
   }, [applyAccommodationFilter, accommodationFilters]); 
   useEffect(() => {

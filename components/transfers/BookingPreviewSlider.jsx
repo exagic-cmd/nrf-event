@@ -202,11 +202,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
               <span className="font-semibold text-gray-800 text-right">{item.mealType}</span>
             </div> */}
 
-            {item.special_request && (
+            {/* {item.special_request && (
               <p className="italic text-gray-500">
                 {t("specialRequests", { ns: "accommodation" })}: {item.specialRequests}
               </p>
-            )}
+            )} */}
           </div>
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">

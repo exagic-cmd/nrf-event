@@ -102,7 +102,7 @@ const FILTER_CONFIG = {
   },
   general_amenities: {
     title: "General Amenities",
-    defaultOpen: false,
+    defaultOpen: true,
     handlerKey: 'amenities',
     itemKey: 'id',
     itemLabel: 'label',
@@ -198,7 +198,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   };
 
   const applyPriceRange = () => {
-    setActiveFilters((prev) => ({ ...prev, priceRange: { min: priceBounds.min, max: Number(selectedMax || 0) } }));
+    setActiveFilters((prev) => ({ ...prev, priceRange: { min: Number(selectedMin || 0), max: Number(selectedMax || 0) } }));
   };
   const clearPriceRange = () => {
     setSelectedMin(priceBounds.min);
@@ -224,9 +224,23 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
         )}
       </div>
 
-      {/* Sort By Section */}
-      <div className="border-b border-gray-200 py-4">
-        <h3 className="text-md font-semibold text-gray-800 mb-3">Sort By</h3>
+      {/* Search & Sort Section */}
+      <FilterSection title="Search & Sort" defaultOpen={true}>
+        {/* Hotel Name Search */}
+        <div className="relative mb-4"> {/* Added mb-4 for spacing */}
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={activeFilters.searchText}
+            onChange={(e) => {
+              const { value } = e.target;
+              setActiveFilters(prev => ({ ...prev, searchText: value }));
+            }}
+            className="w-full border border-gray-300 rounded-lg py-2 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+          />
+        </div>
+
+        {/* Sort By Dropdown */}
         <div className="relative">
           <select
             value={sortBy}
@@ -240,42 +254,44 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
           </select>
           <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
         </div>
-      </div>
-
-      {/* Hotel Name Search */}
-      <FilterSection title="Hotel Name" defaultOpen={true}>
-        <div className="relative pt-2">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            value={activeFilters.searchText}
-            onChange={(e) => {
-              const { value } = e.target;
-              setActiveFilters(prev => ({ ...prev, searchText: value }));
-            }}
-            className="w-full border border-gray-300 rounded-lg py-2 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-          />
-        </div>
       </FilterSection>
 
       {/* Price Range Filter - Always present */}
       <FilterSection title="Price Range" defaultOpen={true} scrollable={false}>
-       <div className="space-y-4 pt-2">
+        <div className="space-y-4 pt-2">
+          <div className="flex items-center justify-between gap-3">
+            <div className="relative w-1/2">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Min</span>
+              <input
+                type="text"
+                value={Math.round(selectedMin)}
+                onChange={(e) => setSelectedMin(Number(e.target.value))}
+                onBlur={applyPriceRange}
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center"
+              />
+            </div>
+            <div className="relative w-1/2">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Max</span>
+              <input
+                type="text"
+                value={Math.round(selectedMax)}
+                onChange={(e) => setSelectedMax(Number(e.target.value))}
+                onBlur={applyPriceRange}
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center"
+              />
+            </div>
+          </div>
           <div className="relative">
             <input
               type="range"
-              min="0"
-              max="1000"
+              min={priceBounds.min}
+              max={priceBounds.max}
               value={selectedMax}
               onChange={(e) => setSelectedMax(Number(e.target.value))}
               onMouseUp={applyPriceRange} // Apply when user releases the slider
               onTouchEnd={applyPriceRange} // Apply for touch devices
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>SGD 0</span>
-              <span>SGD 1000</span>
-            </div>
          </div>
         </div>
       </FilterSection>

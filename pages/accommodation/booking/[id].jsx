@@ -153,7 +153,8 @@ export default function AccommodationBookingPage() {
       <div>
         <p className="text-[9px] opacity-70 leading-tight text-black">Room Details</p>
         <p className="text-sm font-semibold leading-tight text-black">
-          {selectedRoom.roomType || selectedRoom.roomCat || selectedRoom.name} ({totalRoomsRequested} Room{totalRoomsRequested > 1 ? 's' : ''}, {nights} Night{nights > 1 ? 's' : ''})
+          {selectedRoom.roomType || selectedRoom.roomCat || selectedRoom.name}
+           {/* ({totalRoomsRequested} Room{totalRoomsRequested > 1 ? 's' : ''}, {nights} Night{nights > 1 ? 's' : ''}) */}
         </p>
       </div>
     </div>
