@@ -13,7 +13,7 @@ import { useAccommodationsStore } from '@/store/useAccommodationsStore';
 export default function AccommodationBookNow({ isNonStuba, bookingData }) {
   const { searchParams } = useAccommodationsStore();
   const rooms = searchParams?.rooms || [{ adult: 2, children: [] }];
-pelse make it proel  const [isSubmitted, setIsSubmitted] = useState(false);
+const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Reusable, strict validation for name fields
   const nameValidation = z.string()
