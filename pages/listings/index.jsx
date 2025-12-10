@@ -438,7 +438,7 @@ useEffect(() => {
           )}
 
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
-            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
+            <div className="h-fit md:sticky z-30 top-24 self-start w-full lg:w-56">
               {!isLoading && searchResults.length > 0 && (
                 <FilterSidebar />
               )}
@@ -467,7 +467,7 @@ useEffect(() => {
                 className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
               >
                 <Filter size={20} />
-                Filter
+                <span>sss</span>
               </button>
             </div>
           )}
@@ -503,7 +503,7 @@ useEffect(() => {
         </div>
 
         {/* Filter Modal for Small Screens */}
-        {showFilterModal && isAccommodationCategory && (
+        {showFilterModal && (
           <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-bold">Filters</h2>
@@ -512,12 +512,16 @@ useEffect(() => {
               </button>
             </div>
             <div className="p-4">
-              <AccommodationFilterSidebar
-                filters={accommodationFilters}
-                onFilterChange={handleFilterChange}
-                sortBy={accommodationSortBy}
-                onSortChange={setAccommodationSortBy}
-              />
+              {isAccommodationCategory ? (
+                <AccommodationFilterSidebar
+                  filters={accommodationFilters}
+                  onFilterChange={handleFilterChange}
+                  sortBy={accommodationSortBy}
+                  onSortChange={setAccommodationSortBy}
+                />
+              ) : (
+                <FilterSidebar />
+              )}
             </div>
             <div className="sticky bottom-0 bg-white p-4 border-t shadow-lg">
               <button
