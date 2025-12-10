@@ -1,5 +1,6 @@
 "use client";
 
+import { toast, POSITION } from 'react-toastify';
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   MapPin,
@@ -342,7 +343,7 @@ export default function SearchFilterCard({
 
   const handleTransferSearch = async () => {
   if (!selectedPickup || !selectedDropoff) {
-    alert("Please select both pick-up and drop-off locations");
+    toast.error("Please select both pick-up and drop-off locations");
     return;
   }
 

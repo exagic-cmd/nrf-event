@@ -51,10 +51,10 @@ const ImageGallery = ({ apiData }) => {
         <div className="col-span-1 lg:col-span-2 relative rounded-2xl lg:rounded-r-none overflow-hidden">
           <div
             className="cursor-pointer"
-            onClick={() => openPreview(0)}
+            onClick={() => openPreview(currentImageIndex)}
           >
             <img
-              src={images[0].url}
+              src={images[currentImageIndex].url}
               className="w-full h-[280px] sm:h-[340px] md:h-[420px] object-cover"
               alt={tourName}
             />

@@ -26,7 +26,11 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
   const daytoursData = useMemo(() => {
     if (!activeData || !Array.isArray(activeData)) return [];
 
-    return activeData.map((item) => {
+    return activeData
+      .filter(item => 
+        (item.status === 1 || item.status === '1') && item.country_name === 'Singapore'
+      )
+      .map((item) => {
       console.log("Processing Daytour Item:", item);
       const basePrice = parseFloat(item.adult_price || item.starting_price);
       const promoPrice = parseFloat(item.final_promo_price || 0);

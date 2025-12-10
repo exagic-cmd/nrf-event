@@ -152,24 +152,22 @@ function ListingsPage() {
       const hasSelectedCancellation = activeFilters.cancellation_policies && activeFilters.cancellation_policies.length > 0;
       const hasSelectedRoomAmenities = activeFilters.room_amenities && activeFilters.room_amenities.length > 0;
       const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
+      const hasSearchText = activeFilters.searchText && activeFilters.searchText.trim().length > 1;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
       // Create lookup maps for performance
       const generalAmenitiesMap = new Map((accommodationFilters?.general_amenities || []).map(a => [a.id, a.label]));
-      const roomAmenitiesMap = new Map((accommodationFilters?.room_amenities || []).map(a => [a.id, a.name]));
       const cancellationPolicyMap = new Map((accommodationFilters?.cancellation_policies || []).map(p => [p.id, p.name]));
 
        const hotelAmenitiesSet = new Set(hotelData.amenities || []);
 
-      
+      const searchTextMatch = !hasSearchText || (
+        (hotelData.title || hotelData.name || "").toLowerCase().includes(activeFilters.searchText.toLowerCase())
+      );
+
       const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(id => {
         const amenityName = generalAmenitiesMap.get(id);
-        return amenityName && hotelAmenitiesSet.has(amenityName);
-      });
-
-      const roomAmenityMatch = !hasSelectedRoomAmenities || activeFilters.room_amenities.every(id => {
-        const amenityName = roomAmenitiesMap.get(id);
         return amenityName && hotelAmenitiesSet.has(amenityName);
       });
 
@@ -190,7 +188,7 @@ function ListingsPage() {
         (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
       );
 
-      return amenityMatch && roomAmenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
+      return searchTextMatch && amenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
     });
   }, [applyAccommodationFilter, accommodationFilters]); 
   useEffect(() => {
@@ -440,7 +438,7 @@ useEffect(() => {
           )}
 
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
-            <div className="h-fit md:sticky top-24 self-start z-20 w-full lg:w-56">
+            <div className="h-fit md:sticky z-30 top-24 self-start w-full lg:w-56">
               {!isLoading && searchResults.length > 0 && (
                 <FilterSidebar />
               )}
@@ -469,7 +467,7 @@ useEffect(() => {
                 className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
               >
                 <Filter size={20} />
-                Filter
+                <span>sss</span>
               </button>
             </div>
           )}
@@ -505,7 +503,7 @@ useEffect(() => {
         </div>
 
         {/* Filter Modal for Small Screens */}
-        {showFilterModal && isAccommodationCategory && (
+        {showFilterModal && (
           <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-bold">Filters</h2>
@@ -514,12 +512,16 @@ useEffect(() => {
               </button>
             </div>
             <div className="p-4">
-              <AccommodationFilterSidebar
-                filters={accommodationFilters}
-                onFilterChange={handleFilterChange}
-                sortBy={accommodationSortBy}
-                onSortChange={setAccommodationSortBy}
-              />
+              {isAccommodationCategory ? (
+                <AccommodationFilterSidebar
+                  filters={accommodationFilters}
+                  onFilterChange={handleFilterChange}
+                  sortBy={accommodationSortBy}
+                  onSortChange={setAccommodationSortBy}
+                />
+              ) : (
+                <FilterSidebar />
+              )}
             </div>
             <div className="sticky bottom-0 bg-white p-4 border-t shadow-lg">
               <button
