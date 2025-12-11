@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import DaytourCard from "@/components/daytours/DayTourCard";
 import Pagination from "@/components/common/Pagination";
@@ -7,29 +7,26 @@ import { getFullImageUrl } from "@/utils/imageService";
 
 const ITEMS_PER_PAGE = 8;
 
-function DaytoursList({ searchParams, filteredDaytours = null }) {
+function DaytoursList({ searchTerm, sortBy }) {
   const { t } = useTranslation('daytour');
   const [currentPage, setCurrentPage] = useState(1);
-  const { searchResults, filteredResults, isLoading } = useDaytoursStore();
-
-  // Priority: filteredDaytours (from FilterSidebar) -> filteredResults (from store) -> searchResults
-  const activeData = useMemo(() => {
-    if (filteredDaytours && Array.isArray(filteredDaytours) && filteredDaytours.length > 0) {
-      return filteredDaytours;
-    }
+  const { 
+    searchResults, 
+    filteredResults, 
+    isLoading,
+  } = useDaytoursStore();
+   const activeData = useMemo(() => {
     if (filteredResults && Array.isArray(filteredResults) && filteredResults.length > 0) {
       return filteredResults;
     }
     return searchResults;
-  }, [filteredDaytours, filteredResults, searchResults]);
+  }, [filteredResults, searchResults]);
 
   const daytoursData = useMemo(() => {
     if (!activeData || !Array.isArray(activeData)) return [];
 
     return activeData
-      .filter(item => 
-        (item.status === 1 || item.status === '1') && item.country_name === 'Singapore'
-      )
+      
       .map((item) => {
       console.log("Processing Daytour Item:", item);
       const basePrice = parseFloat(item.adult_price || item.starting_price);
@@ -72,42 +69,61 @@ function DaytoursList({ searchParams, filteredDaytours = null }) {
     });
   }, [activeData]);
 
-  // Reset to first page when filtered data changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredDaytours, filteredResults, searchResults]);
+    useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [filteredResults, searchResults, searchTerm, sortBy]);
 
-  const sortedDaytours = useMemo(() => {
-    const sortableDaytours = [...daytoursData];
-    return sortableDaytours.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-  }, [daytoursData]);
+  const processedDaytours = useMemo(() => {
+    let filtered = [...daytoursData];
 
-  const totalPages = Math.ceil(sortedDaytours.length / ITEMS_PER_PAGE);
-  const paginatedDaytours = sortedDaytours.slice(
+    // Apply search term
+    if (searchTerm) {
+      filtered = filtered.filter(tour =>
+        tour.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+switch (sortBy) {
+      case 'price_asc':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price_desc':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'name_asc':
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name_desc':
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  }, [daytoursData, searchTerm, sortBy]);
+
+  const totalPages = Math.ceil(processedDaytours.length / ITEMS_PER_PAGE);
+  const paginatedDaytours = processedDaytours.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
-  // Show loading state only if we're loading from the store AND no filtered data is provided
-  const showLoading = isLoading && !filteredDaytours;
+  const showLoading = isLoading;
 
   return (
     <div className="space-y-6">
       <div className="rounded-xl py-3 px-4 bg-white">
         <p className="text-lg font-semibold">
-          Showing {sortedDaytours.length} Day Tours
-          {filteredDaytours && filteredDaytours.length > 0 && (
-            <span className="text-sm text-gray-600 ml-2">
-              (Filtered from {searchResults?.length || 0} total)
-            </span>
-          )}
+          Showing {processedDaytours.length} Day Tours
         </p>
       </div>
 
       {showLoading ? (
         <div className="flex justify-center items-center py-20">
           <svg
-            className="animate-spin h-8 w-8 text-[#CC9A55]"
+            className="animate-spin h-8 w-8 text-[#D3202D]"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
