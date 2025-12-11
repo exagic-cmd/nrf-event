@@ -26,7 +26,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
 
   const item = api.data[0];
   const room = item.Room;
-  const totalPrice = (parseFloat(room.TotalSellingPrice?.["@attributes"]?.amt) || 0).toFixed(2);
+  const totalPrice = price;
   const currency = api.currency || "USD";
   const roomType = room.RoomType?.["@attributes"]?.text || "N/A";
   const mealType = room.MealType?.["@attributes"]?.text || "N/A";
@@ -189,7 +189,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
 };
 
 // === MAIN COMPONENT ===
-const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
+const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) => {
   const { t } = useTranslation("accommodation");
   const { setJustAdded } = useDrawerStore();
   const user = useUserStore((state) => state.user);
@@ -457,20 +457,16 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const totalChildren = rooms.reduce((s, r) => s + (r.children?.length || 0), 0);
     const totalRoomsRequested = rooms.length || 1;
 
-    // bookingData.selectedRoom.price is already the total for ALL nights for 1 room
-    const priceFor1Room = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (priceFor1Room).toFixed(2);
-
     const cartItem = {
       productType: "accommodation",
       product_id: hotelId,
       tourId: hotelId,
       productTitle: bookingData.hotelData?.title || "",
-      productType: "accommodation",
+      type: "accommodation",
       adult_count: totalAdults,
       child_count: totalChildren,
-      price: priceFor1Room,
-      total: Number(totalPrice),
+      price: price,
+      total: Number(price),
       tour_date: bookingData.checkIn,
       check_in: bookingData.checkIn,
       check_out: bookingData.checkOut,
@@ -529,15 +525,12 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
     const totalChildren = rooms.reduce((s, r) => s + (r.children?.length || 0), 0);
     const totalRoomsRequested = rooms.length || 1;
 
-    // bookingData.selectedRoom.price is already the total for ALL nights for 1 room
-    const priceFor1Room = parseFloat(bookingData.selectedRoom?.price || 0) || 0;
-    const totalPrice = (priceFor1Room).toFixed(2);
-
     const cartItem = {
       product_id: hotelId,
       tourId: hotelId,
       productTitle: bookingData.hotelData?.title || "",
       productType: "accommodation",
+      type: "accommodation",
       adult_count: totalAdults,
       child_count: totalChildren,
       price: priceFor1Room,
@@ -873,6 +866,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
           onClose={() => setModalOpen(false)}
           onConfirm={confirmAndAddToCart}
           bookingResponse={bookingResponse}
+          price={price}
         />
       )}
     </>

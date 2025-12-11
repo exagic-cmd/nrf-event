@@ -96,16 +96,16 @@ function DaytourCard({ tour, category = "daytour" }) {
   {/* Info Section */}
   <div className="flex-1 flex flex-col justify-between p-4">
   <div>
-    <div className="flex justify-between items-start gap-4">
+    <div className="flex justify-between items-start gap-2">
       <h2 className="font-bold text-lg line-clamp-2 text-[#D3202D] flex-grow">
         {tour.name}
       </h2>
-      {/* {mainLandmark && (
-        <div className="flex items-center gap-1 flex-shrink-0 pt-1">
-          <MapPin size={14} className="text-gray-500"/>
-          <span className="text-gray-700 text-sm font-medium line-clamp-1">{mainLandmark}</span>
-        </div>
-      )} */}
+     {tour.duration && (
+      <div className="flex flex-shrink-0 items-center gap-1">
+        <Clock size={14} className="text-gray-500" />
+        <span className="whitespace-nowrap pl-2 text-xs text-gray-600">{tour.duration}</span>
+      </div>
+    )}
     </div>
 
     <p className="text-sm text-gray-600 line-clamp-2 mt-1">
@@ -146,15 +146,10 @@ function DaytourCard({ tour, category = "daytour" }) {
   </div>
 
   {/* New Info Section */}
-  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-gray-700">
-    {tour.duration && (
-      <div className="flex items-center gap-1">
-        <Clock size={14} className="text-gray-500" />
-        <span>{tour.duration}</span>
-      </div>
-    )}
+  {/* <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-gray-700">
+     */}
 
-    {tour.physical_aspect && tour.physical_aspect.length > 0 && (
+    {/* {tour.physical_aspect && tour.physical_aspect.length > 0 && (
       <div className="flex items-center gap-1" title={`Physical: ${tour.physical_aspect.join(', ')}`}>
         <Footprints size={14} className="text-gray-500" />
         <span>{tour.physical_aspect[0]}</span>
@@ -166,9 +161,9 @@ function DaytourCard({ tour, category = "daytour" }) {
         <Zap size={14} className="text-gray-500" />
         <span>{tour.activity_intensity[0]}</span>
       </div>
-    )}
+    )} */}
 
-    {tour.tourtype && (
+    {/* {tour.tourtype && (
       <div className="flex items-center gap-1">
         <Calendar size={14} className="text-gray-500" />
         <span>{tour.tourtype}</span>
@@ -188,7 +183,7 @@ function DaytourCard({ tour, category = "daytour" }) {
         <span>{tour.guidelanguage}</span>
       </div>
     )}
-  </div>
+  </div> */}
 
   {/* Bottom Section */}
   <div className="flex justify-between items-end mt-4">

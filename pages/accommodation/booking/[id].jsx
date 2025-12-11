@@ -103,9 +103,9 @@ export default function AccommodationBookingPage() {
   const nights = bookingData?.nights || 1;
   const totalRoomsRequested = (bookingData?.searchParams?.rooms || []).length || 1;
 
-  // selectedRoom.price is already total for ALL nights for 1 room
+  // selectedRoom.pricing.total_promo is the total for ALL nights for 1 room
   // Multiply by number of rooms to get final total
-  const totalPrice = (selectedRoom.price || 0);
+  const totalPrice = (selectedRoom?.pricing?.total_promo || selectedRoom.price || 0);
 
   return (
     <Layout>
@@ -165,7 +165,7 @@ export default function AccommodationBookingPage() {
         <Utensils className="w-3 h-3 text-black" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight text-black">Meal Type</p>
+        <p className="text-[9px] opacity-70 leading-tight text-black">Meal Plan</p>
         <p className="text-sm font-semibold leading-tight text-black">
           {selectedRoom.mealType || "Room Only"}
         </p>
@@ -205,6 +205,7 @@ export default function AccommodationBookingPage() {
               <AccommodationBookNow
                 isNonStuba={isNonStuba}
                 bookingData={bookingData}
+                price={totalPrice}
               />
             </div>
 
