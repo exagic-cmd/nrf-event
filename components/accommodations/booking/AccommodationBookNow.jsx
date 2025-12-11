@@ -10,7 +10,7 @@ import LoaderSvg from "@/components/common/LoaderSvg";
 
 import {
   Calendar, Home, Bed, Utensils, AlertCircle,
-  CheckCircle, XCircle, DollarSign, Info, Loader2
+  CheckCircle, XCircle, DollarSign, Info, Loader2, RefreshCw
 } from "lucide-react";
 
 const TITLE_OPTIONS = [
@@ -188,6 +188,41 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
   );
 };
 
+// === REPLACE ITEM MODAL ===
+const ReplaceItemModal = ({ isOpen, onClose, onConfirm, hotelName }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl p-8 text-center">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+            <RefreshCw className="w-8 h-8 text-red-500" />
+          </div>
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Item Already in Cart</h3>
+        <p className="text-gray-600 mb-6">
+          You already have a booking for <strong>{hotelName}</strong> in your cart. Do you want to replace it with this new selection?
+        </p>
+        <div className="flex gap-4">
+          <button
+            onClick={onClose}
+            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition"
+          >
+            No, Keep Existing
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-[#D3202D] hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition"
+          >
+            Yes, Replace
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // === MAIN COMPONENT ===
 const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) => {
   const { t } = useTranslation("accommodation");
@@ -222,6 +257,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
   const [errors, setErrors] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [bookingResponse, setBookingResponse] = useState(null);
+  const [itemToReplace, setItemToReplace] = useState(null);
+
 
   useEffect(() => {
     const initialGuests = initGuestsByRoom();
@@ -412,6 +449,18 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       return;
     }
 
+    // Check if item already exists in cart
+    const cartItems = useCartStore.getState().items;
+    const hotelId = bookingData.hotelData?.id || null;
+    const existingItem = cartItems.find(item => item.type === 'accommodation' && item.product_id === hotelId);
+
+    if (existingItem) {
+      setItemToReplace(existingItem);
+      setIsSubmitting(false); // Reset submitting state
+      setLoadingButton(null); // Reset button loading state
+      return; // This will trigger the useEffect to show the modal
+    }
+
     const availabilityPayload = {
       start_date: bookingData.searchParams.start_date,
       end_date: bookingData.searchParams.end_date,
@@ -497,6 +546,14 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     setJustAdded(true);
     setShowCartOptions(true);
   };
+
+  const handleReplaceItem = () => {
+    if (itemToReplace) {
+      useCartStore.getState().removeItem(itemToReplace.key);
+    }
+    addToCartDirectly();
+    setItemToReplace(null); // Close modal
+  }
 
   // === CONFIRM & ADD (STUBA) ===
   const confirmAndAddToCart = () => {
@@ -869,6 +926,13 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
           price={price}
         />
       )}
+
+      <ReplaceItemModal
+        isOpen={!!itemToReplace}
+        onClose={() => setItemToReplace(null)}
+        onConfirm={handleReplaceItem}
+        hotelName={itemToReplace?.productTitle || ""}
+      />
     </>
   );
 };
