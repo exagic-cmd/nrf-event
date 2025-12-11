@@ -264,33 +264,68 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
   };
 
   const validateGuestInfo = () => {
-    const newErrors = {};
+    const newErrors = [];
     let isValid = true;
     const nameRegex = /^[a-zA-Z\s'-]{2,}$/;
+  
+    guestsByRoom.forEach((room, roomIdx) => {
+      const roomErrors = { adults: [], children: [] };
+  
+      room.adults.forEach((adult, adultIdx) => {
+        const adultErrors = {};
+        const isLeadGuest = roomIdx === 0 && adultIdx === 0;
+        const hasFirstName = adult.firstName?.trim();
+        const hasLastName = adult.lastName?.trim();
+  
+        // Validate First Name
+        if (isLeadGuest && !hasFirstName) {
+          adultErrors.firstName = "First name is required.";
+          isValid = false;
+        } else if (hasFirstName && !nameRegex.test(adult.firstName)) {
+          adultErrors.firstName = "Enter a valid name (min 2 letters).";
+          isValid = false;
+        } else if (!isLeadGuest && hasLastName && !hasFirstName) {
+          adultErrors.firstName = "First name is required with last name.";
+          isValid = false;
+        }
+  
+        // Validate Last Name
+        if (isLeadGuest && !hasLastName) {
+          adultErrors.lastName = "Last name is required.";
+          isValid = false;
+        } else if (hasLastName && !nameRegex.test(adult.lastName)) {
+          adultErrors.lastName = "Enter a valid name (min 2 letters).";
+          isValid = false;
+        } else if (!isLeadGuest && hasFirstName && !hasLastName) {
+          adultErrors.lastName = "Last name is required with first name.";
+          isValid = false;
+        }
+        roomErrors.adults[adultIdx] = adultErrors;
+      });
+  room.children.forEach((child, childIdx) => {
+        const childErrors = {};
+        const hasChildFirstName = child.firstName?.trim();
+        const hasChildLastName = child.lastName?.trim();
 
-    // Only the lead guest (Room 1, Adult 1) is mandatory
-    const leadGuest = guestsByRoom[0]?.adults[0];
+        if (hasChildFirstName && !nameRegex.test(child.firstName)) {
+          childErrors.firstName = "Enter a valid child's name.";
+          isValid = false;
+        } else if (hasChildLastName && !hasChildFirstName) {
+          childErrors.firstName = "First name is required.";
+          isValid = false;
+        }
 
-    if (!leadGuest) {
-      // This case should not happen if rooms are configured
-      return false;
-    }
-
-    if (!leadGuest.firstName || !leadGuest.firstName.trim()) {
-      newErrors.leadFirstName = "First name is required.";
-      isValid = false;
-    } else if (!nameRegex.test(leadGuest.firstName)) {
-      newErrors.leadFirstName = "Please enter a valid first name (letters only, min 2).";
-      isValid = false;
-    }
-
-    if (!leadGuest.lastName || !leadGuest.lastName.trim()) {
-      newErrors.leadLastName = "Last name is required.";
-      isValid = false;
-    } else if (!nameRegex.test(leadGuest.lastName)) {
-      newErrors.leadLastName = "Please enter a valid last name (letters only, min 2).";
-      isValid = false;
-    }
+        if (hasChildLastName && !nameRegex.test(child.lastName)) {
+          childErrors.lastName = "Enter a valid child's name.";
+          isValid = false;
+        } else if (hasChildFirstName && !hasChildLastName) {
+          childErrors.lastName = "Last name is required.";
+          isValid = false;
+        }
+        roomErrors.children[childIdx] = childErrors;
+      });
+      newErrors[roomIdx] = roomErrors;
+    });
 
     setErrors(newErrors);
     return isValid;
@@ -628,8 +663,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                   }`}
                   readOnly={showCartOptions}
                 />
-                 {roomIdx === 0 && i === 0 && errors.leadFirstName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.leadFirstName}</p>
+                {errors[roomIdx]?.adults[i]?.firstName && (
+                  <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].firstName}</p>
                 )}
               </div>
 
@@ -652,8 +687,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {} }) => {
                   }`}
                   readOnly={showCartOptions}
                 />
-                {roomIdx === 0 && i === 0 && errors.leadLastName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.leadLastName}</p>
+                 {errors[roomIdx]?.adults[i]?.lastName && (
+                  <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].lastName}</p>
                 )}
               </div>
             </div>

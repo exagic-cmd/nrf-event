@@ -5,22 +5,19 @@ import { useState, useMemo, useEffect, useTransition } from "react";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 
+// Reordered for a more logical flow in the UI
 const FILTER_KEYS = [
-  "suit_clusters",
   "preference_activities",
   "physical_aspect",
   "activity_intensity",
   "inclusions_exclusions_activity",
-  "sgd_preference",
 ];
 
 const FILTER_LABELS = {
-  suit_clusters: "Travel Clusters",
   preference_activities: "Activities",
   physical_aspect: "Physical Aspect",
   activity_intensity: "Activity Intensity",
   inclusions_exclusions_activity: "Inclusions / Exclusions",
-  sgd_preference: "SGD Preference",
   amenities: "Amenities",
 };
 
@@ -51,8 +48,18 @@ const normalizeFilterOption = (value: string): string => {
   return normalizeValue(value);
 };
 
-export default function FilterSidebar({ mode = "daytour" }) {
-  const { searchResults, applyClientFilter, resetFilters } = useDaytoursStore();
+export default function FilterSidebar({
+  mode = "daytour",
+  searchTerm,
+  setSearchTerm,
+  sortBy,
+  setSortBy,
+}) {
+  const { 
+    searchResults, 
+    applyClientFilter, 
+    resetFilters,
+  } = useDaytoursStore();
   const { accommodations, applyAccommodationFilter, resetAccommodationFilters } = useAccommodationsStore();
   const [isPending, startTransition] = useTransition();
   const [isMobileFiltersVisible, setMobileFiltersVisible] = useState(false);
@@ -64,11 +71,14 @@ export default function FilterSidebar({ mode = "daytour" }) {
     return init;
   });
 
+  const hasActiveFilters = Object.values(selected).some((arr) => arr.length > 0);
+
   // -----------------------------------------------------------------
   // 1. Build unique options (normalized for matching, original for display)
   // -----------------------------------------------------------------
   const options = useMemo(() => {
     const result: Record<string, string[]> = {};
+    const counts: Record<string, Record<string, number>> = {};
 
     const currentResults = searchResults || [];
     const currentAccommodations = accommodations || [];
@@ -79,7 +89,10 @@ export default function FilterSidebar({ mode = "daytour" }) {
         : "daytour";
 
     const keys = effectiveMode === "accommodation" ? ["amenities"] : FILTER_KEYS;
-    keys.forEach((k) => (result[k] = []));
+    keys.forEach((k) => {
+      result[k] = [];
+      counts[k] = {};
+    });
 
     const source = effectiveMode === "accommodation" ? currentAccommodations : currentResults;
 
@@ -87,36 +100,32 @@ export default function FilterSidebar({ mode = "daytour" }) {
 
     source.forEach((item) => {
       keys.forEach((key) => {
+        let itemValues: string[] = [];
         if (key === "amenities") {
           const raw = item.amenities || item.Hotel_Data?.amenities || item.normalizedHotelData?.amenities || '';
-          const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
-          parts.forEach(part => {
-            const norm = normalizeValue(part);
-            if (norm && !seen.has(norm)) {
-              seen.add(norm);
-              result[key].push(part); // store original for display
-            }
-          });
+          itemValues = [...new Set(raw.split(',').map(s => s.trim()).filter(Boolean))];
         } else {
           const values = item[key];
           if (Array.isArray(values)) {
-            values.forEach(v => {
-              const str = String(v);
-              const norm = normalizeValue(str);
-              if (norm && !seen.has(norm)) {
-                seen.add(norm);
-                result[key].push(str);
-              }
-            });
+            itemValues = [...new Set(values.map(v => String(v)))];
           } else if (values === 0 || values) {
-            const str = String(values);
-            const norm = normalizeValue(str);
-            if (norm && !seen.has(norm)) {
-              seen.add(norm);
-              result[key].push(str);
-            }
+            itemValues = [String(values)];
           }
         }
+
+        itemValues.forEach(value => {
+          if (!value) return;
+          const norm = normalizeValue(value);
+          if (norm) {
+            // Add to unique options list if not seen
+            if (!seen.has(norm)) {
+              seen.add(norm);
+              result[key].push(value);
+            }
+            // Increment count for this value
+            counts[key][value] = (counts[key][value] || 0) + 1;
+          }
+        });
       });
     });
 
@@ -125,7 +134,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
       result[k].sort((a, b) => a.localeCompare(b));
     });
 
-    return result;
+    return { options: result, counts };
   }, [searchResults, accommodations, mode]);
 
   // -----------------------------------------------------------------
@@ -141,9 +150,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
           ? "accommodation"
           : "daytour";
 
-      const hasActive = Object.values(selected).some((arr) => arr.length > 0);
-
-      if (!hasActive) {
+      if (!hasActiveFilters) {
         effectiveMode === "accommodation" ? resetAccommodationFilters() : resetFilters();
         return;
       }
@@ -187,6 +194,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
     applyAccommodationFilter,
     resetFilters,
     resetAccommodationFilters,
+    hasActiveFilters,
   ]);
 
   // -----------------------------------------------------------------
@@ -233,63 +241,139 @@ export default function FilterSidebar({ mode = "daytour" }) {
   // Render
   // -----------------------------------------------------------------
  return (
-  <aside className="bg-white rounded-lg shadow p-5 w-full lg:overflow-y-auto lg:max-h-[80vh]">
-    <div className="flex items-center justify-between">
-    
-      <h3 className="font-semibold hidden lg:flex text-[#D3202D] text-lg">Filters</h3>
-      <button 
-        onClick={clearAll} 
-        className="text-sm text-blue-600 hover:underline hidden lg:block"
-      >
-        Clear all
-      </button>
-      <button
-        className="lg:hidden font-semibold px-8 text-[#D3202D] text-lg"
-        onClick={() => setMobileFiltersVisible(!isMobileFiltersVisible)}
-      >
-        {isMobileFiltersVisible ? 'Apply' : 'Filters'}
-      </button>
+  <aside className="bg-white rounded-lg shadow p-5 w-full">
+    {/* --- DESKTOP VIEW --- */}
+    <div className="hidden lg:block lg:overflow-y-auto lg:max-h-[80vh]">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-[#D3202D] text-lg">Search & Sort</h3>
+      </div>
+      {/* Search and Sort Controls */}
+      <div className="space-y-4 mt-4 mb-2">
+        <div>
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={searchTerm || ''}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 py-2 border text-xs border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+          />
+        </div>
+        <div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 text-xs rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+          >
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="name_asc">Name: A to Z</option>
+            <option value="name_desc">Name: Z to A</option>
+          </select>
+        </div>
+      </div>
+      <hr className="my-4" />
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-[#D3202D] text-lg">Filters</h3>
+        {hasActiveFilters && (
+          <button onClick={clearAll} className="text-sm text-blue-600 hover:underline">
+            Clear all
+          </button>
+        )}
+      </div>
+      <div className="mt-3 space-y-6">
+        {Object.entries(options.options).map(([key, values]) =>
+          values.length > 0 ? (
+            <FilterGroup
+              key={key}
+              title={FILTER_LABELS[key] || key}
+              options={values}
+              selected={selected[key] || []}
+              // @ts-ignore
+              counts={options.counts[key] || {}}
+              onToggle={(v) => toggle(key, v)}
+            />
+          ) : null
+        )}
+      </div>
     </div>
 
-    <div
-      className={`
-        mt-6 space-y-6
-        lg:block
-        ${isMobileFiltersVisible ? 'block fixed inset-0 bg-white z-50 p-6 overflow-y-auto' : 'hidden'}
-      `}
-    >
+    {/* --- MOBILE VIEW --- */}
+    <div className="lg:hidden">
+      <button
+        className="font-semibold w-full text-center text-[#D3202D] text-lg"
+        onClick={() => setMobileFiltersVisible(true)}
+      >
+        Filters 
+      </button>
+
+      {isMobileFiltersVisible && (
+        <div className="fixed inset-0 mt-12 bg-white z-50 p-6 overflow-y-auto">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-[#D3202D] text-lg">Search & Sort</h3>
+          </div>
+          <div className="space-y-4 mt-4 mb-2">
+            <div>
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm || ''}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border text-xs border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+              />
+            </div>
+            <div>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 text-xs rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+              >
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name_asc">Name: A to Z</option>
+                <option value="name_desc">Name: Z to A</option>
+              </select>
+            </div>
+          </div>
+          <hr className="my-4" />
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-[#D3202D] text-lg">Filters</h3>
+          </div>
+          <div className="mt-3 space-y-6">
       {isPending && (
         <p className="text-xs text-gray-500 animate-pulse">Updating results…</p>
       )}
 
-      {Object.entries(options).map(([key, values]) =>
+      {Object.entries(options.options).map(([key, values]) =>
         values.length > 0 ? (
           <FilterGroup
             key={key}
             title={FILTER_LABELS[key] || key}
             options={values}
             selected={selected[key] || []}
+            // @ts-ignore
+            counts={options.counts[key] || {}}
             onToggle={(v) => toggle(key, v)}
           />
         ) : null
       )}
-
-      {/* Bottom Sticky Controls on Mobile */}
-      {isMobileFiltersVisible && (
-        <div className="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-between">
-          <button
-            onClick={clearAll}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Clear all
-          </button>
-
-          <button
-            onClick={() => setMobileFiltersVisible(false)}
-            className="bg-[#D3202D] text-white px-6 py-2 rounded-lg font-semibold"
-          >
-            Apply
-          </button>
+          </div>
+          {/* Bottom Sticky Controls on Mobile */}
+          <div className="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-between">
+            {hasActiveFilters && (
+              <button
+                onClick={clearAll}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Clear all
+              </button>
+            )}
+            <button
+              onClick={() => setMobileFiltersVisible(false)}
+              className="bg-[#D3202D] text-white px-6 py-2 rounded-lg font-semibold ml-auto"
+            >
+              Apply
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -302,31 +386,37 @@ function FilterGroup({
   title,
   options,
   selected,
+  counts,
   onToggle,
 }: {
   title: string;
   options: string[];
   selected: string[];
+  counts: Record<string, number>;
   onToggle: (value: string) => void;
 }) {
   return (
     <div>
       <h4 className="font-medium text--[#D3202D] text-sm mb-2">{title}</h4>
       <div className="space-y-1 max-h-96 overflow-y-auto pr-2">
-        {options.map((opt) => (
-          <label
-            key={opt}
-            className="flex items-center text-sm cursor-pointer hover:text-blue-600"
-          >
-            <input
-              type="checkbox"
-              checked={selected.includes(opt)}
-              onChange={() => onToggle(opt)}
-              className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300"
-            />
-            <span className="truncate">{opt}</span>
-          </label>
-        ))}
+        {options.map((opt) => {
+          const count = counts[opt] || 0;
+          return (
+            <label
+              key={opt}
+              className="flex items-center text-sm cursor-pointer hover:text-blue-600"
+            >
+              <input
+                type="checkbox"
+                checked={selected.includes(opt)}
+                onChange={() => onToggle(opt)}
+                className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 flex-shrink-0"
+              />
+              <span className="truncate flex-grow">{opt}</span>
+              <span className="text-xs text-gray-500 ml-2 flex-shrink-0">({count})</span>
+            </label>
+          );
+        })}
       </div>
     </div>
   );

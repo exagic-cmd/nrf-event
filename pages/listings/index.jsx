@@ -43,6 +43,8 @@ function ListingsPage() {
   const [cardCheckout, setCardCheckout] = useState(null);
   const [cardSearchQuery, setCardSearchQuery] = useState(""); // For daytours
   const [accommodationSortBy, setAccommodationSortBy] = useState("default"); // New state for accommodation sorting
+  const [daytourSearchTerm, setDaytourSearchTerm] = useState("");
+  const [daytourSortBy, setDaytourSortBy] = useState("price_asc");
   const [cardAccommodationText, setCardAccommodationText] = useState(""); // For accommodations
   const [filterActiveTab, setFilterActiveTab] = useState(() => {
     const t = urlSearchParams.get("type");
@@ -122,6 +124,7 @@ function ListingsPage() {
     searchResults,
     isLoading,
     fetchDaytours,
+    filteredResults: daytoursFilteredResults,
   } = useDaytoursStore();
 
   const { setSelectedCountry, setSelectedCity } = useDaytoursStore();
@@ -322,7 +325,12 @@ useEffect(() => {
         return <TransfersList searchParams={searchParams} searchPerformed={hasValidTransferSearch} />;
       case "daytour":
       case "day-tours":
-        return <DaytoursList searchParams={searchParams} />;
+        return (
+          <DaytoursList
+            searchTerm={daytourSearchTerm}
+            sortBy={daytourSortBy}
+          />
+        );
       case "accommodation":
       case "hotels":
         return (
@@ -378,6 +386,10 @@ useEffect(() => {
   const showFaqs = hasSearched && searchCategory === "transfer" && searchResults.length > 0;
   const isAccommodationCategory = searchCategory === "accommodation" || searchCategory === "hotels";
 
+  const daytoursForMap = (daytoursFilteredResults && daytoursFilteredResults.length > 0) 
+    ? daytoursFilteredResults 
+    : searchResults;
+
   return (
     <Layout>
       <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#f4f4f4]">
@@ -399,7 +411,7 @@ useEffect(() => {
 
           {/* Search Filter Card Container */}
           <div className={`lg:block relative z-30 ${isSearchFilterVisible ? "block" : "hidden"}`}>
-          <div className="min-h-[200px]">
+          <div className="min-h-[200px] mb-3">
               <SearchFilterCard
               filterActiveTab={filterActiveTab}
               filterTabs={filterTabs}
@@ -440,7 +452,12 @@ useEffect(() => {
           {(searchCategory === "daytour" || searchCategory === "day-tours") && (
             <div className="h-fit md:sticky z-30 top-24 self-start w-full lg:w-56">
               {!isLoading && searchResults.length > 0 && (
-                <FilterSidebar />
+                <FilterSidebar
+                  searchTerm={daytourSearchTerm}
+                  setSearchTerm={setDaytourSearchTerm}
+                  sortBy={daytourSortBy}
+                  setSortBy={setDaytourSortBy}
+                />
               )}
             </div>
           )}
@@ -460,14 +477,14 @@ useEffect(() => {
           )}
 
         
-          {isAccommodationCategory && (
+          {isAccommodationCategory && hasSearched && !accommodationLoading && accommodations?.length > 0 && (
             <div className="lg:hidden w-full mb-2 mt-4 "ref={resultsRef}>
               <button
                 onClick={() => setShowFilterModal(true)}
                 className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
               >
                 <Filter size={20} />
-                <span>sss</span>
+                <span>Filters</span>
               </button>
             </div>
           )}
@@ -486,7 +503,7 @@ useEffect(() => {
                 width="100%"
                 height="550px"
                 className="rounded-lg shadow-lg"
-                markers={(searchResults || []).map((r) => ({
+                markers={(daytoursForMap || []).map((r) => ({
                   lat: r.latitude || r.lat || r?.location?.lat,
                   lng: r.longitude || r.lng || r?.location?.lng,
                   title: r.title || r.name || r.location_name || r.hotel_name || "",
