@@ -281,12 +281,12 @@ function ListingsPage() {
     }
   }, [searchCategory, transferSearchParams, fetchTransfers, hasSearched]);
 
-useEffect(() => {
-    const daytourParams = { country: daytourSelectedCountry, city: daytourSelectedCity, search: daytourSearchQuery };
-    if ((searchCategory === "daytour" || searchCategory === "day-tours") && (daytourParams.city || daytourParams.search)) {
-      fetchDaytours(daytourParams);
-    }
-  }, [searchCategory, daytourSelectedCountry, daytourSelectedCity, daytourSearchQuery, fetchDaytours]);
+// useEffect(() => {
+//     const daytourParams = { country: daytourSelectedCountry, city: daytourSelectedCity, search: daytourSearchQuery };
+//     if ((searchCategory === "daytour" || searchCategory === "day-tours") && (daytourParams.city || daytourParams.search)) {
+//       fetchDaytours(daytourParams);
+//     }
+//   }, [searchCategory, daytourSelectedCountry, daytourSelectedCity, daytourSearchQuery]);
 
 useEffect(() => {
     const type = urlSearchParams.get("type");
