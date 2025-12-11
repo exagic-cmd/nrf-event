@@ -24,7 +24,7 @@ const AccommodationInfoCard = ({
     let priceFor1Room = 0;
 
     if (selectedRoom) {
-      priceFor1Room = selectedRoom.pricing?.total_promo || 0;
+      priceFor1Room = (selectedRoom?.rate_plan?.pricing?.total_promo)  || 0;
     } else if (allRooms.length > 0) {
       const min = Math.min(...allRooms.map(r => r.pricing?.total_promo || 0));
       priceFor1Room = min > 0 ? min : startingPrice || 0;
@@ -33,10 +33,11 @@ const AccommodationInfoCard = ({
     }
 
     // Multiply by number of rooms to get total
-    setLowestPrice(priceFor1Room);
+    setLowestPrice(priceFor1Room * roomsCount);
   }, [allRooms, startingPrice, selectedRoom, roomsCount]);
 
   useEffect(() => {
+
     const extract = () => {
       if (hotelData?.amenities) {
         if (typeof hotelData.amenities === "string") {
@@ -75,7 +76,7 @@ const AccommodationInfoCard = ({
         {/* Price */}
         <div className="mb-0 flex justify-end">
           <div className="text-lg lg:text-2xl text-[#D3202D] mb-1">
-          <span className="text-sm md:text-md text-black">  Starting Price </span>SGD {formatPrice(lowestPrice)}
+          <span className="text-sm md:text-md text-black">  Starting Price </span><span className="font-semibold">SGD {formatPrice(lowestPrice)}</span>
           
           </div>
          

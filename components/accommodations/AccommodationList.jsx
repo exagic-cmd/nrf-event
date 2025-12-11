@@ -22,11 +22,21 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
     if (!accommodations) return [];
     const accommodationsCopy = [...accommodations];
 
+    const getPrice = (acc) => {
+      return (
+        acc?.room?.rate_plan?.pricing?.per_room_total_promo ||
+        acc?.room?.rate_plan?.pricing?.per_room_total ||
+        acc?.room?.base_price * (acc?.meta?.nights || 1) || 0
+      );
+    };
+
     switch (sortBy) {
       case "price_desc":
         return accommodationsCopy.sort((a, b) => (b.room?.base_price || b.price || 0) - (a.room?.base_price || a.price || 0));
+        return accommodationsCopy.sort((a, b) => getPrice(b) - getPrice(a));
       case "price_asc":
         return accommodationsCopy.sort((a, b) => (a.room?.base_price || a.price || 0) - (b.room?.base_price || b.price || 0));
+        return accommodationsCopy.sort((a, b) => getPrice(a) - getPrice(b));
       case "rating_desc":
         return accommodationsCopy.sort((a, b) => (b.star_rating || b.stars || 0) - (a.star_rating || a.stars || 0));
       case "rating_asc":

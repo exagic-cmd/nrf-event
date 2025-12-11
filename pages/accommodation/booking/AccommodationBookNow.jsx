@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAccommodationsStore } from '@/store/useAccommodationsStore';
 
-export default function AccommodationBookNow({ isNonStuba, bookingData }) {
+export default function AccommodationBookNow({ isNonStuba, bookingData , price }) {
   const { searchParams } = useAccommodationsStore();
   const rooms = searchParams?.rooms || [{ adult: 2, children: [] }];
 const [isSubmitted, setIsSubmitted] = useState(false);
