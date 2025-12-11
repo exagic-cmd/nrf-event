@@ -91,44 +91,6 @@ export const useDaytoursStore = create((set, get) => ({
     }
   },
 
-  fetchDaytours: async (payload) => {
-    set({ isLoading: true, error: null });
-    try {
-      const apiPayload = {
-        category_id: 3, // Assuming 3 is for daytours
-        country_id: payload.country?.id,
-        city_id: payload.city?.id,
-        name: payload.search,
-        is_b2c_only: 1,
-        is_active: true,
-      };
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/daytours/search`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(apiPayload),
-        }
-      );
-
-      if (!res.ok) {
-        const txt = await res.text().catch(() => null);
-        throw new Error(`Network response was not ok: ${res.status} ${res.statusText} ${txt || ''}`);
-      }
-
-      const data = await res.json();
-      const results = data?.data?.products || [];
-
-      set({ searchResults: results, filteredResults: results, isLoading: false });
-      return results;
-    } catch (err) {
-      console.error("fetchDaytours error:", err);
-      set({ isLoading: false, error: err.message || "Failed to fetch daytours", searchResults: [], filteredResults: [] });
-      return [];
-    }
-  },
-
   // Suggestions for input search
   fetchSuggestedResults: async (query) => {
     try {
