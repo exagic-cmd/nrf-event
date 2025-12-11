@@ -91,7 +91,12 @@ function ListingsPage() {
     }
 
     if (filterActiveTab === 4) {
-      setAccommodationSearchParams(payload); // This will also trigger fetchAccommodations
+      const updatedPayload = {
+        ...payload,
+        checkin: cardCheckin,
+        checkout: cardCheckout,
+      };
+      setAccommodationSearchParams(updatedPayload); // This will also trigger fetchAccommodations
       router.push(`/listings?searched=true&type=accommodation`);
       setHasSearched(true);
       setSearchCategory("accommodation");
@@ -187,8 +192,21 @@ function ListingsPage() {
       });
 
       const priceMatch = !hasPriceRange || (
-        (accommodation.room?.base_price || accommodation.price || 0) >= activeFilters.priceRange.min &&
-        (accommodation.room?.base_price || accommodation.price || 0) <= activeFilters.priceRange.max
+        ( // Use total_promo or total first, then fallback to per_room or base_price
+          accommodation.room?.rate_plan?.pricing?.total_promo ||
+          accommodation.room?.rate_plan?.pricing?.total ||
+          accommodation.room?.rate_plan?.pricing?.per_room_total_promo ||
+          accommodation.room?.rate_plan?.pricing?.per_room_total ||
+          accommodation.room?.base_price ||
+          accommodation.price || 0
+        ) >= activeFilters.priceRange.min &&
+        ( // Use total_promo or total first, then fallback to per_room or base_price
+          accommodation.room?.rate_plan?.pricing?.total_promo ||
+          accommodation.room?.rate_plan?.pricing?.total ||
+          accommodation.room?.rate_plan?.pricing?.per_room_total_promo ||
+          accommodation.room?.rate_plan?.pricing?.per_room_total ||
+          accommodation.room?.base_price || accommodation.price || 0
+        ) <= activeFilters.priceRange.max
       );
 
       return searchTextMatch && amenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;

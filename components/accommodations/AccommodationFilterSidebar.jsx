@@ -153,20 +153,28 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   });
   const { accommodations } = useAccommodationsStore();
 
-  // compute min/max price from accommodations list
+  // Use a fixed price range for the filter as requested.
   const priceBounds = useMemo(() => {
-    if (!accommodations || accommodations.length === 0) return { min: 0, max: 1000 };
-    let min = Infinity;
-    let max = -Infinity;
-    accommodations.forEach((acc) => {
-      const price = acc?.room?.base_price || acc?.price || acc?.min_price || 0;
-      const p = Number(price) || 0;
-      if (p < min) min = p;
-      if (p > max) max = p;
-    });
-    if (min === Infinity) min = 0; // fallback
-    if (max === -Infinity || max === 0) max = 1000; // fallback
-    return { min, max };
+    if (!accommodations || accommodations.length === 0) { // Default fallback if no accommodations
+      return { min: 0, max: 1000 }; // Default fallback
+    }
+    const maxPrice = accommodations.reduce((max, acc) => {
+      const price = // Prioritize total_promo/total for the entire booking, then fallback
+        acc.room?.rate_plan?.pricing?.total_promo ||
+        acc.room?.rate_plan?.pricing?.total ||
+        acc.room?.rate_plan?.pricing?.per_room_total_promo ||
+        acc.room?.rate_plan?.pricing?.per_room_total ||
+        acc.room?.base_price ||
+        // Fallback to acc.price if room data is missing, though it might not be the full booking price
+        // This ensures a price is always considered if available at the top level
+        acc.price || 0;
+      return price > max ? price : max;
+    }, 0);
+
+    return {
+      min: 0,
+      max: maxPrice > 0 ? Math.ceil(maxPrice) : 1000, // Use calculated max, with a fallback
+    };
   }, [accommodations]);
 
   const [selectedMin, setSelectedMin] = useState(0);
@@ -265,9 +273,8 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
               <input
                 type="text"
                 value={Math.round(selectedMin)}
-                onChange={(e) => setSelectedMin(Number(e.target.value))}
-                onBlur={applyPriceRange}
-                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center"
+                readOnly
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center pointer-events-none"
               />
             </div>
             <div className="relative w-1/2">
@@ -275,9 +282,8 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
               <input
                 type="text"
                 value={Math.round(selectedMax)}
-                onChange={(e) => setSelectedMax(Number(e.target.value))}
-                onBlur={applyPriceRange}
-                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center"
+                readOnly
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center pointer-events-none"
               />
             </div>
           </div>
