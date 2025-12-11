@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import { Clock, MapPin, Users, Star, Calendar } from "lucide-react";
+import { Clock, MapPin, Users, Star, Calendar, Zap, Footprints, ChevronDown } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { formatPrice } from "@/utils/priceUtils";
@@ -13,6 +13,7 @@ function DaytourCard({ tour, category = "daytour" }) {
 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [activitiesExpanded, setActivitiesExpanded] = useState(false);
 
   const hasPromo = tour.originalPrice && tour.price < tour.originalPrice;
 
@@ -93,63 +94,77 @@ function DaytourCard({ tour, category = "daytour" }) {
   </div>
 
   {/* Info Section */}
-  <div className="flex-1 flex flex-col justify-between pr-2.5 pl-2.5 py-2">
+  <div className="flex-1 flex flex-col justify-between p-4">
   <div>
-    <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D]">
-      {tour.name}
-    </h2>
+    <div className="flex justify-between items-start gap-4">
+      <h2 className="font-bold text-lg line-clamp-2 text-[#D3202D] flex-grow">
+        {tour.name}
+      </h2>
+      {/* {mainLandmark && (
+        <div className="flex items-center gap-1 flex-shrink-0 pt-1">
+          <MapPin size={14} className="text-gray-500"/>
+          <span className="text-gray-700 text-sm font-medium line-clamp-1">{mainLandmark}</span>
+        </div>
+      )} */}
+    </div>
 
-    <p className="text-sm text-gray-700 line-clamp-2 mt-2">
+    <p className="text-sm text-gray-600 line-clamp-2 mt-1">
       {tour.description}
     </p>
 
     {/* Activities */}
-    <div className="flex flex-wrap items-center gap-2 mt-2">
-      {mainLandmark && (
-        <div className="flex items-center gap-1">
-          <MapPin size={14} />
-          <span className="text-gray-600 text-sm">{mainLandmark}</span>
-        </div>
+    <div className="relative">
+      <div
+        className={`flex flex-wrap items-start gap-1.5 mt-2 overflow-hidden transition-all duration-300 ${
+          activitiesExpanded ? 'max-h-24' : 'max-h-6'
+        }`}
+      >
+        {tour.preference_activities?.map((activity, idx) => (
+          <span
+            key={idx}
+            className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full"
+          >
+            {activity}
+          </span>
+        ))}
+      </div>
+      {tour.preference_activities && tour.preference_activities.length > 4 && (
+        <button
+          onClick={() => setActivitiesExpanded(!activitiesExpanded)}
+          className="absolute -right-2 -top-1 bg-white rounded-full p-0.5 text-gray-500 hover:text-gray-800"
+          aria-label={activitiesExpanded ? "Show less activities" : "Show more activities"}
+        >
+          <ChevronDown
+            size={16}
+            className={`transition-transform duration-300 ${
+              activitiesExpanded ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
       )}
-      {tour.preference_activities &&
-        tour.preference_activities.length > 0 &&
-        (() => {
-          const activities = tour.preference_activities;
-          const visible = activities.slice(0, 4);
-          const remaining = activities.slice(4);
-
-          return (
-            <>
-              {visible.map((activity, idx) => (
-                <span
-                  key={idx}
-                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                >
-                  {activity}
-                </span>
-              ))}
-
-              {remaining.length > 0 && (
-                <span
-                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full cursor-default"
-                  title={remaining.join(", ")}
-                  aria-label={`More activities: ${remaining.join(", ")}`}
-                >
-                  ...
-                </span>
-              )}
-            </>
-          );
-        })()}
     </div>
   </div>
 
   {/* New Info Section */}
-  <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
+  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-gray-700">
     {tour.duration && (
       <div className="flex items-center gap-1">
         <Clock size={14} className="text-gray-500" />
         <span>{tour.duration}</span>
+      </div>
+    )}
+
+    {tour.physical_aspect && tour.physical_aspect.length > 0 && (
+      <div className="flex items-center gap-1" title={`Physical: ${tour.physical_aspect.join(', ')}`}>
+        <Footprints size={14} className="text-gray-500" />
+        <span>{tour.physical_aspect[0]}</span>
+      </div>
+    )}
+
+    {tour.activity_intensity && tour.activity_intensity.length > 0 && (
+      <div className="flex items-center gap-1" title={`Intensity: ${tour.activity_intensity.join(', ')}`}>
+        <Zap size={14} className="text-gray-500" />
+        <span>{tour.activity_intensity[0]}</span>
       </div>
     )}
 
@@ -176,16 +191,16 @@ function DaytourCard({ tour, category = "daytour" }) {
   </div>
 
   {/* Bottom Section */}
-  <div className="flex justify-between items-end mt-3">
+  <div className="flex justify-between items-end mt-4">
     <div>
       {/* Price display */}
       <div className="flex items-center gap-2">
         {hasPromo && (
-          <p className="text-sm text-gray-400 line-through">
+          <p className="text-md text-gray-400 line-through">
            {tour.currency || "SGD"} {formatPrice(tour.originalPrice)} 
           </p>
         )}
-        <p className="text-lg font-bold text-[#D3202D]">
+        <p className="text-xl font-bold text-[#D3202D]">
           {tour.currency || "SGD"} {formatPrice(tour.price)} 
         </p>
       </div>
@@ -195,7 +210,7 @@ function DaytourCard({ tour, category = "daytour" }) {
     <button
       type="button"
       onClick={handleBookNow}
-      className="rounded-lg bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition cursor-pointer flex items-center justify-center min-w-[100px] min-h-[40px]"
+      className="rounded-lg bg-[#D3202D] text-white px-5 py-2.5 font-semibold active:bg-[#b71c1c] transition cursor-pointer flex items-center justify-center min-w-[120px] min-h-[44px]"
     >
       {isLoading ? (
         <span className="flex items-center justify-center">

@@ -189,13 +189,13 @@ export default function Header() {
     />
   </LocalizedLink>
 </div>
-
+<div></div>
 
       {/* RIGHT SIDE: LANGUAGE → LOGIN / USER */}
-      <div className="ml-auto flex items-center gap-2 sm:gap-4" ref={dropdownRef}>
+      {/* <div className="ml-auto flex items-center gap-2 sm:gap-4" ref={dropdownRef}>
         {/* DESKTOP */}
-        <nav className="hidden lg:flex items-center gap-4">
-          {/* {renderLanguageDropdown()} */}
+        {/* <nav className="hidden lg:flex items-center gap-4"> */}
+          {/* {renderLanguageDropdown()} 
           {!token ? (
             <Link
               href="/login"
@@ -208,9 +208,9 @@ export default function Header() {
           )}
         </nav>
 
-        {/* MOBILE */}
+        {/* MOBILE 
         <div className="lg:hidden flex items-center gap-3 sm:gap-4">
-          {/* {renderLanguageDropdown(true)} */}
+          {/* {renderLanguageDropdown(true)} 
           {!token ? (
             <Link
               href="/login"
@@ -222,7 +222,7 @@ export default function Header() {
             renderUserMenu(true)
           )}
         </div>
-      </div>
+      </div> */}
     </header>
   );
 }
