@@ -15,7 +15,7 @@ export default function Custom404() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-700 px-4">
    
-      <h1 className="text-7xl font-extrabold text-[#CC9A55] drop-shadow-sm">
+      <h1 className="text-7xl font-extrabold text-[#d3202d] drop-shadow-sm">
         404
       </h1>
 
@@ -28,7 +28,7 @@ export default function Custom404() {
 
      
       <Link href="/" passHref>
-        <p className="mt-6 px-6 py-3 rounded-xl bg-[#CC9A55] text-white font-medium shadow-md  transition-all duration-300">
+        <p className="mt-6 px-6 py-3 rounded-xl bg-[#d3202d] text-white font-medium shadow-md  transition-all duration-300">
           {t("go_home")}
         </p>
       </Link>

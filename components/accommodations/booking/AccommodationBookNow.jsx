@@ -19,6 +19,9 @@ const TITLE_OPTIONS = [
   { value: "Ms", label: "Ms" },
 ];
 
+const handleKeepExistingAndCheckout = async () => {
+  window.location.href = "/checkout";
+};
 // === CONFIRMATION MODAL (ONLY FOR STUBA) ===
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
   const api = bookingResponse?.apiResponse || bookingResponse;
@@ -206,7 +209,7 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, hotelName }) => {
         </p>
         <div className="flex gap-4">
           <button
-            onClick={onClose}
+            onClick={handleKeepExistingAndCheckout}
             className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition"
           >
             No, Keep Existing
@@ -441,13 +444,32 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     e.preventDefault();
     setLoadingButton("addToCart");
     setIsSubmitting(true);
+    setErrors({});
 
     if (!validateGuestInfo()) {
-      setIsSubmitting(false);
-      setLoadingButton(null);
-      // alert("Please fill in all required guest details correctly.");
-      return;
-    }
+    // Validation failed → find first error and scroll to it
+    setTimeout(() => {
+      const firstErrorElement = document.querySelector('.text-red-500.text-xs.mt-1');
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+
+      } else {
+        // Fallback: scroll to top of guest form
+        const guestForm = document.querySelector('form');
+        if (guestForm) {
+          guestForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.scrollBy(0, -80); // Offset for header
+        }
+      }
+    }, 100); // Small delay to ensure errors are rendered
+
+    setIsSubmitting(false);
+    setLoadingButton(null);
+    return;
+  }
 
     // Check if item already exists in cart
     const cartItems = useCartStore.getState().items;
