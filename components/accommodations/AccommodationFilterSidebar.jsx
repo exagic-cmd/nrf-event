@@ -154,28 +154,33 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   const { accommodations } = useAccommodationsStore();
 
   // Use a fixed price range for the filter as requested.
-  const priceBounds = useMemo(() => {
-    if (!accommodations || accommodations.length === 0) { // Default fallback if no accommodations
-      return { min: 0, max: 1000 }; // Default fallback
-    }
-    const maxPrice = accommodations.reduce((max, acc) => {
-      const price = // Prioritize total_promo/total for the entire booking, then fallback
-        acc.room?.rate_plan?.pricing?.total_promo ||
-        acc.room?.rate_plan?.pricing?.total ||
-        acc.room?.rate_plan?.pricing?.per_room_total_promo ||
-        acc.room?.rate_plan?.pricing?.per_room_total ||
-        acc.room?.base_price ||
-        // Fallback to acc.price if room data is missing, though it might not be the full booking price
-        // This ensures a price is always considered if available at the top level
-        acc.price || 0;
-      return price > max ? price : max;
-    }, 0);
+ const priceBounds = useMemo(() => {
+  if (!accommodations || accommodations.length === 0) {
+    // Default fallback if no accommodations
+    return { min: 0, max: 1000 };
+  }
 
-    return {
-      min: 0,
-      max: maxPrice > 0 ? Math.ceil(maxPrice) : 1000, // Use calculated max, with a fallback
-    };
-  }, [accommodations]);
+  // Collect all candidate prices
+  const prices = accommodations.map(acc => {
+    return (
+      acc.room?.rate_plan?.pricing?.total_promo ||
+      acc.room?.rate_plan?.pricing?.total ||
+      acc.room?.rate_plan?.pricing?.per_room_total_promo ||
+      acc.room?.rate_plan?.pricing?.per_room_total ||
+      acc.room?.base_price ||
+      acc.price || 0
+    );
+  });
+
+  const maxPrice = Math.max(...prices);
+  const minPrice = Math.min(...prices);
+
+  return {
+    min: minPrice > 0 ? Math.floor(minPrice) : 0,   // ✅ calculated min
+    max: maxPrice > 0 ? Math.ceil(maxPrice) : 1000, // ✅ calculated max
+  };
+}, [accommodations]);
+
 
   const [selectedMin, setSelectedMin] = useState(0);
   const [selectedMax, setSelectedMax] = useState(0);

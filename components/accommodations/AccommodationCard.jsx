@@ -118,7 +118,7 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || 0;
           {star_rating && (
             <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white rounded-md bg-yellow-500">
               <Star size={10} />
-              <span>{parseFloat(star_rating).toFixed(1)} ★</span>
+              <span>{parseFloat(star_rating).toFixed(1)}</span>
             </span>
           )}
         </div>
