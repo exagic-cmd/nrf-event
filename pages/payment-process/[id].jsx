@@ -1,6 +1,6 @@
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useRouter } from 'next/router';
-
+import { useEventStore } from "@/store/useEventStore";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import PayNowFlywire from '@/components/PayNowFlywire';
@@ -11,7 +11,7 @@ export default function OrderPaymentPage() {
     const router = useRouter();
   const { id: returnOrderId } = router.query;
   const { t } = useTranslation('order-payment');
-
+  const { event, FetchEvent } = useEventStore();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showFlywire, setShowFlywire] = useState(false);

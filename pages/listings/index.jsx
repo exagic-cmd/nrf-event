@@ -146,6 +146,7 @@ function ListingsPage() {
   } = useAccommodationsStore();
   const {
     setSelectedPickup, setSelectedDropoff, setTripType,
+    searchResults: transferSearchResults,
     searchParams: transferSearchParams, setSearchParams: setTransferSearchParams,
     fetchTransfers,
   } = useTransferStore();
@@ -400,8 +401,8 @@ useEffect(() => {
 //         </div>);
     }
   };
-
-  const showFaqs = hasSearched && searchCategory === "transfer" && searchResults.length > 0;
+  
+  const showFaqs = hasSearched && searchCategory === "transfer" && transferSearchResults.length > 0;
   const isAccommodationCategory = searchCategory === "accommodation" || searchCategory === "hotels";
 
   const daytoursForMap = (daytoursFilteredResults && daytoursFilteredResults.length > 0) 
