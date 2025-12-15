@@ -1,5 +1,4 @@
-// components/transfers/paynow.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PopupMsg from '@/components/common/PopupMsg';
 import { useScrollToTop } from '@/hooks/use-scroll-top';
 import useBookingStore from "@/store/userBookingStore";
@@ -13,7 +12,7 @@ import "@/styles/globals.css";
 import { useCartStore } from "@/store/useCartStore";
 import PayNowFlywire from '@/components/PayNowFlywire';
 import Head from 'next/head';
-import { User, Mail, Phone, Tag, CreditCard } from "lucide-react";
+import { User, Mail, Phone, Tag, CreditCard, ChevronDown,MessageSquare, Wifi } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import useLanguageStore from "@/store/useLanguageStore";
 import { redirectToAirwallexCheckout } from '@/utils/airwallex';
@@ -49,8 +48,21 @@ const PayNow = ({ totalPrice }) => {
   const [promo, setPromo] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
   const [errors, setErrors] = useState({});
+  const [communicationMode, setCommunicationMode] = useState('');
+  const [isCommModeOpen, setIsCommModeOpen] = useState(false);
+  const [hasRoaming, setHasRoaming] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoMessage, setPromoMessage] = useState({ text: '', type: '' });
+  const commModeRef = useRef(null);
+
+  const communicationOptions = [
+    { value: "whatsapp", label: "WhatsApp" },
+    { value: "line", label: "Line" },
+    { value: "telegram", label: "Telegram" },
+    { value: "viber", label: "Viber" },
+    { value: "email", label: "Email" },
+    { value: "sms", label: "SMS" },
+  ];
 
   // === Load cart from sessionStorage if store is empty ===
   const items = (() => {
@@ -103,7 +115,13 @@ const PayNow = ({ totalPrice }) => {
     };
     fetchOptions();
   }, [getPaymentOptions, languageId, items]);
-
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (commModeRef.current && !commModeRef.current.contains(event.target)) setIsCommModeOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   useEffect(() => {
     if (paymentOptions.length > 0) {
       const firstOption = paymentOptions[0];
@@ -313,7 +331,9 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       username: email.split('@')[0],
       first_name: firstName,
       last_name: lastName,
-      contactNumber: phone
+      contactNumber: phone,
+      communication_mode: communicationMode,
+       roaming_enabled: hasRoaming,
     },
     payment_details: {
       charge_to: '',
@@ -349,11 +369,11 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     setIsSubmitting(true);
     try {
       const finalPayload = buildFinalPayload();
-      console.log("Final Payload for submitBooking:", finalPayload);
+      //console.log("Final Payload for submitBooking:", finalPayload);
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
       const totalPrice = response?.total_price;
-      console.log('submitBooking response:', response, 'orderId:', orderId, 'selected paymentOption:', paymentOption);
+      //console.log('submitBooking response:', response, 'orderId:', orderId, 'selected paymentOption:', paymentOption);
 
      // const creditCardOption = paymentOptions.find(opt => opt.name === "Credit Card" || opt.id === 2);
 
@@ -459,6 +479,73 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                 }}
               />
               {errors.phone && <p className="text-red-500 text-xs mt-1">{t(errors.phone)}</p>}
+            </div>
+             {/* Preferred Communication */}
+            <div>
+              <label className="text-sm text-gray-500 flex items-center gap-3">
+                <MessageSquare className="w-4 h-4 text-gray-400" />
+                Preferrd Communication Mode
+              </label>
+              <div className="relative" ref={commModeRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsCommModeOpen(!isCommModeOpen)}
+                  className="w-full border border-gray-300 text-base rounded px-4 py-2.5  focus:outline-none bg-white flex justify-between items-center text-left"
+                >
+                  <span className={communicationMode ? 'text-gray-800' : 'text-gray-500'}>
+                    {communicationOptions.find(opt => opt.value === communicationMode)?.label || "Select option"}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-gray-400 transition-transform ${
+                      isCommModeOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {isCommModeOpen && (
+                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                    <ul>
+                      {communicationOptions.map((option) => (
+                        <li
+                          key={option.value}
+                          onClick={() => {
+                            setCommunicationMode(option.value);
+                            setIsCommModeOpen(false);
+                          }}
+                          className="px-4 py-2 text-base text-gray-800 cursor-pointer hover:bg-gray-100"
+                        >
+                          {option.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Roaming Question */}
+            <div className="md:col-span-2 mt-0">
+              <label className="text-sm text-gray-500 flex items-center gap-3">
+                <Wifi className="w-4 h-4 text-gray-400" />
+                Will you have roaming enabled during your trip?
+              </label>
+              <div className="flex gap-6 mt-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="roaming"
+                    value="yes"
+                    checked={hasRoaming === 'yes'}
+                    onChange={e => setHasRoaming(e.target.value)}
+                    className="form-radio h-4 w-4 text-[#CC9A55] focus:ring-[#CC9A55] border-gray-300"
+                  />
+                  <span>Yes</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="roaming" value="no" checked={hasRoaming === 'no'} onChange={e => setHasRoaming(e.target.value)} className="form-radio h-4 w-4 text-[#CC9A55] focus:ring-[#CC9A55] border-gray-300" />
+                  <span>No</span>
+                </label>
+              </div>
             </div>
             {/* {!showPromoField && (
              <div>
