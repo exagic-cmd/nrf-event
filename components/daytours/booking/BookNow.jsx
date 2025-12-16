@@ -169,6 +169,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
               value={formData}
               errors={errors}
               onChange={handleFormChange}
+              isBookingAdded={showCartOptions}
             />
           </div>
 

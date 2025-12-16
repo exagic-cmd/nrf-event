@@ -439,7 +439,7 @@ const handleVariantSelect = async (variant) => {
           <TourVariants ref={tourOptionsRef} groupProducts={groupProducts} onVariantSelect={handleVariantSelect} />
         )}
 
-       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-blue-50 p-2 border-t border-[#D3202D] shadow-t-lg z-50">
+       <div className="md:hidden right-0  p-2">
         <div className="flex justify-between items-center max-w-screen-xl mx-auto px-4">
           <div>
             <div className="text-sm text-gray-600">{t("starting_from", "Starting From")}</div>
@@ -447,7 +447,7 @@ const handleVariantSelect = async (variant) => {
           </div>
           {apiData?.is_group ? (
             <button
-              onClick={onScrollToOptions}
+              onClick={handleProceedBooking}
               className="bg-[#D3202D] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("choose_tour_type", "Choose your Type")}
