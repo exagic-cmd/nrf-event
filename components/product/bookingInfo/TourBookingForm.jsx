@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "next-i18next";
 
-const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {} }) => {
+const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {}, isBookingAdded = false }) => {
   const router = useRouter()
   const { t } = useTranslation("daytour");
   const { id: productId } = router.query
@@ -229,6 +229,7 @@ setForm({
               type="button"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:border-[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring--[#D3202D]"
               onClick={handleOpenPassengerModal}
+              disabled={isBookingAdded}
             >
               <span className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-gray-500" />
@@ -274,6 +275,7 @@ setForm({
               loading={loadingPickup}
               error={errorPickup}
               t={t}
+              isDisabled={isBookingAdded}
             />
             {errors.hotel && <div className="text-sm text-red-500 mt-1">{t(errors.hotel)}</div>}
           </div>
@@ -305,6 +307,7 @@ setForm({
               }}
               customInput={React.createElement(CustomInput, { className: "w-full" })}
               wrapperClassName="w-full"
+              disabled={isBookingAdded}
             />
             {loadingDates && (
               <div className="text-sm text-[#D3202D] mt-1 flex items-center gap-2">
@@ -382,6 +385,7 @@ setForm({
           customInput={React.createElement(CustomInput, { className: "w-full" })}
           wrapperClassName="w-full"
           includeTimes={times.map(timeToDate)}
+          disabled={isBookingAdded}
         />
       );
     })()
@@ -395,7 +399,7 @@ setForm({
   )
 }
 
-const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPoints }) => {
+const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPoints, isDisabled }) => {
   const customStyles = {
     control: (base, state) => ({
       ...base,
@@ -455,6 +459,7 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
           }
           noOptionsMessage={() => t("bookingForm.noHotelsFound")}
           styles={customStyles}
+          isDisabled={isDisabled}
         />
       )}
     </div>
