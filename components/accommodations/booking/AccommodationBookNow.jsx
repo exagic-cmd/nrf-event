@@ -1,12 +1,14 @@
 // components/accommodations/booking/AccommodationBookNow.jsx
 import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import useUserStore from "@/store/useAuthStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import $helpers from "@/lib/helpers";
 import LoaderSvg from "@/components/common/LoaderSvg";
+import { toast } from 'react-toastify';
 
 import {
   Calendar, Home, Bed, Utensils, AlertCircle,
@@ -20,7 +22,7 @@ const TITLE_OPTIONS = [
 ];
 
 const handleKeepExistingAndCheckout = async () => {
-  window.location.href = "/checkout";
+  router.push = "/checkout";
 };
 // === CONFIRMATION MODAL (ONLY FOR STUBA) ===
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
@@ -192,7 +194,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
 };
 
 // === REPLACE ITEM MODAL ===
-const ReplaceItemModal = ({ isOpen, onClose, onConfirm, hotelName }) => {
+const ReplaceItemModal = ({ isOpen, onClose, onConfirm, onKeepExisting, hotelName }) => {
   if (!isOpen) return null;
 
   return (
@@ -209,7 +211,7 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, hotelName }) => {
         </p>
         <div className="flex gap-4">
           <button
-            onClick={handleKeepExistingAndCheckout}
+            onClick={onKeepExisting}
             className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition"
           >
             No, Keep Existing
@@ -229,9 +231,11 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, hotelName }) => {
 // === MAIN COMPONENT ===
 const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) => {
   const { t } = useTranslation("accommodation");
+  const router = useRouter();
   const { setJustAdded } = useDrawerStore();
   const user = useUserStore((state) => state.user);
   const { checkAvailability } = useAccommodationsStore();
+  const { validateHoldsBeforeCheckout } = useCartStore();
 
   const rooms = bookingData?.searchParams?.rooms || [];
   const nights = bookingData.nights || 1;
@@ -492,16 +496,19 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
 
     const availabilityResult = await checkAvailability(availabilityPayload);
 
-    if (!availabilityResult.success) {
-      alert(availabilityResult.message || "This room is no longer available.");
+    if ( !availabilityResult.data?.is_available) {
+      toast.error(availabilityResult.message || "This room is no longer available for the selected dates.");
       setIsSubmitting(false);
       setLoadingButton(null);
       return;
     }
 
-      addToCartDirectly();setShowCartOptions(true);
-    setLoadingButton(null); 
-    setIsSubmitting(false); 
+    toast.success(availabilityResult.message || "Room is available!");
+
+    addToCartDirectly();
+    setShowCartOptions(true);
+    setLoadingButton(null);
+    setIsSubmitting(false);
   };
 
   // === DIRECT ADD TO CART (NON-STUBA) ===
@@ -545,6 +552,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       roomType: bookingData.selectedRoom?.name || "",
       mealType: bookingData.selectedRoom?.mealPlanCode ||  bookingData.selectedRoom?.mealType || '',
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
+      quoteId: bookingData.selectedRoom?.id || null,
+      rate_plan_id: bookingData.selectedRoom?.id || null,
       hotel_info: {
         id: hotelId,
         roomsDetails: roomsDetailsArray,
@@ -563,18 +572,35 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       hotel_ref_no:hotelId,
       image: bookingData.hotelData?.images?.[0]?.url || null,
     };
-
-    useCartStore.getState().addAccommodationItem(cartItem);
+   useCartStore.getState().addAccommodationItem(cartItem);
     setJustAdded(true);
     setShowCartOptions(true);
   };
 
-  const handleReplaceItem = () => {
+  const handleReplaceItem = async () => {
+    setLoadingButton("replace");
+    const availabilityPayload = {
+      start_date: bookingData.searchParams.start_date,
+      end_date: bookingData.searchParams.end_date,
+      rooms: bookingData.searchParams.rooms,
+      rate_plan_id: bookingData.selectedRoom.id,
+    };
+    const availabilityResult = await checkAvailability(availabilityPayload);
+
+  
+    if (!availabilityResult.success || !availabilityResult.data?.is_available) {
+      toast.error(availabilityResult.message || "This room is no longer available for the selected dates.");
+      setLoadingButton(null);
+      return;
+    }
+    toast.success(availabilityResult.message || "Room is available!");
+
     if (itemToReplace) {
       useCartStore.getState().removeItem(itemToReplace.key);
     }
     addToCartDirectly();
-    setItemToReplace(null); // Close modal
+    setItemToReplace(null); 
+    setLoadingButton(null);
   }
 
   // === CONFIRM & ADD (STUBA) ===
@@ -621,6 +647,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       roomType: bookingData.selectedRoom?.name || bookingData.selectedRoom?.roomType || "",
       mealType: bookingData.selectedRoom?.mealType || "",
       quoteId: bookingData.selectedRoom?.id || null,
+      rate_plan_id: bookingData.selectedRoom?.id || null,
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
       hotel_info: {
         id: hotelId,
@@ -658,7 +685,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     setLoadingButton("checkout");
     await new Promise(r => setTimeout(r, 1200));
     sessionStorage.setItem("fromBooking", "true");
-    window.location.href = "/checkout";
+   // window.location.href = "/checkout";
+    router.push("/checkout");
   };
 
   return (
@@ -953,6 +981,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         isOpen={!!itemToReplace}
         onClose={() => setItemToReplace(null)}
         onConfirm={handleReplaceItem}
+        onKeepExisting={() => router.push("/checkout")}
         hotelName={itemToReplace?.productTitle || ""}
       />
     </>

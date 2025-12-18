@@ -20,6 +20,7 @@ import CheckoutRedirect from "@/components/stripe/CheckoutRedirect";
 import BookingPreviewSlider from "@/components/transfers/BookingPreviewSlider";
 import useUserStore from '@/store/useAuthStore';
 import { useEventStore } from "@/store/useEventStore";
+import { toast } from 'react-toastify';
 const PayNow = ({ totalPrice }) => {
   const { t } = useTranslation("daytour");
   const { languageId, currentLocale } = useLanguageStore.getState();
@@ -183,6 +184,8 @@ const PayNow = ({ totalPrice }) => {
         roomType: item.roomType,
         mealType: item.mealType,
         quoteId: item.quoteId,
+        rate_plan_id: item.rate_plan_id || item.quoteId,
+        cart_id:item.key.split('#').pop() || key,
         cancellationPolicy: item.cancellationPolicy,
         meal_plan:0,
         check_in_time:null,
@@ -368,8 +371,62 @@ console.log("cart_items:PAYNOW #####################", cart_items);
 
     setIsSubmitting(true);
     try {
+      const accommodationItems = items.filter(item => item.type === 'accommodation' && item.holdExpiresAt);
+      
+      for (const item of accommodationItems) {
+        const ratePlanId = item.quoteId || item.rate_plan_id;
+        
+        if (!ratePlanId) {
+          console.warn('Accommodation item missing rate_plan_id:', item);
+          continue;
+        }
+
+        try {
+          const cartId = item.key.split('#').pop() || item.key;
+          const params = new URLSearchParams({
+            cart_id: cartId,
+                      rate_plan_id: ratePlanId,
+          });
+
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/status?${params.toString()}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          const data = await res.json();
+
+          if (!res.ok || data.success === false || data.data?.is_expired === true || data.data?.status === 'expired') {
+            console.warn('Hold expired for accommodation:', item.productTitle, data);
+            useCartStore.getState().removeItem(item.key);
+            
+            const alertMessage = (data.data?.is_expired === true || data.data?.status === 'expired')
+              ? `The allotment for "${item.productTitle}" has been released`
+              : `Could not verify hold status for "${item.productTitle}". Please try again.`;
+              
+            toast.error(alertMessage);
+            setIsSubmitting(false);
+            return;
+          }
+          
+         console.log(`✅ Hold valid for ${item.productTitle}. Extending it now...`);
+          const extendResult = await useCartStore.getState().extendHoldForItem(item.key);
+          if (!extendResult.success) {
+            toast.error(`Could not secure the hold for "${item.productTitle}". Please try again.`);
+            console.warn('Hold extension failed:', extendResult.message);
+            setIsSubmitting(false);
+            return;
+          }
+        } catch (err) {
+          console.warn('Hold validation error:', err);
+          toast.error(`Error validating hold for "${item.productTitle}". Please try again.`);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const finalPayload = buildFinalPayload();
-      //console.log("Final Payload for submitBooking:", finalPayload);
+      console.log("Final Payload for submitBooking:", finalPayload);
+      
+      
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
       const totalPrice = response?.total_price;
