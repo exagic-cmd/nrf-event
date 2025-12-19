@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (isHydrated && !token) {
-      router.push("/login")
+      router.push("/")
     }
   }, [token, isHydrated, router])
 
