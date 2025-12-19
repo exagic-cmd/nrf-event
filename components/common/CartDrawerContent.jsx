@@ -184,7 +184,7 @@ const CartDrawerContent = () => {
                                       toast.error(`Failed to extend hold: ${res.message || 'Unknown error'}`);
                                     }
                                   }}
-                                  className="text-sm bg-gray-100 text-[#D3202D] py-1 px-3 rounded hover:bg-blue-200 transition-colors"
+                                  className="text-sm bg-gray-100 text-[#D3202D] py-1 px-3 rounded transition-colors"
                                 >
                                   Extend Time
                                 </button>

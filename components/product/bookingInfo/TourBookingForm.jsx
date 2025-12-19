@@ -341,6 +341,7 @@ setForm({
         return (
           <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-yellow-200">
             {/* {t("bookingForm.pickupTimesUnavailable")} */}
+            Time is not Available, Proceed!
             
           </div>
         );
