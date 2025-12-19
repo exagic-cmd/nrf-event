@@ -160,7 +160,7 @@ const confirmCancel = (id, reason) => {
   useEffect(() => {
     if (error === "Invalid or unknown access token.") {
       logout();
-      router.push('/login');
+      router.push('/');
     }
   }, [error, logout, router]);
 
