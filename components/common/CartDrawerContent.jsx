@@ -6,6 +6,7 @@ import { getFullImageUrl } from "@/utils/imageService";
 import { Trash2, Clock } from "lucide-react";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal";
+import ConfirmExtendModal from "@/components/common/ExpireHoldModal";
 import { useProductStore } from "@/store/useProductStore";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useRouter } from "next/router";
@@ -23,6 +24,7 @@ const CartDrawerContent = () => {
   const { setDrawerContent, openDrawer, closeDrawer, setJustAdded } = useDrawerStore();
 
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [itemToExtend, setItemToExtend] = useState(null);
   const [timeNow, setTimeNow] = useState(Date.now());
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const CartDrawerContent = () => {
       (item) =>
         item.type === "accommodation" &&
         item.holdExpiresAt &&
-        timeNow > item.holdExpiresAt + 60000 
+        timeNow > item.holdExpiresAt + 600000 
     );
 
     if (expiredItems.length > 0) {
@@ -176,14 +178,7 @@ const CartDrawerContent = () => {
                             return (
                               <div className="mt-2">
                                 <button
-                                  onClick={async () => {
-                                    const res = await extendHoldForItem(item.key);
-                                    if (res.success) {
-                                      toast.success("Hold extended successfully for 7 minutes!");
-                                    } else {
-                                      toast.error(`Failed to extend hold: ${res.message || 'Unknown error'}`);
-                                    }
-                                  }}
+                                  onClick={() => setItemToExtend(item)}
                                   className="text-sm bg-gray-100 text-[#D3202D] py-1 px-3 rounded transition-colors"
                                 >
                                   Extend Time
@@ -312,6 +307,23 @@ const CartDrawerContent = () => {
           }
           onCancel={cancelDelete}
           onConfirm={confirmDelete}
+        />
+      )}
+      {/* Extend Modal */}
+      {itemToExtend && (
+        <ConfirmExtendModal
+          open={!!itemToExtend}
+          item={itemToExtend}
+          onClose={() => setItemToExtend(null)}
+          onConfirm={async () => {
+            const res = await extendHoldForItem(itemToExtend.key);
+            if (res.success) {
+              toast.success("Hold extended successfully for 7 minutes!");
+            } else {
+              toast.error(`Failed to extend hold: ${res.message || 'Unknown error'}`);
+            }
+            setItemToExtend(null);
+          }}
         />
       )}
     </div>
