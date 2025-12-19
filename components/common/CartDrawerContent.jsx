@@ -1,9 +1,9 @@
 // components/cart/CartDrawerContent.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
-import { getFullImageUrl } from "@/utils/imageService";
-import { Trash2 } from "lucide-react";
+import { getFullImageUrl } from "@/utils/imageService"; 
+import { Trash2, Clock } from "lucide-react";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal";
 import { useProductStore } from "@/store/useProductStore";
@@ -11,6 +11,7 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { formatPrice } from "@/utils/priceUtils";
+import { toast } from 'react-toastify';
 const CartDrawerContent = () => {
   const { t } = useTranslation(["common", "accommodation"]);
   const { localizedPush } = useLocalizedRouter();
@@ -18,10 +19,32 @@ const CartDrawerContent = () => {
 
   const isOnPaynowPage = router.pathname === "/checkout";
   const { bookProduct } = useProductStore();
-  const { items, removeItem, setItemToEdit } = useCartStore();
+  const { items, removeItem, setItemToEdit, extendHoldForItem, validateHoldsBeforeCheckout } = useCartStore();
   const { setDrawerContent, openDrawer, closeDrawer, setJustAdded } = useDrawerStore();
 
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [timeNow, setTimeNow] = useState(Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setTimeNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  useEffect(() => {
+    const expiredItems = items.filter(
+      (item) =>
+        item.type === "accommodation" &&
+        item.holdExpiresAt &&
+        timeNow > item.holdExpiresAt + 60000 
+    );
+
+    if (expiredItems.length > 0) {
+      expiredItems.forEach((item) => {
+        console.log(`Hold for ${item.productTitle} expired and grace period passed. Removing from cart.`);
+        removeItem(item.key);
+      //  toast.warn(`The hold for "${item.productTitle}" expired and it has been removed from your cart.`);
+      });
+    }
+  }, [timeNow, items, removeItem]);
 
   // Total price
   const total = items.reduce((sum, item) => {
@@ -59,9 +82,17 @@ const CartDrawerContent = () => {
   };
 
   const handleProceed = () => {
-    sessionStorage.setItem("fromBooking", "true");
-    closeDrawer();
-    localizedPush(`/checkout`);
+    (async () => {
+      // Validate holds before proceeding to checkout
+      const res = await validateHoldsBeforeCheckout();
+      if (!res.success) {
+        toast.error("This accommodation allotment is no longer available.");
+        return;
+      }
+      sessionStorage.setItem("fromBooking", "true");
+      closeDrawer();
+      localizedPush(`/checkout`);
+    })();
   };
 
   const cancelDelete = () => {
@@ -125,6 +156,42 @@ const CartDrawerContent = () => {
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
                            SGD {formatPrice(item.price)}
                         </p>
+                        {/* Hold timer UI */}
+                        {item.holdExpiresAt ? (
+                          (() => {
+                            const remaining = item.holdExpiresAt - timeNow;
+                            if (remaining > 0) {
+                              const mins = Math.floor(remaining / 60000);
+                              const secs = Math.floor((remaining % 60000) / 1000)
+                                .toString()
+                                .padStart(2, "0");
+                              return (
+                                <div className="text-xs text-orange-700 bg-orange-100 rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-medium">
+                                  <Clock size={12} className="mr-1" />
+                                  <span>Hold expires in: <strong>{mins}:{secs}</strong></span>
+                                </div>
+                              );
+                            }
+                            // expired -> show Extend Time button
+                            return (
+                              <div className="mt-2">
+                                <button
+                                  onClick={async () => {
+                                    const res = await extendHoldForItem(item.key);
+                                    if (res.success) {
+                                      toast.success("Hold extended successfully for 7 minutes!");
+                                    } else {
+                                      toast.error(`Failed to extend hold: ${res.message || 'Unknown error'}`);
+                                    }
+                                  }}
+                                  className="text-sm bg-gray-100 text-[#D3202D] py-1 px-3 rounded transition-colors"
+                                >
+                                  Extend Time
+                                </button>
+                              </div>
+                            );
+                          })()
+                        ) : null}
                       </>
                     ) : item.vehicle ? (
                       <>

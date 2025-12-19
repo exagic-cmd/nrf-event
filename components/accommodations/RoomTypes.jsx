@@ -182,7 +182,7 @@ const StubaRoomList = ({
                       const totalPriceFor1Room = Number(ratePlan.price || 0);
                       const originalPriceFor1Room = Number(ratePlan.originalPrice || totalPriceFor1Room);
                       const hasDiscount = ratePlan.hasDiscount === true;
-                      const finalPayable = Number(ratePlan?.pricing?.total_promo);
+                      const finalPayable = Number(ratePlan?.pricing?.total_promo|| ratePlan?.pricing?.total);
                       const finalOriginal = Number(ratePlan?.pricing?.total);
                       const savings = finalOriginal - finalPayable;
 
@@ -270,9 +270,9 @@ const StubaRoomList = ({
                       const totalPriceFor1Room = Number(ratePlan.price || 0);
                       const originalPriceFor1Room = Number(ratePlan.originalPrice || totalPriceFor1Room);
                       const hasDiscount = ratePlan.hasDiscount === true;
-
-                      const finalPayable = totalPriceFor1Room * totalRoomsRequested;
-                      const finalOriginal = originalPriceFor1Room * totalRoomsRequested;
+                      const finalPayable = Number(ratePlan?.pricing?.total_promo || ratePlan?.pricing?.total);
+                      const finalOriginal = Number(ratePlan?.pricing?.total);
+                                          
                       const savings = finalOriginal - finalPayable;
 
                       const displayPayable = `${currency} ${formatPrice(finalPayable)}`;

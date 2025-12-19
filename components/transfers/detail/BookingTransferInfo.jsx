@@ -135,6 +135,24 @@ const FlightNumberField = ({
   const [apiError, setApiError] = useState(null);
   const [isAutoTracking, setIsAutoTracking] = useState(false);
 
+  const getDisplayError = () => {
+    if (!apiError) return null;
+
+    const lowerCaseError = apiError.toLowerCase();
+
+    if (lowerCaseError.includes("departure")) {
+      return t("booking.errors.departureFlight", "Based on our data, this is currently treated as a departure and will be verified after booking.");
+    }
+
+    if (lowerCaseError.includes("arrival")) {
+      return t("booking.errors.arrivalFlight", "Based on our data, this is currently treated as an arrival and will be verified after booking.");
+    }
+
+    return t("booking.errors.noMatchingFlight", "No matching flight found in our data will be verified after booking.");
+  };
+
+  const displayError = getDisplayError();
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && onTrack) {
       e.preventDefault();
@@ -249,14 +267,15 @@ const FlightNumberField = ({
         )}
       </div>
 
-  
-      {apiError && (
+      {/* Display API error message */}
+      {displayError && (
         <p className="text-[#D3202D] text-xs mt-2 bg-red-50 px-3 py-2 rounded border border-red-200">
-          {apiError}
+           {displayError}
         </p>
       )}
 
-      {error && !apiError && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
+      {/* Display validation error */}
+      {error && !displayError && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
     </FormField>
   );
 };

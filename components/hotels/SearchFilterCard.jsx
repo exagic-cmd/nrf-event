@@ -387,15 +387,15 @@ export default function SearchFilterCard({
       ...data,
     });
     // On the homepage, the search triggers a navigation, unmounting this component.
-    // On other pages, it filters results, so we need to keep the loading state until new data arrives.
-    if (isHomepage) {
-      // The component will unmount, so we don't need to manage the state further.
-    } else {
-      // On search results pages, we expect the parent to handle the loading state
-      // or for this component to remain mounted. We keep it searching.
-      setIsSearching(true);
+    if (!isHomepage) {
+      setIsSearching(false);
     }
   };
+
+  useEffect(() => {
+    setIsSearching(false);
+    setSuggestedResults([]);
+  }, [filterActiveTab, setSuggestedResults]);
 
   const Pill = ({ tab }) => (
     <button

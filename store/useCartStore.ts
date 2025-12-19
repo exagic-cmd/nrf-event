@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useOrderStore } from "./useOrderStore";
-
+import { toast } from 'react-toastify';
 // Utility: slugify strings
 const slug = (s: string | undefined | null): string =>
   String(s || "")
@@ -52,7 +52,9 @@ const buildBaseKey = (item: any): string => {
 
 // Generate unique key
 const buildUniqueKey = (baseKey: string): string => {
-  return `${baseKey}#${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  // Generate a unique numeric ID. Date.now() (13 digits) + a 4-digit random number.
+  const uniqueId = `${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
+  return `${baseKey}#${uniqueId}`;
 };
 
 // Cart Item Type
@@ -82,6 +84,12 @@ interface CartState {
   getDayTourItems: () => CartItem[];
   getTransferItems: () => CartItem[];
   getUpsellItems: () => CartItem[];
+  // Hold helpers
+  setHoldForItem: (key: string, expiresAt: number) => void;
+  clearHoldForItem: (key: string) => void;
+  startHoldForItem: (key: string) => Promise<any>;
+  extendHoldForItem: (key: string) => Promise<any>;
+  validateHoldsBeforeCheckout: () => Promise<{ success: boolean; removed?: string[]; message?: string }>;
 }
 
 export const useCartStore = create<CartState>()(
@@ -124,6 +132,13 @@ export const useCartStore = create<CartState>()(
         const newItem = { ...accommodationItem, key, baseKey };
 
         set({ items: [...get().items, newItem] });
+   setTimeout(() => {
+          try {
+            get().startHoldForItem(key);
+          } catch (err) {
+          }
+        }, 0);
+
         return { status: "added", item: newItem };
       },
 
@@ -158,6 +173,154 @@ export const useCartStore = create<CartState>()(
       getDayTourItems: () => get().items.filter((i) => !i.type || i.type === "daytour"),
       getTransferItems: () => get().items.filter(isTransferItem),
       getUpsellItems: () => get().items.filter((i) => i.type === "upsell"),
+
+      setHoldForItem: (key: string, expiresAt: number) => {
+        set({
+          items: get().items.map((i) => (i.key === key ? { ...i, holdExpiresAt: expiresAt, holdStartedAt: Date.now() } : i)),
+        });
+      },
+ clearHoldForItem: (key: string) => {
+        set({
+          items: get().items.map((i) => (i.key === key ? { ...i, holdExpiresAt: undefined, holdStartedAt: undefined } : i)),
+        });
+      },
+ startHoldForItem: async (key: string) => {
+        const item = get().items.find((i) => i.key === key);
+        if (!item) return { success: false, message: "Item not found" };
+
+        try {
+        const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
+        const startDate = item.check_in || item.checkIn;
+          const endDate = item.check_out || item.checkOut;
+
+          if (!ratePlanId || !startDate || !endDate) {
+            console.warn('Hold API missing required fields:', { ratePlanId, startDate, endDate });
+            return { success: false, message: 'Missing required hold fields' };
+          }
+ const cartId = key.split('#').pop() || key;
+
+          const payload = {
+            cart_id: cartId,
+            rate_plan_id: ratePlanId,
+            start_date: startDate,
+            end_date: endDate,
+            qty: item.qty || 1,
+          };
+
+         // console.log('🔓 Calling POST /inventory/hold with payload:', payload);
+
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok || data.success !== true) {
+            console.warn('Hold API failed:', data);
+            return { success: false, message: data?.message || 'Hold failed' };
+          }
+          const expiresAt = data.expiresAt || (Date.now() + 7 * 60 * 1000);
+          get().setHoldForItem(key, expiresAt);
+          toast.success('Accomodation on Hold for 7 minutes');
+          return { success: true, expiresAt };
+        } catch (err) {
+          console.warn('Hold API error:', err);
+          return { success: false, message: err.message };
+        }
+      },
+
+      // Extend hold — calls POST /inventory/hold/extend with cart_id and rate_plan_id
+      extendHoldForItem: async (key: string) => {
+        const item = get().items.find((i) => i.key === key);
+        if (!item) return { success: false, message: "Item not found" };
+
+        try {
+          const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
+          
+          if (!ratePlanId) {
+            console.warn('Extend hold API missing rate_plan_id');
+            return { success: false, message: 'Missing rate plan ID' };
+          }
+
+          const cartId = key.split('#').pop() || key;
+
+          const payload = {
+            cart_id: cartId,
+            rate_plan_id: ratePlanId,
+          };
+
+          console.log('⏱️ Calling POST /inventory/hold/extend with payload:', payload);
+
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/extend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok || data.success !== true) {
+            console.warn('Extend hold API failed:', data);
+            return { success: false, message: data?.message || 'Extend failed' };
+          }
+          const newExpires = data.expiresAt || (Date.now() + 7 * 60 * 1000);
+          get().setHoldForItem(key, newExpires);
+          console.log('✅ Hold extended, new expiry:', new Date(newExpires));
+          return { success: true, expiresAt: newExpires };
+        } catch (err) {
+          console.warn('Extend hold API error:', err);
+          return { success: false, message: err.message };
+        }
+      },
+
+      validateHoldsBeforeCheckout: async () => {
+        const items = get().items;
+        const removedKeys: string[] = [];
+        const accommodationItems = items.filter((i) => i.type === 'accommodation' && i.holdExpiresAt);
+
+        if (accommodationItems.length === 0) {
+          return { success: true, removed: [] };
+        }
+
+        try {
+          for (const item of accommodationItems) {
+            const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
+            
+           const cartId = item.key.split('#').pop() || item.key;
+
+            const params = new URLSearchParams({
+              cart_id: cartId,
+              rate_plan_id: ratePlanId || '',
+            });
+
+            console.log('🔍 Calling GET /inventory/hold/status with params:', Object.fromEntries(params));
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/status?${params.toString()}`, {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await res.json();
+
+            if (!res.ok || data.success === false || data.available === false) {
+              console.warn('Hold status invalid for item', item.key, data);
+              get().removeItem(item.key);
+              removedKeys.push(item.key);
+            } else {
+              console.log('✅ Hold status valid for item', item.key, data);
+            }
+          }
+        } catch (err) {
+          console.warn('Hold status API error:', err);
+          // On network error, fall back to local expiry check
+          const now = Date.now();
+          const expired = accommodationItems.filter((i) => i.holdExpiresAt && i.holdExpiresAt <= now);
+          expired.forEach((i) => {
+            get().removeItem(i.key);
+            if (!removedKeys.includes(i.key)) removedKeys.push(i.key);
+          });
+        }
+
+        if (removedKeys.length > 0) return { success: false, removed: removedKeys, message: 'Some holds expired' };
+        return { success: true, removed: [] };
+      },
     }),
     {
       name: "tour_cart",

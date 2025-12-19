@@ -204,7 +204,7 @@ setForm({
 
   const CustomInput = React.forwardRef(({ value, onClick, className, placeholder }, ref) => (
     <div
-      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring--[#D3202D] focus:border-orange-300 text-left bg-white hover:border-[#D3202D] transition-colors h-12`}
+      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-orange-300 text-left bg-white hover:border-[#D3202D] transition-colors h-12`}
       onClick={onClick}
       ref={ref}
     >
@@ -227,7 +227,7 @@ setForm({
             </label>
             <button
               type="button"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:border-[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring--[#D3202D]"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:border-[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
               onClick={handleOpenPassengerModal}
               disabled={isBookingAdded}
             >
@@ -238,7 +238,7 @@ setForm({
                   {form.child || 0} {form.child === 1 ? t("bookingForm.child") : t("bookingForm.child_plural")}
                 </span>
               </span>
-              <Badge variant="secondary" className="bg-[#D3202D] text-white">
+              <Badge variant="secondary" className="bg-[#D3202D] text-white hover:bg-[#B91C1C] ">
                 {totalPax} {t("bookingForm.total")}
               </Badge>
             </button>
@@ -340,7 +340,9 @@ setForm({
       if (times.length === 0) {
         return (
           <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-yellow-200">
-            {t("bookingForm.pickupTimesUnavailable")}
+            {/* {t("bookingForm.pickupTimesUnavailable")} */}
+            Time is not Available, Proceed!
+            
           </div>
         );
       }
