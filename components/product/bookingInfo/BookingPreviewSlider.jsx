@@ -18,7 +18,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
     setCurrent((prev) => (prev + 1) % items.length);
   };
    const item = items[current];
-  const details = bookingDetailsMap[item.key] || {};
+  const details = bookingDetailsMap[item?.key] || {};
 
   const isTransfer = !!item.vehicle;
   const pickupSurcharge = Number(item?.pickupSurcharge) || 0;

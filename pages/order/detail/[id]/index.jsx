@@ -334,7 +334,7 @@ const confirmCancel = (id, reason) => {
             </div>
             <div>
               <p className="text-sm md:text-md font-semibold text-black">
-                {t("mealPlan", "Bed Type")}
+                {t("mealPlan", "Meal Plan")}
               </p>
               <p className="text-sm text-black">
                 {room.meal_plan}

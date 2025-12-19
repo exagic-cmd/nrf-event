@@ -34,7 +34,7 @@ const CartBubble = () => {
   return (
     <button
       onClick={handleClick}
-      className="fixed bottom-[70px] border-b border-black right-5 z-40 bg-white border shadow-md rounded-full p-3 flex items-center justify-center hover:bg-gray-100 transition"
+      className="fixed bottom-[30px] border-b border-black right-5 z-40 bg-white border shadow-md rounded-full p-3 flex items-center justify-center hover:bg-gray-100 transition"
     >
       <div className="relative">
          <ShoppingCart size={24} className="text-[#D3202D]" />

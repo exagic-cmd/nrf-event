@@ -16,6 +16,7 @@ const AccommodationMapSection = ({ hotelData }) => {
   const longitude = hotelData?.longitude ? parseFloat(hotelData.longitude) : null;
   const hotelName = hotelData?.title || hotelData?.name || "Accommodation";
   const imageUrl = getFullImageUrl(hotelData?.image);
+  const rating = parseFloat(hotelData?.stars || hotelData?.star_rating || 0);
 
   useEffect(() => {
     // Don't run on server or without valid coordinates
@@ -38,22 +39,50 @@ const AccommodationMapSection = ({ hotelData }) => {
 
         const infoWindow = new window.google.maps.InfoWindow();
 
+        let starsHtml = '';
+        if (rating > 0) {
+          for (let i = 0; i < 5; i++) {
+            starsHtml += `<span style="color: ${i < rating ? '#FFD700' : '#d3d3d3'};">★</span>`;
+          }
+        }
+
         const contentString = `
          
-            <img
-              src="${imageUrl}"
-              alt="${hotelName}"
-              style="
-                width: 160px;
-                padding: 4px
-                height: 100px;
-                object-fit: cover;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-              "
-            />
-            
-        `;
+     <div style="
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  ">
+    <img 
+      src="${imageUrl}" 
+      alt="${hotelName}" 
+      style="
+        width: 100px; 
+        height: 70px; 
+        object-fit: cover; 
+        border-radius: 2px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      " 
+    />
+
+    <div style="display: flex; flex-direction: column; justify-content: center;">
+      <div style="
+        font-weight: 600; 
+        font-size: 13px; 
+        max-width: 160px; 
+        line-height: 1.3; 
+        margin-bottom: 5px;
+      ">
+        ${hotelName}
+      </div>
+      ${starsHtml ? `<div style="font-size: 12px; line-height: 1;">${starsHtml}</div>` : ""}
+    </div>
+  </div>
+`;
         marker.addListener("click", () => {
           infoWindow.setContent(contentString);
           infoWindow.open(map, marker);
@@ -89,7 +118,7 @@ const AccommodationMapSection = ({ hotelData }) => {
     script.setAttribute("data-google-maps", "true");
     script.onload = initMap;
     document.head.appendChild(script);
-  }, [latitude, longitude, hotelName, imageUrl]);
+  }, [latitude, longitude, hotelName, imageUrl, rating]);
 
   if (!latitude || !longitude) {
     return null; // Don't render anything if no coordinates

@@ -134,30 +134,12 @@ export default function Header() {
       <div className="ml-auto flex items-center gap-2 sm:gap-4" ref={dropdownRef}>
         {/* DESKTOP */}
       <nav className="hidden lg:flex items-center gap-4">
-          {!token ? (
-            <Link
-              href="/login"
-              className="text-white bg-[#D3202D] py-2 px-5 sm:px-4 rounded-full text-sm sm:text-sm font-semibold hover:bg-gray-600 transition"
-            >
-              Login
-            </Link>
-          ) : (
-            renderUserMenu()
-          )}
+          {token && renderUserMenu()}
         </nav>
 
       
         <div className="lg:hidden flex items-center gap-3 sm:gap-4">
-          {!token ? (
-            <Link
-              href="/login"
-              className="text-white bg-[#D3202D] md:py-2 py-1.5 px-2 md:px-4 rounded-full text-xs sm:text-sm font-semibold"
-            >
-              Login
-            </Link>
-          ) : (
-            renderUserMenu(true)
-          )}
+          {token && renderUserMenu(true)}
         </div>
       </div>
     </header>

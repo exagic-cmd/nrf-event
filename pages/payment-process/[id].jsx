@@ -53,6 +53,47 @@ console.log(order.email)
     fetchOrder();
   }, [returnOrderId]);
 
+  const handleResumePayment = async () => {
+    if (!orderDetails || !orderDetails.itinerariesData) {
+      console.error("Order details not loaded yet.");
+      // Optionally, show a toast message to the user
+      return;
+    }
+
+    const accommodationItineraries = orderDetails.itinerariesData.filter(
+      (item) => item.category_id === 4
+    );
+
+    if (accommodationItineraries.length > 0) {
+      const holdStatusChecks = accommodationItineraries.map(async (item) => {
+        const cartId = item.cart_id;
+        const ratePlanId = item.hotel_ref_no;
+
+        if (!cartId || !ratePlanId) {
+          console.warn("Missing cart_id or rate_plan_id for an accommodation item", item);
+          return; 
+        }
+
+        const params = new URLSearchParams({
+          cart_id: cartId,
+          rate_plan_id: ratePlanId,
+        });
+
+        try {
+          await fetch(`https://app.exploresingapore.ai/api/inventory/hold/status?${params.toString()}`, {
+            method: 'GET',
+          });
+        } catch (error) {
+          console.error(`Failed to check hold status for cart_id ${cartId}:`, error);
+        }
+      });
+
+      await Promise.all(holdStatusChecks);
+    }
+
+    setShowFlywire(true);
+  };
+
   return (
     <div className="p-6 mt-8 text-center min-h-screen bg-[#f4f4f4] relative">
       <button
@@ -188,7 +229,7 @@ console.log(order.email)
             {/* Resume Payment Button */}
             <button
               className="group relative w-full bg-[#D3202D] hover:to-[#D3202D] transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
-              onClick={() => setShowFlywire(true)}
+              onClick={handleResumePayment}
             >
               {/* Button background effect */}
               <div className="absolute inset-0 bg-[#D0E9FF] opacity-20 -skew-x-12 group-hover:animate-pulse"></div>

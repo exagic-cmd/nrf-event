@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import SideDrawer from "@/components/layout/SideDrawer";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import CartBubble from "@/components/common/CartBubble";
+import AccommodationTimerBubble from "@/components/common/AccommodationTimerBubble";
 import { useTranslation } from "next-i18next";
 import { AlertCircle, Loader2, Lock, Eye, EyeClosed } from "lucide-react";
 import { redirectToAirwallexCheckout } from "@/utils/airwallex";
@@ -120,6 +121,7 @@ export default function Layout({ children }) {
         {drawerContent || <p>{t("noContentYet")}</p>}
       </SideDrawer>
       {!router.pathname.includes("booking") && <CartBubble />}
+      <AccommodationTimerBubble />
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
     </>
   );
