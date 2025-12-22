@@ -89,6 +89,7 @@ interface CartState {
   clearHoldForItem: (key: string) => void;
   startHoldForItem: (key: string) => Promise<any>;
   extendHoldForItem: (key: string) => Promise<any>;
+  extendHoldByCart: (cartId: string, ratePlanId: string) => Promise<any>;
   validateHoldsBeforeCheckout: () => Promise<{ success: boolean; removed?: string[]; message?: string }>;
 }
 
@@ -268,6 +269,43 @@ export const useCartStore = create<CartState>()(
         } catch (err) {
           console.warn('Extend hold API error:', err);
           return { success: false, message: err.message };
+        }
+      },
+
+      // Extend hold by cart id and rate plan (used by resume-payment flow where local cart key may not exist)
+      extendHoldByCart: async (cartId: string, ratePlanId: string) => {
+        if (!cartId || !ratePlanId) return { success: false, message: 'Missing cart_id or rate_plan_id' };
+
+        const payload = {
+          cart_id: cartId,
+          rate_plan_id: ratePlanId,
+        };
+
+        try {
+          console.log('⏱️ Calling POST /inventory/hold/extend by cart:', payload);
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/extend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok || data.success !== true) {
+            console.warn('Extend hold by cart API failed:', data);
+            return { success: false, message: data?.message || 'Extend failed', data };
+          }
+
+          const newExpires = data.expiresAt || (Date.now() + 7 * 60 * 1000);
+          // If we have a matching local item, update its hold expiry
+          const localItem = get().items.find((i) => (i.key.split('#').pop?.() || i.key) === String(cartId));
+          if (localItem) {
+            get().setHoldForItem(localItem.key, newExpires);
+          }
+
+          console.log('✅ Hold extended by cart, new expiry:', new Date(newExpires));
+          return { success: true, expiresAt: newExpires, data };
+        } catch (err: any) {
+          console.warn('Extend hold by cart API error:', err);
+          return { success: false, message: err?.message || String(err) };
         }
       },
 

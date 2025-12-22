@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next';
 import PayNowFlywire from '@/components/PayNowFlywire';
 import LoaderSvg from "@/components/common/Loader2Svg";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useCartStore } from '@/store/useCartStore';
 export default function OrderPaymentPage() {
   const { localizedPush } = useLocalizedRouter();
     const router = useRouter();
@@ -16,6 +17,7 @@ export default function OrderPaymentPage() {
   const [loading, setLoading] = useState(true);
   const [showFlywire, setShowFlywire] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
   const [resumePayment, setResumePayment] = useState(false);
 
   const [name, setName] = useState('');
@@ -57,6 +59,7 @@ console.log(order.email)
     if (!orderDetails || !orderDetails.itinerariesData) {
       console.error("Order details not loaded yet.");
       // Optionally, show a toast message to the user
+      setPaymentError("Order details could not be loaded. Please refresh and try again.");
       return;
     }
 
@@ -65,32 +68,46 @@ console.log(order.email)
     );
 
     if (accommodationItineraries.length > 0) {
-      const holdStatusChecks = accommodationItineraries.map(async (item) => {
+      for (const item of accommodationItineraries) {
         const cartId = item.cart_id;
         const ratePlanId = item.hotel_ref_no;
 
         if (!cartId || !ratePlanId) {
           console.warn("Missing cart_id or rate_plan_id for an accommodation item", item);
-          return; 
+          continue;
         }
 
-        const params = new URLSearchParams({
-          cart_id: cartId,
-          rate_plan_id: ratePlanId,
-        });
+        const statusParams = new URLSearchParams({ cart_id: cartId, rate_plan_id: ratePlanId });
 
         try {
-          await fetch(`https://app.exploresingapore.ai/api/inventory/hold/status?${params.toString()}`, {
-            method: 'GET',
-          });
-        } catch (error) {
-          console.error(`Failed to check hold status for cart_id ${cartId}:`, error);
-        }
-      });
+          const statusRes = await fetch(`https://app.exploresingapore.ai/api/inventory/hold/status?${statusParams.toString()}`);
+          const statusData = await statusRes.json();
 
-      await Promise.all(holdStatusChecks);
+          const isExpired = statusRes.ok && statusData?.data?.is_expired === true;
+          const isInvalid = !statusRes.ok || statusData?.success === false || statusData?.data?.found !== true;
+
+          // If expired or invalid, attempt extend API via cart store helper
+          if (isExpired || isInvalid) {
+            console.warn(`Hold expired/invalid for cart_id ${cartId}, attempting extend...`, statusData);
+            const extendResult = await useCartStore.getState().extendHoldByCart(cartId, ratePlanId);
+
+            if (!extendResult || extendResult.success !== true) {
+              console.error(`Extend failed for cart_id ${cartId}`, extendResult?.data || extendResult);
+              setPaymentError('The accommodation allotment is no longer available. Please contact support for assistance.');
+              return;
+            }
+
+            console.log(`✅ Hold extended for cart_id ${cartId}`);
+          }
+        } catch (err) {
+          console.error(`Failed to check/extend hold status for cart_id ${cartId}:`, err);
+          setPaymentError("We couldn't verify the availability of your booking. Please try again or contact support if the problem persists.");
+          return;
+        }
+      }
     }
 
+    // All holds verified/extended — proceed to payment
     setShowFlywire(true);
   };
 
@@ -175,11 +192,11 @@ console.log(order.email)
 
             {/* Header */}
             <h2 className="text-2xl md:text-3xl font-bold text-[#D3202D] mb-4 tracking-tight">
-              {t('paymentIncomplete')}
+              {paymentError ? 'Booking Unavailable' : t('paymentIncomplete')}
             </h2>
-            
+
             <p className="text-gray-600 mb-8 text-lg leading-relaxed">
-              {t('bookingAlmostComplete')}
+              {paymentError || t('bookingAlmostComplete')}
             </p>
 
             {/* Help section with enhanced styling */}
@@ -226,22 +243,24 @@ console.log(order.email)
               </div>
             </div>
 
-            {/* Resume Payment Button */}
-            <button
-              className="group relative w-full bg-[#D3202D] hover:to-[#D3202D] transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
-              onClick={handleResumePayment}
-            >
-              {/* Button background effect */}
-              <div className="absolute inset-0 bg-[#D0E9FF] opacity-20 -skew-x-12 group-hover:animate-pulse"></div>
-              
-              {/* Button content */}
-              <div className="relative z-10 flex items-center gap-3">
-                <span className="text-lg">{t('resumePayment')}</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-            </button>
+            {/* Resume Payment Button (hidden if unrecoverable payment error) */}
+            {!paymentError && (
+              <button
+                className="group relative w-full bg-[#D3202D] hover:to-[#D3202D] transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
+                onClick={handleResumePayment}
+              >
+                {/* Button background effect */}
+                <div className="absolute inset-0 bg-gray-100 opacity-20 -skew-x-12 group-hover:animate-pulse"></div>
+                
+                {/* Button content */}
+                <div className="relative z-10 flex items-center gap-3">
+                  <span className="text-lg">{t('resumePayment')}</span>
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </button>
+            )}
 
             {/* Security badge */}
             <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
