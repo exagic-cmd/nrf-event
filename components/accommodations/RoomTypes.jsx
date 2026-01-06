@@ -158,7 +158,7 @@ const StubaRoomList = ({
 
               {/* Desktop Table Header */}
               <div className="hidden lg:grid grid-cols-5 text-xs uppercase text-black font-bold bg-[#dcdcdc] border-y border-gray-200">
-                <div className="py-3 px-4 border-r border-gray-500">Rate Plan</div>
+                <div className="py-3 px-4 border-r border-gray-500">Room</div>
                 <div className="py-3 px-4 border-r border-gray-500">Meals</div>
                 <div className="py-3 px-4 border-r border-gray-500">Cancellation</div>
                 <div className="py-3 px-4 border-r border-gray-500">NET Price</div>
