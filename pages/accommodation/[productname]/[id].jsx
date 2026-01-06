@@ -458,14 +458,28 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
 }, [router.isReady, accommodationId]); // Simplified dependencies
 
 useEffect(() => {
-  if (accommodation?.normalizedHotelData && accommodation.normalizedHotelData.title) { // Add check for title
-    const { id, title, image, starting_price, stars, rating } =
-      accommodation.normalizedHotelData;
+  if (accommodation?.normalizedHotelData && accommodation.normalizedHotelData.title) {
+    const { id, title, image, stars, rating } = accommodation.normalizedHotelData;
+    
+    // Get the lowest total_promo price from all rate plans
+    let lowestPrice = accommodation.normalizedHotelData.starting_price; // fallback
+    
+    if (accommodation.normalizedRoomData && accommodation.normalizedRoomData.length > 0) {
+      // Extract all total_promo prices from all rate plans
+      const allPromoPrices = accommodation.normalizedRoomData.flatMap(room => 
+        room.ratePlans?.map(plan => plan.rawPricing?.pricing?.total_promo || plan.price || 0) || []
+      ).filter(price => price > 0);
+      
+      if (allPromoPrices.length > 0) {
+        lowestPrice = Math.min(...allPromoPrices);
+      }
+    }
+    
     addRecentlyViewed({
       id: id,
       name: title,
       image: image,
-      price: starting_price,
+      price: lowestPrice,
       rating: stars || rating?.rating || 0,
       type: "accommodation",
       link: router.asPath,

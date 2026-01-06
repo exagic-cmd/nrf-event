@@ -213,7 +213,7 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
      
     </p>
    <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
-      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}, {roomsCount} room{roomsCount > 1 ? 's' : ''}
+      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
     </p>
     {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
@@ -232,7 +232,7 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
       {/* <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span> */}
     </p>
     <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
-      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}, {roomsCount} room{roomsCount > 1 ? 's' : ''}
+      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
     </p>
   </div>
 
