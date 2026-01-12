@@ -76,7 +76,7 @@ const AccommodationTimerBubble = () => {
         <div className="text-left">
           <div className="text-sm font-medium">{active.productTitle || active.title || "Accommodation"}</div>
           <div className="text-xs text-gray-600 inline-flex items-center gap-1">
-            <Clock className="w-3 h-3" /> <span>Hold expires in: {mins}:{secs}</span>
+            <Clock className="w-3 h-3" />  <span>{active?.hotel_info?.roomsDetails?.length} rooms on hold — expires in <strong>{mins}:{secs}.</strong></span>
           </div>
         </div>
       </button>

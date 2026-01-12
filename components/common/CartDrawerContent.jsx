@@ -168,9 +168,9 @@ const CartDrawerContent = () => {
                                 .toString()
                                 .padStart(2, "0");
                               return (
-                                <div className="text-xs text-orange-700 bg-orange-100 rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-medium">
+                                <div className="text-xs text-orange-700 bg-orange-100 rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-small">
                                   <Clock size={12} className="mr-1" />
-                                  <span>Hold expires in: <strong>{mins}:{secs}</strong></span>
+                                  <span>{item?.hotel_info?.roomsDetails?.length} rooms on hold — expires in <strong>{mins}:{secs}.</strong></span>
                                 </div>
                               );
                             }

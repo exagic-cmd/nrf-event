@@ -177,6 +177,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           </div>
 
           <div className="mt-3 space-y-1.5 text-xs">
+            <div className="text-center font-medium text-gray-800">{item.productTitle}</div>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
               <span className="font-medium text-gray-600 flex items-center gap-1.5">
                 <BedDouble size={14} /> {item.roomType}

@@ -154,32 +154,32 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   const { accommodations } = useAccommodationsStore();
 
   // Use a fixed price range for the filter as requested.
- const priceBounds = useMemo(() => {
-  if (!accommodations || accommodations.length === 0) {
-    // Default fallback if no accommodations
-    return { min: 0, max: 1000 };
-  }
+  const priceBounds = useMemo(() => {
+    if (!accommodations || accommodations.length === 0) {
+      // Default fallback if no accommodations
+      return { min: 0, max: 1000 };
+    }
 
-  // Collect all candidate prices
-  const prices = accommodations.map(acc => {
-    return (
-      acc.room?.rate_plan?.pricing?.total_promo ||
-      acc.room?.rate_plan?.pricing?.total ||
-      acc.room?.rate_plan?.pricing?.per_room_total_promo ||
-      acc.room?.rate_plan?.pricing?.per_room_total ||
-      acc.room?.base_price ||
-      acc.price || 0
-    );
-  });
+    // Collect all candidate prices
+    const prices = accommodations.map(acc => {
+      return (
+        acc.room?.rate_plan?.pricing?.total_promo ||
+        acc.room?.rate_plan?.pricing?.total ||
+        acc.room?.rate_plan?.pricing?.per_room_total_promo ||
+        acc.room?.rate_plan?.pricing?.per_room_total ||
+        acc.room?.base_price ||
+        acc.price || 0
+      );
+    });
 
-  const maxPrice = Math.max(...prices);
-  const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const minPrice = Math.min(...prices);
 
-  return {
-    min: minPrice > 0 ? Math.floor(minPrice) : 0,   // ✅ calculated min
-    max: maxPrice > 0 ? Math.ceil(maxPrice) : 1000, // ✅ calculated max
-  };
-}, [accommodations]);
+    return {
+      min: minPrice > 0 ? Math.floor(minPrice) : 0,   // ✅ calculated min
+      max: maxPrice > 0 ? Math.ceil(maxPrice) : 1000, // ✅ calculated max
+    };
+  }, [accommodations]);
 
 
   const [selectedMin, setSelectedMin] = useState(0);
@@ -303,12 +303,16 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
               onTouchEnd={applyPriceRange} // Apply for touch devices
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
-         </div>
+          </div>
         </div>
       </FilterSection>
 
       {Object.entries(filters || {}).map(([key, items]) => {
         if (!items || items.length === 0 || key === 'room_amenities') return null;
+
+        // Filter out items with count === 0
+        const filteredItems = items.filter(item => item.count > 0);
+        if (filteredItems.length === 0) return null;
 
         const config = FILTER_CONFIG[key] || {};
         const title = config.title || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -317,7 +321,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
           const { Component, getProps } = config;
           return (
             <FilterSection key={key} title={title} defaultOpen={config.defaultOpen !== false}>
-              <Component {...getProps(items, activeFilters, handleFilterArrayChange)} />
+              <Component {...getProps(filteredItems, activeFilters, handleFilterArrayChange)} />
             </FilterSection>
           );
         }
@@ -326,8 +330,13 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
         const itemKeyProp = config.itemKey || FILTER_CONFIG.default.itemKey;
 
         return (
-          <FilterSection key={key} title={title} hasLoadMore={items.length > 5} defaultOpen={config.defaultOpen}>
-            {items.map((item) => {
+          <FilterSection
+            key={key}
+            title={title}
+            hasLoadMore={filteredItems.length > 5}
+            defaultOpen={config.defaultOpen}
+          >
+            {filteredItems.map((item) => {
               const itemLabel = typeof config.itemLabel === 'function' ? config.itemLabel(item) : item[config.itemLabel];
               const itemKey = item[itemKeyProp] ?? item.value ?? item.id;
               return (

@@ -541,7 +541,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
             <div>
               <label className="text-sm text-gray-500 flex items-center gap-3">
                 <MessageSquare className="w-4 h-4 text-gray-400" />
-                Preferrd Communication Mode
+                Preferred Communication Mode
               </label>
               <div className="relative" ref={commModeRef}>
                 <button
