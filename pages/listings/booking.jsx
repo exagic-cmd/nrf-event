@@ -65,7 +65,7 @@ const [showReturnOffer, setShowReturnOffer] = useState(false);
 const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
 
   const showMeetAndGreet =
-    selectedTransfer?.feature_type_id === 2 &&
+    selectedTransfer?.feature_type_id === 1 &&
     searchParams?.pickup?.name?.toLowerCase().includes("terminal") &&
     (searchParams?.pickup?.name?.toLowerCase().includes("airport") ||
       searchParams?.pickup?.name?.toLowerCase().includes("changi"));
@@ -77,6 +77,7 @@ const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
       dropoff_point_id: searchParams.dropoff?.id,
       product_id: selectedTransfer?.product_id,
       vehicle_id: selectedTransfer?.vehicle_id,
+        feature_type_id:selectedTransfer?.feature_type_id || null,
       round_trip: searchParams.tripType === "one-way" ? false : true,
     };
 
@@ -361,6 +362,7 @@ const handleUpdate = () => {
   returnSurchargeId: surchargeReturn?.data?.surcharge_id || null,
 
     vehicle: selectedTransfer,
+    currency: selectedTransfer?.currency || "",
     baggage: userBookingDetails.baggage||0,
     cabinBags: userBookingDetails.cabinBags || 0,
     largeBags: userBookingDetails.largeBags || 0,
