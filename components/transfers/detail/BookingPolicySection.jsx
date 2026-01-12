@@ -13,11 +13,12 @@ function BookingPolicySection({
 }) {
   const { t } = useTranslation("daytour");
   const { languageId } = useLanguageStore.getState();
-  const { fetchTermsConditions } = useProductStore();
-
+ const { tieredPricingData, bookedProductDetail,fetchTermsConditions, fetchCancellationPolicy } = useProductStore();
+ 
   const [terms, setTerms] = useState("");
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
+  const [cancellationText, setCancellationText] = useState("");
 
   useEffect(() => {
     if (!productId) return;
@@ -45,6 +46,14 @@ function BookingPolicySection({
     }
   };
 
+  useEffect(() => {
+    if (productId) {
+      fetchCancellationPolicy(productId, languageId).then((res) =>
+        setCancellationText(res?.data?.cancellationpolicies?.description || "")
+      );
+    }
+  }, [productId, languageId, fetchCancellationPolicy]);
+
   if (loading) {
     return (
       <div className="p-4 text-gray-500">
@@ -52,9 +61,11 @@ function BookingPolicySection({
       </div>
     );
   }
-
   return (
-    <div className="bg-white rounded p-0">
+    <div className="bg-white rounded p-0" id="policy">
+        {cancellationText && (
+              <p className="md:text-sm text-sm py-2 text-gray-800 whitespace-pre-line">{cancellationText}</p>
+            )}
       <div className="flex items-center gap-3">
         {/* ✅ Custom Checkbox */}
         <label

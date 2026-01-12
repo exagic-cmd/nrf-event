@@ -197,12 +197,18 @@ fetchAvailableDates: async (productId, adults, children) => {
   loadingTransferAddons: false,
   errorTransferAddons: '',
 
-  fetchTransferAddons: async () => {
+  fetchTransferAddons: async ({ language_id=1, product_id, pickup_id, dropoff_id }) => {
     set({ loadingTransferAddons: true, errorTransferAddons: '' });
     try {
       const data = await apiRequest({
         endpoint: 'transfer-adons',
-        method: "GET",
+        method: "POST",
+        data: {
+          language_id: language_id || "1",
+          product_id,
+          pickup_id,
+          dropoff_id,
+        },
       });
       set({ transferAddons: data?.data?.transfer_add_ons || [], loadingTransferAddons: false });
       return data;

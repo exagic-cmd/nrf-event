@@ -13,6 +13,7 @@ selectedReturnDate: null,
       surchargeReturn: null,
       selectedPickup: null,
       selectedDropoff: null,
+      mapDetails: null,
       isLoading: false,
       error: null,
       searchResults: [],
@@ -53,7 +54,6 @@ returnFlightTime: "",
             ...params,
           },
         }),
-        
 
       // Static category options - now multilingual ready
       // The translation keys will be used in the component
@@ -150,7 +150,7 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
         }
       },
 
-      fetchTransfers: async (payload) => {
+       fetchTransfers: async (payload) => {
         set({ isLoading: true })
         try {
           const apiPayload = {
@@ -166,7 +166,11 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
             body: JSON.stringify(apiPayload),
           })
           const result = await res.json()
-          set({ searchResults: result.results || [], isLoading: false })
+          set({
+            searchResults: result?.results || [],
+            mapDetails: result?.map || null,
+            isLoading: false,
+          })
         } catch (err) {
           set({ isLoading: false, error: err.message || "Search failed" })
         }
@@ -235,7 +239,8 @@ returnFlightTime: "",
       fetchVehicles: async () => {
         set({ isLoading: true })
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/getvehicles`)
+          // Fetch vehicles from the API
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/gettransfervehicles`)
           const result = await res.json()
           if (result.success) {
             set({ vehicles: result.data.vehicles || [], isLoading: false })
@@ -354,6 +359,7 @@ returnFlightTime: "",
           surchargeReturn: null,
           selectedPickup: null,
           selectedDropoff: null,
+          mapDetails: null,
           selectedTransfer: null,
           searchResults: [],
           tripType: "one-way",

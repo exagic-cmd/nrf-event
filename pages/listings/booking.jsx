@@ -19,6 +19,7 @@ import TransferAddonsSection from "@/components/transfers/detail/TransferAddonsS
 import UpsellProducts from "@/components/transfers/detail/UpsellBooking";
 import BookingPolicySection from "@/components/transfers/detail/BookingPolicySection";
 import ReturnTransferModal from "@/components/transfers/detail/ReturnTransferModal";
+import formatPrice from "@/lib/formatPrice";
 const TransferBookingPage = () => {
   const { t } = useTranslation("transfer","common");
   const { localizedPush, back } = useLocalizedRouter();
@@ -42,13 +43,7 @@ const { surchargePickup, surchargeReturn,resetTransferStore  } = useTransferStor
   useEffect(() => {
     if (selectedTransfer) {
       if (tripType === "round-trip") {
-        const promo = selectedTransfer?.two_way_promo_price;
-        const priceToUse =
-          promo && Number(promo) > 0
-            ? Number(promo)
-            : Number(selectedTransfer?.two_way_price) || 0;
-
-        setBasePrice(Math.floor(priceToUse));
+        setBasePrice(selectedTransfer.two_way_promo_price || selectedTransfer.two_way_price);
       } else {
         setBasePrice(selectedTransfer.price);
       }
@@ -68,6 +63,12 @@ const [availablePolicyIds, setAvailablePolicyIds] = useState([]);
 const [priceDifference, setPriceDifference] = useState(0);
 const [showReturnOffer, setShowReturnOffer] = useState(false);
 const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+
+  const showMeetAndGreet =
+    selectedTransfer?.feature_type_id === 2 &&
+    searchParams?.pickup?.name?.toLowerCase().includes("terminal") &&
+    (searchParams?.pickup?.name?.toLowerCase().includes("airport") ||
+      searchParams?.pickup?.name?.toLowerCase().includes("changi"));
 
   useEffect(() => {
   async function loadFeature() {
@@ -116,7 +117,7 @@ setIsLoading(true)
   const handleContinueShopping = () => {
     setIsLoading(true)
     resetFormData();
-    localizedPush("/");
+    localizedPush("/transfers");
     resetTransferStore();
   };
 const handleGoToCart = async () => {
@@ -146,6 +147,9 @@ const executeBookTransfer = () => {
        // newErrors.pickupFlightNumber = "Please track and verify your pickup flight before checkout.";
        }
      }
+    //  if (showMeetAndGreet && !userBookingDetails.meetAndGreetName) {
+    //    newErrors.meetAndGreetName = "booking.meetAndGreetNameRequired";
+    //  }
 
     // Return validation
     if (tripType === "round-trip") {
@@ -185,22 +189,44 @@ const executeBookTransfer = () => {
     return;
   }
   const cart = useCartStore.getState();
+  const cabinBagInfo = selectedTransfer.baggages?.find(b => b.name === "Cabin");
+  const largeBagInfo = selectedTransfer.baggages?.find(b => b.name === "Large");
+  
+  const selectedBaggages = [];
+  if (userBookingDetails.cabinBags > 0 && cabinBagInfo) {
+    selectedBaggages.push({
+      baggage_id: cabinBagInfo.id,
+      quantity: userBookingDetails.cabinBags
+    });
+  }
+  if (userBookingDetails.largeBags > 0 && largeBagInfo) {
+    selectedBaggages.push({
+      baggage_id: largeBagInfo.id,
+      quantity: userBookingDetails.largeBags
+    });
+  }
 
   const result = cart.addItem({
     tourId: selectedTransfer.product_id,
     selectedDate: userBookingDetails.pickupDate ? format(new Date(userBookingDetails.pickupDate), "yyyy-MM-dd") : undefined,
     selectedTime: pickupOption === "time" && userBookingDetails.pickupTime ? format(new Date(userBookingDetails.pickupTime), "hh:mm a") : undefined,
     transferType: tripType,
-    pricing: finalTotalPrice || selectedTransfer.price,
-     pickupSurcharge: parseFloat(surchargePickup?.data?.amount || 0),
+    pricing: formatPrice(finalTotalPrice || basePrice),
+    price: finalTotalPrice || formatPrice(basePrice),
+     pickupSurcharge: formatPrice(surchargePickup?.data?.amount || 0),
   pickupSurchargeId: surchargePickup?.data?.surcharge_id || null,
-  returnSurcharge: parseFloat(surchargeReturn?.data?.amount || 0),
+  returnSurcharge: formatPrice(surchargeReturn?.data?.amount || 0),
   returnSurchargeId: surchargeReturn?.data?.surcharge_id || null,
+  currency: selectedTransfer?.currency || "",
 
     vehicle: selectedTransfer,
     baggage: userBookingDetails.baggage||0,
+    cabinBags: userBookingDetails.cabinBags || 0,
+    largeBags: userBookingDetails.largeBags || 0,
+    selectedBaggages,
    passengers: userBookingDetails.passengers||1,
     phone: userBookingDetails.phone,
+    meetAndGreetName: userBookingDetails.meetAndGreetName,
     pickupFlightNumber: userBookingDetails?.pickupFlightNumber,
     pickupFlightScheduleTime: userBookingDetails?.pickupFlightScheduleTime,
     exceptions: userBookingDetails.exceptions || [],
@@ -256,6 +282,9 @@ const validateBooking = () => {
       newErrors.pickupFlightNumber = "booking.pickupFlightRequired";
     }
   }
+  // if (showMeetAndGreet && !userBookingDetails.meetAndGreetName) {
+  //   newErrors.meetAndGreetName = "booking.meetAndGreetNameRequired";
+  // }
 
   if (!selectedPolicies.includes("terms_conditions")) {
     newErrors.policy = "booking_section.error_required";
@@ -302,12 +331,30 @@ const handleUpdate = () => {
   const pickupOption = userBookingDetails.pickupOption || "time";
   const returnOption = userBookingDetails.returnOption || "time";
 
+  const cabinBagInfo = selectedTransfer.baggages?.find(b => b.name === "Cabin");
+  const largeBagInfo = selectedTransfer.baggages?.find(b => b.name === "Large");
+  
+  const selectedBaggages = [];
+  if (userBookingDetails.cabinBags > 0 && cabinBagInfo) {
+    selectedBaggages.push({
+      baggage_id: cabinBagInfo.id,
+      quantity: userBookingDetails.cabinBags
+    });
+  }
+  if (userBookingDetails.largeBags > 0 && largeBagInfo) {
+    selectedBaggages.push({
+      baggage_id: largeBagInfo.id,
+      quantity: userBookingDetails.largeBags
+    });
+  }
+
   const result = cart.addItem({
     tourId: selectedTransfer.product_id,
     selectedDate: userBookingDetails.pickupDate ? format(new Date(userBookingDetails.pickupDate), "yyyy-MM-dd") : undefined,
     selectedTime: pickupOption === "time" && userBookingDetails.pickupTime ? format(new Date(userBookingDetails.pickupTime), "hh:mm a") : undefined,
     transferType: tripType,
-    pricing: finalTotalPrice || selectedTransfer.price,
+    pricing: formatPrice(finalTotalPrice || basePrice),
+    price: finalTotalPrice || parseFloat(basePrice),
      pickupSurcharge: parseFloat(surchargePickup?.data?.amount || 0),
   pickupSurchargeId: surchargePickup?.data?.surcharge_id || null,
   returnSurcharge: parseFloat(surchargeReturn?.data?.amount || 0),
@@ -315,15 +362,19 @@ const handleUpdate = () => {
 
     vehicle: selectedTransfer,
     baggage: userBookingDetails.baggage||0,
+    cabinBags: userBookingDetails.cabinBags || 0,
+    largeBags: userBookingDetails.largeBags || 0,
+    selectedBaggages,
    passengers: userBookingDetails.passengers||1,
     phone: userBookingDetails.phone,
+    meetAndGreetName: userBookingDetails.meetAndGreetName,
     pickupFlightNumber: userBookingDetails?.pickupFlightNumber,
     pickupFlightScheduleTime: userBookingDetails?.pickupFlightScheduleTime,
     exceptions: userBookingDetails.exceptions || [],
     addons: (selectedAddons.pickup || []).map((a) => ({
       addon_id: a.addon_id,
       rate: a.rate,
-      qty: a.quantity,
+      quantity: a.quantity,
       total: a.total,
       title: a.title,   
       image: a.image,   
@@ -332,7 +383,7 @@ const handleUpdate = () => {
   addons_round: (selectedAddons.return || []).map((a) => ({
     addon_id: a.addon_id,
     rate: a.rate,
-    qty: a.quantity,
+    quantity: a.quantity,
     total: a.total,
     title: a.title,   
     image: a.image,   
@@ -374,6 +425,26 @@ const handleReturnModalConfirm = () => {
       visibleReturnSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, 100);
+};
+
+const baggageSelectorProps = {
+  cabinBags: userBookingDetails.cabinBags || 0,
+  setCabinBags: isLocked ? () => {} : (val) => {
+    const large = userBookingDetails.largeBags || 0;
+    setUserBookingDetails({ cabinBags: val, baggage: val + large });
+    if (errors.baggage) { const newErrors = { ...errors }; delete newErrors.baggage; setErrors(newErrors); }
+  },
+  largeBags: userBookingDetails.largeBags || 0,
+  setLargeBags: isLocked ? () => {} : (val) => {
+    const cabin = userBookingDetails.cabinBags || 0;
+    setUserBookingDetails({ largeBags: val, baggage: val + cabin });
+    if (errors.baggage) { const newErrors = { ...errors }; delete newErrors.baggage; setErrors(newErrors); }
+  },
+  passengers: userBookingDetails.passengers || 1,
+  setPassengers: isLocked ? () => {} : (val) => handleInputChange("passengers", val),
+  baggageDetail: selectedTransfer,
+  errors: errors,
+  disabled: isLocked,
 };
 
   if (isLoading) {
@@ -450,18 +521,25 @@ const handleReturnModalConfirm = () => {
               />
             </div>
             <div className="order-3">
-              <BaggagePassengerSelector
-                baggage={userBookingDetails.baggage || 0}
-                setBaggage={isLocked ? () => {} : (val) => handleInputChange("baggage", val)}
-                maxBaggage={selectedTransfer.capacity_with_luggage}
-                passengers={userBookingDetails.passengers || 1}
-                setPassengers={isLocked ? () => {} : (val) => handleInputChange("passengers", val)}
-                maxPassengers={selectedTransfer.max_capacity}
-                errors={errors}
-                disabled={isLocked}
-              />
+              <BaggagePassengerSelector {...baggageSelectorProps} />
+              {showMeetAndGreet && (
+                <div id="meetAndGreetName" className="mb-6 mt-6 bg-white rounded-md p-2 pl-6">
+                  <label className="block text-lg font-medium text-[#D3202D] mb-2">
+                    {t("booking.meetAndGreetName","Name for meet and greet sign")}
+                  </label>
+                  <input
+                    type="text"
+                    value={userBookingDetails.meetAndGreetName || ""}
+                    onChange={(e) => handleInputChange("meetAndGreetName", e.target.value)}
+                    className={`w-full text-base mb-2 px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                    disabled={isLocked}
+                    placeholder={t("booking.meetAndGreetPlaceholder","Enter name") || "Enter name"}
+                  />
+                  
+                </div>
+              )}
    <div className="mb-6 mt-6 bg-white rounded-md p-2 pl-6 ">
-  <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
+  <label className="block text-lg font-medium text-[#D3202D] mb-2">
     {t("specialRequests.title")}
   </label>
   <p className="text-sm text-gray-700 my-4 pl-2">
@@ -629,16 +707,23 @@ const handleReturnModalConfirm = () => {
   disabled={isLocked}
 />
 
-<BaggagePassengerSelector
-  baggage={userBookingDetails.baggage || 0}
-  setBaggage={isLocked ? () => {} : (val) => handleInputChange("baggage", val)}
-  passengers={userBookingDetails.passengers || 1}
-  setPassengers={isLocked ? () => {} : (val) => handleInputChange("passengers", val)}
-  maxBaggage={selectedTransfer.capacity_with_luggage}
-  maxPassengers={selectedTransfer.max_capacity}
-  errors={errors}
-  disabled={isLocked}
-/>
+<BaggagePassengerSelector {...baggageSelectorProps} />
+ {showMeetAndGreet && (
+    <div id="meetAndGreetName" className="mb-6 mt-6 bg-white rounded-md p-2 pl-6">
+      <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
+        {t("booking.meetAndGreetName","Name for meet and greet sign") || "Name for meet and greet sign"}
+      </label>
+      <input
+        type="text"
+        value={userBookingDetails.meetAndGreetName || ""}
+        onChange={(e) => handleInputChange("meetAndGreetName", e.target.value)}
+        className={` w-full lg:w-1/2 text-base mb-2 px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
+        disabled={isLocked}
+        placeholder={t("booking.meetAndGreetPlaceholder","Enter name") || "Enter name"}
+      />
+      
+    </div>
+  )}
  <div className="mb-6 mt-6 bg-white rounded-md p-2 pl-6 ">
   <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
     {t("specialRequests.title")}
