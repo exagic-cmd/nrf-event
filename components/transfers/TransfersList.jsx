@@ -137,48 +137,6 @@ function TransfersList() {
 
   return (
     <div ref={vehicleSectionRef} className="space-y-4">
-    
-  <div className="h-64 mb-6 rounded-lg overflow-hidden shadow-lg">
-                  <TransferMap mapDetails={mapDetails} />
-                </div>
-                  <div className="rounded-xl py-3 px-2 bg-gray-50">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:gap-4">
-        <div className="w-full md:w-auto flex flex-row items-center gap-3">
-          <p className="lg:text-lg text-md font-medium">
-            {t('results.availableOptions', 'Available Options')}
-          </p>
-          <div className="flex items-center bg-gray-200 p-1 rounded-lg">
-            <button
-              className="px-3 py-1 text-xs font-medium rounded-md text-gray-500 cursor-default"
-            >
-              {tripType === 'round-trip' ? t('round_trip', 'Round Trip') : t('one_way', 'One Way')}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTripTypeChange(tripType === 'round-trip' ? 'one-way' : 'round-trip');
-              }}
-              className="px-3 py-1 text-xs font-medium rounded-md bg-white text-black shadow-sm hover:bg-gray-50 transition-all duration-200"
-            >
-              {tripType === 'round-trip'
-                ? t('see_one_way_price', 'See One Way Price')
-                : t('see_round_trip_price', 'See Round Trip Price')}
-            </button>
-          </div>
-        </div>
-        
-          {/* {hasAnyPromo && (
-            <div className="ml-0 md:ml-4 md:mb-0 mb-2 text-sm  mt-0 lg:mt-3 lg:text-md">
-              <PromoButton
-                label={t('buttons.applyPromo',"Apply Promo") || 'Apply Promo'}
-                prominent
-                onClick={handleOpenPromoModal}
-              />
-            </div>
-          )} */}
-        </div>
-        <p className="text-xs md:text-sm text-gray-500 text-left mt-0">{t('tax_fees_included', 'Tax and fees included /Vehicle pictures are inddicative only')}</p>
-      </div>
       {isLoading ? (
         <div className="flex justify-start md:justify-center items-start md:items-center py-20">
           <svg
@@ -203,8 +161,42 @@ function TransfersList() {
           </svg>
         </div>
       ) : paginatedTransfers.length > 0 ? (
-        
-        paginatedTransfers.map((car) => <TransfersCard key={car.id} car={car} tripType={tripType} handleTripTypeChange={handleTripTypeChange} />)
+        <>
+          <div className="h-64 mb-6 rounded-lg overflow-hidden relative z-0 shadow-lg">
+            <TransferMap mapDetails={mapDetails} />
+          </div>
+          <div className="rounded-xl py-3 px-2 bg-gray-50">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:gap-4">
+              <div className="w-full md:w-auto flex flex-row items-center gap-3">
+                <p className="lg:text-lg text-md font-medium">
+                  {t('results.availableOptions', 'Available Options')}
+                </p>
+                <div className="flex items-center bg-gray-200 p-1 rounded-lg">
+                  <button className="px-3 py-1 text-xs font-medium rounded-md text-gray-500 cursor-default">
+                    {tripType === 'round-trip' ? t('round_trip', 'Round Trip') : t('one_way', 'One Way')}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTripTypeChange(tripType === 'round-trip' ? 'one-way' : 'round-trip');
+                    }}
+                    className="px-3 py-1 text-xs font-medium rounded-md bg-white text-black shadow-sm hover:bg-gray-50 transition-all duration-200"
+                  >
+                    {tripType === 'round-trip'
+                      ? t('see_one_way_price', 'See One Way Price')
+                      : t('see_round_trip_price', 'See Round Trip Price')}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs md:text-sm text-gray-500 text-left mt-0">
+              {t('tax_fees_included', 'Tax and fees included /Vehicle pictures are inddicative only')}
+            </p>
+          </div>
+          {paginatedTransfers.map((car) => (
+            <TransfersCard key={car.id} car={car} tripType={tripType} handleTripTypeChange={handleTripTypeChange} />
+          ))}
+        </>
       ) : (
         <div className="text-center py-10 text-gray-500">{t('results.noTransfersFound')}</div>
       )}

@@ -42,18 +42,27 @@ const TransferSearchFilter = ({ onSearch, showModal: showModalProp, setShowModal
 
   useEffect(() => {
     const hasStoredParams = storeSearchParams?.pickup && storeSearchParams?.dropoff
+    const urlTripType = searchParams.get("tripType")
 
     if (hasStoredParams) {
       setPickupQuery(storeSearchParams.pickup.name)
       setDropoffQuery(storeSearchParams.dropoff.name)
       setSelectedPickup(storeSearchParams.pickup)
       setSelectedDropoff(storeSearchParams.dropoff)
-      setTripType(storeSearchParams.tripType)
+
+      if (urlTripType && (urlTripType === "one-way" || urlTripType === "round-trip")) {
+        setTripType(urlTripType)
+      } else {
+        setTripType(storeSearchParams.tripType)
+      }
     }
 
     if (!hasStoredParams && !hasResetRef.current) {
       resetTransferStore()
       hasResetRef.current = true
+      if (urlTripType && (urlTripType === "one-way" || urlTripType === "round-trip")) {
+        setTripType(urlTripType)
+      }
     }
   }, [storeSearchParams, searchParams, hasAutoSearched])
 

@@ -28,7 +28,7 @@ const ReturnTransferModal = ({
         <div className="mb-6">
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <p className="text-gray-700 font-medium">
-              {t('returnTransfer.savingsMessage')} for USD {formatPrice(returnPrice)}
+              {t('returnTransfer.savingsMessage')} for {selectedTransfer?.currency} {formatPrice(returnPrice)}
             </p>
            
           </div>

@@ -80,14 +80,14 @@ export default function FlightTracker({
             original_schedule_time: original_schedule_time,
           });
         } else {
-        //  const msg = "We couldn’t find the flight details in our Database, we will check it manually";
+          const msg = result?.error || "We couldn’t find the flight details in our Database, we will check it manually";
           setError(msg);
           setFlightData(null);
           onTrackFail?.(msg);
         }
       } catch (err) {
         if (cancelled) return;
-       // const msg = "We couldn’t find the flight details in our Database, we will check it manually";
+        const msg = "We couldn’t find the flight details in our Database, we will check it manually";
         setError(msg);
         onTrackFail?.(msg);
       } finally {

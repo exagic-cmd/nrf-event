@@ -156,11 +156,11 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
             <div className="text-right">
               {hasPromo && (
                 <p className="text-sm text-gray-400 line-through">
-                  SGD {formatPrice(originalPrice)}
+                    {car.currency} {formatPrice(originalPrice)}
                 </p>
               )}
               <p className="text-2xl font-bold text-[#D3202D]">
-                SGD {formatPrice(displayPrice)}
+                {car.currency} {formatPrice(displayPrice)}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {currentTripType === "round-trip" ? t("transferType.roundTrip") : t("transferType.oneWay")}
@@ -233,11 +233,11 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
               <div>
                 {hasPromo && (
                   <p className="text-[10px] text-gray-400 line-through">
-                    SGD {formatPrice(originalPrice)}
+                    {car.currency} {formatPrice(originalPrice)}
                   </p>
                 )}
                 <p className="text-sm font-bold text-[#D3202D]">
-                  SGD {formatPrice(displayPrice)}
+                  {car.currency} {formatPrice(displayPrice)}
                 </p>
                 <p className="text-[10px] text-gray-500">
                   {currentTripType === "round-trip" ? t("transferType.roundTrip") : t("transferType.oneWay")}

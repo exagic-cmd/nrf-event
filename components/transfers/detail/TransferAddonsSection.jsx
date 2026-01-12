@@ -188,7 +188,7 @@ const formatDate = (dateString) => {
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm font-bold text-[#D3202D]">
-                {displayPrice} USD
+                {displayPrice} {addon?.currency||""}
               </span>
 
               {!isSelected ? (
@@ -260,7 +260,7 @@ const formatDate = (dateString) => {
               </div>
             )}
             <div className="absolute top-1 right-1 bg-black/70 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
-              {displayPrice} USD
+              {displayPrice} {addon?.currency||""}
             </div>
 
             {isSelected && (

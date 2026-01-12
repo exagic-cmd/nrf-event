@@ -144,7 +144,7 @@ export default function Layout({ children }) {
 
       {/* ===== MAIN LAYOUT ===== */}
       <Header />
-      <main className="min-h-screen bg-black">{children}</main>
+      <main className="min-h-screen">{children}</main>
 
       {/* {pendingOrderId && !loading && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-[#D3202D] text-white text-sm px-4 py-3 rounded-xl shadow-lg flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 z-50 max-w-[90%] sm:max-w-2xl w-full sm:w-auto">
