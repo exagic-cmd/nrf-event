@@ -170,7 +170,7 @@ const CartDrawerContent = () => {
                               return (
                                 <div className="text-xs text-orange-700 bg-orange-100 rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-small">
                                   <Clock size={12} className="mr-1" />
-                                  <span>{item?.hotel_info?.roomsDetails?.length} rooms on hold — expires in <strong>{mins}:{secs}.</strong></span>
+                                  <span>{item?.hotel_info?.roomsDetails?.length} rooms reserved — expires in <strong>{mins}:{secs}.</strong></span>
                                 </div>
                               );
                             }

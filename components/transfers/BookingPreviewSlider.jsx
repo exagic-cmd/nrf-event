@@ -220,6 +220,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
         <div className="flex flex-col gap-2">
           <img src={image} alt={title} className="w-80 h-36 object-cover rounded-lg" />
           <div className="space-y-1.5 text-xs">
+            <div className="text-center font-medium text-gray-800">{item?.vehicle?.name}</div>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
                 <span className="flex items-end justify-end gap-1 text-sm text-gray-700">
                   <User className="w-4 h-4" /> {item?.passengers}
@@ -308,6 +309,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
             className="w-80 h-36 object-cover rounded-lg"
           />
           <div className="space-y-1.5 text-xs">
+            <div className="text-center font-medium text-gray-800">{item?.title}</div>
             {date && (
               <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
                 <span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> Date</span>
