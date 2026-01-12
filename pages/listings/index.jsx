@@ -186,11 +186,7 @@ function ListingsPage() {
 
       const paymentTypeMatch = !hasSelectedPaymentTypes || activeFilters.payment_types.includes(accommodation.room?.rate_plan?.payment_type);
       
-      const cancellationPolicyMatch = !hasSelectedCancellation || activeFilters.cancellation_policies.every(id => {
-        const policyName = cancellationPolicyMap.get(id)?.toLowerCase();
-        const isRefundable = accommodation.room?.rate_plan?.is_refundable;
-        return (policyName === 'no' && !isRefundable) || (policyName !== 'no' && isRefundable);
-      });
+      const cancellationPolicyMatch = !hasSelectedCancellation || activeFilters.cancellation_policies.includes(accommodation.room?.rate_plan?.cancellation_policy?.id);
 
       const priceMatch = !hasPriceRange || (
         ( // Use total_promo or total first, then fallback to per_room or base_price

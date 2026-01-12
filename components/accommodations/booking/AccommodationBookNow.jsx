@@ -503,7 +503,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       return;
     }
 
-    toast.success(availabilityResult.message || "Room is available!");
+   // toast.success(availabilityResult.message || "Room is available!");
+   toast.success("Successfully added to your cart.")
 
     addToCartDirectly();
     setShowCartOptions(true);
