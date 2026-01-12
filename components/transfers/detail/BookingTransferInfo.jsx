@@ -33,6 +33,19 @@ const CustomInput = React.forwardRef(
   )
 );
 
+const ProtectedTimeInput = React.forwardRef(
+  ({ dateSelected, onWarning, onClick, ...props }, ref) => {
+    const handleClick = (e) => {
+      if (!dateSelected) {
+        if (onWarning) onWarning();
+        return;
+      }
+      if (onClick) onClick(e);
+    };
+    return <CustomInput ref={ref} onClick={handleClick} {...props} />;
+  }
+);
+
 const DatePickerField = ({
   label,
   value,
@@ -84,39 +97,59 @@ const TimePickerField = ({
   orangeColor,
   t,
   surchargeDetails,
-}) => (
-  <FormField
-    label={label}
-    required
-    icon={Clock}
-    orangeColor={orangeColor}
-  >
-    <DatePicker
-      selected={value ? new Date(value) : null}
-      onChange={(date) => !disabled && onChange(date)}
-      showTimeSelect
-      showTimeSelectOnly
-      timeIntervals={15}
-      timeCaption={t("form.time")}
-      timeFormat="hh:mm aa"
-      dateFormat="hh:mm aa"
-      placeholderText={t("form.selectTime")}
-            popperPlacement="bottom-start"
-      wrapperClassName="w-full"
-      className={`text-base w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-200 ${
-        disabled ? "bg-gray-100 cursor-not-allowed" : ""
-      }`}
-      customInput={<CustomInput disabled={disabled} />}
-      disabled={disabled}
-    />
-    {error && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
-    {surchargeDetails?.amount && (
-      <div className="text-sm text-orange-600 font-semibold col-span-2">
-        {t("form.surchargeApplied")}: SGD {surchargeDetails.amount}
-      </div>
-    )}
-  </FormField>
-);
+  includeTimes,
+  dateSelected = true,
+}) => {
+  const [showDateWarning, setShowDateWarning] = useState(false);
+
+  useEffect(() => {
+    if (showDateWarning) {
+      const timer = setTimeout(() => setShowDateWarning(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDateWarning]);
+
+  return (
+    <FormField label={label} required icon={Clock} orangeColor={orangeColor}>
+      <DatePicker
+        selected={value ? new Date(value) : null}
+        onChange={(date) => !disabled && onChange(date)}
+        showTimeSelect
+        showTimeSelectOnly
+        timeIntervals={15}
+        timeCaption={t("form.time")}
+        timeFormat="hh:mm aa"
+        dateFormat="hh:mm aa"
+        placeholderText={t("form.selectTime")}
+        popperPlacement="bottom-start"
+        includeTimes={includeTimes}
+        wrapperClassName="w-full"
+        className={`text-base w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-200 ${
+          disabled ? "bg-gray-100 cursor-not-allowed" : ""
+        }`}
+        customInput={
+          <ProtectedTimeInput
+            dateSelected={dateSelected}
+            onWarning={() => setShowDateWarning(true)}
+            disabled={disabled}
+          />
+        }
+        disabled={disabled}
+      />
+      {error && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
+      {showDateWarning && (
+        <p className="text-red-500 text-xs mt-1">
+          {t("booking.selectDateFirst") || "Please select a date first"}
+        </p>
+      )}
+      {surchargeDetails?.amount && (
+        <div className="text-sm text-red-600 font-semibold col-span-2">
+          {t("form.surchargeApplied")}: {surchargeDetails.amount} {surchargeDetails.currency}
+        </div>
+      )}
+    </FormField>
+  );
+};
 
 
 const FlightNumberField = ({
@@ -141,14 +174,14 @@ const FlightNumberField = ({
     const lowerCaseError = apiError.toLowerCase();
 
     if (lowerCaseError.includes("departure")) {
-      return t("booking.errors.departureFlight", "Based on our data, this is currently treated as a departure and will be verified after booking.");
+      return t("booking.errors.departureFlight", " The flight number you provided doesn’t match our database, please enter the scheduled departure time and proceed with the booking; our team will verify and contact you if needed.");
     }
 
     if (lowerCaseError.includes("arrival")) {
-      return t("booking.errors.arrivalFlight", "Based on our data, this is currently treated as an arrival and will be verified after booking.");
+      return t("booking.errors.arrivalFlight", " The flight number you provided doesn’t match our database, please enter the scheduled arrival time and proceed with the booking; our team will verify and contact you if needed.");
     }
 
-    return t("booking.errors.noMatchingFlight", "No matching flight found in our data will be verified after booking.");
+    return t("booking.errors.noMatchingFlight", " Disclaimer: We couldn’t find the flight in our database, but this is not a cause for concern,our team will verify the details and confirm the pickup time with you via email.");
   };
 
   const displayError = getDisplayError();
@@ -177,10 +210,10 @@ const FlightNumberField = ({
 
        if (result?.error && !result?.similar_flights) {
          setApiError(result.error);
-         return;
+        return;
       }
 
-      if (result?.similar_flights?.length > 0) {
+       if (result?.similar_flights?.length > 0) {
         setSuggestions(result.similar_flights);
         setShowSuggestions(true);
       }
@@ -190,12 +223,7 @@ const FlightNumberField = ({
     }
   };
 
-  // const handleSelectSuggestion = (suggestion) => {
-  //   onChange(suggestion); // update field
-  //   setShowSuggestions(false); // close dropdown
-  //   // do NOT re-track automatically — wait for user to click “Check”
-  // };
-  const handleSelectSuggestion = async (suggestion) => {
+ const handleSelectSuggestion = async (suggestion) => {
     onChange(suggestion);
     setShowSuggestions(false);
     setApiError(null);
@@ -211,6 +239,7 @@ const FlightNumberField = ({
         }
     }
   };
+
   return (
     <FormField label={label} required icon={Hash} orangeColor={orangeColor}>
       <div className="relative">
@@ -270,7 +299,7 @@ const FlightNumberField = ({
       {/* Display API error message */}
       {displayError && (
         <p className="text-[#D3202D] text-xs mt-2 bg-red-50 px-3 py-2 rounded border border-red-200">
-           {displayError}
+          {displayError}
         </p>
       )}
 
@@ -334,6 +363,32 @@ const CustomOptionSelector = ({
     </div>
   );
 };
+
+const parseAllowedTimes = (dateStr, availableDates) => {
+  if (!dateStr || !availableDates.length) return undefined;
+
+  const selectedDate = new Date(dateStr);
+  const dateInfo = availableDates.find(
+    (d) => d.date.toDateString() === selectedDate.toDateString()
+  );
+
+  if (!dateInfo || !dateInfo.pickup_time || dateInfo.pickup_time.length === 0) {
+    return undefined;
+  }
+
+  return dateInfo.pickup_time.map((timeStr) => {
+    const [time, modifier] = timeStr.trim().split(/\s+/);
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier === "PM" && hours < 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    const newDate = new Date(selectedDate);
+    newDate.setHours(hours, minutes, 0, 0);
+    return newDate;
+  });
+};
+
 export default function BookingTransferInfo({
   TransferInfo,
   errors,
@@ -364,6 +419,8 @@ const [pickupTracking, setPickupTracking] = useState(false);
 const [showPickupTimeWarning, setShowPickupTimeWarning] = useState(false);
 const [showReturnTimeWarning, setShowReturnTimeWarning] = useState(false);
 const [returnTracking, setReturnTracking] = useState(false);
+const [showPickupManualTime, setShowPickupManualTime] = useState(false);
+const [showReturnManualTime, setShowReturnManualTime] = useState(false);
 
   // Set default radio button selection on mount
   useEffect(() => {
@@ -401,12 +458,28 @@ const [returnTracking, setReturnTracking] = useState(false);
     }
   }, [userBookingDetails.pickupDate, userBookingDetails.returnDate]);
 
+  const pickupAllowedTimes = React.useMemo(() => {
+    return parseAllowedTimes(userBookingDetails.pickupDate, availableDates);
+  }, [userBookingDetails.pickupDate, availableDates]);
+
+  const returnAllowedTimes = React.useMemo(() => {
+    return parseAllowedTimes(userBookingDetails.returnDate, availableDates);
+  }, [userBookingDetails.returnDate, availableDates]);
+
   const handleChange = (field, value) => {
     if (disabled) return;
     
     const updates = (typeof field === 'object' && field !== null && !Array.isArray(field)) 
                     ? field 
                     : { [field]: value };
+
+    if (updates.pickupDate && !updates.pickupTime) {
+      updates.pickupTime = null;
+    }
+    if (updates.returnDate && !updates.returnTime) {
+      updates.returnTime = null;
+    }
+
 if (updates.pickupOption || updates.returnOption) {
   fetchProductSurcharge({
     productId,
@@ -456,15 +529,19 @@ const handlePickupTrack = async (flightNumber = null) => {
     const data = await res.json();
 
     if (res.ok && !data.error) {
+
       if (!data.similar_flights || data.similar_flights.length === 0) {
         setPickupTrigger((prev) => prev + 1);
       }
+      setShowPickupManualTime(false);
       return data;
     } else {
+      setShowPickupManualTime(true);
       return data;
     }
   } catch (e) {
     console.error("Pickup track error", e);
+    setShowPickupManualTime(true);
     return { error: "An error occurred while fetching flight data." };
   } finally {
     setPickupTracking(false);
@@ -490,12 +567,15 @@ const handleReturnTrack = async (flightNumber = null) => {
       if (!data.similar_flights || data.similar_flights.length === 0) {
         setReturnTrigger((prev) => prev + 1);
       }
+      setShowReturnManualTime(false);
       return data; 
     } else {
+      setShowReturnManualTime(true);
       return data; 
     }
   } catch (e) {
     console.error("Return track error", e);
+    setShowReturnManualTime(true);
     return { error: "An error occurred while fetching flight data." };
   } finally {
     setReturnTracking(false);
@@ -513,6 +593,7 @@ const handleReturnTrack = async (flightNumber = null) => {
 
   return (
     <div className="space-y-8">
+
       <div className="bg-white rounded-lg p-6 shadow-sm space-y-6">
         {/* --- Pickup Section --- */}
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -523,6 +604,7 @@ const handleReturnTrack = async (flightNumber = null) => {
         <div id="pickupDate" className="grid grid-cols-1 md:grid-cols-1 gap-6">
           <DatePickerField
             label={t("booking.pickupDate")}
+
             value={userBookingDetails.pickupDate}
             onChange={(date) => handleChange("pickupDate", date?.toISOString())}
             error={errors?.pickupDate}
@@ -557,34 +639,31 @@ const handleReturnTrack = async (flightNumber = null) => {
                 t={t}
               />
 
-<div className="mt-3">
-  <TimePickerField
-  label={t("booking.pickupTime")}
-  value={
-    userBookingDetails.pickupFlightScheduleTime
-      ? new Date(`1970-01-01T${userBookingDetails.pickupFlightScheduleTime}`)
-      : null
-  }
-  onChange={(date) =>
-    handleChange({
-      pickupFlightScheduleTime: date
-        ? date.toTimeString().substring(0, 5)
-        : null,
-    })
-  }
-  error={errors?.pickupFlightScheduleTime}
-  disabled={disabled}
-  orangeColor={orangeColor}
-  t={t}
-/>
-  {showPickupTimeWarning && (
-    <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded-md mt-2 border border-amber-200">
-      {t("booking.flightTimeWarning", "The actual pickup time may be adjusted based on real-time flight data.")}
-    </p>
-  )}
+              
+              {showPickupManualTime && (
+                <div className="mt-3">
+                  <TimePickerField
+                    label={t("booking.pickupTime")}
+                    value={userBookingDetails.pickupTime}
+                    onChange={(date) => handleChange("pickupTime", date?.toISOString())}
+                    error={errors?.pickupTime}
+                    disabled={disabled}
+                    orangeColor={orangeColor}
+                    t={t}
+                    surchargeDetails={surchargeDetails}
+                    includeTimes={pickupAllowedTimes}
+                    dateSelected={!!userBookingDetails.pickupDate}
+                  />
+                </div>
+              )}
 
-</div>
-
+              {/* <p className="text-xs text-gray-500 mt-2">
+                {t(
+                  "booking.flightDisclaimer",
+                  "If flight time or terminal mismatch or you cannot find the flight number, its OK, we will work it out. AND the pickup time is indicative and driver will monitor and be there."
+                )}
+              </p> */}
+              
 
    <FlightTracker
   pickupId={selectedTransfer?.pickup_point_id}
@@ -593,11 +672,18 @@ const handleReturnTrack = async (flightNumber = null) => {
   onTrackSuccess={(result) => {
     setPickupTracking(false);
 
+
     const flightTime = result?.schedule_time || result?.scheduled_time;
     if (flightTime) {
+      let dateTimeStr = new Date(`1970-01-01T${flightTime}`).toISOString();
+      if (userBookingDetails.pickupDate) {
+        const datePart = userBookingDetails.pickupDate.split('T')[0];
+        dateTimeStr = new Date(`${datePart}T${flightTime}`).toISOString();
+      }
+
       handleChange({
         pickupFlightScheduleTime: flightTime, 
-        pickupTime: new Date(`1970-01-01T${flightTime}`),
+        pickupTime: dateTimeStr,
       });
       setShowPickupTimeWarning(true);
     }
@@ -606,6 +692,7 @@ const handleReturnTrack = async (flightNumber = null) => {
   }}
   onTrackFail={() => {
     setPickupTracking(false);
+
     onPickupTracked?.(false);
   }}
 />
@@ -623,6 +710,8 @@ const handleReturnTrack = async (flightNumber = null) => {
               orangeColor={orangeColor}
               t={t}
               surchargeDetails={surchargeDetails}
+              includeTimes={pickupAllowedTimes}
+              dateSelected={!!userBookingDetails.pickupDate}
             />
             </div>
           )}
@@ -676,48 +765,51 @@ const handleReturnTrack = async (flightNumber = null) => {
       t={t}
     />
 
-    {/* Time Picker Field (same style as pickup) */}
-    <div className="mt-3">
-      <TimePickerField
-  label={t("booking.returnPickupTime")}
-  value={
-    userBookingDetails.returnFlightScheduleTime
-      ? new Date(`1970-01-01T${userBookingDetails.returnFlightScheduleTime}`)
-      : null
-  }
-  onChange={(date) =>
-    handleChange({
-      returnFlightScheduleTime: date
-        ? date.toTimeString().substring(0, 5)
-        : null,
-    })
-  }
-  error={errors?.returnFlightScheduleTime}
-  disabled={disabled}
-  orangeColor={orangeColor}
-  t={t}
-/>
-    {showReturnTimeWarning && (
-    <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded-md mt-2 border border-amber-200">
-      {t("booking.flightTimeWarning", "This is the scheduled flight time. The actual pickup time may be adjusted based on real-time flight data.")}
-    </p>
-  )}
-
-    </div>
+    {showReturnManualTime && (
+      <div className="mt-3">
+        <TimePickerField
+          label={t("booking.returnTime")}
+          value={userBookingDetails.returnTime}
+          onChange={(date) => handleChange("returnTime", date?.toISOString())}
+          error={errors?.returnTime}
+          disabled={disabled}
+          orangeColor={orangeColor}
+          t={t}
+          surchargeDetails={surchargeDetails}
+          includeTimes={returnAllowedTimes}
+          dateSelected={!!userBookingDetails.returnDate}
+        />
+      </div>
+    )}
+{/* 
+    <p className="text-xs text-gray-500 mt-2">
+      {t(
+        "booking.flightDisclaimer",
+        "If flight time or terminal mismatch or you cannot find the flight number, its OK, we will work it out. AND the pickup time is indicative and driver will monitor and be there."
+      )}
+    </p> */}
+    
 
     {/* Flight Tracker (auto triggers when valid flight found) */}
     <FlightTracker
   pickupId={selectedTransfer?.dropoff_point_id}
   flightNumber={userBookingDetails.returnFlightNumber}
+
   trigger={returnTrigger}
   onTrackSuccess={(result) => {
     setReturnTracking(false);
 
     const flightTime = result?.schedule_time || result?.scheduled_time;
     if (flightTime) {
+      let dateTimeStr = new Date(`1970-01-01T${flightTime}`).toISOString();
+      if (userBookingDetails.returnDate) {
+        const datePart = userBookingDetails.returnDate.split('T')[0];
+        dateTimeStr = new Date(`${datePart}T${flightTime}`).toISOString();
+      }
+
       handleChange({
         returnFlightScheduleTime: flightTime,
-        returnPickupTime: new Date(`1970-01-01T${flightTime}`),
+        returnPickupTime: dateTimeStr,
       });
       setShowReturnTimeWarning(true);
     }
@@ -743,6 +835,8 @@ const handleReturnTrack = async (flightNumber = null) => {
                   orangeColor={orangeColor}
                   t={t}
                   surchargeDetails={surchargeDetails}
+                  includeTimes={returnAllowedTimes}
+                  dateSelected={!!userBookingDetails.returnDate}
                 />
                 </div>
               )}

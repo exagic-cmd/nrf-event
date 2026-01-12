@@ -3,8 +3,7 @@ import { PlaneLanding, PlaneTakeoff } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useTranslation } from "next-i18next";
 import { getFullImageUrl } from "@/utils/imageService";
-import { formatPrice } from "@/utils/priceUtils";
-
+import formatPrice from "@/lib/formatPrice";
 function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupLocation }) {
   const { t } = useTranslation("transfer");
   const { surchargePickup, surchargeReturn, addonsTotal, productFeature, tripType } = useTransferStore();
@@ -25,6 +24,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
   const returnAmount = parseFloat(surchargeReturn?.data?.amount || 0);
   const totalSurcharge = pickupAmount + returnAmount;
   const finalTotal = baseTotal + totalSurcharge + addonsTotal;
+
 
   useEffect(() => {
     if (onPriceChange) onPriceChange(finalTotal);
@@ -104,12 +104,20 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
         )}
 
         <div className="border-t border-dashed my-1"></div>
-        {/* 🔹 Surcharges + Total */}
+
+        <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-gray-600">{t("vehiclePrice", "Vehicle Price")}</span>
+            <span className="text-sm font-medium text-gray-600">
+              {formatPrice(baseTotal)} USD
+            </span>
+        </div>
+
+        {/* Surcharges + Total */}
         {pickupAmount > 0 && (
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("pickupSurcharge")}</span>
             <span className="text-sm font-medium text-gray-600">
-             SGD +{Math.round(pickupAmount)} 
+              +{formatPrice(pickupAmount)} USD
             </span>
           </div>
         )}
@@ -117,7 +125,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("returnSurcharge")}</span>
             <span className="text-sm font-medium text-gray-600">
-              SGD +{Math.round(returnAmount)}
+              +{formatPrice(returnAmount)} USD
             </span>
           </div>
         )}
@@ -125,14 +133,14 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("addons_total")}</span>
             <span className="text-sm font-medium text-gray-600">
-             SGD +{Math.round(addonsTotal)} 
+              +{formatPrice(addonsTotal)} USD
             </span>
           </div>
         )}
 
         <div className="flex justify-between items-center mt-4">
           <span className="md:text-xl text-md font-bold">{t("total")}</span>
-          <span className="md:text-xl text-md font-bold">SGD {formatPrice(finalTotal)} </span>
+          <span className="md:text-xl text-md font-bold">{formatPrice(finalTotal)} USD</span>
         </div>
       </div>
     </div>

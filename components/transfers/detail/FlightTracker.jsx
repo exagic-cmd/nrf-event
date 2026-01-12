@@ -80,14 +80,14 @@ export default function FlightTracker({
             original_schedule_time: original_schedule_time,
           });
         } else {
-          const msg = "We couldn’t find the flight details in our Database, we will check it manually";
+        //  const msg = "We couldn’t find the flight details in our Database, we will check it manually";
           setError(msg);
           setFlightData(null);
           onTrackFail?.(msg);
         }
       } catch (err) {
         if (cancelled) return;
-        const msg = "We couldn’t find the flight details in our Database, we will check it manually";
+       // const msg = "We couldn’t find the flight details in our Database, we will check it manually";
         setError(msg);
         onTrackFail?.(msg);
       } finally {
@@ -150,7 +150,7 @@ export default function FlightTracker({
         ["Terminal", flightData.terminal],
          ["Flight Time", flightData.original_schedule_time],
         [
-          "Pickup Time",
+          "Estimated Pickup Time",
           flightData.schedule_time || "To be updated after payment confirmation"
         ],
       ]
@@ -159,7 +159,7 @@ export default function FlightTracker({
         ["Terminal", flightData.terminal],
         ["Belt", flightData.belt],
         ["Flight Time", flightData.original_schedule_time],
-          ["Pickup Time", flightData?.schedule_time]
+          ["Estimated Pickup Time", flightData?.schedule_time]
       ];
 
   const airlineLogo = `https://logo.clearbit.com/${encodeURIComponent(
@@ -170,7 +170,7 @@ export default function FlightTracker({
     <div className="mt-1 border border-gray-200 rounded-xl shadow-sm bg-white overflow-hidden">
       <button
         onClick={toggleDetails}
-        className="w-full flex justify-between items-center bg-blue-50 px-4 py-2 font-semibold text-[#D3202D] border-b border-orange-100"
+        className="w-full flex justify-between items-center bg-red-50 px-4 py-2 font-semibold text-[#D3202D] border-b border-orange-100"
       >
         <span>Flight Details</span>
         {isDetailsVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -212,7 +212,7 @@ export default function FlightTracker({
         </table>
 
         <p className="text-[10px] text-gray-500 px-4 py-2 border-t bg-gray-50">
-          Disclaimer: <span>This is not actual data. Actual flight tracking will update later.</span>
+          Disclaimer: <span>Flight number, time, or terminal mismatches are common and not a concern. our drivers monitor flights in real time and adjust pickup timing and terminal accordingly.</span>
         </p>
       </div>
     </div>

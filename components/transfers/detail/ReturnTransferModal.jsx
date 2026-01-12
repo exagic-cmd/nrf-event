@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-
+import formatPrice from "@/lib/formatPrice";
 const ReturnTransferModal = ({ 
   isOpen, 
   onClose, 
@@ -12,17 +12,11 @@ const ReturnTransferModal = ({
   if (!isOpen || !selectedTransfer) return null;
 
   // Calculate savings
-  const promoPrice = parseFloat(selectedTransfer?.final_promo_price);
-  const finalPrice = parseFloat(selectedTransfer?.final_price);
-  const oneWayPrice = promoPrice > 0 ? promoPrice : finalPrice;
-
-  const twoWayPromoPrice = parseFloat(selectedTransfer?.two_way_promo_price);
-  const twoWayFinalPrice = parseFloat(selectedTransfer?.two_way_price);
-  const twoWayPrice = twoWayPromoPrice > 0 ? twoWayPromoPrice : twoWayFinalPrice;
-
-  const returnPrice = twoWayPrice > oneWayPrice ? twoWayPrice - oneWayPrice : 0;
+  const oneWayPrice = parseFloat(selectedTransfer?.final_promo_price || selectedTransfer?.final_price || 0);
+  const twoWayPrice = parseFloat(selectedTransfer?.two_way_promo_price || selectedTransfer?.two_way_price || 0);
+  const returnPrice = twoWayPrice - oneWayPrice;
   const twoSeparatePrice = oneWayPrice * 2;
-  const savingsAmount = twoSeparatePrice > twoWayPrice ? twoSeparatePrice - twoWayPrice : 0;
+  const savingsAmount = twoSeparatePrice - twoWayPrice;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
@@ -34,7 +28,7 @@ const ReturnTransferModal = ({
         <div className="mb-6">
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <p className="text-gray-700 font-medium">
-              {t('returnTransfer.savingsMessage')} for SGD {returnPrice}
+              {t('returnTransfer.savingsMessage')} for USD {formatPrice(returnPrice)}
             </p>
            
           </div>
