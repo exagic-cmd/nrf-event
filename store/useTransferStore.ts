@@ -13,6 +13,8 @@ selectedReturnDate: null,
       surchargeReturn: null,
       selectedPickup: null,
       selectedDropoff: null,
+      selectedPickupCategory: null,
+      selectedDropoffCategory: null,
       mapDetails: null,
       isLoading: false,
       error: null,
@@ -55,8 +57,52 @@ returnFlightTime: "",
           },
         }),
 
-      // Static category options - now multilingual ready
-      // The translation keys will be used in the component
+      // Get unique categories from options
+      getPickupCategories: () => {
+        const options = get().pickupOptions;
+        const categories = new Map();
+        options.forEach((opt) => {
+          const type = (opt.type || "other").toLowerCase();
+          if (!categories.has(type)) {
+            categories.set(type, { type, count: 0 });
+          }
+          categories.get(type).count += 1;
+        });
+        return Array.from(categories.values());
+      },
+
+      getDropoffCategories: () => {
+        const options = get().dropoffOptions;
+        const categories = new Map();
+        options.forEach((opt) => {
+          const type = (opt.type || "other").toLowerCase();
+          if (!categories.has(type)) {
+            categories.set(type, { type, count: 0 });
+          }
+          categories.get(type).count += 1;
+        });
+        return Array.from(categories.values());
+      },
+
+      // Filter options by category
+      getFilteredPickupOptions: () => {
+        const { selectedPickupCategory, pickupOptions } = get();
+        if (!selectedPickupCategory) return pickupOptions;
+        return pickupOptions.filter(
+          (opt) => (opt.type || "other").toLowerCase() === selectedPickupCategory.toLowerCase()
+        );
+      },
+
+      getFilteredDropoffOptions: () => {
+        const { selectedDropoffCategory, dropoffOptions } = get();
+        if (!selectedDropoffCategory) return dropoffOptions;
+        return dropoffOptions.filter(
+          (opt) => (opt.type || "other").toLowerCase() === selectedDropoffCategory.toLowerCase()
+        );
+      },
+
+      setSelectedPickupCategory: (category) => set({ selectedPickupCategory: category }),
+      setSelectedDropoffCategory: (category) => set({ selectedDropoffCategory: category }),
       categoryOptions: [
         {
           id: "hotel",
@@ -115,18 +161,26 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
   selectedPickupDate: pickupDate ?? state.selectedPickupDate,
   selectedReturnDate: returnDate ?? state.selectedReturnDate,
 })),
-
-      fetchPickupOptions: (query) => {
+   fetchPickupOptions: (query) => {
         const { searchTimeoutId } = get()
         if (searchTimeoutId) {
           clearTimeout(searchTimeoutId)
         }
 
-        if (!query?.trim()) return
         const timeoutId = setTimeout(async () => {
           set({ isLoading: true })
           try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/pickup-options?search=${query}`)
+            let visitorId = ""
+            if (typeof window !== "undefined") {
+              visitorId = localStorage.getItem("userId") || ""
+            }
+
+            let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/pickup-options?visitor_id=${encodeURIComponent(visitorId)}`
+            if (query?.trim()) {
+              url += `&search=${encodeURIComponent(query)}`
+            }
+
+            const res = await fetch(url)
             const result = await res.json()
             set({ pickupOptions: result?.pickup_points || [], isLoading: false })
           } catch (err) {
@@ -359,6 +413,8 @@ returnFlightTime: "",
           surchargeReturn: null,
           selectedPickup: null,
           selectedDropoff: null,
+          selectedPickupCategory: null,
+          selectedDropoffCategory: null,
           mapDetails: null,
           selectedTransfer: null,
           searchResults: [],
@@ -393,6 +449,8 @@ addons: [],
         selectedTransfer: state.selectedTransfer,
         selectedPickup: state.selectedPickup,
         selectedDropoff: state.selectedDropoff,
+        selectedPickupCategory: state.selectedPickupCategory,
+        selectedDropoffCategory: state.selectedDropoffCategory,
         userBookingDetails: state.userBookingDetails,
         searchParams: state.searchParams,
         tripType: state.tripType,

@@ -9,6 +9,11 @@ import {
   ArrowLeftRight,
   Search,
   ChevronDown,
+  Building2,
+  Plane,
+  Ship,
+  Train,
+  Landmark,
 } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
@@ -80,8 +85,9 @@ export default function SearchFilterCard({
   const [accommodationSearchText, setAccommodationSearchText] = useState(initialAccommodationText || "");
   const [placeholderIndex, setPlaceholderIndex] = useState(0); // For daytour placeholders
   const [showTripTypeDropdown, setShowTripTypeDropdown] = useState(false);
+  const [selectedPickupCategory, setSelectedPickupCategory] = useState(null);
+  const [selectedDropoffCategory, setSelectedDropoffCategory] = useState(null);
   const tripTypeDropdownRef = useRef(null);
-
 
   // Searchable dropdowns
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
@@ -91,13 +97,79 @@ export default function SearchFilterCard({
 
   const [showPickupDropdown, setShowPickupDropdown] = useState(false);
   const [showDropoffDropdown, setShowDropoffDropdown] = useState(false);
+  const [pickupFocused, setPickupFocused] = useState(false);
+  const [dropoffFocused, setDropoffFocused] = useState(false);
 
   const isLoading = transferLoading || daytoursLoading || isSearching;
   const { prefillData, updatePrefillDataFromCart } = useOrderStore();
   const { items: cartItems } = useCartStore();
+
+  const getIconForCategory = (type) => {
+    switch ((type || "").toLowerCase()) {
+      case "airport":
+        return <Plane size={16} className="text-red-600" />;
+      case "cruise":
+        return <Ship size={16} className="text-cyan-600" />;
+      case "hotel":
+      case "villa":
+      case "apartment":
+        return <Building2 size={16} className="text-gray-700" />;
+      case "train":
+      case "metro":
+        return <Train size={16} className="text-purple-600" />;
+      case "attraction":
+        return <Landmark size={16} className="text-orange-600" />;
+      default:
+        return <MapPin size={16} className="text-gray-400" />;
+    }
+  };
   useEffect(() => {
     updatePrefillDataFromCart(cartItems);
   }, [cartItems, updatePrefillDataFromCart]);
+
+  const availablePickupCategories = useMemo(() => {
+    if (!pickupOptions || pickupOptions.length === 0) return [];
+    const uniqueTypes = [...new Set(pickupOptions.map(item => (item.type || "").toLowerCase()).filter(Boolean))];
+    return uniqueTypes.map((type, index) => ({
+      id: `pickup-cat-${index}`,
+      name: type.charAt(0).toUpperCase() + type.slice(1),
+      nameKey: type
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [pickupOptions]);
+
+  const availableDropoffCategories = useMemo(() => {
+    if (!dropoffOptions || dropoffOptions.length === 0) return [];
+    const uniqueTypes = [...new Set(dropoffOptions.map(item => (item.type || "").toLowerCase()).filter(Boolean))];
+    return uniqueTypes.map((type, index) => ({
+      id: `dropoff-cat-${index}`,
+      name: type.charAt(0).toUpperCase() + type.slice(1),
+      nameKey: type
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [dropoffOptions]);
+
+  const filteredPickupOptions = useMemo(() => {
+    let options = pickupOptions;
+    if (selectedPickupCategory) {
+      options = options.filter(opt => (opt.type || "").toLowerCase() === selectedPickupCategory.toLowerCase());
+    }
+    const q = (pickupQuery || "").toLowerCase();
+    if (!q) return options;
+    return options.filter((p) =>
+      (p.name || p.title || "").toLowerCase().includes(q) || (p.type || "").toLowerCase().includes(q)
+    );
+  }, [pickupOptions, pickupQuery, selectedPickupCategory]);
+
+  const filteredDropoffOptions = useMemo(() => {
+    let options = dropoffOptions;
+    if (selectedDropoffCategory) {
+      options = options.filter(opt => (opt.type || "").toLowerCase() === selectedDropoffCategory.toLowerCase());
+    }
+    const q = (dropoffQuery || "").toLowerCase();
+    if (!q) return options;
+    return options.filter((d) =>
+      (d.name || d.title || "").toLowerCase().includes(q) || (d.type || "").toLowerCase().includes(q)
+    );
+  }, [dropoffOptions, dropoffQuery, selectedDropoffCategory]);
 
   useEffect(() => {
     if (filterActiveTab === 2 && !isHomepage) {
@@ -171,63 +243,44 @@ export default function SearchFilterCard({
   // Pickup handlers
   const onPickupChange = (val) => {
     setPickupQuery(val);
-    setShowPickupDropdown(true);
     setSelectedPickup(null);
     setSelectedDropoff(null);
     setDropoffQuery("");
-    if (val && val.trim()) fetchPickupOptions(val.trim());
   };
 
   const onPickupSelect = (opt) => {
     setSelectedPickup(opt);
     setPickupQuery(opt.name || opt.title || "");
     setShowPickupDropdown(false);
+    setPickupFocused(false);
     setSelectedDropoff(null);
     setDropoffQuery("");
-    const pickupName = (opt.name || opt.title || "").toLowerCase();
-    let prefName = null;
-    if ((pickupName.includes("changi airport") || pickupName.includes("terminal")) && prefillData && prefillData.pickup_point) {
-         const pref = prefillData.pickup_point;
-         prefName = pref?.name || pref?.title || pref;
-         setDropoffQuery(prefName);
-         // If prefill is already a full object with an id, accept it as selectedDropoff
-         if (pref && typeof pref === "object" && (pref.id || pref.place_id)) {
-           setSelectedDropoff(pref);
-         }
-    }
+    setSelectedDropoffCategory(null);
     if (opt?.id) {
       fetchDropoffOptions(opt.id);
-      // try to immediately match a prefill name to existing dropoffOptions
-      if (prefName && dropoffOptions && dropoffOptions.length) {
-        const prefNameLower = (prefName || "").toLowerCase();
-        const match = dropoffOptions.find((d) => ((d.name || d.title || "").toLowerCase() === prefNameLower));
-        if (match) {
-          setSelectedDropoff(match);
-          setDropoffQuery(match.name || match.title || prefName);
-        }
-      }
     }
+  };
+
+  const handlePickupCategorySelect = (category) => {
+    setSelectedPickupCategory((category.nameKey || category.name).toLowerCase());
+    setPickupQuery("");
+    setPickupFocused(true);
+    setShowPickupDropdown(true);
   };
 
   const onDropoffChange = (val) => {
-    setDropoffQuery(val);
-    setShowDropoffDropdown(true);
+    if (!selectedPickup) return;
+    const value = val;
+    setDropoffQuery(value);
     setSelectedDropoff(null);
   };
 
-  const filteredPickup = useMemo(() => {
-    const q = (pickupQuery || "").toLowerCase();
-    return pickupOptions.filter((p) =>
-      (p.name || p.title || "").toLowerCase().includes(q)
-    );
-  }, [pickupOptions, pickupQuery]);
-
-  const filteredDropoff = useMemo(() => {
-    const q = (dropoffQuery || "").toLowerCase();
-    return dropoffOptions.filter((d) =>
-      (d.name || d.title || "").toLowerCase().includes(q)
-    );
-  }, [dropoffOptions, dropoffQuery]);
+  const handleDropoffCategorySelect = (category) => {
+    setSelectedDropoffCategory((category.nameKey || category.name).toLowerCase());
+    setDropoffQuery("");
+    setShowDropoffDropdown(true);
+    setDropoffFocused(true);
+  };
 
   // When dropoff options load, if we have a dropoffQuery but no selectedDropoff,
   // try to auto-select an option that matches the prefilled name.
@@ -459,95 +512,210 @@ export default function SearchFilterCard({
                      </div>
                    )}
                  </div>
+
                  {/* Pick-up */}
                  <div className="md:col-span-4 relative">
                    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2 h-full">
                      <MapPin className="h-5 w-5 text-[#D3202D]" />
                      <input
                        type="text"
-                       value={pickupQuery}
-                       placeholder="Pick-up point (e.g. Airport)"
+                       readOnly={!selectedPickupCategory && !selectedPickup}
+                       value={selectedPickup?.name || pickupQuery}
+                       placeholder={selectedPickupCategory ? `Search ${selectedPickupCategory}...` : "Pick-up point (e.g. Airport)"}
                        onChange={(e) => onPickupChange(e.target.value)}
-                       className="w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none"
+                       onFocus={() => {
+                         setPickupFocused(true);
+                         setShowPickupDropdown(true);
+                       }}
+                       onBlur={() => {
+                         setTimeout(() => {
+                           setShowPickupDropdown(false);
+                           setPickupFocused(false);
+                         }, 200);
+                       }}
+                       className={`w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none ${(!selectedPickupCategory && !selectedPickup) ? 'cursor-pointer' : ''}`}
                      />
-                     {pickupQuery && (
-                       <button type="button" onClick={() => onPickupChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear pick-up">
+                     {(selectedPickup || pickupQuery || selectedPickupCategory) && (
+                       <button
+                         type="button"
+                         onClick={() => {
+                           setPickupQuery("");
+                           setSelectedPickup(null);
+                           setSelectedDropoff(null);
+                           setDropoffQuery("");
+                           setSelectedPickupCategory(null);
+                         }}
+                         className="text-gray-400 hover:text-gray-600"
+                         aria-label="Clear pick-up"
+                       >
                          <X className="h-4 w-4" />
                        </button>
                      )}
                    </div>
-     
-                   {showPickupDropdown && pickupQuery && filteredPickup.length > 0 && !selectedPickup && (
-                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
-                       {filteredPickup.map((p) => (
-                         <button
-                           key={p.id || p.name}
-                           type="button"
-                           onMouseDown={() => onPickupSelect(p)}
-                           className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-                         >
-                           <MapPin className="h-4 w-4 text-[#D3202D]" />
-                           <span className="text-sm text-black">{p.name || p.title}</span>
-                         </button>
-                       ))}
-                       {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
+
+                   {pickupFocused && !pickupQuery && !selectedPickup && !selectedPickupCategory && availablePickupCategories.length > 0 && (
+                     <div className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg z-50 max-h-[50vh] overflow-y-auto">
+                       <ul className="py-2">
+                         <li className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                           Select Category
+                         </li>
+                         {availablePickupCategories.map((category) => (
+                           <li
+                             key={category.id}
+                             onMouseDown={(e) => { e.preventDefault(); handlePickupCategorySelect(category); }}
+                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                           >
+                             <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
+                             <span className="text-gray-900 font-medium">{category.name}</span>
+                           </li>
+                         ))}
+                       </ul>
                      </div>
                    )}
+
+                   {showPickupDropdown && (pickupQuery || selectedPickupCategory) && pickupQuery !== selectedPickup?.name && (
+                     <ul className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg max-h-[50vh] overflow-auto z-50">
+                       {!selectedPickupCategory && availablePickupCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(pickupQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== pickupQuery.toLowerCase()).map((category) => (
+                         <li
+                           key={`cat-${category.id}`}
+                           onMouseDown={(e) => { e.preventDefault(); handlePickupCategorySelect(category); }}
+                           className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                         >
+                           <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
+                           <span className="text-gray-900 font-medium">{category.name} <span className="text-xs text-gray-500 font-normal">(Category)</span></span>
+                         </li>
+                       ))}
+                       {transferLoading ? (
+                         <li className="px-3 py-2.5 text-center text-gray-800">Loading...</li>
+                       ) : filteredPickupOptions.length > 0 ? (
+                         filteredPickupOptions.map((option) => (
+                           <li
+                             key={option.id}
+                             onClick={() => onPickupSelect(option)}
+                             className="flex justify-between items-center px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-300 last:border-b-0 text-gray-900"
+                           >
+                             <div className="flex text-sm items-center gap-2">
+                               {getIconForCategory(option.type)}
+                               <span>{option.name}</span>
+                             </div>
+                             <span className="text-xs text-gray-500 capitalize">{option.type}</span>
+                           </li>
+                         ))
+                       ) : (
+                         (!selectedPickupCategory && availablePickupCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(pickupQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== pickupQuery.toLowerCase()).length === 0) && (
+                           <li className="px-3 py-2.5 text-center text-gray-500">No results found</li>
+                         )
+                       )}
+                     </ul>
+                   )}
                  </div>
-     
-                 {/* Swap Button */}
-                 {/* <div className="hidden md:flex md:col-span-1 items-center justify-center">
-                   <button type="button" onClick={swapLocations} className="rounded-full p-2 hover:bg-gray-100" title="Swap">
-                     <ArrowLeftRight className="h-5 w-5 text-gray-400" />
-                   </button>
-                 </div> */}
-     
+
                  {/* Drop-off */}
                  <div className="md:col-span-4 relative">
                    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2 h-full">
                      <Building className="h-5 w-5 text-[#D3202D]" />
                      <input
                        type="text"
+                       readOnly={!selectedDropoffCategory && !selectedDropoff}
                        value={dropoffQuery}
                        onChange={(e) => onDropoffChange(e.target.value)}
-                       placeholder="Drop-off point (e.g. Hotel)"
-                       disabled={!selectedPickup && !dropoffQuery}
-                       className="w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none disabled:text-gray-400"
+                       onFocus={() => {
+                         if (selectedPickup && (dropoffOptions.length > 0 || selectedDropoffCategory)) {
+                           setDropoffFocused(true);
+                           setShowDropoffDropdown(true);
+                         }
+                       }}
+                       onBlur={() => {
+                         setTimeout(() => {
+                           setShowDropoffDropdown(false);
+                           setDropoffFocused(false);
+                         }, 200);
+                       }}
+                       disabled={!selectedPickup}
+                       placeholder={selectedDropoffCategory ? `Search ${selectedDropoffCategory}...` : "Drop-off point (e.g. Hotel)"}
+                       className={`w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none disabled:text-gray-400 ${(!selectedDropoffCategory && !selectedDropoff) ? 'cursor-pointer' : ''}`}
                      />
-                     {dropoffQuery && (
-                       <button type="button" onClick={() => onDropoffChange("")} className="text-gray-400 hover:text-gray-600" aria-label="Clear drop-off">
+                     {(dropoffQuery || selectedDropoff || selectedDropoffCategory) && (
+                       <button
+                         type="button"
+                         onClick={() => {
+                           setDropoffQuery("");
+                           setSelectedDropoff(null);
+                           setSelectedDropoffCategory(null);
+                         }}
+                         className="text-gray-400 hover:text-gray-600"
+                         aria-label="Clear drop-off"
+                       >
                          <X className="h-4 w-4" />
                        </button>
                      )}
                    </div>
-     
-                   {showDropoffDropdown && selectedPickup && dropoffQuery && filteredDropoff.length > 0 && !selectedDropoff && (
-                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-64 overflow-auto">
-                       {filteredDropoff.map((d) => (
-                         <button
-                           key={d.id || d.name}
-                           type="button"
-                           onMouseDown={() => {
-                             setSelectedDropoff(d);
-                             setDropoffQuery(d.name || d.title);
-                             setShowDropoffDropdown(false);
-                           }}
-                           className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-                         >
-                           <Building className="h-4 w-4 text-[#D3202D]" />
-                           <span className="text-sm text-black">{d.name || d.title}</span>
-                         </button>
-                       ))}
-                       {isLoading && <div className="px-3 py-2 text-center text-gray-400">Loading...</div>}
+
+                   {dropoffFocused && !dropoffQuery && !selectedDropoff && !selectedDropoffCategory && selectedPickup && availableDropoffCategories.length > 0 && (
+                     <div className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg z-50 max-h-[50vh] overflow-y-auto">
+                       <ul className="py-2">
+                         <li className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                           Select Category
+                         </li>
+                         {availableDropoffCategories.map((category) => (
+                           <li
+                             key={category.id}
+                             onMouseDown={(e) => { e.preventDefault(); handleDropoffCategorySelect(category); }}
+                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                           >
+                             <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
+                             <span className="text-gray-900 font-medium">{category.name}</span>
+                           </li>
+                         ))}
+                       </ul>
                      </div>
                    )}
+
+                   {showDropoffDropdown && (dropoffQuery || selectedDropoffCategory) && dropoffQuery !== selectedDropoff?.name && selectedPickup && (
+                     <ul className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg max-h-[50vh] overflow-auto z-50">
+                       {!selectedDropoffCategory && availableDropoffCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(dropoffQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== dropoffQuery.toLowerCase()).map((category) => (
+                         <li
+                           key={`cat-${category.id}`}
+                           onMouseDown={(e) => { e.preventDefault(); handleDropoffCategorySelect(category); }}
+                           className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                         >
+                           <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
+                           <span className="text-gray-900 font-medium">{category.name} <span className="text-xs text-gray-500 font-normal">(Category)</span></span>
+                         </li>
+                       ))}
+                       {filteredDropoffOptions.length > 0 ? (
+                         filteredDropoffOptions.map((option) => (
+                           <li
+                             key={option.id}
+                             onClick={() => {
+                               setSelectedDropoff(option);
+                               setDropoffQuery(option.name || option.title);
+                               setShowDropoffDropdown(false);
+                             }}
+                             className="flex justify-between items-center px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-300 last:border-b-0 text-gray-900"
+                           >
+                             <div className="flex text-sm items-center gap-2">
+                               {getIconForCategory(option.type)}
+                               <span>{option.name}</span>
+                             </div>
+                             <span className="text-xs text-gray-500 capitalize">{option.type}</span>
+                           </li>
+                         ))
+                       ) : (
+                         (!selectedDropoffCategory && availableDropoffCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(dropoffQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== dropoffQuery.toLowerCase()).length === 0) && (
+                           <li className="px-3 py-2.5 text-center text-gray-500">No results found</li>
+                         )
+                       )}
+                     </ul>
+                   )}
                  </div>
-                 
+
                  {/* Search button */}
                  <div className="md:col-span-2 flex items-stretch">
                    <button
-                     type="submit"                     className="min-w-full rounded-lg  bg-[#D3202D] text-white font-semibold text-base sm:text-lg  py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
-                   disabled={isLoading}                   
+                     type="submit"
+                     className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
+                     disabled={isLoading}
                    >
                      {isLoading ? (
                       <LoaderSvg />
