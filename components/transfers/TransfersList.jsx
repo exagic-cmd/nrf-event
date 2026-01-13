@@ -26,8 +26,11 @@ function TransfersList() {
     const currentTripType = searchParams.get('tripType');
     if (currentTripType && currentTripType !== tripType) {
       setTripType(currentTripType);
+      if (storeSearchParams && storeSearchParams.tripType !== currentTripType) {
+        setSearchParams({ ...storeSearchParams, tripType: currentTripType });
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, tripType, setTripType, storeSearchParams, setSearchParams]);
 
   const vehicleSectionRef = useRef(null);
  const { mapDetails } = useTransferStore()
@@ -94,8 +97,17 @@ function TransfersList() {
 }, [searchResults]);
 
   const handleTripTypeChange = async (newType) => {
+    if (newType === tripType) return;
+
     setTripType(newType);
     if (setSelectedTransfer) setSelectedTransfer(null);
+
+    if (setSearchParams && storeSearchParams) {
+      setSearchParams({
+        ...storeSearchParams,
+        tripType: newType
+      });
+    }
 
     const params = new URLSearchParams(searchParams);
     params.set('tripType', newType);
@@ -111,7 +123,11 @@ function TransfersList() {
       if (promoId) searchPayload.promo_id = promoId;
       await searchTransfers(searchPayload);
     } else if (fetchTransfers) {
-      fetchTransfers();
+      fetchTransfers({
+        tripType: newType,
+        pickup: storeSearchParams?.pickup,
+        dropoff: storeSearchParams?.dropoff
+      });
     }
   };
 
@@ -178,6 +194,7 @@ function TransfersList() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      e.preventDefault();
                       handleTripTypeChange(tripType === 'round-trip' ? 'one-way' : 'round-trip');
                     }}
                     className="px-3 py-1 text-xs font-medium rounded-md bg-white text-black shadow-sm hover:bg-gray-50 transition-all duration-200"

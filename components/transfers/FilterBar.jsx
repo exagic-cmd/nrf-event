@@ -42,7 +42,6 @@ const TransferSearchFilter = ({ onSearch, showModal: showModalProp, setShowModal
 
   useEffect(() => {
     const hasStoredParams = storeSearchParams?.pickup && storeSearchParams?.dropoff
-    const urlTripType = searchParams.get("tripType")
 
     if (hasStoredParams) {
       setPickupQuery(storeSearchParams.pickup.name)
@@ -50,21 +49,31 @@ const TransferSearchFilter = ({ onSearch, showModal: showModalProp, setShowModal
       setSelectedPickup(storeSearchParams.pickup)
       setSelectedDropoff(storeSearchParams.dropoff)
 
-      if (urlTripType && (urlTripType === "one-way" || urlTripType === "round-trip")) {
-        setTripType(urlTripType)
-      } else {
-        setTripType(storeSearchParams.tripType)
+      const urlTripType = searchParams.get("tripType")
+      if (!urlTripType && storeSearchParams.tripType) {
+         setTripType(storeSearchParams.tripType)
       }
     }
+  }, [storeSearchParams, setSelectedPickup, setSelectedDropoff, setTripType, searchParams])
 
+  useEffect(() => {
+    const urlTripType = searchParams.get("tripType")
+    if (urlTripType && (urlTripType === "one-way" || urlTripType === "round-trip")) {
+      setTripType(urlTripType)
+    }
+  }, [searchParams, setTripType])
+
+  useEffect(() => {
+    const hasStoredParams = storeSearchParams?.pickup && storeSearchParams?.dropoff
     if (!hasStoredParams && !hasResetRef.current) {
       resetTransferStore()
       hasResetRef.current = true
+      const urlTripType = searchParams.get("tripType")
       if (urlTripType && (urlTripType === "one-way" || urlTripType === "round-trip")) {
         setTripType(urlTripType)
       }
     }
-  }, [storeSearchParams, searchParams, hasAutoSearched])
+  }, [storeSearchParams, searchParams, resetTransferStore, setTripType])
 
 
   return (
