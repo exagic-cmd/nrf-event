@@ -312,7 +312,7 @@ export default function TourDetailPage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleGoToReviewRoute}
-                  className="px-6 py-3 rounded-xl bg-[#D3202D] font-semibold text-black hover:bg-[#e1b97b]"
+                  className="px-6 py-3 rounded-xl bg-[#D3202D] font-semibold text-white "
                 >
                   Submit Review
                 </button>
@@ -415,17 +415,17 @@ export default function TourDetailPage() {
                 >
                     <div className={`relative rounded-xl overflow-hidden ${
                         step.type === 'travel'
-                            ? 'bg-[#f4f4f4] border border-[#D3202D]'
+                            ? 'bg-[#ffffff] border text-black border-[#D3202D]'
                             : isActive
                             ? 'bg-gradient-to-br from-[#D3202D] via-[#e05b5b] to-[#ff105c] shadow-lg shadow-[#D3202D]/50'
-                            : 'bg-gray-200 border border-gray-700'
+                            : 'bg-gray-200 border text-black border-gray-700'
                     } transition-all duration-300`}>
                         
                         {step.type !== 'travel' && ( 
                             <div className={`absolute top-2 left-2 w-8 h-8 rounded-full flex items-center justify-center text-base font-bold shadow-lg ${
                             isActive 
                                 ? 'bg-white text-[#D3202D] border-2 border-[#D3202D]' 
-                                : 'bg-gray-200 text-gray-800 border border-gray-700'
+                                : 'bg-gray-200 text-black border border-gray-700'
                             }`}>
                                 {step.type === 'review' ? 'R' : stopCounter}
                             </div>
@@ -433,7 +433,7 @@ export default function TourDetailPage() {
                         
                         {isActive && (
                         <div className="absolute top-3 right-3">
-                            <div className="w-3 h-3 bg-[#f4f4f4] rounded-full animate-pulse" />
+                            <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
                         </div>
                         )}
 
@@ -456,12 +456,12 @@ export default function TourDetailPage() {
                                 {step.type === 'travel' ? 'Travel' : (step.type === 'review' ? 'Final Step' : `Stop ${stopCounter}`)}
                             </p>
                             <p className={`text-xs font-bold leading-tight truncate ${
-                                isActive && step.type !== 'travel' ? 'text-black' : 'text-white'
+                                isActive && step.type !== 'travel' ? 'text-black' : 'text-black'
                             }`}>
                                 {step.title}
                             </p>
                             {step.type === 'travel' && (
-                                <p className={`text-[11px] mt-1 ${isActive && step.type !== 'travel' ? 'text-black/70' : 'text-gray-400'}`}>
+                                <p className={`text-[11px] mt-1 ${isActive && step.type !== 'travel' ? 'text-black/70' : 'text-gray-800'}`}>
                                     {step.to.details.travel_time && (
                                         <span>{step.to.details.travel_time}</span>
                                     )}
