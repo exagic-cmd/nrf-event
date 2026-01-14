@@ -50,7 +50,7 @@ const RecentlyViewed = () => {
                 <div className="flex-grow p-3 flex flex-col justify-between">
                   <p className="font-semibold text-sm line-clamp-2">{item?.name}</p>
                   <div className="flex-col items-center justify-between text-xs text-gray-600 mt-1">
-                    <span>From SGD {formatPrice(item?.price)}</span>
+                    <span>From {item?.currency} {formatPrice(item?.price)}</span>
                     <div className="flex items-center">
                       {[...Array(item?.rating || 0)].map((_, i) => (
                         <svg

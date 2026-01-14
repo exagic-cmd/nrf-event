@@ -100,12 +100,15 @@ export default function AccommodationDetailPage() {
       hasDiscount: discountedTotal < originalTotal,
     };
   };
-
+const detectedCurrency =
+  roomData?.[0]?.rate_plans?.[0]?.pricing?.currency ||
+  "-";
   // 1. Normalize Hotel Data
   const normalizedHotelData = {
     id: hotel.id,
     title: hotel.name,
     name: hotel.name,
+    currency: detectedCurrency,
     short_desc: hotel.short_desc,
     long_desc: hotel.long_desc,
     country: hotel.country,
@@ -460,7 +463,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
 useEffect(() => {
   if (accommodation?.normalizedHotelData && accommodation.normalizedHotelData.title) {
     const { id, title, image, stars, rating } = accommodation.normalizedHotelData;
-    
+    console.log("Adding to recently viewed::::", accommodation);
     // Get the lowest total_promo price from all rate plans
     let lowestPrice = accommodation.normalizedHotelData.starting_price; // fallback
     
@@ -481,6 +484,7 @@ useEffect(() => {
       image: image,
       price: lowestPrice,
       rating: stars || rating?.rating || 0,
+      currency: hotelData?.currency,
       type: "accommodation",
       link: router.asPath,
       link_type_id: urlLinkTypeId,
@@ -542,6 +546,7 @@ useEffect(() => {
                   startingPrice={hotelData.starting_price}
                   allRooms={accommodation.normalizedRoomData}
                   selectedRoom={selectedRoom}
+                  ratePlans={roomData?.flatMap(r => r.ratePlans) || []}
                   currency={hotelData.currency}
                   onScrollToOptions={handleScrollToOptions}
                   onProceedBooking={handleProceedBooking}

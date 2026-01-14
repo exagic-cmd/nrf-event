@@ -92,7 +92,7 @@ const AccommodationTimerBubble = () => {
           onExtend={async () => {
             const res = await extendHoldForItem(modalItem.key);
             if (res.success) {
-              toast.success("Hold extended successfully for 7 minutes!");
+              toast.success("Reserve extended successfully for 7 minutes!");
             } else {
               toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
             }
