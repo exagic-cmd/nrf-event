@@ -199,15 +199,15 @@ const CartDrawerContent = () => {
                             {item.tripType === 'round-trip' ? t('roundTrip', { ns: 'transfer' }) : t('oneWay', { ns: 'transfer' })}
                           </p>
                           <p >
-                           | {t("date", { ns: "common" })}: {formatDate(item.selectedDate)} 
+                           | {t("", { ns: "common" })} {formatDate(item.selectedDate)} 
                             {item.tripType === 'round-trip' && item.returnDate && ` - ${formatDate(item.returnDate)}`}
                           </p></div>
                           <p>
-                            {t("passengers")}: {item.passengers} | {t("baggage")}: {item.baggage}
+                             {item.passengers} {t("passengers")}|  {item.baggage} {t("baggage")}
                           </p>
                         </div>
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                          {item?.pricing || item?.price} SGD
+                        {item?.currency}  {item?.pricing || item?.price} 
                         </p>
                       </>
                     ) : (
@@ -221,11 +221,11 @@ const CartDrawerContent = () => {
                             {t("date", { ns: "common" })}: {formatDate(item.selectedDate)}
                           </p>
                           <p>
-                            {t("adult")}: {item?.adults || item?.pax} | {t("child")}: {item?.child || 0}
+                            {item?.adults || item?.pax} {t("adult")} |  {item?.child || 0} {t("child")}
                           </p>
                         </div>
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                        {item.currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")} 
+                        {item[0].currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")} 
                         </p>
                       </>
                     )}
@@ -294,7 +294,7 @@ const CartDrawerContent = () => {
                   onClick={handleProceed}
                   className="w-full bg-slate-200 text-gray-800 border border-1 py-2.5 rounded-lg text-sm font-semibold hover:text-white hover:bg-gray-500 transition"
                 >
-                  {t("proceedToCheckout","Checkout")}
+                  {t("Checkout")}
                 </button>
               )}
 

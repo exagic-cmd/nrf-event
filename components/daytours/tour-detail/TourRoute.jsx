@@ -26,7 +26,7 @@ export default function TourPage({ prod_id, lang_id , colortext,colorheading, no
   };
 
   return (
-    <div className=" text-white min-h-screen flex flex-col">
+    <div className=" text-black min-h-screen flex flex-col">
      
         <TourSummary
           product={product}

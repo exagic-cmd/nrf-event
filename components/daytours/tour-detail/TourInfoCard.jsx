@@ -110,8 +110,8 @@ useEffect(() => {
                 <div className="bg-gradient-to-br from-red-100 to-red-200 p-2 rounded-lg">
                   <IconComponent size={14} className="text-black" />
                 </div>
-                <div className="font-medium text-sm text-black">{feature.title}
-              </div>
+                {/* <div className="font-medium text-sm text-black">{feature.title} 
+              </div>*/}
               <div className="text-xs text-black">{feature.desc}</div>
               </div>
             </div>

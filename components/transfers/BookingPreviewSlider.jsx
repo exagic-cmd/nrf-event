@@ -227,7 +227,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           <img src={image} alt={title} className="w-80 h-36 object-cover rounded-lg" />
           
           <div className="space-y-1.5 text-xs">
-            <span className="font-bold text-gray-800 flex items-center gap-1.5">
+            <span className="font-bold text-gray-800 flex justify-center items-center gap-1.5">
                  {item?.vehicle?.vehicle_name}
               </span>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
@@ -236,20 +236,32 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                    <Luggage className="w-4 h-4" /> {item?.baggage}
                
                 </span>
-                <span>
-                  {item?.vehicle?.price && (
-                  <span className="text-[#D3202D] font-medium">{item?.currency||""} {formatPrice(item.vehicle.price)}</span>
-                )}
-                </span>
-              </div>
-            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
-                <span className="font-medium text-gray-600 text-xs capitalize">
+          <span className="text-[#D3202D] font-medium">
+  {item?.currency}{" "}
+{formatPrice(
+  isRoundTrip
+    ? item.vehicle?.two_way_promo_price || item.vehicle?.two_way_price
+    : item.vehicle?.final_promo_price ||
+      item.vehicle?.promo_price ||
+      item.vehicle?.price
+)}
+
+</span>
+<span className="font-medium text-gray-600 text-xs capitalize">
                   {item.transferType === 'round-trip' || item.tripType === 'round-trip' ? t("roundTrip", { ns: "transfer", defaultValue: "Round Trip" }) : t("oneWay", { ns: "transfer", defaultValue: "One Way" })}
                 </span>
+
+              </div>
+            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                
                 {(item.selectedTime || item.pickupTime) && (
+               <>
                  <span className="text-sm text-gray-800 font-medium flex items-center gap-1.5">
-                   <Clock size={14} /> {item.selectedTime || item.pickupTime}
+                   Time: 
                  </span>
+                  <span className="text-sm text-gray-800 font-medium">
+                  {item.selectedTime || item.pickupTime}{item.returnDate && ` - ${item.returnDate}`}
+                </span></>
                 )}
              </div>
             {date && (

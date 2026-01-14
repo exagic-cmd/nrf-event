@@ -279,7 +279,7 @@ useEffect(() => {
             </label>
             <button
               type="button"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:bg-[#fff4e6] hover:border--[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:border-[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
               onClick={handleOpenPassengerModal}
               disabled={isBookingAdded}
             >

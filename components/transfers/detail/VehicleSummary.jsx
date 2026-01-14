@@ -108,7 +108,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
         <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("vehiclePrice", "Vehicle Price")}</span>
             <span className="text-sm font-medium text-gray-600">
-              {formatPrice(baseTotal)} {vehicleInfo?.currency}
+             {vehicleInfo?.currency} {formatPrice(baseTotal)} 
             </span>
         </div>
 
@@ -117,7 +117,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("pickupSurcharge")}</span>
             <span className="text-sm font-medium text-gray-600">
-              +{formatPrice(pickupAmount)} {vehicleInfo?.currency}
+              {vehicleInfo?.currency} +{formatPrice(pickupAmount)} 
             </span>
           </div>
         )}
@@ -125,7 +125,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("returnSurcharge")}</span>
             <span className="text-sm font-medium text-gray-600">
-              +{formatPrice(returnAmount)} {vehicleInfo?.currency}
+              {vehicleInfo?.currency} +{formatPrice(returnAmount)} 
             </span>
           </div>
         )}
@@ -133,14 +133,14 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">{t("addons_total")}</span>
             <span className="text-sm font-medium text-gray-600">
-              +{formatPrice(addonsTotal)} {vehicleInfo?.currency}
+             {vehicleInfo?.currency} +{formatPrice(addonsTotal)} 
             </span>
           </div>
         )}
 
         <div className="flex justify-between items-center mt-4">
           <span className="md:text-xl text-md font-bold">{t("total")}</span>
-          <span className="md:text-xl text-md font-bold">{formatPrice(finalTotal)} {vehicleInfo?.currency}</span>
+          <span className="md:text-xl text-md font-bold">{vehicleInfo?.currency} {formatPrice(finalTotal)}</span>
         </div>
       </div>
     </div>
