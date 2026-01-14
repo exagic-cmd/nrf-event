@@ -157,7 +157,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 return (
                   <div
                     key={`${item.order_id}-${item.id}`}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col"
+                    className="relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col"
                   >
                     {loadingItemId === item.id && (
                       <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">

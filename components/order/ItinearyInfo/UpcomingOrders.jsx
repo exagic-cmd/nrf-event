@@ -94,7 +94,7 @@ const handleVirtualTourClick = (item) => {
         {allItineraryItems.map((item) => (
           <div
             key={`${item.order_id}-${item.id}`}
-            className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row"
+            className="relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row"
           >
             {loadingItemId === item.id && (
               <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
