@@ -165,7 +165,7 @@ export function TransferBenefitsSection() {
                       {/* Footer */}
                       <div className="flex items-center bg-[#F7F7F780] rounded-xl py-3 px-1 justify-between">
                         <p className="text-2xl font-bold text-gray-900">
-                          {tour?.starting_price} <span className="text-base">SGD</span>
+                         <span className="">{tour?.currency}</span> {tour?.starting_price} 
                         </p>
                         <button
                           onClick={() => handleCardClick(tour)}
