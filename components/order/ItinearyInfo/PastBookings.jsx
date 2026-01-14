@@ -5,6 +5,7 @@ import { History, Calendar, Star, Search, Eye, AlertCircle } from "lucide-react"
 import { useOrderStore } from "@/store/useOrderStore"
 import { getFullImageUrl } from "@/utils/imageService"
 import { useTranslation } from "next-i18next"
+import Loader2Svg from "@/components/common/Loader2Svg"
 
 const PastBookings = ({ onReviewClick, onDetailsClick }) => {
   const { t } = useTranslation("order")
@@ -13,6 +14,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("date")
   const [filterBy, setFilterBy] = useState("all")
+  const [loadingItemId, setLoadingItemId] = useState(null)
 
   const formatDateTime = (date, time) => {
     if (!date) return "-"
@@ -76,7 +78,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
     if (firstImage?.image) {
       return getFullImageUrl(firstImage.image)
     }
-    return "public/placeholder.svg"
+    return "/placeholder.svg"
   }
 
   return (
@@ -157,6 +159,11 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                     key={`${item.order_id}-${item.id}`}
                     className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col"
                   >
+                    {loadingItemId === item.id && (
+                      <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+                        <Loader2Svg />
+                      </div>
+                    )}
                     <div className="flex flex-col sm:flex-row flex-1">
                       <div className="relative flex-shrink-0 w-full md:h-40 md:w-44 h-40">
                         <img
@@ -188,18 +195,24 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                         {isConfirmed ? (
                           <div className="flex flex-col sm:flex-row gap-2 mt-3">
                             <button
-                              onClick={() => onReviewClick(item)}
-                              className="flex-1 bg-[#D3202D] text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#D3202D] transition-colors text-sm"
+                              onClick={() => {
+                                setLoadingItemId(item.id);
+                                onReviewClick(item);
+                              }}
+                              disabled={loadingItemId === item.id}
+                              className="flex-1 bg-[#D3202D]  text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 transition-colors text-sm disabled:opacity-50"
                             >
                               <Star className="w-4 h-4" />
                               <span>{t("review")}</span>
                             </button>
                             <button
-                              onClick={() =>
+                              onClick={() => {
+                                setLoadingItemId(item.id);
                                 onDetailsClick &&
-                                onDetailsClick({ order_id: item.order_id, itinerary_id: item.id })
-                              }
-                              className="flex-1 bg-gray-400 text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm"
+                                onDetailsClick({ order_id: item.order_id, itinerary_id: item.id });
+                              }}
+                              disabled={loadingItemId === item.id}
+                              className="flex-1 bg-gray-400 text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
                             >
                               <Eye className="w-3 h-3" />
                               <span>{t("details")}</span>

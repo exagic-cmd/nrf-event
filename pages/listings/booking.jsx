@@ -77,7 +77,7 @@ const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
       dropoff_point_id: searchParams.dropoff?.id,
       product_id: selectedTransfer?.product_id,
       vehicle_id: selectedTransfer?.vehicle_id,
-        feature_type_id:selectedTransfer?.feature_type_id || null,
+      feature_type_id:selectedTransfer?.feature_type_id || null,
       round_trip: searchParams.tripType === "one-way" ? false : true,
     };
 
@@ -118,7 +118,7 @@ setIsLoading(true)
   const handleContinueShopping = () => {
     setIsLoading(true)
     resetFormData();
-    localizedPush("/transfers");
+    localizedPush("/");
     resetTransferStore();
   };
 const handleGoToCart = async () => {

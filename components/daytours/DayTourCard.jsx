@@ -31,6 +31,9 @@ function DaytourCard({ tour, category = "daytour" }) {
       } else {
         // Navigate to day tour details page
         localizedPush(`/day-tours/detail/${tour.id}`);
+       
+           sessionStorage.removeItem("fromOrder");
+        
         // Keep loader active until component unmounts on navigation
       }
     } catch (err) {

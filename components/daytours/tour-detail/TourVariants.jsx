@@ -65,7 +65,7 @@ const TourVariants = forwardRef(({ groupProducts, onVariantSelect }, ref) => {
           </thead>
           <tbody>
             {groupProducts.map((variant) => (
-              <tr key={variant.group_product_id} className="border-b hover:bg-blue-50 transition">
+              <tr key={variant.group_product_id} className="border-b hover:bg-orange-50 transition">
                 <td className="p-4">
                   <div className="font-bold text-gray-900">{variant.Title}</div>
                   <div className="text-xs text-gray-500 mt-1">{variant.Description}</div>

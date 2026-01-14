@@ -70,7 +70,7 @@ useEffect(() => {
   return (
     <div className="flex-1  py-6 md:py-8 space-y-6">
       {/* Totals Card */}
-      <div className="bg-[#CC9A55] rounded-2xl p-4">
+      <div className="bg-[#D3202D] rounded-2xl p-4">
         <p className="mb-2 text-[12px] md:text-sm">
           Airport Transfer by our luxury cars
         </p>
@@ -115,7 +115,7 @@ useEffect(() => {
 
       {/* Locations Section */}
       <div>
-        <h3 className="text-md md:text-2xl font-bold text-white mb-4">
+        <h3 className="text-md md:text-2xl font-bold text-black mb-4">
           Visited Locations ({locations.length})
         </h3>
 
@@ -184,13 +184,13 @@ useEffect(() => {
       </div>
        {fromOrderScreen && (  
             <div className="flex justify-end pt-6">
-              <button
+              {/* <button
                 onClick={handleStartTour}
                 disabled={loading}
-                className="px-2 py-3 bg-[#CC9A55] hover:bg-[#e1b97b] text-black font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
+                className="px-2 py-3 bg-[#D3202D]   text-black font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? "Starting..." : "Start Tour"}
-              </button>
+              </button> */}
             </div>
        )}
     </div>

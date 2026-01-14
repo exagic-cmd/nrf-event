@@ -13,19 +13,19 @@ const BookingPriceTable = ({ id }) => {
   const { tieredPricingData } = useProductStore()
   const pricingList = tieredPricingData?.tieredPricing?.data?.product_pricing || []
 
-  const renderPriceWithPromo = (price, promo) => {
+  const renderPriceWithPromo = (price, promo, currency) => {
     if (promo > 0) {
       return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-          <span className="font-semibold text-sm text-green-600">SGD {promo}</span>
-          <span className="line-through text-gray-400 text-xs">SGD {price}</span>
-          <Badge variant="secondary" className="bg-gray-100 text-green-700 text-xs px-1 py-1 w-fit mt-1 sm:mt-0">
+          <span className="font-semibold text-sm text-green-600">{currency} {promo}</span>
+          <span className="line-through text-gray-400 text-xs">{currency} {price}</span>
+          <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs px-1 py-1 w-fit mt-1 sm:mt-0">
             {t("promo")}
           </Badge>
         </div>
       )
     }
-    return <span className="text-sm font-medium text-gray-700">SGD {price}</span>
+    return <span className="text-sm font-medium text-gray-700">{currency} {price}</span>
   }
 
   if (pricingList.length === 0) {
@@ -47,17 +47,17 @@ const BookingPriceTable = ({ id }) => {
         </div>
 
         <div
-          className="mt-4 mb-4 p-4 bg-gradient-to-r from-[#ce6269] to-gray-50 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+          className="mt-4 mb-4 p-4 bg-gradient-to-r from-[#D3202D] to-gray-50 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
             <div className="flex items-center gap-2 text-black font-semibold">
-              <ChevronUp className={`w-5 h-5 text-white transition-transform duration-300 ${!isOpen ? "rotate-180" : ""}`} />
+              <ChevronUp className={`w-5 h-5 text-[#D3202D] transition-transform duration-300 ${!isOpen ? "rotate-180" : ""}`} />
               <span className="font-medium">
                 {t("tiersAvailable", { count: pricingList.length })}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-black">
+            <div className="flex items-center gap-2 text-gray-700">
               <Users className="w-4 h-4 text-[#D3202D]" />
               <span className="font-medium">
                 {t("groupSize", {
@@ -98,7 +98,7 @@ const BookingPriceTable = ({ id }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {pricingList.map((item, index) => (
-                    <tr key={item.id} className="transition-colors duration-200 group">
+                    <tr key={item.id} className="hover:bg-orange-25 transition-colors duration-200 group">
                       <td className="py-4 px-4">
                         <div className="w-8 h-8 flex items-center justify-center text-sm font-bold">
                           {index + 1}
@@ -107,13 +107,13 @@ const BookingPriceTable = ({ id }) => {
                       <td className="py-4 px-4">{item.min_pax}</td>
                       <td className="py-4 px-4">{item.max_pax}</td>
                       <td className="py-4 px-4">
-                        <div className="bg-gray-50 rounded-lg p-2 inline-block min-w-fit">
-                          {renderPriceWithPromo(item.adult_price, item.adult_promo_price)}
+                        <div className="bg-red-50 rounded-lg p-2 inline-block min-w-fit">
+                          {renderPriceWithPromo(item.adult_price, item.adult_promo_price, item.currency)}
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="bg-gray-50 rounded-lg p-2 inline-block min-w-fit">
-                          {renderPriceWithPromo(item.child_price, item.child_promo_price)}
+                        <div className="bg-red-50 rounded-lg p-2 inline-block min-w-fit">
+                          {renderPriceWithPromo(item.child_price, item.child_promo_price, item.currency)}
                         </div>
                       </td>
                     </tr>

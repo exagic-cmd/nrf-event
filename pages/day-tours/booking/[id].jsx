@@ -16,9 +16,9 @@ import { Separator } from "@/components/ui/separator"
 import { useTranslation } from "next-i18next"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import useLanguageStore from "@/store/useLanguageStore";
-import { formatPrice } from "@/utils/priceUtils";
+
 const slugify = (text) => {
-    if (!text) return "";
+    if (!text) return "";[]
     const processedText = text
         .toString()
         .toLowerCase()
@@ -78,7 +78,7 @@ const DayTourBookingPage = () => {
                 if (id && apiTitle) {
                     localizedReplace(`/day-tours/${slugify(apiTitle)}/${id}`);
                 } else {
-                    localizedReplace("/transfers");
+                    localizedReplace("/");
                 }
             }, 1200);
             return () => clearTimeout(timer);
@@ -96,7 +96,7 @@ const DayTourBookingPage = () => {
   }
 
   const handleContinueShopping = () => {
-    localizedPush("/transfers")
+    localizedPush("/")
   }
 
   const handleProceedToCheckout = () => {
@@ -183,7 +183,7 @@ const DayTourBookingPage = () => {
                           <div>
      <p className="text-xs text-gray-500 uppercase tracking-wide">{t("price")}</p>
                             <p className="font-medium text-gray-900">
-  {t("startingFrom")}  SGD {formatPrice(displayPrice)}
+  {t("startingFrom")}  {apiData?.currency} { displayPrice }
 </p>
                           </div>
                         </div>            

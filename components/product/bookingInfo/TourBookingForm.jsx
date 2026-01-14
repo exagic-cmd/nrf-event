@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import useBookingStore from "@/store/userBookingStore"
 import { useRouter } from "next/router"
 import { useProductStore } from "@/store/useProductStore"
@@ -43,6 +43,7 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
   const [errorTimes, setErrorTimes] = useState("")
   const [showPassengerModal, setShowPassengerModal] = useState(false)
   const [formBeforeModal, setFormBeforeModal] = useState(null)
+  const [minSelectableDate, setMinSelectableDate] = useState(null)
 
   const {
     fetchPickupPointCity,
@@ -52,18 +53,60 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
     errorPickup,
     searchPickupPoints,
   } = useBookingStore()
+
+  const hasAdjustedDateRef = useRef(false);
+
 useEffect(() => {
-  setForm({
-    adults:
-      typeof value.adults === "number" && value.adults >= minPax
-        ? value.adults
-        : minPax,
-    child: value.child ?? 0,
-    hotel: value.hotel ?? "",
-    time: value.time ?? "",
-    date: value.date ? new Date(value.date + "T00:00:00") : "", // <-- convert string to Date
+  let initialDate = "";
+  let calculatedMinDate = minSelectableDate;
+
+  if (value.date) {
+    if (!hasAdjustedDateRef.current) {
+      const d = new Date(value.date + "T00:00:00");
+      d.setDate(d.getDate() + 1);
+
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      initialDate = `${year}-${month}-${day}`;
+
+      calculatedMinDate = d;
+      hasAdjustedDateRef.current = true;
+    } else {
+      // If already adjusted, use the value as is (it's the selected tour date)
+      initialDate = value.date;
+    }
+  } else {
+    initialDate = "";
+  }
+
+  setForm(prev => {
+    // Prevent unnecessary updates if values are the same
+    const newDateStr = initialDate instanceof Date ? initialDate.toDateString() : initialDate;
+    const prevDateStr = prev.date instanceof Date ? prev.date.toDateString() : prev.date;
+    
+    if (
+      prev.adults === (typeof value.adults === "number" && value.adults >= minPax ? value.adults : minPax) &&
+      prev.child === (value.child ?? 0) &&
+      prev.hotel === (value.hotel ?? "") &&
+      prev.time === (value.time ?? "") &&
+      newDateStr === prevDateStr
+    ) {
+      return prev;
+    }
+
+    return {
+      adults: typeof value.adults === "number" && value.adults >= minPax ? value.adults : minPax,
+      child: value.child ?? 0,
+      hotel: value.hotel ?? "",
+      time: value.time ?? "",
+      date: initialDate,
+    };
   });
-}, [value, minPax]);
+  if (calculatedMinDate?.getTime() !== minSelectableDate?.getTime()) {
+    setMinSelectableDate(calculatedMinDate);
+  }
+}, [value.date, value.adults, value.child, value.hotel, value.time, minPax]);
 
 useEffect(() => {
   if (!productId || !form.hotel) return;
@@ -88,6 +131,11 @@ useEffect(() => {
 
       for (const entry of availabilityData) {
         if (entry.available) {
+          if (minSelectableDate) {
+            const entryDate = new Date(entry.date + "T00:00:00");
+            if (entryDate < minSelectableDate) continue;
+          }
+
           validDates.push(entry.date);
           let finalTimes = [];
           if (entry.pickup_time && entry.pickup_time.length > 0) {
@@ -107,6 +155,25 @@ useEffect(() => {
           updated.date = null;
           updated.time = "";
         }
+
+        // Auto-select time if available for the selected date
+        if (updated.date) {
+           const dateStr = updated.date instanceof Date 
+              ? updated.date.getFullYear() + "-" + String(updated.date.getMonth() + 1).padStart(2, "0") + "-" + String(updated.date.getDate()).padStart(2, "0")
+              : updated.date;
+           
+           const times = dateMap[dateStr] || [];
+           
+           if (times.length > 0) {
+              // If current time is invalid or empty, select the first available time
+              if (!updated.time || !times.includes(updated.time)) {
+                 updated.time = times[0];
+              }
+           } else {
+              updated.time = "";
+           }
+        }
+
         onChange && onChange({ ...updated, availableTimes: [] });
         return updated;
       });
@@ -120,7 +187,7 @@ useEffect(() => {
       setErrorDates(t("bookingForm.failedToLoadDates"));
       setLoadingDates(false);
     });
-}, [productId, form.adults, form.child, form.hotel]);
+}, [productId, form.adults, form.child, form.hotel, minSelectableDate]);
 
   useEffect(() => {
     if (!productId) return
@@ -134,22 +201,7 @@ useEffect(() => {
   }, [pickupPoints, onHotelsAvailable])
 
   // for edit
- useEffect(() => {
-setForm({
-  adults:
-    typeof value.adults === "number" && typeof value.child === "number" && value.adults + value.child >= minPax
-      ? value.adults
-      : minPax,
-  child:
-    typeof value.adults === "number" && typeof value.child === "number" && value.adults + value.child >= minPax
-      ? value.child
-      : 0,
-  hotel: value.hotel ?? "",
-  time: value.time ?? "",
-  date: value.date ?? "",
-})
-
-}, [value, minPax])
+ // Removed redundant useEffect that was causing conflicts with the main initialization effect
 
 
   const handleOpenPassengerModal = () => {
@@ -204,7 +256,7 @@ setForm({
 
   const CustomInput = React.forwardRef(({ value, onClick, className, placeholder }, ref) => (
     <div
-      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-orange-300 text-left bg-white hover:border-[#D3202D] transition-colors h-12`}
+      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring--[#D3202D] focus:border-red-300 text-left bg-white hover:border--[#D3202D] transition-colors h-12`}
       onClick={onClick}
       ref={ref}
     >
@@ -227,7 +279,7 @@ setForm({
             </label>
             <button
               type="button"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:border-[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:bg-[#fff4e6] hover:border--[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
               onClick={handleOpenPassengerModal}
               disabled={isBookingAdded}
             >
@@ -260,7 +312,7 @@ setForm({
 
           {/* Hotel */}
           <div className="space-y-3 ">
-            <label className="block font-medium text-sm text-gray-700  flex items-center gap-2">
+            <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
               <Hotel className="w-4 h-4 text-[#D3202D]" />
               {t("bookingForm.selectHotel")} <span className="text-red-500">*</span>
             </label>
@@ -294,8 +346,10 @@ setForm({
               }
               onChange={(date) => handleChange("date", date)}
               dateFormat="yyyy-MM-dd"
+               popperPlacement="bottom-start"
               placeholderText={t("bookingForm.selectDate")}
               includeDates={availableDates}
+              minDate={minSelectableDate}
               dayClassName={(date) => {
                 const localDateStr =
                   date.getFullYear() +
@@ -311,7 +365,7 @@ setForm({
             />
             {loadingDates && (
               <div className="text-sm text-[#D3202D] mt-1 flex items-center gap-2">
-                <div className="w-4 h-4 border--[#D3202D] border-t-[#D3202D] rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-[#D3202D] border-t-[#D3202D] rounded-full animate-spin"></div>
                 {t("bookingForm.loadingDates")}
               </div>
             )}
@@ -328,14 +382,7 @@ setForm({
   </label>
   {form.date ? (
     (() => {
-      const dateObj = form.date instanceof Date ? form.date : (form.date ? new Date(form.date + "T00:00:00") : null);
-      if (!dateObj || isNaN(dateObj.getTime())) {
-        return <div className="text-sm text-gray-400">{t("bookingForm.selectDate")}</div>;
-      }
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      const dateStr = `${year}-${month}-${day}`;
+      const dateStr = form.date;
       const times = pickupTimesByDate[dateStr] || [];
       if (times.length === 0) {
         return (
@@ -346,24 +393,18 @@ setForm({
           </div>
         );
       }
-      if (times.length === 1 && form.time !== times[0]) {
-      setTimeout(() => {
-          const newFormState = { ...form, time: times[0] };
-          setForm(newFormState);
-          onChange?.(newFormState);
-        }, 0);
-      }
 
       const timeToDate = (timeStr) => {
         if (!timeStr) return null;
-        const period = timeStr.match(/([AP]M)/);
-        let [hours, minutes] = timeStr.replace(/[AP]M/, '').split(':');
-        hours = parseInt(hours, 10);
-        if (period && period[0] === 'PM' && hours !== 12) {
-          hours += 12;
-        }
         const date = new Date();
-        date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+        const isPM = /pm/i.test(timeStr);
+        const isAM = /am/i.test(timeStr);
+        let [hours, minutes] = timeStr.replace(/am|pm/i, '').trim().split(':');
+        hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
+        if (isPM && hours < 12) hours += 12;
+        if (isAM && hours === 12) hours = 0;
+        date.setHours(hours, minutes, 0, 0);
         return date;
       };
 
@@ -387,7 +428,8 @@ setForm({
           customInput={React.createElement(CustomInput, { className: "w-full" })}
           wrapperClassName="w-full"
           includeTimes={times.map(timeToDate)}
-          disabled={isBookingAdded}
+           disabled={isBookingAdded}
+           popperPlacement="bottom-start"
         />
       );
     })()
