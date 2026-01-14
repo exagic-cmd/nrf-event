@@ -14,7 +14,8 @@ import { Tag, Star, Clock } from "lucide-react";
 import { getFullImageUrl } from "@/utils/imageService";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useOrderStore } from "@/store/useOrderStore";
-import { formatPrice } from "@/utils/priceUtils";
+import useLanguageStore from "@/store/useLanguageStore";
+
 const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const { t } = useTranslation("daytour");
   const router = useRouter();
@@ -27,7 +28,8 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   });
 
   const { setJustAdded, justAdded } = useDrawerStore();
-  const { tieredPricingData, bookedProductDetail } = useProductStore();
+  const { tieredPricingData, bookedProductDetail, fetchCancellationPolicy } = useProductStore();
+  const { languageId } = useLanguageStore();
   const { removeItem } = useCartStore();
   const { prefillData, updatePrefillDataFromCart } = useOrderStore();
   const { items: cartItems } = useCartStore();
@@ -41,6 +43,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const [availablePolicyIds, setAvailablePolicyIds] = useState([]);
   const [showCartOptions, setShowCartOptions] = useState(false);
   const [loadingButton, setLoadingButton] = useState(null);
+  const [cancellationText, setCancellationText] = useState("");
 
   const apiData = bookedProductDetail?.data?.basicinfo;
   const imageUrl = getFullImageUrl(apiData?.images?.[0]?.image);
@@ -49,6 +52,14 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   useEffect(() => {
     setJustAdded(false);
   }, [setJustAdded]);
+
+  useEffect(() => {
+    if (id) {
+      fetchCancellationPolicy(id, languageId).then((res) =>
+        setCancellationText(res?.data?.cancellationpolicies?.description || "")
+      );
+    }
+  }, [id, languageId, fetchCancellationPolicy]);
 
   const handleFormChange = (data) => {
     setFormData(data);
@@ -66,7 +77,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       setFormData((prev) => ({
         ...prev,
         date: prefillData.date || prev.date,
-        time: "",
+        time: prefillData.pickup_time || prev.time,
         hotel: prefillData.pickup_point || prev.hotel,
         adults: prefillData.total_adult || prev.adults,
         child: prefillData.total_child || prev.child,
@@ -105,7 +116,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
     const title =
       productData?.basicinfo?.product_description?.title || "Untitled Tour";
     const image = productData?.basicinfo?.images?.[0]?.image || "img";
-    const currency = "SGD";
+    const currency = apiData?.currency ;
 
     let pricing = calculateTierPricing(
       formData.adults || 0,
@@ -187,10 +198,10 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                     {productTitle}
                   </h3>
                   <Separator />
-                  <div className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
-                    <Tag className="w-4 h-4 text-[]" />
+                  <div className="flex items-center gap-3 p-3 bg-\gray-50 rounded-lg">
+                    <Tag className="w-4 h-4 text-gray-600" />
                     <p className="font-medium text-gray-900">
-                      {t("startingFrom")} SGD {formatPrice(displayPrice)}
+                      {t("startingFrom")} {apiData?.currency} {displayPrice}
                     </p>
                   </div>
                 </div>
@@ -200,10 +211,9 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
 
           {/* 📜 Policy + Buttons */}
           <div className="bg-white rounded-lg p-2 px-6 md:px-5 md:p-5 shadow-sm border border-gray-100">
-            <p className="md:text-sm text-xs py-1">
-              Non-Refundable, Free Cancellation{" "}
-              <span className="text-[#D3202D]">24 hours</span> before service starts
-            </p>
+            {cancellationText && (
+              <p className="md:text-sm text-xs py-1 text-gray-700 whitespace-pre-line">{cancellationText}</p>
+            )}
 
             <div className="mt-2 flex flex-col sm:flex-row justify-between gap-3">
               <div>
@@ -250,14 +260,14 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   <button
                     onClick={handleViewCart}
                     disabled={loadingButton === "checkout"}
-                    className="bg-[#D3202D]  text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
+                    className="bg-[#D3202D] text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     {loadingButton === "checkout" ? (
                       <>
                         <LoaderSvg color="#fff"/> {t("processing")}
                       </>
                     ) : (
-                      t("Checkout")
+                      t("checkout","Checkout")
                     )}
                   </button>
                 </div>

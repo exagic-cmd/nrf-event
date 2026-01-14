@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import TourSummary from "@/components/tour-summary";
 import { useVirtualTourStore } from "@/store/useVirtualTourStore";
-export default function TourPage({ prod_id, lang_id , colortext,colorheading }) {
+export default function TourPage({ prod_id, lang_id , colortext,colorheading, noTour, fromOrderScreen }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { fetchVirtualTour, product, locations, totals } = useVirtualTourStore();
 
   useEffect(() => {
     if (prod_id && lang_id) {
-      fetchVirtualTour(prod_id, 2); 
+      fetchVirtualTour(prod_id, lang_id); 
     }
   }, [prod_id, lang_id, fetchVirtualTour]);
 
@@ -37,6 +37,8 @@ export default function TourPage({ prod_id, lang_id , colortext,colorheading }) 
           id={prod_id}
           colortext={colortext}
           colorheading={colorheading}
+          noTour={noTour}
+          fromOrderScreen={fromOrderScreen}
         />
     
     </div>

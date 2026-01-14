@@ -5,11 +5,15 @@ import { useOrderStore } from "@/store/useOrderStore"
 import { getFullImageUrl } from "@/utils/imageService"
 import CancelModal from "./CancelModal"
 import { useTranslation } from "next-i18next"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import Loader2Svg from "@/components/common/Loader2Svg"
 
 const UpcomingOrders = ({ onViewDetails }) => {
   const { t } = useTranslation("order")
-  const { upcomingBookings ,accommodations} = useOrderStore()
-
+  const { upcomingBookings } = useOrderStore()
+  const router = useRouter()
+  const [loadingItemId, setLoadingItemId] = useState(null)
   const formatDate = (dateString) => {
     if (!dateString) return "-"
     const date = new Date(dateString)
@@ -51,6 +55,14 @@ const UpcomingOrders = ({ onViewDetails }) => {
       tour_date: order.tour_date,
     }))
   )
+const handleVirtualTourClick = (item) => {
+  setLoadingItemId(item.id);
+  sessionStorage.setItem("itineraryItem", JSON.stringify(item));
+  sessionStorage.setItem("fromOrder", "true");
+  router.push({
+    pathname: `/day-tours/detail/${item?.product_id}`,
+  });
+};
 
   if (!allItineraryItems || allItineraryItems.length === 0 && accommodations?.length === 0) {
     return (
@@ -84,10 +96,15 @@ const UpcomingOrders = ({ onViewDetails }) => {
             key={`${item.order_id}-${item.id}`}
             className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row"
           >
+            {loadingItemId === item.id && (
+              <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+                <Loader2Svg />
+              </div>
+            )}
             {/* Image */}
             <div className="relative flex-shrink-0 w-full md:h-40 md:w-44 h-40">
               <img
-                src={getItineraryImage(item) || "public/placeholder.svg"}
+                src={getItineraryImage(item) || "/placeholder.svg"}
                 alt={item.title || t("activity")}
                 className="w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-t-none"
               />
@@ -122,28 +139,47 @@ const UpcomingOrders = ({ onViewDetails }) => {
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                {item.booking_status?.toLowerCase() === "confirmed" ? (
-                  <button
-                    onClick={() =>
-                      onViewDetails({
-                        order_id: item.order_id,
-                        itinerary_id: item.id,
-                      })
-                    }
-                    className="flex-1 bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1  transition-colors text-sm"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    <span>{t("details")}</span>
-                  </button>
-                ) : (
-                  <div className="flex items-center justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    {t("awaitingConfirmation")}
-                  </div>
-                )}
-              </div>
+{/* Actions */}
+<div className="flex flex-col sm:flex-row gap-2 mt-3">
+  {item.booking_status?.toLowerCase() === "confirmed" ? (
+    <>
+      {/* Details Button */}
+      <button
+        onClick={() => {
+          setLoadingItemId(item.id);
+          sessionStorage.setItem("itineraryItem", JSON.stringify(item));
+          onViewDetails({
+            order_id: item.order_id,
+            itinerary_id: item.id,
+          });
+        }}
+        disabled={loadingItemId === item.id}
+ className="flex-1 bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1  transition-colors text-sm"
+      >
+        <Eye className="w-4 h-4 mr-2" />
+        <span>{t("details")}</span>
+      </button>
+
+      {(item.category_id === 1 || item.category_id === 3) && (
+        <button
+          onClick={() => handleVirtualTourClick(item)}
+          disabled={loadingItemId === item.id}
+          className="flex-1 bg-gray-800 text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
+        >
+          <Eye className="w-4 h-4 mr-2" />
+          <span>{t("virtualTour","Virtual Tour")}</span>
+        </button>
+      )}
+    </>
+  ) : (
+    <div className="flex items-center justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
+      <AlertCircle className="w-4 h-4 mr-2" />
+      {t("awaitingConfirmation")}
+    </div>
+  )}
+</div>
+
+
             </div>
           </div>
         ))}

@@ -97,7 +97,7 @@ const UserProfileScreen = () => {
     const diffTime = Math.abs(now.getTime() - joinDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    const years = now.getFullYear() - joinDate.getFullYear();
+    let years = now.getFullYear() - joinDate.getFullYear();
     let months = now.getMonth() - joinDate.getMonth();
 
     if (months < 0) {

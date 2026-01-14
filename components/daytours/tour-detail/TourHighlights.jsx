@@ -1,8 +1,14 @@
-import { Star, Award } from "lucide-react";
+import { Award } from "lucide-react";
 import { useTranslation } from "next-i18next";
 
-const TourHighlights = ({ apiData }) => {
+const TourHighlights = ({ apiData, fromOrderScreen }) => {
   const { t } = useTranslation("daytour");
+  const isFromOrder =
+    typeof fromOrderScreen !== "undefined"
+      ? fromOrderScreen
+      : typeof window !== "undefined" && sessionStorage.getItem("fromOrder") === "true";
+
+  if (isFromOrder) return null; 
 
   const mainHighlights = apiData?.product_description?.highlights || [];
   const groupHighlights =
@@ -20,11 +26,7 @@ const TourHighlights = ({ apiData }) => {
   if (allHighlights.length === 0) return null;
 
   return (
-    <div className="mb-6  ">
-      {/* <h3 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <Star className="text-[#D3202D]" size={20} />
-        {t("tourHighlights")}
-      </h3> */}
+    <div className="mb-6">
       <div
         className="
           flex gap-3 overflow-x-auto pb-2
@@ -46,9 +48,10 @@ const TourHighlights = ({ apiData }) => {
           </div>
         ))}
       </div>
-       <div>
-    <p className="py-2 mt-2">{apiData?.product_description?.short_desc}</p>
-   </div>
+
+      <div>
+        <p className="py-2 mt-2">{apiData?.product_description?.short_desc}</p>
+      </div>
     </div>
   );
 };

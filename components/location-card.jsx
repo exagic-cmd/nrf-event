@@ -11,7 +11,7 @@ export default function LocationCard({ location, index, isLast }) {
       {/* Timeline Line and Dot */}
       <div className="flex flex-col items-center">
         {/* Dot */}
-        <div className="md:w-6 md:h-6 w-2 h-2 bg-[#CC9A55] rounded-full flex-shrink-0 mt-0" />
+        <div className="md:w-6 md:h-6 w-2 h-2 bg-[#D3202D] rounded-full flex-shrink-0 mt-0" />
         {/* Connecting Line */}
         {!isLast && <div className="w-0.5 md:w-1 bg-white flex-1 min-h-16 mt-0" />}
       </div>
@@ -28,14 +28,14 @@ export default function LocationCard({ location, index, isLast }) {
 
             {/* Optional Description */}
             {currentTranslation.short_desc && (
-              <p className="text-gray-300 text-xs md:text-sm mb-1">
+              <p className="text-gray-700 text-xs md:text-sm mb-1">
                 {currentTranslation.short_desc}
               </p>
             )}
           </div>
 
             {/* Location Details */}
-            <div className="flex-col md:flex gap-3 text-xs md:text-sm text-gray-400">
+            <div className="flex-col md:flex gap-3 text-xs md:text-sm text-gray-900">
               {landmarkType !== "N/A" && <span>{tags}</span>}
             
              <div>
@@ -46,7 +46,7 @@ export default function LocationCard({ location, index, isLast }) {
           </div>
 
           {/* Stop Duration Badge */}
-          <div className="bg-[#CC9A55] text-white rounded-full text-sm font-semibold flex items-center justify-between flex-shrink-0 whitespace-nowrap">
+          <div className="bg-[#D3202D] text-white rounded-full text-sm font-semibold flex items-center justify-between flex-shrink-0 whitespace-nowrap">
             <span className="text-[10px] md:text-sm px-2">Stop duration:</span>
             <span className="rounded-xl text-[10px] md:text-sm text-black bg-white py-1 px-2">
               {stopDuration !== "—" ? stopDuration : "-"}

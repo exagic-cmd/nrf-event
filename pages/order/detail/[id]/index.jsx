@@ -216,7 +216,7 @@ const confirmCancel = (id, reason) => {
     return (
       <ProtectedRoute>
         
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-black mb-2">
               {t("orderNotFound")}
@@ -236,12 +236,12 @@ const confirmCancel = (id, reason) => {
   if (error) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
             <div className="text-red-500 text-xl mb-4">⚠️</div>
             <h2 className="text-xl text-black mb-2">{t("errorLoadingOrder")}</h2>
             <p className="text-gray-900 mb-4">{error}</p>
-            <button onClick={() => router.back()} className="bg-[#D3202D] text-white px-4 py-2 rounded-lg">
+            <button onClick={() => router.back()} className="bg-[#D3202D] text-black px-4 py-2 rounded-lg">
               {t("goBack")}
             </button>
           </div>
@@ -253,7 +253,7 @@ const confirmCancel = (id, reason) => {
   return (
     <ProtectedRoute>
       
-      <div className="min-h-screen text-black  font-normal bg-black">
+      <div className="min-h-screen text-black  font-normal bg-[#F4F4F4] ">
         {displayItineraries.map((it) => (
   <div key={it.id} className="relative">
 
@@ -281,7 +281,7 @@ const confirmCancel = (id, reason) => {
        <div className="md:pt-24 pt-20">
          <button
  onClick={() => router.push("/order")}
-                  className="flex items-center gap-2 text-gray-100 hover:text-[#D3202D]  ml-3 md:ml-6 mb-6 transition-colors"
+                  className="flex items-center gap-2 text-[#D3202D] hover:text-[#D3202D]  ml-3 md:ml-6 mb-6 transition-colors"
                 >
                   <ArrowLeft size={20} /> {t("button.back")}
                 </button>

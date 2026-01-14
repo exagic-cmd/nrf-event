@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useRouter } from "next/router"
 import Head from "next/head"
@@ -15,7 +14,7 @@ import TourInfoCard from "@/components/daytours/tour-detail/TourInfoCard.jsx"
 import TourHighlights from "@/components/daytours/tour-detail/TourHighlights.jsx"
 import TourAccordion from "@/components/daytours/tour-detail/TourAccordion.jsx"
 import TourVariants from "@/components/daytours/tour-detail/TourVariants.jsx"
-import TourMapSection from "@/components/daytours/tour-detail/TourMapSection.jsx"
+import CompareSection from "@/components/daytours/tour-detail/CompareSection.jsx"
 import BookingModal from "@/components/daytours/tour-detail/BookingModal.jsx"
 import { apiRequest } from "@/lib/clientApi"
 import TourDetailHead from "@/components/daytours/tour-detail/TourDetailHead.jsx"
@@ -24,6 +23,8 @@ import { useLocalizedRouter } from "@/components/localizedRouter";
 import TourRoute from "@/components/daytours/tour-detail/TourRoute.jsx";
 import {ChevronDown, ChevronRight} from "lucide-react"
 import { useTranslation } from "next-i18next";
+import { useScrollToTop } from '@/hooks/use-scroll-top';
+
 export async function getServerSideProps(context) {
   const { productname, id: productid } = context.params;
 
@@ -119,7 +120,6 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
     ja: 5,
   }
 
-  const isStillLoading = !router.isReady || !bookedProductDetail?.data?.basicinfo || isLanguageLoading
   const slugify = useCallback((text) => {
     if (!text) return "";
     return text
@@ -132,7 +132,35 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
         .replace(/-+$/, "");
   }, []);
 
-    useEffect(() => {
+  // declare param-related state BEFORE any derived state that uses it
+  const [fromOrderScreen, setFromOrderScreen] = useState(false);
+  const [isParamReady, setIsParamReady] = useState(false); 
+
+  const isStillLoading =
+    !router.isReady || !isParamReady || !bookedProductDetail?.data?.basicinfo || isLanguageLoading
+  const [notReady, setNotReady] = useState(true)
+
+  useEffect(() => {
+    if (router.isReady) {
+      const postParam = router.query?.post === "true";
+      const storedFlag = typeof window !== "undefined" && sessionStorage.getItem("fromOrder") === "true";
+
+      if (postParam) {
+        sessionStorage.setItem("fromOrder", "true");
+        setFromOrderScreen(true);
+      } else if (storedFlag) {
+        setFromOrderScreen(true);
+      } else {
+        setFromOrderScreen(false);
+      }
+
+      setIsParamReady(true);
+      // optional: remove after reading if needed
+      // sessionStorage.removeItem("fromOrder");
+    }
+  }, [router.isReady, router.query?.post]);
+
+  useEffect(() => {
     setLocalBookedProductDetail(initialBookedProductDetail)
     setLocalTourMapData(initialTourMapData)
   }, [initialBookedProductDetail, initialTourMapData])
@@ -403,9 +431,9 @@ const handleVariantSelect = async (variant) => {
 
       <div className="min-h-screen bg-[#f4f4f4] text-black w-full pt-[80px] md:pt-10 pb-12">
         <div className="relative overflow-hidden">
-          <div className="px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-8">
+          <div className="px-4 sm:px-6 lg:px-12 pt-12">
             <TourHeader apiData={apiData} />
-   <TourHighlights apiData={apiData} />
+   <TourHighlights apiData={apiData} fromOrderScreen={fromOrderScreen} />
   
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
               <div className="lg:col-span-3"> 
@@ -424,49 +452,55 @@ const handleVariantSelect = async (variant) => {
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
+        <div className="px-4 sm:px-6 lg:px-12 py-4 lg:pt-4">
        
-            {/* <TourRoute
+            <TourRoute
               prod_id={productid}
-              lang_id={2}
-              colortext="#222"
-              colorheading="#ffff"
-            /> */}
+              lang_id={languageMap[router.locale] || 1}
+              colortext="#fff"
+              colorheading="#000000"
+              fromOrderScreen={fromOrderScreen}
+            />
           <TourAccordion apiData={apiData} />
         </div>
 
         {apiData?.is_group && (
           <TourVariants ref={tourOptionsRef} groupProducts={groupProducts} onVariantSelect={handleVariantSelect} />
         )}
-
-       <div className="md:hidden right-0  p-2">
-        <div className="flex justify-between items-center max-w-screen-xl mx-auto px-4">
-          <div>
-            <div className="text-sm text-gray-600">{t("starting_from", "Starting From")}</div>
-            <div className="text-xl font-bold text-gray-900">SGD {startingPrice}</div>
+ {!fromOrderScreen && (
+       <div className=" md:hidden block mx-8 bg-white p-4 rounded-xl border border-orange-200 ">
+        <div className="text-center">
+          <div className="text-sm text-gray-600">{t("starting_from","Starting From")}</div>
+          <div className="my-2">
+            <span className="text-2xl font-bold text-gray-900">{apiData?.currency} {startingPrice}</span>
           </div>
           {apiData?.is_group ? (
             <button
-              onClick={handleProceedBooking}
-              className="bg-[#D3202D] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              onClick={scrollToTourOptions}
+              className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
-              {t("choose_tour_type", "Choose your Type")}
+              {t("choose_tour_type","Choose your Type")}
               <ChevronDown size={20} />
             </button>
           ) : (
             <button
               onClick={handleProceedBooking}
-              className="bg-[#D3202D] text-white px-6 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
-              {t("proceed_booking", "Proceed Booking")}
+              {t("proceed_booking","Proceed Booking")}
               <ChevronRight size={20} />
             </button>
           )}
         </div>
       </div>
-     
+ )}
 
-        
+       <CompareSection
+        currentProduct={apiData}
+        currentProductId={productid}
+        relatedProducts={apiData?.related_products}
+        onNavigateToProduct={() => setIsNavigating(true)}
+      />
       </div>
 
       <BookingModal

@@ -18,7 +18,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
     setCurrent((prev) => (prev + 1) % items.length);
   };
    const item = items[current];
-  const details = bookingDetailsMap[item?.key] || {};
+  const details = bookingDetailsMap[item.key] || {};
 
   const isTransfer = !!item.vehicle;
   const pickupSurcharge = Number(item?.pickupSurcharge) || 0;
@@ -102,18 +102,18 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
          </div>
      {isTransfer && totalSurcharge > 0 && (
   <p className="text-sm text-green-500 my-2">
-    {t("surcharges_included")}: SGD {totalSurcharge} {surchargeScope}
+    {t("surcharges_included")}: {apiData?.currency} {totalSurcharge} {surchargeScope}
   </p>
 )}
 
           <div className="pt-2 flex flex-col justify-between text-md font-normal">
             <div className='flex justify-between'>
               <span>{t('subtotal')}</span>
-              <span className="text-[#D3202D]">SGD {total}</span>
+              <span className="text-[#D3202D]">{apiData?.currency} {total}</span>
             </div>
             <div className='flex border-t mt-4 pt-2 justify-between text-lg font-semibold'>
               <span>{t('total_all_items')}</span>
-              <span className="text-[#D3202D]">SGD {overallTotal}</span>
+              <span className="text-[#D3202D]">{apiData?.currency} {overallTotal}</span>
             </div>
           </div>
         </>
@@ -122,22 +122,22 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           <div className="text-sm text-gray-800">
             <div className="flex justify-between mb-1">
               <span>{adultCount} {t('adultsPreview')}</span>
-              <span>SGD {totalAdult}</span>
+              <span>{apiData?.currency} {totalAdult}</span>
             </div>
             <div className="flex justify-between mb-1">
               <span>{childCount} {childCount === 1 ? t('child') : t('childrenPreview')}</span>
-              <span>SGD {totalChild}</span>
+              <span>{apiData?.currency} {totalChild}</span>
             </div>
           </div>
 
           <div className="pt-2 flex flex-col justify-between text-md font-normal">
             <div className='flex justify-between'>
               <span>{t('subtotal')}</span>
-              <span className="text-[#D3202D]">SGD {total}</span>
+              <span className="text-[#D3202D]">{apiData?.currency} {total}</span>
             </div>
             <div className='flex border-t mt-4 pt-2 justify-between text-lg font-semibold'>
               <span>{t('total_all_items')}</span>
-              <span className="text-[#D3202D]">SGD {overallTotal}</span>
+              <span className="text-[#D3202D]">{apiData?.currency} {overallTotal}</span>
             </div>
           </div>
         </>

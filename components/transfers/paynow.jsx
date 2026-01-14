@@ -49,10 +49,12 @@ const PayNow = ({ totalPrice }) => {
   const [promo, setPromo] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
   const [errors, setErrors] = useState({});
-  const [communicationMode, setCommunicationMode] = useState('');
+ const [communicationMode, setCommunicationMode] = useState(user?.communication_mode || '');
   const [isCommModeOpen, setIsCommModeOpen] = useState(false);
-  const [hasRoaming, setHasRoaming] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasRoaming, setHasRoaming] = useState(
+    user?.roaming_enabled === 1 || user?.roaming_enabled === true ? 'yes' : 
+    (user?.roaming_enabled === 0 || user?.roaming_enabled === false ? 'no' : '')
+  ); const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoMessage, setPromoMessage] = useState({ text: '', type: '' });
   const commModeRef = useRef(null);
 
@@ -64,7 +66,19 @@ const PayNow = ({ totalPrice }) => {
     { value: "email", label: "Email" },
     { value: "sms", label: "SMS" },
   ];
-
+  useEffect(() => {
+    if (user) {
+      setName((prev) => prev || user.name || "");
+      setEmail((prev) => prev || user.email || "");
+      setPhone((prev) => prev || user.phone || "");
+      
+      // For hidden fields, strictly use user data if available
+      if (user.communication_mode) setCommunicationMode(user.communication_mode);
+      if (user.roaming_enabled !== undefined && user.roaming_enabled !== null) {
+        setHasRoaming(user.roaming_enabled ? 'yes' : 'no');
+      }
+    }
+  }, [user]);
   // === Load cart from sessionStorage if store is empty ===
   const items = (() => {
     if (storeItems.length > 0) return storeItems;
@@ -542,6 +556,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
               {errors.phone && <p className="text-red-500 text-xs mt-1">{t(errors.phone)}</p>}
             </div>
              {/* Preferred Communication */}
+              {!user?.communication_mode && (
             <div>
               <label className="text-sm text-gray-500 flex items-center gap-3">
                 <MessageSquare className="w-4 h-4 text-gray-400" />
@@ -583,9 +598,12 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                 )}
               </div>
             </div>
+   )}
 
             {/* Roaming Question */}
             <div className="md:col-span-2 mt-0">
+              {(user?.roaming_enabled === undefined || user?.roaming_enabled === null) && (
+              <>
               <label className="text-sm text-gray-500 flex items-center gap-3">
                 <Wifi className="w-4 h-4 text-gray-400" />
                 Will you have roaming enabled during your trip?
@@ -607,7 +625,10 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   <span>No</span>
                 </label>
               </div>
+               </>
+              )}
             </div>
+              
             {/* {!showPromoField && (
              <div>
                 <label className="text-sm text-gray-500 flex justify-between items-center gap-3">
