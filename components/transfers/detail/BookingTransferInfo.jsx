@@ -77,7 +77,7 @@ const DatePickerField = ({
           ? "bg-orange-100 text-gray-700 hover:bg-orange-200"
           : ""
       }
-      className={`text-base w-full px-4 md:py-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-200 ${
+      className={`text-base w-full px-4 md:py-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-200 ${
         disabled ? "bg-gray-100 cursor-not-allowed" : ""
       }`}
       wrapperClassName="w-full"
