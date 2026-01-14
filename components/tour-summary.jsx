@@ -71,13 +71,13 @@ useEffect(() => {
     <div className="flex-1  py-6 md:py-8 space-y-6">
       {/* Totals Card */}
       <div className="bg-[#D3202D] rounded-2xl p-4">
-        <p className="mb-2 text-[12px] md:text-sm">
+        <p className="mb-2 text-[12px] text-white md:text-sm">
           Airport Transfer by our luxury cars
         </p>
         <div className="grid grid-cols-4 divide-x divide-white text-center">
           <div>
             <div className="text-sm md:text-3xl font-bold text-white">
-              {totals.stop_time}
+              {totals.stop_time} Minutes
             </div>
             <div className="text-[10px] md:text-sm text-amber-100 mt-1">
               Stop Time
@@ -177,7 +177,7 @@ useEffect(() => {
                   
               </>
             ) : (
-              <p  style={{ color: colortext }} className="text-sm font font-semibold">No audio found for this guide & language.</p>
+              <p  className="text-sm text-black font font-semibold">No audio found for this guide & language.</p>
             )}
           </div>
         )}

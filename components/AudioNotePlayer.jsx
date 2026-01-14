@@ -69,11 +69,11 @@ const AudioNotePlayer = ({ audioUrl, autoPlay = false }) => {
   };
 
   return (
-    <div className="bg-[#CC9A55] p-4 rounded-2xl flex items-center gap-3 w-full">
+    <div className="bg-gray-300 p-4 rounded-2xl flex items-center gap-3 w-full">
       {/* Play / Pause Button */}
       <button
         onClick={togglePlay}
-        className="w-10 h-10 flex items-center justify-center bg-white/90 rounded-full text-[#CC9A55] text-lg"
+        className="w-10 h-10 flex items-center justify-center bg-white/90 rounded-full text-black text-lg"
       >
         {isPlaying ? "⏸" : "▶"}
       </button>
