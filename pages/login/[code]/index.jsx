@@ -21,7 +21,8 @@ export default function LoginWithCodePage() {
 
       if (result.success) {
         setStatus(t("loginSuccess"));
-        setTimeout(() => router.replace("/order"), 1500);
+        const redirectPath = router.query.router ? `/${router.query.router}` : "/";
+        setTimeout(() => router.replace(redirectPath), 1500);
       } else {
         setStatus(t("invalidOrExpired"));
         setTimeout(() => router.replace("/"), 2000);
@@ -29,7 +30,7 @@ export default function LoginWithCodePage() {
     }
 
     handleVerify();
-  }, [code, t, router]);
+  }, [code, router, t, verifyQrCode]);
 
   return (
     <div className="flex items-center justify-center h-screen">
