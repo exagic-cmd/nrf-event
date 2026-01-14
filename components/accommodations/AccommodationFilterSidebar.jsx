@@ -181,6 +181,12 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
     };
   }, [accommodations]);
 
+  // Determine currency to display in the Price Range title (fallback to USD)
+  const currency = useMemo(() => {
+    if (!accommodations || accommodations.length === 0) return 'USD';
+    const found = accommodations.find(acc => acc.room?.rate_plan?.pricing?.currency || acc.currency);
+    return found?.room?.rate_plan?.pricing?.currency || found?.currency || 'USD';
+  }, [accommodations]);
 
   const [selectedMin, setSelectedMin] = useState(0);
   const [selectedMax, setSelectedMax] = useState(0);
@@ -270,7 +276,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
       </FilterSection>
 
       {/* Price Range Filter - Always present */}
-      <FilterSection title="Price Range" defaultOpen={true} scrollable={false}>
+      <FilterSection title={`Price Range (${currency})`} defaultOpen={true} scrollable={false}>
         <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between gap-3">
             <div className="relative w-1/2">

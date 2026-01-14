@@ -7,6 +7,7 @@ const AccommodationInfoCard = ({
   hotelData,
   startingPrice,
   allRooms = [],
+  ratePlans = [],
   currency = "USD",
   onScrollToOptions,
   onProceedBooking,
@@ -66,9 +67,19 @@ const AccommodationInfoCard = ({
   if (hotelData?.stars) highlights.push(`${hotelData.stars}-star`);
   if (hotelData?.category_name) highlights.push(hotelData.category_name);
   if (hotelData?.rating?.description) highlights.push(hotelData.rating.description);
-
   const freeCancellation = hasFreeCancellation();
   const roomCountText = getRoomCountText();
+
+  const currencyToShow = (() => {
+    const srCur = selectedRoom?.rate_plan?.pricing?.currency;
+    if (srCur) return srCur;
+    if (Array.isArray(ratePlans) && ratePlans.length) {
+      const found = ratePlans.find(rp => rp?.pricing?.currency);
+      if (found?.pricing?.currency) return found.pricing.currency;
+    }
+    if (hotelData?.currency) return hotelData.currency;
+    return currency || "USD";
+  })();
 
   return (
     <div className="lg:col-span-1">
@@ -76,8 +87,8 @@ const AccommodationInfoCard = ({
         {/* Price */}
         <div className="mb-0 flex justify-end">
           <div className="text-lg lg:text-2xl text-[#D3202D] mb-1">
-          <span className="text-sm md:text-md text-black">  Starting Price </span><span className="font-semibold">SGD {formatPrice(lowestPrice)}</span>
-          
+            <span className="text-sm md:text-md text-black">  Starting Price </span>
+            <span className="font-semibold">{currencyToShow} {formatPrice(lowestPrice)}</span>
           </div>
          
             

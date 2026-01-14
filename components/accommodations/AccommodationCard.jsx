@@ -209,7 +209,7 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
   {/* Third Column: Price */}
   <div className="text-right">
     <p className="text-lg font-bold text-primary">
-      {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
+      {room?.rate_plan?.pricing?.currency || 'SGD'} {formatPrice(lowestPrice)}
      
     </p>
    <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
@@ -228,7 +228,7 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
   {/* Left side: price (mobile only) */}
   <div className="block md:hidden mr-auto">
     <p className="text-lg font-bold text-primary">
-      {room?.rate_plan?.currency || 'SGD'} {formatPrice(lowestPrice)}
+      {room?.rate_plan?.pricing?.currency || 'SGD'} {formatPrice(lowestPrice)}
       {/* <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span> */}
     </p>
     <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">

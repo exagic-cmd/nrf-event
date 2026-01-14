@@ -240,6 +240,92 @@ export default function SearchFilterCard({
     }
   }, [filterActiveTab, fetchCountriesCities, countries.length]);
 
+  // Guard refs to prevent infinite re-runs
+  const daytourAutoRunRef = useRef(null);
+  const accAutoRunRef = useRef(null);
+
+  // Auto-load Day Tours listing with empty name when Day Tours tab becomes active
+  useEffect(() => {
+    let mounted = true;
+    const loadDayTours = async () => {
+      if (filterActiveTab !== 3) return;
+
+      const payloadKey = JSON.stringify({ country: selectedCountry?.id, city: selectedCity?.id, name: "" });
+      if (daytourAutoRunRef.current === payloadKey) return; // already ran for same payload
+      daytourAutoRunRef.current = payloadKey;
+
+      setIsSearching(true);
+      try {
+        const apiPayload = {
+          category_id: 3,
+          country_id: selectedCountry?.id,
+          city_id: selectedCity?.id,
+          name: "",
+          is_b2c_only: 1,
+          is_active: true,
+        };
+        let results = await fetchSearchResults(apiPayload);
+
+        // fallback if empty and no name
+        if (mounted && Array.isArray(results)) {
+          setTimeout(() => {
+            onFilterTransfer?.({
+              country: selectedCountry,
+              city: selectedCity,
+              search: "",
+              results: results,
+              category: "daytour",
+              category_id: 3,
+              timestamp: Date.now(),
+            });
+          }, 100);
+        }
+      } catch (err) {
+        console.error("Daytour auto-load failed:", err);
+        daytourAutoRunRef.current = null; // allow retry next time
+      } finally {
+        if (!isHomepage) setIsSearching(false);
+      }
+    };
+
+    // Small delay to allow any remote data (countries) to settle
+    const t = setTimeout(loadDayTours, 150);
+    return () => {
+      mounted = false;
+      clearTimeout(t);
+    };
+  }, [filterActiveTab, fetchSearchResults, selectedCountry, selectedCity, onFilterTransfer, isHomepage]);
+
+  // Auto-run Accommodation search when tab becomes active using persisted params or prefill data
+  useEffect(() => {
+    if (filterActiveTab !== 4) return;
+
+    // If explicit accommodation params exist, reuse them
+    const hasAccParams = accommodationParams && (accommodationParams.text || accommodationParams.start_date || accommodationParams.rooms);
+    let payload = null;
+
+    if (hasAccParams) {
+      payload = accommodationParams;
+    } else if (prefillData && (prefillData.pickup_point || prefillData.date)) {
+      // If no accommodationParams but we have prefill data (e.g., from cart), use that to search
+      payload = {
+        text: prefillData.pickup_point || "",
+        start_date: prefillData.date || null,
+        end_date: prefillData.date || null,
+        rooms: rooms || [],
+      };
+    }
+
+    if (!payload) return; // Nothing to run
+
+    const key = JSON.stringify(payload);
+    if (accAutoRunRef.current === key) return; // already ran for this payload
+    accAutoRunRef.current = key;
+
+    const t = setTimeout(() => handleAccommodationSearch(payload), 150);
+    return () => clearTimeout(t);
+  }, [filterActiveTab, accommodationParams, prefillData, rooms]);
+
   // Pickup handlers
   const onPickupChange = (val) => {
     setPickupQuery(val);

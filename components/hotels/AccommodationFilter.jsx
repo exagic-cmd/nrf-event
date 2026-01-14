@@ -118,7 +118,7 @@ useEffect(() => {
       return `${y}-${m}-${day}`;
     };
     fetchHotelsAndRegions({
-      term: query,
+      text: query,
       start_date: formatDate(startDate),
       end_date: formatDate(endDate),
       rooms: rooms,
