@@ -254,7 +254,7 @@ export default function SuggestionsSection({
 
   return (
     <div style={{ backgroundColor: customColor }} className="relative w-full bg-[#F4F4F4]">
-      <div className="container px-12 relative z-10">
+      <div className="container relative z-10">
         <div className="flex items-center justify-between mb-3 md:mb-6">
           <h2 className=" text-md md:text-xl  font-semibold text-text">
             {t("you_might_also_like", "You might also like")}

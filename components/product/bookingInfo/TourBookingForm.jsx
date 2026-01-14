@@ -245,8 +245,8 @@ useEffect(() => {
 
   const loadPickupPoints = (inputValue, callback) => {
     if (!inputValue) {
-      callback(pickupPoints.map(p => ({ label: p.name, value: p.name })));
-      return;
+      callback([]); // Do not show options on focus, only on search
+      return
     }
     searchPickupPoints(productId, inputValue).then(results => {
       const formattedResults = results.map(p => ({ label: p.name, value: p.name }));
@@ -474,11 +474,6 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
     }),
   }
 
-  const defaultOptions = pickupPoints.map((opt) => ({
-    label: opt.name,
-    value: opt.name,
-  }));
-
   return (
     <div>
       {loading ? (
@@ -491,7 +486,6 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
       ) : (
         <AsyncSelect
           cacheOptions
-          defaultOptions={defaultOptions}
           loadOptions={loadOptions}
           value={value}
           onChange={onChange}

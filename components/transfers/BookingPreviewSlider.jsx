@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { getFullImageUrl } from "@/utils/imageService";
-import { ChevronLeft, ChevronRight, Luggage, User, ChevronDown, ChevronUp, BedDouble, Moon, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Luggage, User, ChevronDown, ChevronUp, BedDouble, Moon, Calendar, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { formatPrice } from "@/utils/priceUtils";
 const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
-  const { t } = useTranslation(["daytour", "common", "accommodation"]);
+  const { t } = useTranslation(["daytour", "common", "accommodation", "transfer"]);
   const [current, setCurrent] = useState(0);
   const [showAllAddons, setShowAllAddons] = useState(false);
 
@@ -218,7 +218,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold">SGD {formatPrice(basePrice)}</span>
+            <span className="text-[#D3202D] font-semibold">{item?.currency||""} {formatPrice(basePrice)}</span>
           </div>
         </div>
       ) : isTransfer ? (
@@ -238,11 +238,28 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                 </span>
                 <span>
                   {item?.vehicle?.price && (
-                  <span className="text-[#D3202D] font-medium">SGD {formatPrice(item.vehicle.price)}</span>
+                  <span className="text-[#D3202D] font-medium">{item?.currency||""} {formatPrice(item.vehicle.price)}</span>
                 )}
                 </span>
               </div>
-            {date && <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded"><span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> Date</span><span className="text-sm text-gray-800 font-medium">{date}</span></div>}
+            <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                <span className="font-medium text-gray-600 text-xs capitalize">
+                  {item.transferType === 'round-trip' || item.tripType === 'round-trip' ? t("roundTrip", { ns: "transfer", defaultValue: "Round Trip" }) : t("oneWay", { ns: "transfer", defaultValue: "One Way" })}
+                </span>
+                {(item.selectedTime || item.pickupTime) && (
+                 <span className="text-sm text-gray-800 font-medium flex items-center gap-1.5">
+                   <Clock size={14} /> {item.selectedTime || item.pickupTime}
+                 </span>
+                )}
+             </div>
+            {date && (
+              <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                <span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> Date</span>
+                <span className="text-sm text-gray-800 font-medium">
+                  {date}{item.returnDate && ` - ${item.returnDate}`}
+                </span>
+              </div>
+            )}
           </div>
 
            {(uniqueAddons.length > 0 || totalSurcharge > 0) && (
@@ -264,7 +281,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                       {addon.title}
                       <span className="text-gray-400 text-xs">(x{addon.quantity})</span>
                     </span> 
-                    <span className="text-sm text-gray-800 font-medium">SGD {addon.total} </span>
+                    <span className="text-sm text-gray-800 font-medium">{item?.currency||""} {addon.total} </span>
                   </li>
                 ))}
                 {totalSurcharge > 0 && (

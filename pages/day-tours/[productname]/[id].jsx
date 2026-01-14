@@ -468,7 +468,7 @@ const handleVariantSelect = async (variant) => {
           <TourVariants ref={tourOptionsRef} groupProducts={groupProducts} onVariantSelect={handleVariantSelect} />
         )}
  {!fromOrderScreen && (
-       <div className=" md:hidden block mx-8 bg-white p-4 rounded-xl border border-orange-200 ">
+       <div className=" md:hidden block mx-8 my-12 bg-white p-4 rounded-xl border border-red-200 ">
         <div className="text-center">
           <div className="text-sm text-gray-600">{t("starting_from","Starting From")}</div>
           <div className="my-2">

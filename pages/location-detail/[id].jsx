@@ -418,14 +418,14 @@ export default function TourDetailPage() {
                             ? 'bg-[#f4f4f4] border border-[#D3202D]'
                             : isActive
                             ? 'bg-gradient-to-br from-[#D3202D] via-[#e05b5b] to-[#ff105c] shadow-lg shadow-[#D3202D]/50'
-                            : 'bg-gray-800 border border-gray-700'
+                            : 'bg-gray-200 border border-gray-700'
                     } transition-all duration-300`}>
                         
                         {step.type !== 'travel' && ( 
                             <div className={`absolute top-2 left-2 w-8 h-8 rounded-full flex items-center justify-center text-base font-bold shadow-lg ${
                             isActive 
                                 ? 'bg-white text-[#D3202D] border-2 border-[#D3202D]' 
-                                : 'bg-gray-900 text-gray-800 border border-gray-700'
+                                : 'bg-gray-200 text-gray-800 border border-gray-700'
                             }`}>
                                 {step.type === 'review' ? 'R' : stopCounter}
                             </div>
