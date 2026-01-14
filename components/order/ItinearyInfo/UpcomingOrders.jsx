@@ -11,7 +11,7 @@ import Loader2Svg from "@/components/common/Loader2Svg"
 
 const UpcomingOrders = ({ onViewDetails }) => {
   const { t } = useTranslation("order")
-  const { upcomingBookings } = useOrderStore()
+  const { upcomingBookings,accommodations } = useOrderStore()
   const router = useRouter()
   const [loadingItemId, setLoadingItemId] = useState(null)
   const formatDate = (dateString) => {

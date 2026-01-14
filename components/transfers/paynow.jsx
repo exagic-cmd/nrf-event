@@ -181,6 +181,22 @@ const PayNow = ({ totalPrice }) => {
     const isTransfer = !!item.vehicle || item.transferType || item.tripType;
     const isAccommodation = item.type === "accommodation";
 
+    const addonsPayload = (item.addons || []).map(a => ({
+      addon_id: a.addon_id,
+      title: a.title,
+      qty: a.quantity || 1,
+      rate: a.rate || 0,
+      total: a.total || 0,
+    }));
+
+    const addonsRoundPayload = (item.addons_round || []).map(a => ({
+      addon_id: a.addon_id,
+      title: a.title,
+      qty: a.quantity || 1,
+      rate: a.rate || 0,
+      total: a.total || 0,
+    }));
+const exceptionsPayload = item.exceptions || []; 
     console.log("Building cart item for:", item);
 
     // For accommodation items, use the existing structure from cart
@@ -261,45 +277,62 @@ const PayNow = ({ totalPrice }) => {
     }
 
     // === TRANSFER ITEM ===
-    else if (isTransfer) {
-      // ... keep your existing transfer logic unchanged ...
-      return {
-        product_id: item.tourId,
-        adult_count: item.passengers || 0,
-        child_count: item.children || 0,
-        total: typeof item.pricing === 'number' ? item.pricing : item.pricing?.total || 0,
-        tour_date: item.selectedDate || item.pickupDate || currentDate,
-        pickup_date: item.selectedDate || item.pickupDate || currentDate,
-        pickup_time: item.pickupTime || item.selectedTime || item.pickupFlightScheduleTime || "",
-        pickup_point: item.pickup || item.pickup?.name || item.searchParams?.pickup?.name || "",
-        pickup_point_id: item.vehicle?.pickup_point_id || item.pickup?.id || item.searchParams?.pickup?.id || "",
-        dropoff_point_id: item.vehicle?.dropoff_point_id || item.dropoff?.id || item.searchParams?.dropoff?.id || "",
-        two_way_pickup_point_id: item.returnPickup?.id || item.vehicle?.dropoff_point_id || item.searchParams?.returnPickup?.id || "",
-        two_way_dropoff_point_id: item.returnDropoff?.id || item.vehicle?.pickup_point_id || item.searchParams?.returnDropoff?.id || "",
-        feature_type_id: item.vehicle?.feature_type_id || 1,
-        flight_estimated_time: item.pickupFlightScheduleTime || "",
-        flight_dep_estimated_time: item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
-        dropoff_point: item.dropoff || item.dropoff?.name || item.searchParams?.dropoff?.name || "",
-        vehicle_id: item.vehicle?.vehicle_id || item.vehicle?.id || "",
-        transfer_type: item.transferType || item.tripType || "",
-        flight_number: item.pickupFlightNumber || "",
-        flight_dep_number: item.returnFlightNumber || "",
-        two_way_dropoff_date: item.returnDate || "",
-        two_way_dropoff_time: item.returnTime || item.flightDepEstimatedTime || "",
-         meetAndGreetName: item.meetAndGreetName || "",
-        baggage: item.baggage || 0,
+     if (isTransfer) {
+    return {
+  product_id: item.tourId,
+  adult_count: item.passengers || 1,
+  child_count: item.children || 0,
+  total: typeof item.pricing === 'number' ? item.pricing : item.pricing?.total ||item.price|| '',
+  tour_date: item.selectedDate || item.pickupDate,
+  pickup_date: item.selectedDate || item.pickupDate,
+  pickup_time: item.pickupTime|| item.selectedTime||item.pickupFlightScheduleTime||"",
+   pickup_point:item.pickup ||item.pickup?.name || item.searchParams?.pickup?.name || "",
+   pickup_point_id:
+      item.vehicle?.pickup_point_id ||
+      item.pickup?.id ||
+      item.searchParams?.pickup?.id ||
+      "",
+      dropoff_point_id:
+      item.vehicle?.dropoff_point_id ||
+      item.dropoff?.id ||
+      item.searchParams?.dropoff?.id ||
+      "" ,
+two_way_pickup_point_id:
+      item.returnPickup?.id ||
+      item.vehicle?.dropoff_point_id ||
+      item.searchParams?.returnPickup?.id ||
+      "",
+      two_way_dropoff_point_id:
+      item.returnDropoff?.id ||
+      item.vehicle?.pickup_point_id ||
+      item.searchParams?.returnDropoff?.id ||
+      "",
+         feature_type_id: item.vehicle?.feature_type_id || 1,
+         flight_estimated_time: item.pickupFlightScheduleTime  || "",
+flight_dep_estimated_time:
+      item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
+      dropoff_point:item.dropoff ||item.dropoff?.name ||item.searchParams?.dropoff?.name|| "",
+  vehicle_id: item.vehicle?.vehicle_id || item.vehicle?.id || "",
+  meetAndGreetName: item.meetAndGreetName || "",
+  transfer_type: item.transferType || item.tripType || "",
+  flight_number: item.pickupFlightNumber || "",
+  flight_dep_number: item.returnFlightNumber || "",
+  two_way_dropoff_date: item.returnDate || "",
+  two_way_dropoff_time: item.returnTime ||item.flightDepEstimatedTime|| "",
+  baggage: item.baggage || 0,
  // cabin_bags: item.cabinBags || 0,
  // large_bags: item.largeBags || 0,
   baggages: item.selectedBaggages || [],
-        pickup_surcharge: item.pickupSurcharge || 0,
-        return_surcharge: item.returnSurcharge || 0,
-        return_surcharge_id: item.returnSurchargeId || 0,
-        pickup_surcharge_id: item.pickupSurchargeId || 0,
-        addons: item.addons || [],
-        addons_round: item.addons_round || [],
-        exceptions: item.exceptions || []
-      };
-    }
+    pickup_surcharge: item.pickupSurcharge || 0,
+    return_surcharge: item.returnSurcharge || 0,
+     return_surcharge_id: item.returnSurchargeId || 0,
+    pickup_surcharge_id: item.pickupSurchargeId || 0,
+    addons: addonsPayload,           
+      addons_round: addonsRoundPayload ,
+        exceptions: exceptionsPayload,
+}
+
+  }
 
     // === DAY TOUR / UPSELL ===
     // ... keep your existing day tour/upsell logic unchanged ...

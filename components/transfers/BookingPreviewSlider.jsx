@@ -69,13 +69,15 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
   else if (hasPickupSurcharge) surchargeScope = `(${t("pickup")})`;
 
   // Price logic
+  const isRoundTrip = item.transferType === 'round-trip' || item.tripType === 'round-trip';
+
   const basePrice = isAccommodation
     ? Number(item.total) || 0  // Use item.total which includes all rooms × nights
     : isTransfer
-    ? Number(item.vehicle?.final_promo_price) ||
-      Number(item.vehicle?.promo_price) ||
-      Number(item.vehicle?.price) ||
-      0
+    ? (isRoundTrip 
+        ? (Number(item.vehicle?.two_way_promo_price) || Number(item.vehicle?.two_way_price) || 0)
+        : (Number(item.vehicle?.final_promo_price) || Number(item.vehicle?.promo_price) || Number(item.vehicle?.price) || 0)
+      )
     : typeof item.pricing === "object"
     ? Number(item.pricing?.total) || 0
     : Number(item.pricing) || 0;
@@ -94,14 +96,15 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
   const overallTotal = items.reduce((sum, i) => {
     const isAcc = i.type === "accommodation";
     const isTrans = !!i.vehicle;
+    const isRoundTripItem = i.transferType === 'round-trip' || i.tripType === 'round-trip';
 
     const itemBasePrice = isAcc
       ? Number(i.total) || 0  // Use item.total which includes all rooms × nights
       : isTrans
-      ? Number(i.vehicle?.final_promo_price) ||
-        Number(i.vehicle?.promo_price) ||
-        Number(i.vehicle?.price) ||
-        0
+      ? (isRoundTripItem
+          ? (Number(i.vehicle?.two_way_promo_price) || Number(i.vehicle?.two_way_price) || 0)
+          : (Number(i.vehicle?.final_promo_price) || Number(i.vehicle?.promo_price) || Number(i.vehicle?.price) || 0)
+        )
       : typeof i.pricing === "object"
       ? Number(i.pricing?.total) || 0
       : Number(i.pricing) || 0;
@@ -177,8 +180,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           </div>
 
           <div className="mt-3 space-y-1.5 text-xs">
-            <div className="text-center font-medium text-gray-800">{item.productTitle}</div>
+            <span className="font-bold text-gray-800 flex items-center gap-1.5">
+                 {item.productTitle}
+              </span>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+              
               <span className="font-medium text-gray-600 flex items-center gap-1.5">
                 <BedDouble size={14} /> {item.roomType}
               </span>
@@ -219,8 +225,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
         /* TRANSFER PREVIEW (unchanged) */
         <div className="flex flex-col gap-2">
           <img src={image} alt={title} className="w-80 h-36 object-cover rounded-lg" />
+          
           <div className="space-y-1.5 text-xs">
-            <div className="text-center font-medium text-gray-800">{item?.vehicle?.name}</div>
+            <span className="font-bold text-gray-800 flex items-center gap-1.5">
+                 {item?.vehicle?.vehicle_name}
+              </span>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
                 <span className="flex items-end justify-end gap-1 text-sm text-gray-700">
                   <User className="w-4 h-4" /> {item?.passengers}
@@ -258,19 +267,19 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                     <span className="text-sm text-gray-800 font-medium">SGD {addon.total} </span>
                   </li>
                 ))}
-                {showAllAddons && totalSurcharge > 0 && (
+                {totalSurcharge > 0 && (
                   <li className="flex justify-between items-center text-sm bg-gray-50 rounded-lg px-2 py-2">
                     <span className="text-[#D3202D] text-xs font-medium flex items-center gap-2">
                       {t("Surcharges")} {surchargeScope}
                     </span>
                     <span className="text-sm  font-medium">
-                      SGD {formatPrice(totalSurcharge)}
+                      {item?.currency} {formatPrice(totalSurcharge)}
                     </span>
                   </li>
                 )}
               </ul>
               <div className="text-right">
-                {(uniqueAddons.length > 2 || (uniqueAddons.length > 0 && totalSurcharge > 0)) && (
+                {uniqueAddons.length > 2 && (
                   <>
                     {!showAllAddons ? (
                       <button
@@ -297,7 +306,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold">SGD {formatPrice(total)}</span>
+            <span className="text-[#D3202D] font-semibold">{item?.currency} {formatPrice(total)}</span>
           </div>
         </div>
       ) : (
@@ -332,7 +341,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D]">SGD {formatPrice(basePrice) || "0"}</span>
+            <span className="text-[#D3202D]">{item?.currency} {formatPrice(basePrice) || "0"}</span>
           </div>
         </div>
       )}
@@ -341,7 +350,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       <div className="pt-2 flex flex-col justify-between text-md font-normal">
         <div className="flex border-t mt-2 pt-2 justify-between text-lg font-semibold">
           <span>{t("total_all_items")}</span>
-          <span className="text-[#D3202D]">SGD {formatPrice(overallTotal)}</span>
+          <span className="text-[#D3202D]">{item?.currency} {formatPrice(overallTotal)}</span>
         </div>
       </div>
     </div>
