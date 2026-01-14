@@ -139,7 +139,7 @@ const TimePickerField = ({
       {error && <p className="text-red-500 text-xs mt-1">{t(error)}</p>}
       {showDateWarning && (
         <p className="text-red-500 text-xs mt-1">
-          {t("booking.selectDateFirst") || "Please select a date first"}
+          {t("booking.selectDateFirst", "Please select a date first") || "Please select a date first"}
         </p>
       )}
       {surchargeDetails?.amount && (
