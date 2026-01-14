@@ -251,8 +251,14 @@ function ListingsPage() {
       setDaytourSelectedCountry(searchDaytourParams.country);
       setDaytourSelectedCity(searchDaytourParams.city);
       setCardSearchQuery(searchDaytourParams.searchQuery);
+
+      // Trigger a fetch on page load if we have meaningful params
+      const hasDaytourPayload = searchDaytourParams && (searchDaytourParams.country || searchDaytourParams.city || searchDaytourParams.searchQuery);
+      if (hasDaytourPayload) {
+        fetchDaytours({ country: searchDaytourParams.country, city: searchDaytourParams.city, name: searchDaytourParams.searchQuery });
+      }
     }
-  }, [urlSearchParams, searchDaytourParams]);
+  }, [urlSearchParams, searchDaytourParams, setSearchDaytourParams, fetchDaytours]);
 
   useEffect(() => {
     const type = urlSearchParams.get("type");
@@ -270,8 +276,13 @@ function ListingsPage() {
       } else {
         setCardRooms([{ adult: 2, children: [] }]); 
       }
+
+      // Trigger fetch on page load if payload exists
+      if (searchAccommodationParams && Object.keys(searchAccommodationParams).length > 0) {
+        fetchAccommodations(searchAccommodationParams);
+      }
     }
-  }, [urlSearchParams, searchAccommodationParams]);
+  }, [urlSearchParams, searchAccommodationParams, setAccommodationSearchParams, fetchAccommodations]);
 
   useEffect(() => {
     if (

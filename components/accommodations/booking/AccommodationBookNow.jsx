@@ -951,7 +951,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                   {loadingButton === "checkout" ? (
                     <LoaderSvg />
                   ) : (
-                    "Proceed to Checkout"
+                    "Checkout"
                   )}
                 </button>
               </div>
