@@ -72,9 +72,9 @@ const Footer = () => {
           </div>
 
           {/* Contact Information */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contact Us</h3>
-            <div className=" text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className=" text-sm grid grid-cols-1 md:grid-cols-2 gap-14">
              
               <div className="space-y-1">
                 {/* <h4 className="font-semibold text-sm mb-1"></h4> */}

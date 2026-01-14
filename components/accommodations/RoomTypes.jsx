@@ -8,6 +8,7 @@ import { getFullImageUrl } from "@/utils/imageService";
 import { formatPrice } from "@/utils/priceUtils";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import AmenitiesCarousel from "@/components/accommodations/AmenitiesCarousel";
 
 // === STUBA VERSION: List of Rooms (FINAL WORKING VERSION) ===
 const StubaRoomList = ({
@@ -89,9 +90,9 @@ const StubaRoomList = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
             <h2 className="text-lg font-semibold text-[#233BA0] mb-1">Available Rooms</h2>
-            <p className="text-black">
+            {/* <p className="text-black">
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -100,7 +101,7 @@ const StubaRoomList = ({
             <div key={roomType.id} className="bg-white rounded-2xl overflow-hidden border border-gray-200">
               {/* Room Header */}
               <div className="bg-white lg:border-b border-gray-200 p-4">
-                <div className="flex gap-4">
+                <div className="flex gap-4 mb-2">
                   <div className="flex-shrink-0 w-32 h-24">
                     {roomType.images?.[0] && (
                       <img
@@ -132,28 +133,7 @@ const StubaRoomList = ({
                 </div>
 
                 {/* Amenities */}
-                <div className="mt-4">
-                  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-                    {roomType.amenities?.map((amenity) => (
-                      <div
-                        key={amenity.id || amenity.name}
-                        title={amenity.name}
-                        className="flex-shrink-0 bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap"
-                      >
-                        {amenity.icon ? (
-                          <img
-                            src={getFullImageUrl((amenity.icon || "").replace(/\\/g, "/"))}
-                            alt={amenity.name}
-                            className="w-4 h-4 object-contain"
-                          />
-                        ) : (
-                          <span className="w-4 h-4 rounded bg-gray-300/40" />
-                        )}
-                        <span className="truncate">{amenity.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <AmenitiesCarousel items={roomType.amenities || []} />
               </div>
 
               {/* Desktop Table Header */}
@@ -186,8 +166,8 @@ const StubaRoomList = ({
                       const finalOriginal = Number(ratePlan?.pricing?.total);
                       const savings = finalOriginal - finalPayable;
 
-                      const displayPayable = `${currency} ${formatPrice(finalPayable)}`;
-                      const displayOriginal = hasDiscount ? `${currency} ${formatPrice(finalOriginal)}` : null;
+                      const displayPayable = `${ratePlan?.pricing?.currency} ${formatPrice(finalPayable)}`;
+                      const displayOriginal = hasDiscount ? `${ratePlan?.pricing?.currency} ${formatPrice(finalOriginal)}` : null;
 
                       return (
                         <div
@@ -372,7 +352,7 @@ const RoomTypes = ({
   allRooms = [],
   normalizedRoomData = [],
   allotments = [],
-  currency = "SGD",
+  currency = "SGD12",
   nights = 1,
   onRoomSelect,
   onProceedBooking,

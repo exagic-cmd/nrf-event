@@ -84,23 +84,23 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
             </h4>
             <div className="space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-6 md:grid-cols-7 gap-3">
-  {(Array.isArray(nightCosts) && nightCosts.length > 0
-    ? nightCosts
-    : Array.from({ length: nights }, (_, i) => ({
-        SellingPrice: { "@attributes": { amt: perNightPrice } },
-        Date: null,
-      }))
-  ).map((nc, idx) => {
-    const amt = parseFloat(nc?.SellingPrice?.["@attributes"]?.amt) || parseFloat(perNightPrice);
-    const label = nc?.Date || nc?.["@attributes"]?.date || `Night ${idx + 1}`;
-    return (
-      <div key={idx} className="bg-white rounded-xl shadow p-1 flex flex-col items-center justify-center text-center border border-gray-500/50">
-        <div className="text-sm text-gray-600 mb-2">{label}</div>
-        <div className="text-lg font-semibold text-gray-800">{amt.toFixed(2)} {currency}</div>
-      </div>
-    );
-  })}
-</div>
+                {(Array.isArray(nightCosts) && nightCosts.length > 0
+                  ? nightCosts
+                  : Array.from({ length: nights }, (_, i) => ({
+                    SellingPrice: { "@attributes": { amt: perNightPrice } },
+                    Date: null,
+                  }))
+                ).map((nc, idx) => {
+                  const amt = parseFloat(nc?.SellingPrice?.["@attributes"]?.amt) || parseFloat(perNightPrice);
+                  const label = nc?.Date || nc?.["@attributes"]?.date || `Night ${idx + 1}`;
+                  return (
+                    <div key={idx} className="bg-white rounded-xl shadow p-1 flex flex-col items-center justify-center text-center border border-gray-500/50">
+                      <div className="text-sm text-gray-600 mb-2">{label}</div>
+                      <div className="text-lg font-semibold text-gray-800">{amt.toFixed(2)} {currency}</div>
+                    </div>
+                  );
+                })}
+              </div>
 
             </div>
             <div className="flex justify-between items-center pt-5 border-t-4 border-double border-gray-300">
@@ -126,58 +126,58 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
                 : "Refundable – Free cancellation available"}
             </div>
           </div> */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
-            <div className="flex items-center gap-3 mb-4">
-              <Info className="h-5 w-5 text-blue-600" />
-              <h5 className="text-lg font-semibold text-gray-800">General Messages</h5>
-              <span className="ml-auto text-sm text-gray-500">{(generalMessages?.length || 0)} found</span>
-            </div>
-
-            {generalMessages && generalMessages.length > 0 ? (
-              <div className="space-y-3">
-  {generalMessages.map((m, i) => {
-    const rawText =
-      m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
-
-    return (
-      <div
-        key={i}
-        className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700"
-        dangerouslySetInnerHTML={{ __html: rawText || "No message text available" }}
-      />
-    );
-  })}
-</div>
-
-            ) : (
-              <div className="text-sm text-gray-500">No general messages provided.</div>
-            )}
-          </div>
-
-          <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
-            <div className="flex items-center gap-3 mb-4">
-              <Info className="h-5 w-5 text-yellow-600" />
-              <h5 className="text-lg font-semibold text-gray-800">Internal Notes</h5>
-              <span className="ml-auto text-sm text-gray-500">{(internalNotes?.length || 0)} found</span>
-            </div>
-
-            {internalNotes && internalNotes.length > 0 ? (
-              <div className="space-y-3">
-                {internalNotes.map((m, i) => {
-                  const text = m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
-                  return (
-                    <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700">
-                      {text || "No note text available"}
-                    </div>
-                  );
-                })}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <Info className="h-5 w-5 text-blue-600" />
+                <h5 className="text-lg font-semibold text-gray-800">General Messages</h5>
+                <span className="ml-auto text-sm text-gray-500">{(generalMessages?.length || 0)} found</span>
               </div>
-            ) : (
-              <div className="text-sm text-gray-500">No internal notes available.</div>
-            )}
+
+              {generalMessages && generalMessages.length > 0 ? (
+                <div className="space-y-3">
+                  {generalMessages.map((m, i) => {
+                    const rawText =
+                      m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
+
+                    return (
+                      <div
+                        key={i}
+                        className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700"
+                        dangerouslySetInnerHTML={{ __html: rawText || "No message text available" }}
+                      />
+                    );
+                  })}
+                </div>
+
+              ) : (
+                <div className="text-sm text-gray-500">No general messages provided.</div>
+              )}
+            </div>
+
+            <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <Info className="h-5 w-5 text-yellow-600" />
+                <h5 className="text-lg font-semibold text-gray-800">Internal Notes</h5>
+                <span className="ml-auto text-sm text-gray-500">{(internalNotes?.length || 0)} found</span>
+              </div>
+
+              {internalNotes && internalNotes.length > 0 ? (
+                <div className="space-y-3">
+                  {internalNotes.map((m, i) => {
+                    const text = m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
+                    return (
+                      <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700">
+                        {text || "No note text available"}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500">No internal notes available.</div>
+              )}
+            </div>
           </div>
-        </div>
 
           <div className="flex gap-5 mt-10">
             <button onClick={onClose} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-5 rounded-2xl transition text-xl shadow-md">
@@ -270,7 +270,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
   useEffect(() => {
     const initialGuests = initGuestsByRoom();
     const storedData = JSON.parse(sessionStorage.getItem("accommodationBookingData"));
-    
+
     // Pre-fill lead passenger details from auth store if available
     if (user?.name && initialGuests.length > 0 && initialGuests[0].adults.length > 0) {
       const nameParts = user.name.split(' ');
@@ -287,8 +287,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     if (storedData?.guestDetailsByRoom) {
       setGuestsByRoom(storedData.guestDetailsByRoom);
       setShowCartOptions(true); // Show "Continue Shopping" / "Checkout" buttons
+      // Restore any previously entered special requests so user can see what was saved
+      if (storedData?.specialRequests) setSpecialRequests(storedData.specialRequests);
     } else {
-    setGuestsByRoom(initialGuests);
+      setGuestsByRoom(initialGuests);
     }
   }, [bookingData, user]);
 
@@ -297,11 +299,11 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       prev.map((room, rIdx) =>
         rIdx === roomIdx
           ? {
-              ...room,
-              [type]: room[type].map((g, gIdx) =>
-                gIdx === guestIdx ? { ...g, [field]: value } : g
-              ),
-            }
+            ...room,
+            [type]: room[type].map((g, gIdx) =>
+              gIdx === guestIdx ? { ...g, [field]: value } : g
+            ),
+          }
           : room
       )
     );
@@ -311,16 +313,16 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     const newErrors = [];
     let isValid = true;
     const nameRegex = /^[a-zA-Z\s'-]{2,}$/;
-  
+
     guestsByRoom.forEach((room, roomIdx) => {
       const roomErrors = { adults: [], children: [] };
-  
+
       room.adults.forEach((adult, adultIdx) => {
         const adultErrors = {};
         const isLeadGuest = roomIdx === 0 && adultIdx === 0;
         const hasFirstName = adult.firstName?.trim();
         const hasLastName = adult.lastName?.trim();
-  
+
         // Validate First Name
         if (isLeadGuest && !hasFirstName) {
           adultErrors.firstName = "First name is required.";
@@ -332,7 +334,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
           adultErrors.firstName = "First name is required with last name.";
           isValid = false;
         }
-  
+
         // Validate Last Name
         if (isLeadGuest && !hasLastName) {
           adultErrors.lastName = "Last name is required.";
@@ -346,7 +348,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         }
         roomErrors.adults[adultIdx] = adultErrors;
       });
-  room.children.forEach((child, childIdx) => {
+      room.children.forEach((child, childIdx) => {
         const childErrors = {};
         const hasChildFirstName = child.firstName?.trim();
         const hasChildLastName = child.lastName?.trim();
@@ -451,29 +453,29 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     setErrors({});
 
     if (!validateGuestInfo()) {
-    // Validation failed → find first error and scroll to it
-    setTimeout(() => {
-      const firstErrorElement = document.querySelector('.text-red-500.text-xs.mt-1');
-      if (firstErrorElement) {
-        firstErrorElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
+      // Validation failed → find first error and scroll to it
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('.text-red-500.text-xs.mt-1');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
 
-      } else {
-        // Fallback: scroll to top of guest form
-        const guestForm = document.querySelector('form');
-        if (guestForm) {
-          guestForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          window.scrollBy(0, -80); // Offset for header
+        } else {
+          // Fallback: scroll to top of guest form
+          const guestForm = document.querySelector('form');
+          if (guestForm) {
+            guestForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.scrollBy(0, -80); // Offset for header
+          }
         }
-      }
-    }, 100); // Small delay to ensure errors are rendered
+      }, 100); // Small delay to ensure errors are rendered
 
-    setIsSubmitting(false);
-    setLoadingButton(null);
-    return;
-  }
+      setIsSubmitting(false);
+      setLoadingButton(null);
+      return;
+    }
 
     // Check if item already exists in cart
     const cartItems = useCartStore.getState().items;
@@ -496,15 +498,15 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
 
     const availabilityResult = await checkAvailability(availabilityPayload);
 
-    if ( !availabilityResult.data?.is_available) {
+    if (!availabilityResult.data?.is_available) {
       toast.error(availabilityResult.message || "This room is no longer available for the selected dates.");
       setIsSubmitting(false);
       setLoadingButton(null);
       return;
     }
 
-   // toast.success(availabilityResult.message || "Room is available!");
-   toast.success("Successfully added to your cart.")
+    // toast.success(availabilityResult.message || "Room is available!");
+    toast.success("Successfully added to your cart.")
 
     addToCartDirectly();
     setShowCartOptions(true);
@@ -551,7 +553,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       check_out: bookingData.checkOut,
       nights,
       roomType: bookingData.selectedRoom?.name || "",
-      mealType: bookingData.selectedRoom?.mealPlanCode ||  bookingData.selectedRoom?.mealType || '',
+      mealType: bookingData.selectedRoom?.mealPlanCode || bookingData.selectedRoom?.mealType || '',
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
       quoteId: bookingData.selectedRoom?.id || null,
       rate_plan_id: bookingData.selectedRoom?.id || null,
@@ -565,15 +567,15 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: specialRequests || "",
-      meal_plan:0,
-      check_in_time:"15:00",
-      check_out_time:"11:00",
+      meal_plan: 0,
+      check_in_time: "15:00",
+      check_out_time: "11:00",
       bed_type: bookingData.selectedRoom?.rawData?.cat?.id || null,
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
-      hotel_ref_no:hotelId,
+      hotel_ref_no: hotelId,
       image: bookingData.hotelData?.images?.[0]?.url || null,
     };
-   useCartStore.getState().addAccommodationItem(cartItem);
+    useCartStore.getState().addAccommodationItem(cartItem);
     setJustAdded(true);
     setShowCartOptions(true);
   };
@@ -588,7 +590,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     };
     const availabilityResult = await checkAvailability(availabilityPayload);
 
-  
+
     if (!availabilityResult.success || !availabilityResult.data?.is_available) {
       toast.error(availabilityResult.message || "This room is no longer available for the selected dates.");
       setLoadingButton(null);
@@ -600,7 +602,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       useCartStore.getState().removeItem(itemToReplace.key);
     }
     addToCartDirectly();
-    setItemToReplace(null); 
+    setItemToReplace(null);
     setLoadingButton(null);
   }
 
@@ -661,15 +663,15 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: "Sajid" || "",
-      meal_plan:0,
-      check_in_time:null,
-      check_out_time:null,
+      meal_plan: 0,
+      check_in_time: null,
+      check_out_time: null,
       bed_type: bookingData.selectedRoom?.rawData?.cat?.id || null,
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
-      hotel_ref_no:hotelId,
+      hotel_ref_no: hotelId,
       image: bookingData.hotelData?.images?.[0]?.url || null,
     };
- console.log("cartItem: accomodation Booking", cartItem);
+    console.log("cartItem: accomodation Booking", cartItem);
     useCartStore.getState().addAccommodationItem(cartItem);
     setJustAdded(true);
     setModalOpen(false);
@@ -686,222 +688,216 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
     setLoadingButton("checkout");
     await new Promise(r => setTimeout(r, 1200));
     sessionStorage.setItem("fromBooking", "true");
-   // window.location.href = "/checkout";
+    // window.location.href = "/checkout";
     router.push("/checkout");
   };
 
   return (
     <>
-     <div className="bg-white rounded-lg p-6">
-  <h2 className="font-bold text-md lg:text-md text-black mb-6">
-    Guest Information
-  </h2>
+      <div className="bg-white rounded-lg p-6">
+        <h2 className="font-bold text-md lg:text-md text-black mb-6">
+          Guest Information
+        </h2>
 
-  <form onSubmit={handleAddToCart} className="space-y-5">
-    {rooms.map((room, roomIdx) => {
-      const roomGuests = guestsByRoom[roomIdx] || { adults: [], children: [] };
-      const roomNumber = roomIdx + 1;
+        <form onSubmit={handleAddToCart} className="space-y-5">
+          {rooms.map((room, roomIdx) => {
+            const roomGuests = guestsByRoom[roomIdx] || { adults: [], children: [] };
+            const roomNumber = roomIdx + 1;
 
-      return (
-        <div key={roomIdx} className="rounded-lg p-0 md:p-4">
-          <h3 className="font-bold text-md lg:text-md text-black mb-5">
-            Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
-            {room.children?.length > 0 &&
-              `, ${room.children.length} Child${
-                room.children.length > 1 ? "ren" : ""
-              }`}
-          </h3>
+            return (
+              <div key={roomIdx} className="rounded-lg p-0 md:p-4">
+                <h3 className="font-bold text-md lg:text-md text-black mb-5">
+                  Room {roomNumber} – {room.adult} Adult{room.adult > 1 ? "s" : ""}
+                  {room.children?.length > 0 &&
+                    `, ${room.children.length} Child${room.children.length > 1 ? "ren" : ""
+                    }`}
+                </h3>
 
-          {/* Adults */}
-          {roomGuests.adults.map((adult, i) => (
-            <div
-              key={`adult-${i}`}
-              className="bg-gray-100  p-2 grid grid-cols-1 md:grid-cols-3 gap-4"
-            >
-              {/* Title */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                   {roomIdx === 0 && i === 0 ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
-                </label>
-                <select
-                  value={adult.title}
-                  onChange={(e) =>
-                    updateGuest(roomIdx, "adults", i, "title", e.target.value)
-                  }
-                  className="w-full px-3 h-[42px] py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                  required={roomIdx === 0 && i === 0}
-                >
-                  {TITLE_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                {/* Adults */}
+                {roomGuests.adults.map((adult, i) => (
+                  <div
+                    key={`adult-${i}`}
+                    className="bg-gray-100  p-2 grid grid-cols-1 md:grid-cols-3 gap-4"
+                  >
+                    {/* Title */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        {roomIdx === 0 && i === 0 ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
+                      </label>
+                      <select
+                        value={adult.title}
+                        onChange={(e) =>
+                          updateGuest(roomIdx, "adults", i, "title", e.target.value)
+                        }
+                        className="w-full px-3 h-[42px] py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        required={roomIdx === 0 && i === 0}
+                      >
+                        {TITLE_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* First Name */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        {roomIdx === 0 && i === 0 ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="First Name"
+                        value={adult.firstName}
+                        onChange={(e) => { //Allow only letters and spaces 
+                          const onlyText = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                          updateGuest(roomIdx, "adults", i, "firstName", onlyText);
+                        }}
+                        className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${roomIdx === 0 && i === 0 && user?.name
+                          ? "bg-gray-300"
+                          : "bg-white"
+                          }`}
+                        readOnly={showCartOptions}
+                      />
+                      {errors[roomIdx]?.adults[i]?.firstName && (
+                        <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].firstName}</p>
+                      )}
+                    </div>
+
+                    {/* Last Name */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        {roomIdx === 0 && i === 0 ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Last Name"
+                        value={adult.lastName}
+                        onChange={(e) => {
+                          // Allow only letters and spaces
+                          const onlyText = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                          updateGuest(roomIdx, "adults", i, "lastName", onlyText);
+                        }}
+                        className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${roomIdx === 0 && i === 0 && user?.name ? "bg-gray-300" : "bg-white"
+                          }`}
+                        readOnly={showCartOptions}
+                      />
+
+                      {errors[roomIdx]?.adults[i]?.lastName && (
+                        <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].lastName}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Children */}
+                {roomGuests.children.map((child, i) => (
+                  <div
+                    key={`child-${i}`}
+                    className="bg-gray-200 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
+                  >
+                    {/* Title */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        Title
+                      </label>
+                      <select
+                        value={child.title}
+                        onChange={(e) =>
+                          updateGuest(roomIdx, "children", i, "title", e.target.value)
+                        }
+                        className="w-full px-3 py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                      >
+                        {TITLE_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* First Name */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        value={child.firstName}
+                        onChange={(e) =>
+                          updateGuest(
+                            roomIdx,
+                            "children",
+                            i,
+                            "firstName",
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                      />
+                    </div>
+
+                    {/* Last Name */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        value={child.lastName}
+                        onChange={(e) =>
+                          updateGuest(
+                            roomIdx,
+                            "children",
+                            i,
+                            "lastName",
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                      />
+                    </div>
+
+                    {/* Age */}
+                    <div>
+                      <label className="block text-black text-sm font-medium mb-2">
+                        Age
+                      </label>
+                      <input
+                        type="text"
+                        value={child.age}
+                        readOnly
+                        className="w-full px-3 py-2 bg-gray-300 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none cursor-not-allowed"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
+            );
+          })}
 
-              {/* First Name */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                 {roomIdx === 0 && i === 0 ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
-                </label>
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  value={adult.firstName}
-                  onChange={(e) =>
-                    updateGuest(
-                      roomIdx,
-                      "adults",
-                      i,
-                      "firstName",
-                      e.target.value
-                    )
-                  }
-                  className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${
-                    roomIdx === 0 && i === 0 && user?.name
-                      ? "bg-gray-300"
-                      : "bg-white"
-                  }`}
-                  readOnly={showCartOptions}
-                />
-                {errors[roomIdx]?.adults[i]?.firstName && (
-                  <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].firstName}</p>
-                )}
-              </div>
+          {/* Special Requests */}
+          <div>
+            <label className="block text-black text-sm font-medium mb-2">
+              Special Requests (Optional)
+            </label>
+            <textarea
+              value={specialRequests}
+              onChange={(e) => setSpecialRequests(e.target.value)}
+              rows={4}
+              readOnly={showCartOptions}
+              className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${showCartOptions ? 'bg-gray-300 cursor-not-allowed' : 'bg-white'}`}
+              placeholder="Late check-in, extra bed, dietary needs, etc..."
+            />
+          </div>
 
-              {/* Last Name */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                  {roomIdx === 0 && i === 0 ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
-                </label>
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  value={adult.lastName}
-                  onChange={(e) =>
-                    updateGuest(roomIdx, "adults", i, "lastName", e.target.value)
-                  }
-                  className={`w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${
-                    roomIdx === 0 && i === 0 && user?.name
-                      ? "bg-gray-300"
-                      : "bg-white"
-                  }`}
-                  readOnly={showCartOptions}
-                />
-                 {errors[roomIdx]?.adults[i]?.lastName && (
-                  <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].lastName}</p>
-                )}
-              </div>
-            </div>
-          ))}
-
-          {/* Children */}
-          {roomGuests.children.map((child, i) => (
-            <div
-              key={`child-${i}`}
-              className="bg-gray-200 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
-            >
-              {/* Title */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                  Title
-                </label>
-                <select
-                  value={child.title}
-                  onChange={(e) =>
-                    updateGuest(roomIdx, "children", i, "title", e.target.value)
-                  }
-                  className="w-full px-3 py-2.5 bg-white border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                >
-                  {TITLE_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* First Name */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  value={child.firstName}
-                  onChange={(e) =>
-                    updateGuest(
-                      roomIdx,
-                      "children",
-                      i,
-                      "firstName",
-                      e.target.value
-                    )
-                  }
-                  className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                />
-              </div>
-
-              {/* Last Name */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  value={child.lastName}
-                  onChange={(e) =>
-                    updateGuest(
-                      roomIdx,
-                      "children",
-                      i,
-                      "lastName",
-                      e.target.value
-                    )
-                  }
-                  className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-                />
-              </div>
-
-              {/* Age */}
-              <div>
-                <label className="block text-black text-sm font-medium mb-2">
-                  Age
-                </label>
-                <input
-                  type="text"
-                  value={child.age}
-                  readOnly
-                  className="w-full px-3 py-2 bg-gray-300 border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none cursor-not-allowed"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    })}
-
-    {/* Special Requests */}
-    <div>
-      <label className="block text-black text-sm font-medium mb-2">
-        Special Requests (Optional)
-      </label>
-      <textarea
-        value={specialRequests}
-        onChange={(e) => setSpecialRequests(e.target.value)}
-        rows={4}
-        className="w-full px-3 py-2 bg-white border border-gray-500 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-        placeholder="Late check-in, extra bed, dietary needs, etc..."
-      />
-    </div>
-
-{/* BUTTONS (RIGHT ALIGNED) */}
-<div className="w-full flex justify-end">
-  {!showCartOptions ? (
-    <button
-      type="submit"
-      disabled={isSubmitting}
-      className="
+          {/* BUTTONS (RIGHT ALIGNED) */}
+          <div className="w-full flex justify-end">
+            {!showCartOptions ? (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="
         w-full sm:w-auto
         bg-[#D3202D] text-white 
         font-semibold text-base lg:px-10
@@ -909,23 +905,23 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         transition disabled:opacity-50 
         flex items-center justify-center gap-2
       "
-    >
-      {isSubmitting ? (
-        <>
-          <Loader2 className="w-4 h-4 animate-spin" />
-          {isNonStuba ? "Adding to Cart..." : "Validating Booking..."}
-        </>
-      ) : (
-        "Add to Cart"
-      )}
-    </button>
-  ) : (
-    <div className="flex flex-col sm:flex-row justify-end gap-3">
-      <button
-        type="button"
-        onClick={handleContinueShopping}
-        disabled={loadingButton === "continue"}
-        className="
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {isNonStuba ? "Adding to Cart..." : "Validating Booking..."}
+                  </>
+                ) : (
+                  "Add to Cart"
+                )}
+              </button>
+            ) : (
+              <div className="flex flex-col sm:flex-row justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleContinueShopping}
+                  disabled={loadingButton === "continue"}
+                  className="
           flex-1 sm:flex-none
           bg-gray-100 hover:bg-gray-200 
           text-gray-800 
@@ -933,38 +929,38 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
           py-3 px-6 rounded-lg 
           transition
         "
-      >
-        {loadingButton === "continue" ? (
-    <LoaderSvg />   
-  ) : (
-  "Continue Shopping")}
-      </button>
+                >
+                  {loadingButton === "continue" ? (
+                    <LoaderSvg />
+                  ) : (
+                    "Continue Shopping")}
+                </button>
 
-      <button
-        type="button"
-        onClick={handleViewCart}
-        disabled={loadingButton === "checkout"}
-        className="
+                <button
+                  type="button"
+                  onClick={handleViewCart}
+                  disabled={loadingButton === "checkout"}
+                  className="
           flex-1 sm:flex-none
           bg-[#D3202D] text-white 
           font-semibold text-base lg:px-10
           py-3 px-6 rounded-lg 
           transition
         "
-      >
-       {loadingButton === "checkout" ? (
-    <LoaderSvg />   
-  ) : (
-    "Proceed to Checkout"
-  )}
-      </button>
-    </div>
-  )}
-</div>
+                >
+                  {loadingButton === "checkout" ? (
+                    <LoaderSvg />
+                  ) : (
+                    "Proceed to Checkout"
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
 
 
-  </form>
-</div>
+        </form>
+      </div>
 
 
       {/* MODAL ONLY FOR STUBA */}
