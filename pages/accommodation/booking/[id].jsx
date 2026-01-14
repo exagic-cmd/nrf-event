@@ -111,9 +111,9 @@ export default function AccommodationBookingPage() {
     <Layout>
       <div className="min-h-screen bg-[#f4f4f4] text-black pt-20 mt-2 lg: mt-6 pb-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-lg font-semibold mb-8">
+          {/* <h1 className="text-lg font-semibold mb-8">
             Book {hotel?.title || "Hotel"}
-          </h1>
+          </h1> */}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* --- BOOKING SUMMARY BOX (Right side on Desktop, Top on Mobile) --- */}
