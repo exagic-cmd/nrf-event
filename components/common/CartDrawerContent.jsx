@@ -47,7 +47,6 @@ const CartDrawerContent = () => {
       });
     }
   }, [timeNow, items, removeItem]);
-console.log("CartDrawerContent items:::::", items);
   // Total price
   const total = items.reduce((sum, item) => {
     let itemPrice = 0;
@@ -225,7 +224,7 @@ console.log("CartDrawerContent items:::::", items);
                           </p>
                         </div>
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                        {item[0].currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")} 
+                        {item?.currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")} 
                         </p>
                       </>
                     )}
