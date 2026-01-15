@@ -118,6 +118,7 @@ export default function SearchFilterCard({
       case "metro":
         return <Train size={16} className="text-purple-600" />;
       case "attraction":
+      case "attractions":
         return <Landmark size={16} className="text-orange-600" />;
       default:
         return <MapPin size={16} className="text-gray-400" />;
@@ -688,7 +689,7 @@ export default function SearchFilterCard({
                            </li>
                          ))
                        ) : (
-                         (!selectedPickupCategory && availablePickupCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(pickupQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== pickupQuery.toLowerCase()).length === 0) && (
+                         (selectedPickupCategory || availablePickupCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(pickupQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== pickupQuery.toLowerCase()).length === 0) && (
                            <li className="px-3 py-2.5 text-center text-gray-500">No results found</li>
                          )
                        )}
@@ -788,7 +789,7 @@ export default function SearchFilterCard({
                            </li>
                          ))
                        ) : (
-                         (!selectedDropoffCategory && availableDropoffCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(dropoffQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== dropoffQuery.toLowerCase()).length === 0) && (
+                         (selectedDropoffCategory || availableDropoffCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(dropoffQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== dropoffQuery.toLowerCase()).length === 0) && (
                            <li className="px-3 py-2.5 text-center text-gray-500">No results found</li>
                          )
                        )}
