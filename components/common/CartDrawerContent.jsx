@@ -41,13 +41,13 @@ const CartDrawerContent = () => {
 
     if (expiredItems.length > 0) {
       expiredItems.forEach((item) => {
-        console.log(`Hold for ${item.productTitle} expired and grace period passed. Removing from cart.`);
+        console.log(`Reserve for ${item.productTitle} expired and grace period passed. Removing from cart.`);
         removeItem(item.key);
       //  toast.warn(`The hold for "${item.productTitle}" expired and it has been removed from your cart.`);
       });
     }
   }, [timeNow, items, removeItem]);
-
+console.log("CartDrawerContent items:::::", items);
   // Total price
   const total = items.reduce((sum, item) => {
     let itemPrice = 0;
@@ -285,7 +285,7 @@ const CartDrawerContent = () => {
               <div className="flex justify-between font-semibold text-base">
                 <span>{t("total","Total")}</span>
                 <span>
-                  {items[0]?.currency || ""} {formatPrice(total)} 
+                  {items?.[0]?.hotel_info?.roomsDetails?.[0]?.pricing?.currency || items?.[0]?.currency} {formatPrice(total)} 
                 </span>
               </div>
 

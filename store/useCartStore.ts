@@ -222,7 +222,7 @@ export const useCartStore = create<CartState>()(
           }
           const expiresAt = data.expiresAt || (Date.now() + 7 * 60 * 1000);
           get().setHoldForItem(key, expiresAt);
-          toast.success('Accomodation on Hold for 7 minutes');
+          toast.success('Accommodation on reserve for 7 minutes');
           return { success: true, expiresAt };
         } catch (err) {
           console.warn('Hold API error:', err);

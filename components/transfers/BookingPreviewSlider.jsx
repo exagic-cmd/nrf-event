@@ -23,7 +23,6 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
   const details = bookingDetailsMap[item.key] || {};
   const isTransfer = !!item.vehicle;
   const isAccommodation = item.type === "accommodation";
-
   const normalizeSurcharge = (data) => {
     if (Array.isArray(data)) {
       return data.reduce((sum, s) => sum + Number(s?.total ?? s?.amount ?? 0), 0);
@@ -218,7 +217,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold">{item?.currency||""} {formatPrice(basePrice)}</span>
+            <span className="text-[#D3202D] font-semibold">{item?.hotel_info?.roomsDetails?.[0]?.pricing?.currency||"-"} {formatPrice(basePrice)}</span>
           </div>
         </div>
       ) : isTransfer ? (
@@ -379,7 +378,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       <div className="pt-2 flex flex-col justify-between text-md font-normal">
         <div className="flex border-t mt-2 pt-2 justify-between text-lg font-semibold">
           <span>{t("total_all_items")}</span>
-          <span className="text-[#D3202D]">{item?.currency} {formatPrice(overallTotal)}</span>
+          <span className="text-[#D3202D]">{item?.hotel_info?.roomsDetails?.[0]?.pricing?.currency || item?.currency} {formatPrice(overallTotal)}</span>
         </div>
       </div>
     </div>
