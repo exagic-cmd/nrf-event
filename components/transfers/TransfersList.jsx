@@ -215,7 +215,9 @@ function TransfersList() {
           ))}
         </>
       ) : (
-        <div className="text-center py-10 text-gray-500">{t('results.noTransfersFound')}</div>
+        <div className="text-center py-10 text-gray-500">
+          {/* {t('results.noTransfersFound')} */}
+          </div>
       )}
 
       {!isLoading && totalPages > 1 && (

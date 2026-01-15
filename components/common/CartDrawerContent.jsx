@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
-import { getFullImageUrl } from "@/utils/imageService"; 
+import { getFullImageUrl } from "@/utils/imageService";
 import { Trash2, Clock } from "lucide-react";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal";
@@ -36,14 +36,14 @@ const CartDrawerContent = () => {
       (item) =>
         item.type === "accommodation" &&
         item.holdExpiresAt &&
-        timeNow > item.holdExpiresAt + 600000 
+        timeNow > item.holdExpiresAt + 600000
     );
 
     if (expiredItems.length > 0) {
       expiredItems.forEach((item) => {
         console.log(`Reserve for ${item.productTitle} expired and grace period passed. Removing from cart.`);
         removeItem(item.key);
-      //  toast.warn(`The hold for "${item.productTitle}" expired and it has been removed from your cart.`);
+        //  toast.warn(`The hold for "${item.productTitle}" expired and it has been removed from your cart.`);
       });
     }
   }, [timeNow, items, removeItem]);
@@ -111,7 +111,7 @@ const CartDrawerContent = () => {
   return (
     <div className="p-4 text-sm text-gray-800">
       {items.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10">{t("emptyCart","Cart Empty")}</p>
+        <p className="text-center text-gray-500 mt-10">{t("emptyCart", "Cart Empty")}</p>
       ) : (
         <>
           <ul className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
@@ -126,8 +126,8 @@ const CartDrawerContent = () => {
                       isAccommodation
                         ? getFullImageUrl(item.image) || "/default-hotel.png"
                         : item.image
-                        ? getFullImageUrl(item.image)
-                        : getFullImageUrl(item.vehicle?.image || item.vehicle?.vehicle_image) || "/default-vehicle.png"
+                          ? getFullImageUrl(item.image)
+                          : getFullImageUrl(item.vehicle?.image || item.vehicle?.vehicle_image) || "/default-vehicle.png"
                     }
                     alt={
                       isAccommodation
@@ -148,14 +148,16 @@ const CartDrawerContent = () => {
                         {/* Accommodation Details */}
                         <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
                           <p>
-                          <strong>{t("Nights", { ns: "accommodation" })}:</strong> {item.nights} |  <strong>{t("Guests", { ns: "accommodation" })}:</strong> {item.adult_count + item.child_count}
+                            {item.nights} {item.nights === 1 ? 'Night' : 'Nights'} |&nbsp;
+                             {item.adult_count + item.child_count} {(item.adult_count + item.child_count) === 1 ? 'Guest' : 'Guests'}
                           </p>
+
                         </div>
 
                         {/* Price */}
-                      
+
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                           SGD {formatPrice(item.price)}
+                          {item?.hotel_info?.roomsDetails?.[0]?.pricing?.currency}  {formatPrice(item.price)}
                         </p>
                         {/* Hold timer UI */}
                         {item.holdExpiresAt ? (
@@ -169,7 +171,7 @@ const CartDrawerContent = () => {
                               return (
                                 <div className="text-xs text-orange-700 bg-orange-100 rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-small">
                                   <Clock size={12} className="mr-1" />
-                                  <span>{item?.hotel_info?.roomsDetails?.length} rooms reserved — expires in <strong>{mins}:{secs}.</strong></span>
+                                  <span>{item?.hotel_info?.roomsDetails?.length} {item?.hotel_info?.roomsDetails?.length === 1 ? 'room' : 'rooms'} reserved — expires in <strong>{mins}:{secs}.</strong></span>
                                 </div>
                               );
                             }
@@ -194,19 +196,19 @@ const CartDrawerContent = () => {
                           {item.vehicle.vehicle_name || item.vehicle.name}
                         </h4>
                         <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
-                         <div className="flex gap-2"> <p className="capitalize flex gap-2">
+                          <div className="flex gap-2"> <p className="capitalize flex gap-2">
                             {item.tripType === 'round-trip' ? t('roundTrip', { ns: 'transfer' }) : t('oneWay', { ns: 'transfer' })}
                           </p>
-                          <p >
-                           | {t("", { ns: "common" })} {formatDate(item.selectedDate)} 
-                            {item.tripType === 'round-trip' && item.returnDate && ` - ${formatDate(item.returnDate)}`}
-                          </p></div>
+                            <p >
+                              | {t("", { ns: "common" })} {formatDate(item.selectedDate)}
+                              {item.tripType === 'round-trip' && item.returnDate && ` - ${formatDate(item.returnDate)}`}
+                            </p></div>
                           <p>
-                             {item.passengers} {t("passengers")}|  {item.baggage} {t("baggage")}
+                            {item.passengers} {t("passengers")}|  {item.baggage} {t("baggage")}
                           </p>
                         </div>
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                        {item?.currency}  {item?.pricing || item?.price} 
+                          {item?.currency}  {item?.pricing || item?.price}
                         </p>
                       </>
                     ) : (
@@ -224,7 +226,7 @@ const CartDrawerContent = () => {
                           </p>
                         </div>
                         <p className="text-sm text-[#D3202D] font-semibold mt-1">
-                        {item?.currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")} 
+                          {item[0]?.currency || "SGD"} {formatPrice(item.pricing?.total || item?.price || "0")}
                         </p>
                       </>
                     )}
@@ -282,9 +284,9 @@ const CartDrawerContent = () => {
           {items.length > 0 && (
             <div className="pt-5 border-t mt-5 space-y-3">
               <div className="flex justify-between font-semibold text-base">
-                <span>{t("total","Total")}</span>
+                <span>{t("total", "Total")}</span>
                 <span>
-                  {items?.[0]?.hotel_info?.roomsDetails?.[0]?.pricing?.currency || items?.[0]?.currency} {formatPrice(total)} 
+                  {items?.[0]?.hotel_info?.roomsDetails?.[0]?.pricing?.currency || items?.[0]?.currency} {formatPrice(total)}
                 </span>
               </div>
 
@@ -301,7 +303,7 @@ const CartDrawerContent = () => {
                 onClick={handleContinue}
                 className="w-full bg-[#D3202D] text-white py-2.5 rounded-lg text-sm font-semibold transition"
               >
-                {t("continueShopping","Continue Shopping")}
+                {t("continueShopping", "Continue Shopping")}
               </button>
             </div>
           )}
