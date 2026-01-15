@@ -230,10 +230,11 @@ export default function SearchFilterCard({
 
   // Load data
   useEffect(() => {
+    if (isHomepage) return; // Don't auto-load on homepage
     if (filterActiveTab === 2 && !pickupOptions?.length) {
       fetchPickupOptions();
     }
-  }, [filterActiveTab, fetchPickupOptions, pickupOptions?.length]);
+  }, [filterActiveTab, fetchPickupOptions, pickupOptions?.length, isHomepage]);
 
   useEffect(() => {
     if ((filterActiveTab === 3 || filterActiveTab === 4) && countries.length === 0) {
@@ -249,6 +250,7 @@ export default function SearchFilterCard({
   useEffect(() => {
     let mounted = true;
     const loadDayTours = async () => {
+      if (isHomepage) return; // Don't auto-search on homepage
       if (filterActiveTab !== 3) return;
 
       const payloadKey = JSON.stringify({ country: selectedCountry?.id, city: selectedCity?.id, name: "" });
@@ -299,6 +301,7 @@ export default function SearchFilterCard({
 
   // Auto-run Accommodation search when tab becomes active using persisted params or prefill data
   useEffect(() => {
+    if (isHomepage) return; // Don't auto-search on homepage
     if (filterActiveTab !== 4) return;
 
     // If explicit accommodation params exist, reuse them
