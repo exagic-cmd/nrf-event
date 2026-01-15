@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useTransferStore } from "@/store/useTransferStore";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, Clock, Plane, Hash } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Plane,
+  Hash,
+  Landmark,
+  Building,
+  Ship,
+  Train,
+} from "lucide-react";
 import useBookingStore from "@/store/userBookingStore";
 import { useTranslation } from "next-i18next";
 import FlightTracker from "@/components/transfers/detail/FlightTracker";
@@ -407,6 +416,8 @@ export default function BookingTransferInfo({
     fetchProductSurcharge,
     surchargeDetails,
     setSelectedDates,
+      selectedPickup,
+    selectedDropoff,
   } = useTransferStore();
 
   const orangeColor = "#D3202D";
@@ -421,21 +432,58 @@ const [showReturnTimeWarning, setShowReturnTimeWarning] = useState(false);
 const [returnTracking, setReturnTracking] = useState(false);
 const [showPickupManualTime, setShowPickupManualTime] = useState(false);
 const [showReturnManualTime, setShowReturnManualTime] = useState(false);
+  const getIconForType = (type) => {
+    const props = { size: 20, color: orangeColor };
+    switch (type?.toLowerCase()) {
+      case "airport":
+        return <Plane {...props} />;
+      case "cruise":
+        return <Ship {...props} />;
+      case "hotel":
+      case "villa":
+      case "apartment":
+        return <Building {...props} />;
+      case "train":
+      case "metro":
+        return <Train {...props} />;
+      case "attraction":
+        return <Landmark {...props} />;
+      default:
+        return <Plane {...props} />;
+    }
+  };
+
+  const isPickupAirport = selectedPickup?.type?.toLowerCase() === "airport";
+  const isDropoffAirport = selectedDropoff?.type?.toLowerCase() === "airport";
 
   // Set default radio button selection on mount
   useEffect(() => {
-    const defaults = {};
-    if (!userBookingDetails.pickupOption) {
-      defaults.pickupOption = 'time';
-    }
-    if (tripType === 'round-trip' && !userBookingDetails.returnOption) {
-      defaults.returnOption = 'time';
-    }
-    if (Object.keys(defaults).length > 0) {
-      setUserBookingDetails(defaults);
-    }
-  }, [tripType, userBookingDetails.pickupOption, userBookingDetails.returnOption, setUserBookingDetails]);
+    const updates = {};
 
+    // For pickup
+    if (!isPickupAirport) {
+      if (userBookingDetails.pickupOption !== "time") {
+        updates.pickupOption = "time";
+      }
+    } else if (!userBookingDetails.pickupOption) {
+      updates.pickupOption = "time"; // Default to time even for airports
+    }
+
+    // For return
+    if (tripType === "round-trip") {
+      if (!isDropoffAirport) {
+        if (userBookingDetails.returnOption !== "time") {
+          updates.returnOption = "time";
+        }
+      } else if (!userBookingDetails.returnOption) {
+        updates.returnOption = "time"; // Default to time even for airports
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      setUserBookingDetails(updates);
+    }
+  }, [isPickupAirport, isDropoffAirport, tripType, userBookingDetails.pickupOption, userBookingDetails.returnOption, setUserBookingDetails]);
 
   useEffect(() => {
     if (!productId) return;
@@ -597,7 +645,7 @@ const handleReturnTrack = async (flightNumber = null) => {
       <div className="bg-white rounded-lg p-6 shadow-sm space-y-6">
         {/* --- Pickup Section --- */}
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <Plane size={20} color={orangeColor} />
+         {getIconForType(selectedPickup?.type)}
           {t("booking.pickupDetails")}
         </h3>
 
@@ -614,7 +662,7 @@ const handleReturnTrack = async (flightNumber = null) => {
             t={t}
           />
         </div>
-
+ {isPickupAirport && (
         <CustomOptionSelector
           fieldName="pickupOption"
           userBookingDetails={userBookingDetails}
@@ -623,10 +671,10 @@ const handleReturnTrack = async (flightNumber = null) => {
           orangeColor={orangeColor}
           disabled={disabled}
         />
-
+)}
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          {userBookingDetails.pickupOption === "flight" ? (
-            <div id="pickupFlightNumber">
+           {isPickupAirport && userBookingDetails.pickupOption === "flight" ? (
+             <div id="pickupFlightNumber">
               <FlightNumberField
                 label={t("booking.pickupFlightNumber")}
                 value={userBookingDetails.pickupFlightNumber}
@@ -722,7 +770,9 @@ const handleReturnTrack = async (flightNumber = null) => {
           <>
           <div id="return-section"></div>
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 pt-6 border-t border-gray-200">
-              <Plane size={20} className="rotate-180" color={orangeColor} />
+             {React.cloneElement(getIconForType(selectedDropoff?.type), {
+                className: "rotate-180",
+              })}
               {t("booking.returnDetails")}
             </h3>
 
@@ -739,7 +789,7 @@ const handleReturnTrack = async (flightNumber = null) => {
                 t={t}
               />
             </div>
-
+  {isDropoffAirport && (
             <CustomOptionSelector
               fieldName="returnOption"
               userBookingDetails={userBookingDetails}
@@ -748,10 +798,10 @@ const handleReturnTrack = async (flightNumber = null) => {
               orangeColor={orangeColor}
               disabled={disabled}
             />
-
+ )}
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-             {userBookingDetails.returnOption === "flight" ? (
-  <div id="returnFlightNumber">
+             {isDropoffAirport && userBookingDetails.returnOption === "flight" ? (
+               <div id="returnFlightNumber">
     {/* Flight Number Input with tracking */}
     <FlightNumberField
       label={t("booking.returnFlightNumber")}

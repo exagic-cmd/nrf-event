@@ -169,11 +169,13 @@ const firstUpcomingItineraryId =
       onViewDetails={handleViewDetails}
       onShowQRCode={handleShowQRCode}
     />
+        {pastBookings && pastBookings.length > 0 && (
     <PastBookings
       pastTrips={pastBookings}
       onReviewClick={handleReviewClick}
       onDetailsClick={handleDetailsClick}
     />
+      )}
     <LandmarkList itineraryId={firstUpcomingItineraryId} />
 
     <Recommended />
