@@ -15,6 +15,7 @@ import { getFullImageUrl } from "@/utils/imageService";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useOrderStore } from "@/store/useOrderStore";
 import useLanguageStore from "@/store/useLanguageStore";
+import {toast} from "react-toastify";
 
 const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const { t } = useTranslation("daytour");
@@ -153,6 +154,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
     setShowCartOptions(true);
     onBookNow(safeFormData);
     setLoadingButton(null);
+    toast.success("Added to cart");
   };
 
   const handleContinueShopping = async () => {
