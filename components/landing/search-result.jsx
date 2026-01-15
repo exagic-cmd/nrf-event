@@ -119,7 +119,7 @@ export default function SearchResult() {
         </>
       ) : (
         <div className="text-center py-10 text-gray-500">
-          {t("results.noTransfersFound")}
+          {/* {t("results.noTransfersFound")} */}
         </div>
       )}
     </section>

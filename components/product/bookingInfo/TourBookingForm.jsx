@@ -495,7 +495,7 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
               {t("bookingForm.searchHotel")}
             </div>
           }
-          noOptionsMessage={() => t("bookingForm.noHotelsFound")}
+          //noOptionsMessage={() => t("bookingForm.noHotelsFound")}
           styles={customStyles}
           isDisabled={isDisabled}
         />

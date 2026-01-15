@@ -20,7 +20,7 @@ import UpsellProducts from "@/components/transfers/detail/UpsellBooking";
 import BookingPolicySection from "@/components/transfers/detail/BookingPolicySection";
 import ReturnTransferModal from "@/components/transfers/detail/ReturnTransferModal";
 import formatPrice from "@/lib/formatPrice";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 const TransferBookingPage = () => {
   const { t } = useTranslation("transfer","common");
   const { localizedPush, back } = useLocalizedRouter();
@@ -261,7 +261,9 @@ const executeBookTransfer = () => {
     setItemToUpdate(result.item);
     setAlreadyModalOpen(true);
     setIsAddingToCart(false); 
+    toast.success("Cart updated successfully!");
   } else {
+    toast.success("Added into cart!");
     useDrawerStore.getState().setDrawerContent(<CartDrawerContent />);
     useDrawerStore.getState().setJustAdded(true);
     setIsAddedToCart(true);
@@ -838,13 +840,13 @@ const baggageSelectorProps = {
         onClick={handleContinueShopping}
         className="bg-gray-200 mb-2 mr-2 text-gray-800 font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
-        {t("continueShopping")}
+       Continue Shopping
       </button>
       <button
         onClick={handleProceedToCheckout}
         className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
-        {t("proceedToCheckout")}
+        Checkout
       </button>
     </div>
     </div>

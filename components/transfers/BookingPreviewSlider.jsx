@@ -178,8 +178,8 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
             />
           </div>
 
-          <div className="mt-3 space-y-1.5 text-xs">
-            <span className="font-bold text-gray-800 flex items-center gap-1.5">
+          <div className="space-y-1.5 text-xs">
+            <span className="font-bold text-gray-800 flex justify-center items-center gap-1.5">
                  {item.productTitle}
               </span>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
@@ -188,7 +188,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                 <BedDouble size={14} /> {item.roomType}
               </span>
               <span className="text-sm text-gray-800 font-medium text-right">
-                x{item.hotel_info?.roomsDetails?.length || 1} {t("room", { ns: "accommodation" })}
+                x{item.hotel_info?.roomsDetails?.length || 1} { item.hotel_info?.roomsDetails?.length  === 1 ? 'room' : 'rooms' }
               </span>
             </div>
             <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
@@ -217,7 +217,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold">{item?.hotel_info?.roomsDetails?.[0]?.pricing?.currency||"-"} {formatPrice(basePrice)}</span>
+            <span className="text-[#D3202D]">{item?.hotel_info?.roomsDetails?.[0]?.pricing?.currency||"-"} {formatPrice(basePrice)}</span>
           </div>
         </div>
       ) : isTransfer ? (
@@ -235,7 +235,10 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                    <Luggage className="w-4 h-4" /> {item?.baggage}
                
                 </span>
-          <span className="text-[#D3202D] font-medium">
+          
+<span className="font-medium text-gray-600 text-xs capitalize">
+                  {item.transferType === 'round-trip' || item.tripType === 'round-trip' ? t("roundTrip", { ns: "transfer", defaultValue: "Round Trip" }) : t("oneWay", { ns: "transfer", defaultValue: "One Way" })}
+                (<span className="font-medium">
   {item?.currency}{" "}
 {formatPrice(
   isRoundTrip
@@ -245,9 +248,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       item.vehicle?.price
 )}
 
-</span>
-<span className="font-medium text-gray-600 text-xs capitalize">
-                  {item.transferType === 'round-trip' || item.tripType === 'round-trip' ? t("roundTrip", { ns: "transfer", defaultValue: "Round Trip" }) : t("oneWay", { ns: "transfer", defaultValue: "One Way" })}
+</span>)
                 </span>
 
               </div>
@@ -255,8 +256,9 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
                 
                 {(item.selectedTime || item.pickupTime) && (
                <>
-                 <span className="text-sm text-gray-800 font-medium flex items-center gap-1.5">
-                   Time: 
+               
+                 <span className="font-medium text-gray-600 flex items-center gap-1.5">
+                   <Clock size={14} />Time 
                  </span>
                   <span className="text-sm text-gray-800 font-medium">
                   {item.selectedTime || item.pickupTime}{item.returnDate && ` - ${item.returnDate}`}
@@ -334,7 +336,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
           <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
-            <span className="text-[#D3202D] font-semibold">{item?.currency} {formatPrice(total)}</span>
+            <span className="text-[#D3202D]">{item?.currency} {formatPrice(total)}</span>
           </div>
         </div>
       ) : (
@@ -346,11 +348,17 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
             className="w-80 h-36 object-cover rounded-lg"
           />
           <div className="space-y-1.5 text-xs">
-            <div className="text-center font-medium text-gray-800">{item?.title}</div>
+            <div className="font-bold text-gray-800 flex justify-center items-center gap-1.5">{item?.title}</div>
             {date && (
               <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
                 <span className="font-medium text-gray-600 flex items-center gap-1.5"><Calendar size={14} /> Date</span>
                 <span className="text-sm text-gray-800 font-medium">{date}</span>
+              </div>
+            )}
+            {item?.selectedTime && (
+              <div className="flex justify-between items-center bg-gray-50 p-1.5 rounded">
+                <span className="font-medium text-gray-600 flex items-center gap-1.5"><Clock size={14} /> Time</span>
+                <span className="text-sm text-gray-800 font-medium">{item?.selectedTime}</span>
               </div>
             )}
             {adultCount > 0 && (
@@ -367,7 +375,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
             )}
           </div>
 
-          <div className="flex justify-between items-center border-t pt-2 mt-3 text-sm">
+          <div className="flex justify-between items-center border-t pt-2 mt-2 text-sm">
             <span>{t("price")}</span>
             <span className="text-[#D3202D]">{item?.currency} {formatPrice(basePrice) || "0"}</span>
           </div>
