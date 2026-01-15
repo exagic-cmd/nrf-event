@@ -12,6 +12,8 @@ function BaggagePassengerSelector({
   baggageDetail,
   errors = {},
   disabled = false,  
+    hideBaggage = false,
+
 }) {
   const { t } = useTranslation("transfer");
   const [modalBaggageInfo, setModalBaggageInfo] = useState(null);
@@ -72,6 +74,8 @@ function BaggagePassengerSelector({
         </div>
 
         {/* Baggage Section */}
+          {!hideBaggage && (
+          
         <div className="relative">
              <div className="flex justify-between mb-2">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -168,7 +172,14 @@ function BaggagePassengerSelector({
             <p className="mt-2 text-red-500 text-sm">{errors.baggage}</p>
           )}
         </div>
+          )}
       </div>
+      {hideBaggage && (
+        <p className="text-sm text-gray-600 pt-2">
+            {t("attractionLuggageDisclaimer", "We do not expect customers to be carrying any Large or Cabin size luggage to the attraction.")}
+          </p>
+      
+      )}
       {modalBaggageInfo && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"

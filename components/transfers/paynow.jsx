@@ -207,7 +207,7 @@ const exceptionsPayload = item.exceptions || [];
         adult_count: item.adult_count || item.guests || 0,
         child_count: item.child_count || 0,
         total: item?.total ?? 0,  // Use item.total which is already rooms × nights
-        tour_date: item.tour_date || item.checkIn||"20-11-2025",
+        tour_date: item.tour_date || item.checkIn||"",
         check_in: item.check_in || item.checkIn,
         check_out: item.check_out || item.checkOut,
         nights: item.nights || 1,
@@ -334,46 +334,61 @@ flight_dep_estimated_time:
 
   }
 
-    // === DAY TOUR / UPSELL ===
-    // ... keep your existing day tour/upsell logic unchanged ...
-    else if(!isTransfer && !isAccommodation) {
+  else {
     return {
-      adult_count: item.adults || 0,
-      child_count: item.child || 0,
-      dropoff_point: item.hotelName || item.searchParams?.dropoff?.name || '',
+  adult_count: item.adults || 0,
+  child_count: item.child || 0,
+  dropoff_point:  item.hotelName ||item.searchParams?.dropoff?.name || '',
       flight_number: item.pickupFlightNumber || '',
-      operator_email: 'operator@example.com',
-      operator_id: '12345',
-      pickup_date: allUpsell ? currentDate : (transferItem?.selectedDate || transferItem?.pickupDate || currentDate),
-      pickup_point: item.hotelName || item.searchParams?.pickup?.name || '',
-      pickup_point_id: item.vehicle?.pickup_point_id || item.pickup?.id || item.searchParams?.pickup?.id || "",
-      dropoff_point_id: item.vehicle?.dropoff_point_id || item.dropoff?.id || item.searchParams?.dropoff?.id || "",
-      two_way_pickup_point_id: item.returnPickup?.id || item.vehicle?.dropoff_point_id || item.searchParams?.returnPickup?.id || "",
-      two_way_dropoff_point_id: item.returnDropoff?.id || item.vehicle?.pickup_point_id || item.searchParams?.returnDropoff?.id || "",
-      feature_type_id: item.vehicle?.feature_type_id || 1,
-      flight_estimated_time: item.pickupFlightScheduleTime || item.flightEstimatedTime || "",
-      flight_dep_estimated_time: item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
-      pickup_time: item.selectedTime,
-      product_id: item.tourId,
-      total: item.pricing?.total || 0,
-      tour_date: allUpsell ? currentDate : (transferItem?.selectedDate || transferItem?.pickupDate || currentDate),
-      tourplan_hotel_id: '789',
-      vehicle_id: 'V102',
-      transfer_type: '',
-      flight_dep_number: '',
-      flight_estimated_time: '',
-      flight_dep_estimated_time: '',
-      two_way_dropoff_date: '',
-      two_way_dropoff_time: '',
-      baggage: item.baggage || 0,
-      pickup_surcharge: item.pickupSurcharge || 0,
-      return_surcharge: item.returnSurcharge || 0,
-      return_surcharge_id: item.returnSurchargeId || 0,
-      pickup_surcharge_id: item.pickupSurchargeId || 0,
-      addons: item.addons || [],
-      addons_round: item.addons_round || [],
-      exceptions: item.exceptions || [],
-    };
+  operator_email: 'operator@example.com',
+  operator_id: '12345', 
+  pickup_date: item.selectedDate,
+  pickup_point: item.hotelName || item.searchParams?.pickup?.name || '',
+   pickup_point_id:
+      item.vehicle?.pickup_point_id ||
+      item.pickup?.id ||
+      item.searchParams?.pickup?.id ||
+      "",
+      dropoff_point_id:
+      item.vehicle?.dropoff_point_id ||
+      item.dropoff?.id ||
+      item.searchParams?.dropoff?.id ||
+      "",
+two_way_pickup_point_id:
+      item.returnPickup?.id ||
+      item.vehicle?.dropoff_point_id ||
+      item.searchParams?.returnPickup?.id ||
+      "",
+      two_way_dropoff_point_id:
+      item.returnDropoff?.id ||
+      item.vehicle?.pickup_point_id ||
+      item.searchParams?.returnDropoff?.id ||
+      "",
+       feature_type_id: item.vehicle?.feature_type_id || 1,
+         flight_estimated_time: item.pickupFlightScheduleTime || item.flightEstimatedTime || "",
+flight_dep_estimated_time:
+      item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
+  pickup_time: item.selectedTime,
+  product_id: item.tourId,
+  total: item.pricing?.total || 0,
+  tour_date: item.selectedDate,
+  tourplan_hotel_id: '789', 
+  vehicle_id: 'V102', 
+  transfer_type: '', // in trasfer passing
+  flight_dep_number: '', // in trasfer passing
+  flight_estimated_time: '', // in trasfer passing
+  flight_dep_estimated_time: '', // in trasfer passing
+  two_way_dropoff_date: '', // in trasfer passing
+  two_way_dropoff_time: '', // in trasfer passing,
+  baggage: item.baggage || 0,
+    pickup_surcharge: item.pickupSurcharge || 0,
+    return_surcharge: item.returnSurcharge || 0,
+    return_surcharge_id: item.returnSurchargeId || 0,
+    pickup_surcharge_id: item.pickupSurchargeId || 0,
+     addons: addonsPayload,           
+      addons_round: addonsRoundPayload ,
+        exceptions: exceptionsPayload,
+}
   }
 }
 );
@@ -476,8 +491,6 @@ console.log("cart_items:PAYNOW #####################", cart_items);
 
       const finalPayload = buildFinalPayload();
       console.log("Final Payload for submitBooking:", finalPayload);
-      
-      
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
       const totalPrice = response?.total_price;

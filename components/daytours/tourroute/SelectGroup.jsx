@@ -120,7 +120,7 @@ export default function SelectGroup({
                   } flex items-center justify-center transition-all duration-300`}
                 >
                   <img
-                    src={getFullImageUrl(guide?.image || "") || "placeholder.svg"}
+                    src={getFullImageUrl(guide?.image || "") || "/placeholder.svg"}
                     alt={guide.name}
                     className="w-full h-full object-cover"
                   />
@@ -152,7 +152,7 @@ export default function SelectGroup({
             <button
               onClick={onReview}
               disabled={!selectedGuide || !selectedLanguage || reviewDisabled}
-              className="w-full sm:w-auto px-4 py-2 bg-[#D3202D]   text-black font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2 bg-[#D3202D]   text-white font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
             >
               Preview
             </button>

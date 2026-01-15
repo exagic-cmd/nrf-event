@@ -20,6 +20,7 @@ import UpsellProducts from "@/components/transfers/detail/UpsellBooking";
 import BookingPolicySection from "@/components/transfers/detail/BookingPolicySection";
 import ReturnTransferModal from "@/components/transfers/detail/ReturnTransferModal";
 import formatPrice from "@/lib/formatPrice";
+import { toast } from 'react-toastify';
 const TransferBookingPage = () => {
   const { t } = useTranslation("transfer","common");
   const { localizedPush, back } = useLocalizedRouter();
@@ -266,6 +267,7 @@ const executeBookTransfer = () => {
     setIsAddedToCart(true);
     setIsAddingToCart(false); 
 setIsLocked(true);
+    toast.success("Added to cart");
 
   }
 }, 1000);
@@ -404,6 +406,7 @@ const handleUpdate = () => {
   setIsLocked(true);
   useDrawerStore.getState().setDrawerContent(<CartDrawerContent />);
   useDrawerStore.getState().setJustAdded(true);
+  toast.success("Added to cart");
 };
 
 const handleReturnModalClose = () => {
@@ -428,6 +431,8 @@ const handleReturnModalConfirm = () => {
     }
   }, 100);
 };
+const isAttractionTrip = [searchParams?.pickup?.type, searchParams?.dropoff?.type]
+  .some(t => ["attraction", "landmark"].includes(t?.toLowerCase()));
 
 const baggageSelectorProps = {
   cabinBags: userBookingDetails.cabinBags || 0,
@@ -447,6 +452,7 @@ const baggageSelectorProps = {
   baggageDetail: selectedTransfer,
   errors: errors,
   disabled: isLocked,
+   hideBaggage: isAttractionTrip,
 };
 
   if (isLoading) {
