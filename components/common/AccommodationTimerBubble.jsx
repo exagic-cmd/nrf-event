@@ -92,7 +92,7 @@ const AccommodationTimerBubble = () => {
           onExtend={async () => {
             const res = await extendHoldForItem(modalItem.key);
             if (res.success) {
-              toast.success("Reserve extended successfully for 7 minutes!");
+              toast.success("Reservation extended successfully for 7 minutes!");
             } else {
               toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
             }
@@ -101,7 +101,7 @@ const AccommodationTimerBubble = () => {
           }}
           onRelease={async () => {
             removeItem(modalItem.key);
-            toast.info("Accommodation released from your cart.");
+            toast.info("Accommodation removed from your cart.");
             setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
             setModalItem(null);
           }}

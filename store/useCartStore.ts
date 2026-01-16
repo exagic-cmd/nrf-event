@@ -222,7 +222,8 @@ export const useCartStore = create<CartState>()(
           }
           const expiresAt = data.expiresAt || (Date.now() + 7 * 60 * 1000);
           get().setHoldForItem(key, expiresAt);
-          toast.success('Accommodation on reserve for 7 minutes');
+          const roomCount = get().getAccommodationItems().length;
+          toast.success(`${roomCount} ${roomCount === 1 ? 'room' : 'rooms'} reserved for 7 mins`);
           return { success: true, expiresAt };
         } catch (err) {
           console.warn('Hold API error:', err);

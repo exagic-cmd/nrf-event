@@ -219,7 +219,7 @@ const CartDrawerContent = () => {
                         </h4>
                         <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
                           <p>
-                            {t("date", { ns: "common" })}: {formatDate(item.selectedDate)}
+                             {formatDate(item.selectedDate)}
                           </p>
                           <p>
                             {item?.adults || item?.pax} {t("adult")} |  {item?.child || 0} {t("child")}
@@ -295,7 +295,7 @@ const CartDrawerContent = () => {
                   onClick={handleProceed}
                   className="w-full bg-slate-200 text-gray-800 border border-1 py-2.5 rounded-lg text-sm font-semibold hover:text-white hover:bg-gray-500 transition"
                 >
-                  {t("Checkout")}
+                 Checkout
                 </button>
               )}
 
@@ -333,7 +333,7 @@ const CartDrawerContent = () => {
           onConfirm={async () => {
             const res = await extendHoldForItem(itemToExtend.key);
             if (res.success) {
-              toast.success("Reserve extended successfully for 7 minutes!");
+              toast.success("Reservation extended successfully for 7 minutes!");
             } else {
               toast.error(`Failed to extend hold: ${res.message || 'Unknown error'}`);
             }
