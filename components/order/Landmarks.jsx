@@ -23,7 +23,7 @@ export default function LandmarkList({ itineraryId , customColor }) {
   useEffect(() => {
   const fetchTypes = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/landmark-types`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/landmark-types`);
       const data = await res.json();
       setTypes(data?.data || []);
     } catch (err) {
