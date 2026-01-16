@@ -52,6 +52,8 @@ const Footer = () => {
     },
   ];
 
+  const hasSocialLinks = socialLinks.some((social) => social.href);
+
   return (
     <footer className=" text-black">
       <hr />
@@ -118,7 +120,8 @@ const Footer = () => {
           </div>
 
           {/* Social Media */}
-          <div className="space-y-4">
+          {hasSocialLinks && (
+            <div className="space-y-4">
             <h3 className="text-lg font-semibold">Follow Us</h3>
             <div className="flex space-x-4 ">
               {socialLinks.map(
@@ -137,7 +140,8 @@ const Footer = () => {
                   )
               )}
             </div>
-          </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-2 border-t border-white pt-2 text-center text-sm text-white">

@@ -230,7 +230,7 @@ export default function SearchFilterCard({
 
   // Load data
   useEffect(() => {
-    if (isHomepage) return; // Don't auto-load on homepage
+    //if (isHomepage) return; // Don't auto-load on homepage
     if (filterActiveTab === 2 && !pickupOptions?.length) {
       fetchPickupOptions();
     }
