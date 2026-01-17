@@ -263,7 +263,7 @@ const executeBookTransfer = () => {
     setIsAddingToCart(false); 
     toast.success("Cart updated successfully!");
   } else {
-    toast.success("Added into cart!");
+    //toast.success("Added into cart!");
     useDrawerStore.getState().setDrawerContent(<CartDrawerContent />);
     useDrawerStore.getState().setJustAdded(true);
     setIsAddedToCart(true);
