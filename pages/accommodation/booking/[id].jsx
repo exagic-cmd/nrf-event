@@ -110,7 +110,7 @@ export default function AccommodationBookingPage() {
   return (
     <Layout>
       <div className="min-h-screen bg-[#f4f4f4] text-black pt-20 mt-2 lg: mt-6 pb-12">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-2">
           {/* <h1 className="text-lg font-semibold mb-8">
             Book {hotel?.title || "Hotel"}
           </h1> */}

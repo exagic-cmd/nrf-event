@@ -140,7 +140,7 @@ const DayTourBookingPage = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-[#f4f4f4] pb-12 pt-12 md:pt-20">
-        <div className="max-w-7xl mx-auto px-1 md:px-4 py-8">
+        <div className="full-width mx-auto px-1 md:px-4 py-8 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <BookNow id={displayId} productTitle={displayTitle} onBookNow={handleItemAddedToCart} />

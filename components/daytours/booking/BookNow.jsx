@@ -173,7 +173,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-0 md:mx-2 p-1 md:p-2">
+    <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-0 md:mx-2 lg:mx-0">
       <div className="w-full lg:w-3/3">
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white rounded-lg p-1 md:p-6 shadow-sm border border-gray-100">

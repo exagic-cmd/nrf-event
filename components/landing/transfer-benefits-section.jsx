@@ -116,13 +116,12 @@ export function TransferBenefitsSection() {
             {/* Scrollable Container */}
             <div
               ref={scrollContainerRef}
-              className="flex overflow-x-auto gap-6 snap-x snap-mandatory scrollbar-hide pb-4"
+              className="flex overflow-x-auto gap-6 snap-x snap-mandatory scrollbar-hide pb-8"
             >
               {topDayTours.map((tour) => (
                 <div
-                  key={tour.id}
-                 
-                  className="flex-shrink-0 w-full md:w-96 cursor-pointer snap-start group"
+                  key={tour.id}                 
+                  className="flex-shrink-0 w-full md:w-96 snap-start group"
                 >
                   {/* Card Container */}
                   <div className=" rounded-2xl h-[426px] md:h-[446px] lg:w-[380px] ">
