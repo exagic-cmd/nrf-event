@@ -495,7 +495,7 @@ const baggageSelectorProps = {
   return (
     <Layout>
      <div className="bg-[#f4f4f4] pb-6 md:pb-14">
-       <div className="min-h-screen bg-[#f4f4f4] mt-16 p-4 max-w-7xl mx-auto">
+       <div className="min-h-screen bg-[#f4f4f4] mt-16 p-4 full-width mx-auto lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
           <div className="lg:hidden space-y-4">
             <div className="order-1">

@@ -78,7 +78,7 @@ const PayNowPage = () => {
   return (
     <Layout>
       <div className= "bg-[#f4f4f4] mt-12 min-h-screen">
-        <div className="max-w-6xl bg-[#f4f4f4] mx-auto px-4 py-8 pb-14">
+        <div className="full-width bg-[#f4f4f4] mx-auto px-4 py-8 pb-14 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">           
               <PayNow />          
           </div>

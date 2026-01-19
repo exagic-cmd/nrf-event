@@ -7,11 +7,11 @@ export default function HeroSection() {
     "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1764328249/External%20Links/lhsjacediff4b9pgp1al.svg";
 
   return (
-    <div className="min-h-[40vh] bg-white w-full px-2 md:px-8 lg:px-12">
+    <div className="min-h-[40vh] bg-white w-full ">
       <div className="  py-4 md:py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center ">
           {/* Left  */}
-          <div className="flex flex-col justify-center space-y-4 text-center md:text-left">
+          <div className="flex flex-col justify-center space-y-4 text-center md:text-left px-2 md:px-8 lg:px-12">
             <div className="">
               <h1 className="text-xl lg:text-3xl font-semibold text-gray-900 ">
                 Reliable Transfers, Comfort Stays &

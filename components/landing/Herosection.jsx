@@ -181,7 +181,7 @@ export default function HomePage() {
       <section className="relative pb-24 md:pb-32">
       
 
-        <div className="absolute -top-12 lg:-top-16 min-w-full z-10">
+        <div className="absolute -top-12 lg:-top-16 lg:px-8 min-w-full z-10">
           {/* Set favicon to event banner when available */}
           {event?.event?.banner && (
             <Head>
