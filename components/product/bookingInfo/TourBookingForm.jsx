@@ -54,28 +54,14 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
     searchPickupPoints,
   } = useBookingStore()
 
-  const hasAdjustedDateRef = useRef(false);
-
 useEffect(() => {
   let initialDate = "";
   let calculatedMinDate = minSelectableDate;
 
   if (value.date) {
-    if (!hasAdjustedDateRef.current) {
-      const d = new Date(value.date + "T00:00:00");
-      d.setDate(d.getDate() + 1);
-
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      initialDate = `${year}-${month}-${day}`;
-
-      calculatedMinDate = d;
-      hasAdjustedDateRef.current = true;
-    } else {
-      // If already adjusted, use the value as is (it's the selected tour date)
-      initialDate = value.date;
-    }
+    // Keep the selected date as is, without adding extra days
+    initialDate = value.date;
+    calculatedMinDate = new Date(value.date + "T00:00:00");
   } else {
     initialDate = "";
   }
@@ -378,65 +364,45 @@ useEffect(() => {
 <div className="space-y-3">
   <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
     <Clock className="w-4 h-4 text-[#D3202D]" />
-    {t("bookingForm.time")} <span className="text-red-500">*</span>
+    Tour start time <span className="text-red-500">*</span>
   </label>
+
   {form.date ? (
     (() => {
-      const dateStr = form.date;
-      const times = pickupTimesByDate[dateStr] || [];
-      if (times.length === 0) {
+      const times = pickupTimesByDate[form.date] || [];
+
+      if (!times.length) {
         return (
           <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-yellow-200">
-            {/* {t("bookingForm.pickupTimesUnavailable")} */}
-            Time is not Available, Proceed!
-            
+            Time is not available for selected date
           </div>
         );
       }
 
-      const timeToDate = (timeStr) => {
-        if (!timeStr) return null;
-        const date = new Date();
-        const isPM = /pm/i.test(timeStr);
-        const isAM = /am/i.test(timeStr);
-        let [hours, minutes] = timeStr.replace(/am|pm/i, '').trim().split(':');
-        hours = parseInt(hours, 10);
-        minutes = parseInt(minutes, 10);
-        if (isPM && hours < 12) hours += 12;
-        if (isAM && hours === 12) hours = 0;
-        date.setHours(hours, minutes, 0, 0);
-        return date;
-      };
-
       return (
-        <DatePicker
-          selected={timeToDate(form.time)}
-          onChange={(date) => {
-            if (date) {
-              const timeString = date.toTimeString().slice(0, 5);
-              handleChange("time", timeString);
-            } else {
-              handleChange("time", "");
-            }
-          }}
-          showTimeSelect
-          showTimeSelectOnly
-          timeIntervals={15}
-          timeCaption={t("bookingForm.time")}
-          dateFormat="h:mm aa"
-          placeholderText={t("bookingForm.time")}
-          customInput={React.createElement(CustomInput, { className: "w-full" })}
-          wrapperClassName="w-full"
-          includeTimes={times.map(timeToDate)}
-           disabled={isBookingAdded}
-           popperPlacement="bottom-start"
-        />
+        <select
+          className="w-full h-12 border border-gray-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+          value={form.time}
+          onChange={(e) => handleChange("time", e.target.value)}
+          disabled={isBookingAdded}
+        >
+          <option value="">{t("bookingForm.time")}</option>
+          {times.map((time, idx) => (
+            <option key={idx} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
       );
     })()
   ) : (
-    <div className="text-sm text-gray-400">{t("bookingForm.selectDate")}</div>
+    <div className="text-sm text-gray-400">
+      {t("bookingForm.selectDate")}
+    </div>
   )}
 </div>
+
+
         </CardContent>
       </Card>
     </>
