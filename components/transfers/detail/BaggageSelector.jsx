@@ -18,8 +18,12 @@ function BaggagePassengerSelector({
   const { t } = useTranslation("transfer");
   const [modalBaggageInfo, setModalBaggageInfo] = useState(null);
 
-  const maxPassengers = baggageDetail?.pax_capacity || 0;
-  const maxBaggage = baggageDetail?.suitcases || baggageDetail?.capacity_with_luggage || 0;
+   const hasBaggageOptions = Array.isArray(baggageDetail?.baggages) && baggageDetail.baggages.length > 0;
+  const maxPassengers = hasBaggageOptions
+    ? (baggageDetail?.capacity_with_luggage || baggageDetail?.pax_capacity || 0)
+    : (baggageDetail?.capacity_without_luggage || baggageDetail?.pax_capacity || 0);
+
+    const maxBaggage = baggageDetail?.suitcases || baggageDetail?.capacity_with_luggage || 0;
   // Robustly find baggage info by name, with a fallback to array index.
   const cabinBaggageInfo = baggageDetail?.baggages?.find(b => b.name === 'Cabin') || baggageDetail?.baggages?.[0];
   const largeBaggageInfo = baggageDetail?.baggages?.find(b => b.name === 'Large') || baggageDetail?.baggages?.[1];
