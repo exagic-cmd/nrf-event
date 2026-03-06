@@ -190,7 +190,7 @@ export default function AccommodationBookingPage() {
       <div className="flex justify-between items-center">
         <span className="text-base font-semibold">Total</span>
         <span className="text-xl font-bold">
-          SGD {formatPrice(totalPrice)}
+           {selectedRoom?.pricing?.currency} {formatPrice(totalPrice)}
         </span>
       </div>
       <p className="text-xs text-gray-600 mt-1 text-right">
