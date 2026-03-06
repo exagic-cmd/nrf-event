@@ -15,8 +15,6 @@ import {
   CheckCircle, XCircle, DollarSign, Info, Loader2, RefreshCw
 } from "lucide-react";
 
-const [itemToReplace, setItemToReplace] = useState(null);
-const [showRecommendations, setShowRecommendations] = useState(false);
 const TITLE_OPTIONS = [
   { value: "Mr", label: "Mr" },
   { value: "Mrs", label: "Mrs" },
@@ -266,7 +264,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
   const [modalOpen, setModalOpen] = useState(false);
   const [bookingResponse, setBookingResponse] = useState(null);
   const [itemToReplace, setItemToReplace] = useState(null);
-
+const [showRecommendations, setShowRecommendations] = useState(false);
 
   useEffect(() => {
     const initialGuests = initGuestsByRoom();
@@ -592,6 +590,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
     addToCartDirectly();
     setItemToReplace(null);
     setLoadingButton(null);
+    setShowRecommendations(true);
   }
 
   // === CONFIRM & ADD (STUBA) ===
