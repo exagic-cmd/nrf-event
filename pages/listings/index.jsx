@@ -493,6 +493,8 @@ useEffect(() => {
             <div className="hidden lg:block max-h-[calc(100vh-7rem)] overflow-y-auto md:sticky top-24 self-start z-20 w-full lg:w-56">
               {!accommodationLoading && accommodations && accommodations.length > 0 && (
                 <AccommodationFilterSidebar
+                  accommodations={accommodations}
+                  filteredResults={filteredResults}
                   filters={accommodationFilters}
                   onFilterChange={handleFilterChange}
                   sortBy={accommodationSortBy}
@@ -557,6 +559,8 @@ useEffect(() => {
             <div className="p-4">
               {isAccommodationCategory ? (
                 <AccommodationFilterSidebar
+                  accommodations={accommodations}
+                  filteredResults={filteredResults}
                   filters={accommodationFilters}
                   onFilterChange={handleFilterChange}
                   sortBy={accommodationSortBy}

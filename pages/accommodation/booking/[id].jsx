@@ -50,15 +50,15 @@ export default function AccommodationBookingPage() {
 
     try {
       const data = JSON.parse(stored);
-      const nonStuba = data.isNonStuba === true;
+      const isStuba = data.isStuba === true;
 
       setBookingData(data);
-      setIsNonStuba(nonStuba);
+      setIsNonStuba(!isStuba);
 
-      if (nonStuba) {
-        setAllowed(true); // Non-Stuba always allowed
-      } else {
+      if (isStuba) {
         setAllowed(!!data.hotelData && !!data.selectedRoom); // Stuba requires full flow
+      } else {
+        setAllowed(true); // Non-Stuba always allowed
       }
     } catch (err) {
       console.error("Invalid booking data:", err);
@@ -203,6 +203,7 @@ export default function AccommodationBookingPage() {
    
             <div className="lg:col-span-2">
               <AccommodationBookNow
+                isStuba={!isNonStuba}
                 isNonStuba={isNonStuba}
                 bookingData={bookingData}
                 price={totalPrice}

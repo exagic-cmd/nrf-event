@@ -1,5 +1,6 @@
 // stores/useAccommodationsStore.js
 import { create } from "zustand";
+import helpers from "@/lib/helpers";
 
 
 let hotelRegionDebounceTimeout = null;
@@ -64,7 +65,7 @@ export const useAccommodationsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/search-titles`,
+        `${helpers.getApiAbsoluteURL("/accommodations/search-titles")}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -201,6 +202,9 @@ export const useAccommodationsStore = create((set, get) => ({
       const params = {
         text: searchPayload.text || '',
         start_date: searchPayload.start_date,
+        get_stb_items: true,
+        region: 18196,
+        is_b2b_only: 1,
       };
       if (searchPayload.end_date) {
         params.end_date = searchPayload.end_date;
@@ -209,6 +213,7 @@ export const useAccommodationsStore = create((set, get) => ({
       const baseParams = new URLSearchParams(params).toString();
 
       const rooms = searchPayload.rooms || [{ adult: 1, children: [] }];
+      
       const roomsParams = rooms.map((room, index) => {
         const adultParam = `rooms[${index}][adult]=${room.adult}`;
         let childrenParams = '';
@@ -219,9 +224,9 @@ export const useAccommodationsStore = create((set, get) => ({
       }).join('&');
 
       const queryString = [baseParams, roomsParams].filter(Boolean).join('&');
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/search?${queryString}`;
+      const url = `${helpers.getApiAbsoluteURL(`/accommodations/search?${queryString}`)}`;
 
-      console.log("🧾 Final GET Request URL:", url);
+      //console.log("🧾 Final GET Request URL:", url);
 
       const res = await fetch(url, {
         method: "GET",
@@ -236,7 +241,7 @@ export const useAccommodationsStore = create((set, get) => ({
       const data = await res.json();
       // Handle cases where the API call is successful but finds no results.
       if (data.success === true && (!data.data || !data.data.accommodations || data.data.accommodations.length === 0)) {
-        console.log("✅ API returned success but no accommodations found.");
+        //console.log("✅ API returned success but no accommodations found.");
         set({
           accommodations: [],
           searchResults: [],
@@ -277,7 +282,7 @@ export const useAccommodationsStore = create((set, get) => ({
         accommodationFilters: filters,
       }));
 
-      console.log("✅ Accommodations API Response:", data);
+     // console.log("✅ Accommodations API Response:", data);
       return enrichedResults;
     } catch (err) {
       console.error("fetchAccommodations error:", err);
@@ -297,10 +302,10 @@ fetchNonStubaAccommodation: async (hotelId) => {
   try {
     const payload = { ids: [Number(hotelId)] };
 
-    console.log("Calling /affliate/get_public_products with:", payload);
+   // console.log("Calling /affliate/get_public_products with:", payload);
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
+      `${helpers.getApiAbsoluteURL("/affliate/get_public_products")}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -309,7 +314,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
     );
 
     const rawResponse = await res.json();
-    console.log("Raw non-Stuba API response:", rawResponse);
+   // console.log("Raw non-Stuba API response:", rawResponse);
 
     if (!res.ok) {
       throw new Error(rawResponse.message || `HTTP ${res.status}`);
@@ -319,7 +324,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
     // 1. CORRECT PATH: rawResponse.products (NOT rawResponse.data)
     // ———————————————————————————————
     const allProducts = Array.isArray(rawResponse?.products) ? rawResponse.products : [];
-    console.log("All products from API:", allProducts);
+   // console.log("All products from API:", allProducts);
 
     // Choose a product from the returned products without filtering by link_type_id/category_id.
     // Prefer the product that matches the requested hotelId (if present), otherwise fall back to the first product.
@@ -328,7 +333,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
     }
 
     const hotel = allProducts.find(item => Number(item.id) === Number(hotelId)) || allProducts[0];
-    console.log("Selected non-Stuba hotel product:", hotel);
+   // console.log("Selected non-Stuba hotel product:", hotel);
 
     // ———————————————————————————————
     // 4. NORMALIZE (match your UI)
@@ -365,7 +370,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
 
     const result = { ...hotel, ...normalized };
 
-    console.log("✅ Normalized non-Stuba data:", result);
+   // console.log("✅ Normalized non-Stuba data:", result);
 
     set({ isLoading: false });
     return result;
@@ -376,122 +381,10 @@ fetchNonStubaAccommodation: async (hotelId) => {
   }
 },
 
-fetchNonStubaRooms: async (accommodationId) => {
-  set({ isLoading: true, error: null });
 
-  try {
-    const productId = Number(accommodationId);
-    if (!productId) throw new Error("Invalid product id");
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/product_tiered_pricing/${productId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
 
-    const rawResponse = await res.json();
-    console.log("product_tiered_pricing full response:", rawResponse);
 
-    if (!res.ok || rawResponse.success !== true) {
-      throw new Error(rawResponse.message || `HTTP ${res.status}`);
-    }
 
-    const data = rawResponse.data;
-
-    set({ isLoading: false });
-
-    return {
-      rawResponse,
-      room_categories: data.room_categories || [],
-      room_types: data.room_types || [],
-      product_pricing: data.product_pricing || [],   // ← THIS IS THE KEY
-    };
-  } catch (err) {
-    console.error("fetchNonStubaRooms failed:", err);
-    set({ isLoading: false, error: err.message });
-    return {
-      rawResponse: null,
-      room_categories: [],
-      room_types: [],
-      product_pricing: [],
-    };
-  }
-},
-
-// Add this inside your store (keep everything else exactly as is)
-checkNonStubaAvailability: async (productId, startDate, endDate) => {
-  if (!productId || !startDate || !endDate) return { isFullyAvailable: true };
-
-  const dates = [];
-  let cur = new Date(startDate);
-  const end = new Date(endDate);
-  while (cur < end) {
-    dates.push(cur.toISOString().split('T')[0]);
-    cur.setDate(cur.getDate() + 1);
-  }
-
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/check-dates-availability`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        product_id: Number(productId),
-        adults: 1,
-        children: 0,
-      }),
-    });
-
-    if (!res.ok) throw new Error("Failed");
-
-    const data = await res.json();
-    if (data.status !== "success" || !Array.isArray(data.availability)) {
-      return { isFullyAvailable: false };
-    }
-
-    const isFullyAvailable = dates.every(date => {
-      const entry = data.availability.find(a => a.date === date);
-      return entry && entry.available === true && entry.available_qty >= 1;
-    });
-
-    return { 
-      isFullyAvailable,
-      allotments: data.availability.map(a => ({
-        date: a.date,
-        value: a.available_qty,
-        available: a.available
-      }))
-    };
-  } catch (err) {
-    console.warn("Availability check failed:", err);
-    return { isFullyAvailable: true, allotments: [] }; // safe fallback
-  }
-},
-
-  // New action to check availability before booking
-  checkAvailability: async (payload) => {
-    set({ isCheckingAvailability: true, error: null });
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accommodations/check-availability`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || data.success === false) {
-        throw new Error(data.message || 'Availability check failed');
-      }
-      
-      return data; // Should return { success: true, ... }
-    } catch (error) {
-      set({ error: error.message });
-      return { success: false, message: error.message };
-    } finally {
-      set({ isCheckingAvailability: false });
-    }
-  },
   // Suggestions for hotel/region search
   fetchSuggestedAccommodations: async (query) => {
     try {
