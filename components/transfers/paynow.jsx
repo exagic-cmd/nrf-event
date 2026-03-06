@@ -102,10 +102,10 @@ const PayNow = ({ totalPrice }) => {
 
   useEffect(() => {
     const hasPendingPayment = typeof window !== "undefined" && !!localStorage.getItem("pendingPaymentOrderId");
-    if (items.length === 0 && !hasPendingPayment) {
+    if (items.length === 0 && !hasPendingPayment && !isPopupVisible) {
       localizedPush("/");
     }
-  }, [items, localizedPush]);
+  }, [items, localizedPush, isPopupVisible]);
 
   useEffect(() => {
     if (user) {
@@ -343,15 +343,17 @@ flight_dep_estimated_time:
   operator_email: 'operator@example.com',
   operator_id: '12345', 
   pickup_date: item.selectedDate,
-  pickup_point: item.hotelName || item.searchParams?.pickup?.name || '',
+  pickup_point: item.hotelName||item.pickupPoint || item.searchParams?.pickup?.name || '',
+  dropoff_point: item.dropoffPoint ||item.searchParams?.dropoff?.name || '',
+  category_id:item.category_name||"",
    pickup_point_id:
-      item.vehicle?.pickup_point_id ||
+      item.vehicle?.pickup_point_id ||item.pickupPointId ||
       item.pickup?.id ||
       item.searchParams?.pickup?.id ||
       "",
       dropoff_point_id:
-      item.vehicle?.dropoff_point_id ||
-      item.dropoff?.id ||
+      item.vehicle?.dropoff_point_id || item.dropoffPointId||
+            item.dropoff?.id ||
       item.searchParams?.dropoff?.id ||
       "",
 two_way_pickup_point_id:
@@ -504,7 +506,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
          setShowFlywire(true); 
          useCartStore.getState().clearCart();
        // } else {
-    
+
        // setIsPopupVisible(true);
       // }
       } catch (error) {

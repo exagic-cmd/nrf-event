@@ -118,6 +118,21 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       productData?.basicinfo?.product_description?.title || "Untitled Tour";
     const image = productData?.basicinfo?.images?.[0]?.image || "img";
     const currency = apiData?.currency ;
+    
+    const isShuttle = apiData?.category_id === 2;
+    alert(apiData?.category_id === 2);
+    const selectedTime = isShuttle ? formData.pickupTime : formData.time;
+
+    let pickupPointId = null;
+    let dropoffPointId = null;
+
+    if (isShuttle) {
+      const pickupObj = apiData?.pickup_group_list?.find((p) => p.pickup_point_name === formData.pickupPoint);
+      if (pickupObj) pickupPointId = pickupObj.id || pickupObj.pickup_point_id;
+
+      const dropoffObj = apiData?.dropoff_point_group_list?.find((d) => d.dropoff_point_name === formData.dropoffPoint);
+      if (dropoffObj) dropoffPointId = dropoffObj.id || dropoffObj.dropoff_point_id;
+    }
 
     let pricing = calculateTierPricing(
       formData.adults || 0,
@@ -139,11 +154,15 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       tourId: id,
       title,
       image,
-      category_name: 2,
+      category_name: apiData?.category_id,
       currency,
-      selectedDate: formData.date,
-      selectedTime: formData.time || "09:00 AM",
-      hotelName: formData.hotel,
+      selectedDate: formData.date||"20-11-2018",
+      selectedTime: selectedTime || "09:00 AM",
+      pickupPoint: isShuttle ? formData.pickupPoint : formData.hotel,
+      dropoffPoint: isShuttle ? formData.dropoffPoint : "",
+      pickupPointId,
+      dropoffPointId,
+      type:isShuttle ? "shuttle Service" : "daytour",
       adults: formData.adults,
       child: formData.child,
       totalPax: formData.adults + formData.child,
@@ -177,12 +196,15 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       <div className="w-full lg:w-3/3">
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white rounded-lg p-1 md:p-6 shadow-sm border border-gray-100">
-            <BookingPriceTable id={id} />
+            {apiData?.category_id !== 2 && <BookingPriceTable id={id} />}
             <BookingForm
               value={formData}
               errors={errors}
               onChange={handleFormChange}
               isBookingAdded={showCartOptions}
+              categoryId={apiData?.category_id}
+              pickupGroupList={apiData?.pickup_group_list}
+              dropoffPointGroupList={apiData?.dropoff_point_group_list}
             />
           </div>
 
