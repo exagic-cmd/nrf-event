@@ -590,6 +590,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
     addToCartDirectly();
     setItemToReplace(null);
     setLoadingButton(null);
+    setShowRecommendations(true);
   }
 
   // === CONFIRM & ADD (STUBA) ===
