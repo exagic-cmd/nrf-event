@@ -59,16 +59,15 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
     searchPickupPoints,
   } = useBookingStore()
 
-useEffect(() => {
-  let initialDate = "";
-  let calculatedMinDate = minSelectableDate;
+ // const hasAdjustedDateRef = useRef(false);
 
-  if (value.date) {
-    // Keep the selected date as is, without adding extra days
-    initialDate = value.date;
-    calculatedMinDate = new Date(value.date + "T00:00:00");
-  } else {
-    initialDate = "";
+useEffect(() => {
+  let initialDate = value.date ?? "";
+
+  // Pre-fill dropoff point if only one exists
+  let initialDropoffPoint = value.dropoffPoint ?? "";
+  if (categoryId === 2 && dropoffPointGroupList?.length === 1 && !initialDropoffPoint) {
+    initialDropoffPoint = dropoffPointGroupList[0].dropoff_point_name;
   }
 
   setForm(prev => {
@@ -581,9 +580,7 @@ useEffect(() => {
   <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
     <Clock className="w-4 h-4 text-[#D3202D]" />
     Tour start time <span className="text-red-500">*</span>
-    Tour start time <span className="text-red-500">*</span>
   </label>
-
 
   {form.date ? (
     (() => {
@@ -630,40 +627,70 @@ useEffect(() => {
   </label>
   {form.date && form.pickupPoint ? (
     (() => {
-      const times = pickupTimesByDate[form.date] || [];
+      const dateStr = form.date;
+      const baseAPITimes = pickupTimesByDate[dateStr] || [];
+      
+      // Get pickup point additional time
+      const selectedPickupPoint = pickupGroupList?.find(p => p.pickup_point_name === form.pickupPoint);
+      const pickupAdditionalTime = selectedPickupPoint?.additional_time || 0;
 
-      if (!times.length) {
+      // Calculate adjusted times: API time + pickup_point additional_time only
+      const adjustedTimes = baseAPITimes.map(timeStr => {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const totalMinutes = hours * 60 + minutes + pickupAdditionalTime;
+        const adjustedHours = Math.floor(totalMinutes / 60) % 24;
+        const adjustedMinutes = totalMinutes % 60;
+        return `${String(adjustedHours).padStart(2, '0')}:${String(adjustedMinutes).padStart(2, '0')}`;
+      });
+
+      if (adjustedTimes.length === 0) {
         return (
           <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-yellow-200">
-            Time is not available for selected date
+            Pickup time is not available, Proceed!
           </div>
         );
       }
 
+      const timeToDate = (timeStr) => {
+        if (!timeStr) return null;
+        const date = new Date();
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        date.setHours(hours, minutes, 0, 0);
+        return date;
+      };
+
       return (
-        <select
-          className="w-full h-12 border border-gray-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-          value={form.time}
-          onChange={(e) => handleChange("time", e.target.value)}
+        <DatePicker
+          selected={timeToDate(form.pickupTime)}
+          onChange={(date) => {
+            if (date) {
+              const timeString = date.toTimeString().slice(0, 5);
+              handleChange("pickupTime", timeString);
+            } else {
+              handleChange("pickupTime", "");
+            }
+          }}
+          showTimeSelect
+          showTimeSelectOnly
+          timeIntervals={15}
+          timeCaption={t("Pickup Time") || "Pickup Time"}
+          dateFormat="h:mm aa"
+          placeholderText={t("Pickup Time") || "Pickup Time"}
+          customInput={React.createElement(CustomInput, { className: "w-full" })}
+          wrapperClassName="w-full"
+          includeTimes={adjustedTimes.map(timeToDate)}
           disabled={isBookingAdded}
-        >
-          <option value="">{t("bookingForm.time")}</option>
-          {times.map((time, idx) => (
-            <option key={idx} value={time}>
-              {time}
-            </option>
-          ))}
-        </select>
+          popperPlacement="bottom-start"
+        />
       );
     })()
   ) : (
     <div className="text-sm text-gray-400">
-      {t("bookingForm.selectDate")}
+      {!form.date ? t("bookingForm.selectDate") : "Select a pickup point"}
     </div>
   )}
 </div>
-
-
+         )}
         </CardContent>
       </Card>
     </>
