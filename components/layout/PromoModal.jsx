@@ -26,7 +26,7 @@ useEffect(() => {
   const fetchOnlineAgent = async () => {
     setAgentLoading(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const response = await fetch(`${baseUrl}/agent-online`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ useEffect(() => {
         ip_address: ipAddress,
       };
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const response = await fetch(`${baseUrl}/add_popup_customer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -152,7 +152,7 @@ useEffect(() => {
         ip_address: ipAddress,
       };
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const response = await fetch(`${baseUrl}/add_popup_customer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

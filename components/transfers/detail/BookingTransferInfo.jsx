@@ -420,6 +420,9 @@ export default function BookingTransferInfo({
     selectedDropoff,
   } = useTransferStore();
 
+  const isAttractionTrip = [selectedPickup?.type, selectedDropoff?.type].some((t) =>
+    ["attraction", "landmark"].includes(t?.toLowerCase())
+  );
   const orangeColor = "#D3202D";
   const { fetchAvailableDatesTR } = useBookingStore();
   const [availableDates, setAvailableDates] = useState([]);
@@ -561,7 +564,13 @@ if (updates.pickupOption || updates.returnOption) {
       }
     }
   };
-
+  useEffect(() => {
+    if (isAttractionTrip && tripType === "round-trip" && userBookingDetails.pickupDate) {
+      if (userBookingDetails.returnDate !== userBookingDetails.pickupDate) {
+        handleChange("returnDate", userBookingDetails.pickupDate);
+      }
+    }
+  }, [isAttractionTrip, tripType, userBookingDetails.pickupDate, userBookingDetails.returnDate]);
 const handlePickupTrack = async (flightNumber = null) => {
   const numberToUse = flightNumber || userBookingDetails.pickupFlightNumber;
   if (!numberToUse) return;
@@ -777,6 +786,8 @@ const handleReturnTrack = async (flightNumber = null) => {
             </h3>
 
             <div id="returnDate" className="grid grid-cols-1 md:grid-cols-1 gap-6">
+             
+           {!isAttractionTrip && (
               <DatePickerField
                 label={t("booking.returnDate")}
                 value={userBookingDetails.returnDate}
@@ -788,7 +799,9 @@ const handleReturnTrack = async (flightNumber = null) => {
                 orangeColor={orangeColor}
                 t={t}
               />
+             )}
             </div>
+            
   {isDropoffAirport && (
             <CustomOptionSelector
               fieldName="returnOption"

@@ -7,6 +7,8 @@ import Script from 'next/script';
 import App from 'next/app';
 import '@/styles/globals.css';
 
+const GA_TRACKING_ID = 'G-5SQKF4Y54M';
+
 import '@/lib/helpers'; // loads globally
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -19,24 +21,36 @@ function MyApp({ Component, pageProps }) {
     }
   }, [router.locale, currentLocale, setLocale]);
 
-  // SPA pageview tracking via GTM dataLayer
+  // Track page views on route change for Google Analytics
   useEffect(() => {
     const handleRouteChange = (url) => {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: 'pageview',
-        page: url,
-      });
+      // This function will be called on route changes, sending page views to GA
+      if (typeof window.gtag === 'function') {
+        window.gtag('config', GA_TRACKING_ID, {
+          page_path: url,
+        });
+      }
     };
-
     router.events.on('routeChangeComplete', handleRouteChange);
-    return () => router.events.off('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
   }, [router.events]);
 
   return (
     <>
-      
-
+      <Script
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+      />
+      <Script id="google-analytics-inline" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_TRACKING_ID}');
+        `}
+      </Script>
       <Header />
       <Component {...pageProps} />
     </>

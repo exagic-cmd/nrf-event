@@ -5,16 +5,18 @@ import { useRouter } from "next/router";
 import useUserStore from "@/store/useAuthStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore } from "@/store/useCartStore";
-import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import $helpers from "@/lib/helpers";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { toast } from 'react-toastify';
+import RecommendedProductsModal from '@/components/accommodations/booking/RecommendedProductsModal';
 
 import {
   Calendar, Home, Bed, Utensils, AlertCircle,
   CheckCircle, XCircle, DollarSign, Info, Loader2, RefreshCw
 } from "lucide-react";
 
+const [itemToReplace, setItemToReplace] = useState(null);
+const [showRecommendations, setShowRecommendations] = useState(false);
 const TITLE_OPTIONS = [
   { value: "Mr", label: "Mr" },
   { value: "Mrs", label: "Mrs" },
@@ -25,7 +27,7 @@ const handleKeepExistingAndCheckout = async () => {
   router.push = "/checkout";
 };
 // === CONFIRMATION MODAL (ONLY FOR STUBA) ===
-const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse }) => {
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price }) => {
   const api = bookingResponse?.apiResponse || bookingResponse;
   if (!isOpen || !api?.data?.[0]) return null;
 
@@ -229,12 +231,11 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, onKeepExisting, hotelNam
 };
 
 // === MAIN COMPONENT ===
-const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) => {
+const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData = {}, price }) => {
   const { t } = useTranslation("accommodation");
   const router = useRouter();
   const { setJustAdded } = useDrawerStore();
   const user = useUserStore((state) => state.user);
-  const { checkAvailability } = useAccommodationsStore();
   const { validateHoldsBeforeCheckout } = useCartStore();
 
   const rooms = bookingData?.searchParams?.rooms || [];
@@ -324,7 +325,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         const hasLastName = adult.lastName?.trim();
 
         // Validate First Name
-        if (isLeadGuest && !hasFirstName) {
+        if ((isLeadGuest || isStuba) && !hasFirstName) {
           adultErrors.firstName = "First name is required.";
           isValid = false;
         } else if (hasFirstName && !nameRegex.test(adult.firstName)) {
@@ -336,7 +337,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         }
 
         // Validate Last Name
-        if (isLeadGuest && !hasLastName) {
+         if ((isLeadGuest || isStuba) && !hasLastName) {
           adultErrors.lastName = "Last name is required.";
           isValid = false;
         } else if (hasLastName && !nameRegex.test(adult.lastName)) {
@@ -353,7 +354,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         const hasChildFirstName = child.firstName?.trim();
         const hasChildLastName = child.lastName?.trim();
 
-        if (hasChildFirstName && !nameRegex.test(child.firstName)) {
+        if (isStuba && !hasChildFirstName) {
+          childErrors.firstName = "First name is required.";
+          isValid = false;
+        } else if (hasChildFirstName && !nameRegex.test(child.firstName)) {
           childErrors.firstName = "Enter a valid child's name.";
           isValid = false;
         } else if (hasChildLastName && !hasChildFirstName) {
@@ -361,7 +365,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
           isValid = false;
         }
 
-        if (hasChildLastName && !nameRegex.test(child.lastName)) {
+        if (isStuba && !hasChildLastName) {
+          childErrors.lastName = "Last name is required.";
+          isValid = false;
+        } else if (hasChildLastName && !nameRegex.test(child.lastName)) {
           childErrors.lastName = "Enter a valid child's name.";
           isValid = false;
         } else if (hasChildFirstName && !hasChildLastName) {
@@ -379,7 +386,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
 
 
   // === STUBA: CALL PRE-BOOKING API ===
-  const callPreBookingAPI = async () => {
+  const callStubaBookingAPI = async () => {
     const flatAdults = [];
     const flatChildren = [];
 
@@ -387,60 +394,51 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       roomGuests.adults.forEach((a) => {
         flatAdults.push({
           title: a.title,
-          f_name: a.firstName,
-          l_name: a.lastName,
-          nationality: null,
+          firstName: a.firstName,
+          lastName: a.lastName,
         });
       });
       roomGuests.children.forEach((c) => {
         flatChildren.push({
           title: c.title,
-          f_name: c.firstName,
-          l_name: c.lastName,
-          age: String(c.age),
-          nationality: null,
+          firstName: c.firstName,
+          lastName: c.lastName,
         });
       });
     });
 
     const payload = {
-      region: bookingData.searchParams?.region ?? false,
-      hotel_id: bookingData.searchParams?.hotel_id ?? false,
+      region: null,
+      hotel_id: bookingData.accommodationId || bookingData.searchParams?.hotel_id,
       start_date: bookingData.searchParams?.start_date,
       nights: bookingData.nights,
       rooms: bookingData.searchParams?.rooms ?? [],
-      stars: bookingData.searchParams?.stars ?? "0",
+      nationality: "all",
+      stars: null,
       quoteId: bookingData.selectedRoom?.id ?? "",
-      visitor_id: $helpers.getVisitorId(),
       adult: flatAdults,
       child: flatChildren,
-      confiremed: false,
     };
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/stuba/booking`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch($helpers.getApiAbsoluteURL("customer/stuba/booking"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       if (!res.ok) throw new Error("Booking validation failed");
       const data = await res.json();
-      // If API responds with a validation status=false, show the server message
-      // to the user and return null so the flow can be corrected by the user.
       if (data && data.status === false) {
         const serverMsg = data.msg || "Booking validation failed.";
-        // Show server-provided validation message instead of throwing
-        alert(serverMsg);
+        toast.error(serverMsg);
         return null;
       }
 
       return { apiResponse: data, requestPayload: payload };
     } catch (err) {
-      alert("Booking validation failed. Please try again.");
+      console.error("Stuba booking API error:", err);
+      toast.error("Booking validation failed. Please try again.");
       return null;
     }
   };
@@ -476,7 +474,26 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       setLoadingButton(null);
       return;
     }
+    // === FOR STUBA: Call booking validation API and show modal ===
+    if (isStuba) {
+      const result = await callStubaBookingAPI();
+      setIsSubmitting(false);
+      setLoadingButton(null);
 
+      if (result) {
+        setBookingResponse(result);
+        setModalOpen(true);
+      }
+      return;
+    }
+ const success = await proceedWithAddToCart([]);
+ if (success) {
+      setShowRecommendations(true);
+    }
+  };
+
+  const proceedWithAddToCart = async (selectedProducts) => {
+    // === FOR NON-STUBA: Add directly to cart ===
     // Check if item already exists in cart
     const cartItems = useCartStore.getState().items;
     const hotelId = bookingData.hotelData?.id || null;
@@ -488,36 +505,22 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       setLoadingButton(null); // Reset button loading state
       return; // This will trigger the useEffect to show the modal
     }
-
-    const availabilityPayload = {
-      start_date: bookingData.searchParams.start_date,
-      end_date: bookingData.searchParams.end_date,
-      rooms: bookingData.searchParams.rooms,
-      rate_plan_id: bookingData.selectedRoom.id,
-    };
-
-    const availabilityResult = await checkAvailability(availabilityPayload);
-
-    if (!availabilityResult.data?.is_available) {
-      toast.error(availabilityResult.message || "This room is no longer available for the selected dates.");
-      setIsSubmitting(false);
-      setLoadingButton(null);
-      return;
-    }
-
+    
     // toast.success(availabilityResult.message || "Room is available!");
     toast.success("Successfully added to your cart.")
 
-    addToCartDirectly();
+     addToCartDirectly(selectedProducts);
     setShowCartOptions(true);
     setLoadingButton(null);
     setIsSubmitting(false);
-  };
+    return true;
+  }
 
   // === DIRECT ADD TO CART (NON-STUBA) ===
-  const addToCartDirectly = () => {
+  const addToCartDirectly = (recommendedProducts = []) => {
     const updatedBookingData = {
       ...bookingData,
+      recommendedProducts,
       guestDetailsByRoom: guestsByRoom,
       specialRequests,
     };
@@ -582,21 +585,6 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
 
   const handleReplaceItem = async () => {
     setLoadingButton("replace");
-    const availabilityPayload = {
-      start_date: bookingData.searchParams.start_date,
-      end_date: bookingData.searchParams.end_date,
-      rooms: bookingData.searchParams.rooms,
-      rate_plan_id: bookingData.selectedRoom.id,
-    };
-    const availabilityResult = await checkAvailability(availabilityPayload);
-
-
-    if (!availabilityResult.success || !availabilityResult.data?.is_available) {
-      toast.error(availabilityResult.message || "This room is no longer available for the selected dates.");
-      setLoadingButton(null);
-      return;
-    }
-    toast.success(availabilityResult.message || "Room is available!");
 
     if (itemToReplace) {
       useCartStore.getState().removeItem(itemToReplace.key);
@@ -641,8 +629,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
       type: "accommodation",
       adult_count: totalAdults,
       child_count: totalChildren,
-      price: priceFor1Room,
-      total: Number(totalPrice),
+      price: price,
+      total: Number(price),
       tour_date: bookingData.checkIn,
       check_in: bookingData.checkIn,
       check_out: bookingData.checkOut,
@@ -660,6 +648,8 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         request_response: bookingResponse?.apiResponse ?? null,
         guestDetailsByRoom: guestsByRoom,
         request: bookingResponse?.requestPayload ? { callPreBookingAPI: bookingResponse.requestPayload } : null,
+       stuba_response: bookingResponse?.apiResponse ?? null,
+        stuba_payload: bookingResponse?.requestPayload ?? null,
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: "Sajid" || "",
@@ -722,7 +712,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                     {/* Title */}
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">
-                        {roomIdx === 0 && i === 0 ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
+                         {(roomIdx === 0 && i === 0) || isStuba ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-gray-700">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-red-500">*</span>}
                       </label>
                       <select
                         value={adult.title}
@@ -743,7 +733,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                     {/* First Name */}
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">
-                        {roomIdx === 0 && i === 0 ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
+                        {(roomIdx === 0 && i === 0) || isStuba ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-gray-700">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-red-500">*</span>}
                       </label>
                       <input
                         type="text"
@@ -767,7 +757,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                     {/* Last Name */}
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">
-                        {roomIdx === 0 && i === 0 ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-blue-600 font-semibold">(Lead)</span>} {roomIdx === 0 && i === 0 && <span className="text-red-500">*</span>}
+                        {(roomIdx === 0 && i === 0) || isStuba ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-gray-700">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-red-500">*</span>}
                       </label>
                       <input
                         type="text"
@@ -819,7 +809,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                     {/* First Name */}
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">
-                        First Name
+                        First Name {isStuba && <span className="text-red-500">*</span>}
                       </label>
                       <input
                         type="text"
@@ -840,7 +830,7 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                     {/* Last Name */}
                     <div>
                       <label className="block text-black text-sm font-medium mb-2">
-                        Last Name
+                        Last Name {isStuba && <span className="text-red-500">*</span>}
                       </label>
                       <input
                         type="text"
@@ -909,10 +899,10 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    {isNonStuba ? "Adding to Cart..." : "Validating Booking..."}
+                    {isStuba ? "Validating Booking..." : "Adding to Cart..."}
                   </>
                 ) : (
-                  "Add to Cart"
+                   isStuba ? "Validation" : "Add to Cart"
                 )}
               </button>
             ) : (
@@ -981,6 +971,13 @@ const AccommodationBookNow = ({ isNonStuba = false, bookingData = {}, price }) =
         onKeepExisting={() => router.push("/checkout")}
         hotelName={itemToReplace?.productTitle || ""}
       />
+    {showRecommendations && (
+        <RecommendedProductsModal
+          isOpen={showRecommendations}
+          onClose={() => setShowRecommendations(false)}
+          hotelName={bookingData.hotelData?.title}
+        />
+      )}
     </>
   );
 };

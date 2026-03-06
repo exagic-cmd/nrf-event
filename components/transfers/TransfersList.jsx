@@ -54,12 +54,15 @@ function TransfersList() {
       // Check if promo price is valid and applicable
       const usePromo = promoPrice > 0 && !isNaN(promoPrice) && promoPrice < basePrice;
       const priceToShow = usePromo ? promoPrice : basePrice;
-
+const passengerCapacity =
+        Array.isArray(item.baggages) && item.baggages.length === 0
+          ? item.capacity_without_luggage
+          : item.capacity_with_luggage;
       return {
         ...item, 
         id: item.id,
         name: item.vehicle_name,
-        passengers: item.max_capacity,
+       passengers: passengerCapacity,
         suitcases: item.capacity_with_luggage,
         desc: item.description,
         image: getFullImageUrl(item.vehicle_image),

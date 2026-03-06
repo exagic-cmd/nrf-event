@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import {  Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee,CircleParking ,ParkingCircle, Baby, Waves, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
+import { Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee, CircleParking, ParkingCircle, Baby, Waves, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
@@ -8,6 +8,8 @@ import SvgLoader2 from "@/components/common/Loader2Svg";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { formatPrice } from "@/utils/priceUtils";
 import { getFullImageUrl } from "@/utils/imageService";
+import { slugify } from "@/utils/slugify";
+
 function AccommodationCard({ accommodation, category = "accommodation" }) {
 
   const amenityIconMap = {
@@ -44,19 +46,41 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         if (Array.isArray(r?.children)) return sum + r.children.length;
         return sum + (Number(r?.children) || 0);
       }, 0) || 0;
-  
-  const {
-    id,
-    name,
-    address,
-    accommodation_type,
-    star_rating,
-    photo, 
-    room,
-    amenities,
-  } = accommodation;
 
-const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan?.pricing?.total) ||0;
+       // Support both old and new API response formats
+  const isNewFormat = !!accommodation?.Hotel_Data;
+  const hotelData = isNewFormat ? accommodation.Hotel_Data : accommodation;
+  const resultData = isNewFormat ? accommodation.Result : null;
+
+  const {
+    id = hotelData?.id,
+    name = hotelData?.product_title || hotelData?.name,
+    address = hotelData?.address,
+    accommodation_type = hotelData?.accommodation_type || hotelData?.category_name,
+    star_rating = hotelData?.star_rating,
+    photo = { image: hotelData?.image },
+    room = null,
+    amenities = hotelData?.amenities || [],
+  } = isNewFormat ? {} : accommodation;
+  
+  // Get lowest price - from old format or new format
+  let lowestPrice = 0;
+  if (!isNewFormat) {
+    lowestPrice = (room?.rate_plan?.pricing?.total_promo) || (room?.rate_plan?.pricing?.total) || 0;
+  } else if (resultData) {
+    // Extract lowest price from Result data
+    const allPrices = [];
+    Object.values(resultData).forEach(roomType => {
+      if (Array.isArray(roomType)) {
+        roomType.forEach(option => {
+          if (option?.Room?.[0]?.Price?.["@attributes"]?.amt) {
+            allPrices.push(parseFloat(option.Room[0].Price["@attributes"].amt));
+          }
+        });
+      }
+    });
+    lowestPrice = allPrices.length > 0 ? Math.min(...allPrices) : 0;
+  }
 
   const handleCardClick = async () => {
     setIsLoading(true);
@@ -70,9 +94,31 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
         setShowModal(true);
         setIsLoading(false);
       } else {
+        // Stuba flow - check top-level link_type_id
+	  if (accommodation?.link_type_id === 9) {
+      const stubaHotelId = accommodation?.Hotel?.["@attributes"]?.id;
+
+	    const payload = {
+	      "region": null,
+	      "hotel_id": stubaHotelId,
+	      "start_date": searchParams?.start_date,
+	      "nights": searchParams?.nights || 1,
+	      "rooms": searchParams?.rooms || [{ "adult": 2, "children": [] }],
+	      "nationality": "all",
+	      "stars": null,
+	      "pax": totalAdults + totalChildren
+	    };
+
+	    sessionStorage.setItem("stubaAccommodationPayload", JSON.stringify(payload));
+	    localizedPush({
+	      pathname: `/hotel/${slugify(name)}/${stubaHotelId}`,
+	    });
+	  } else {
+      // Non-Stuba flow
         localizedPush({
           pathname: `/accommodation/detail/${id}`,
         });
+      }
       }
     } catch (err) {
       console.error("Booking failed", err);
@@ -110,7 +156,7 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
         {/* Image */}
         <div className="relative w-full md:w-[300px] flex-shrink-0 flex justify-center items-center">
           <img
-           src={getFullImageUrl(photo?.image) || '/images/placeholder-hotel.jpg'}
+          src={getFullImageUrl(isNewFormat ? hotelData?.image : photo?.image) || '/images/placeholder-hotel.jpg'}
             alt={name}
             className="object-cover h-[235px] w-full md:w-[300px]"
           />
@@ -147,8 +193,16 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
                 {(() => {
                   const availableIcons = [];
                   const amenityKeywords = Object.keys(amenityIconMap);
-                  if (Array.isArray(amenities)) {
-                    for (const amenity of amenities) {
+                  
+                    // Use amenities from hotel or highlight field
+                    let amenitiesList = Array.isArray(amenities) ? amenities : [];
+                    if (isNewFormat && hotelData?.highlight && amenitiesList.length === 0) {
+                      amenitiesList = hotelData.highlight.split(',').map(a => a.trim());
+                    }
+                    
+                    if (amenitiesList.length > 0) {
+                      for (const amenity of amenitiesList) {
+                      
                       const lowerAmenity = amenity.toLowerCase();
                       const foundKeyword = amenityKeywords.find(keyword => lowerAmenity.includes(keyword));
                       if (foundKeyword && !availableIcons.some(icon => icon.keyword === foundKeyword)) {
@@ -186,36 +240,47 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
     })()}
   </div>
 
-  {/* Second Column: Policies */}
+  {/* Second Column: Policies/Amenities */}
 <div>
     <ul className="space-y-1 text-gray-700 text-[12px]">
-        {Array.isArray(amenities) && amenities.slice(0, 2).map((amenity, i) => (
-            <li key={i} className="flex items-center">
-                <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
-                {amenity}
-            </li>
-        ))}
-        {Array.isArray(amenities) && amenities.length > 3 && (
-            <li className="flex items-center">
-                <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
-                <span className="font-semibold text-gray-600">
-                    +{amenities.length - 3} more
-                </span>
-            </li>
-        )}
-    </ul>
+                  {(() => {
+                    let amenitiesList = Array.isArray(amenities) ? amenities : [];
+                    if (isNewFormat && hotelData?.highlight && amenitiesList.length === 0) {
+                      amenitiesList = hotelData.highlight.split(',').map(a => a.trim());
+                    }
+                    return amenitiesList.slice(0, 2).map((amenity, i) => (
+                      <li key={i} className="flex items-center text-gray-700">
+                        <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
+                        {amenity}
+                      </li>
+                    ));
+                  })()}
+                  {(() => {
+                    let amenitiesList = Array.isArray(amenities) ? amenities : [];
+                    if (isNewFormat && hotelData?.highlight && amenitiesList.length === 0) {
+                      amenitiesList = hotelData.highlight.split(',').map(a => a.trim());
+                    }
+                    return amenitiesList.length > 3 ? (
+                      <li className="flex items-center ">
+                        <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
+                        <span className="font-semibold text-gray-600">
+                          +{amenitiesList.length - 2} more
+                        </span>
+                      </li>
+                    ) : null;
+                  })()}
+                </ul>
 </div>
 
   {/* Third Column: Price */}
   <div className="text-right">
     <p className="text-lg font-bold text-primary">
-      {room?.rate_plan?.pricing?.currency || 'SGD'} {formatPrice(lowestPrice)}
-     
+       {isNewFormat ? accommodation?.currency || 'USD' : (room?.rate_plan?.pricing?.currency || 'SGD')} {formatPrice(lowestPrice)}
+
     </p>
    <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
       for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
     </p>
-    {/* <p className="text-gray-700 text-[12px]">for a night for {totalAdults}  adults and {totalChildren} children</p> */}
   </div>
 
 </div>
@@ -228,9 +293,8 @@ const lowestPrice = (room?.rate_plan?.pricing?.total_promo)  || (room?.rate_plan
   {/* Left side: price (mobile only) */}
   <div className="block md:hidden mr-auto">
     <p className="text-lg font-bold text-primary">
-      {room?.rate_plan?.pricing?.currency || 'SGD'} {formatPrice(lowestPrice)}
-      {/* <span className="text-xs text-gray-600 font-normal ml-1"> per Room/per night</span> */}
-    </p>
+      {isNewFormat ? accommodation?.currency || 'USD' : (room?.rate_plan?.pricing?.currency || 'SGD')} {formatPrice(lowestPrice)}
+      </p>
     <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
       for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
     </p>

@@ -171,12 +171,11 @@ const AccommodationHotelDetail = ({ hotelData }) => {
 
             sortedAmenities = [...popular, ...general, ...others];
           }
-
+          if (sortedAmenities.length === 0) return null;
           return (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <h2 className="text-xl font-bold mb-8">Services and amenities</h2>
 
-              {sortedAmenities.length > 0 ? (
                 <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
                   {sortedAmenities.map((category, index) => {
                     let subItems = category?.descriptions || [];
@@ -221,12 +220,6 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                     );
                   })}
                 </div>
-              ) : (
-                <div className="py-10 flex flex-col items-center justify-center text-gray-400 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                  <AlertCircle size={32} className="mb-2 opacity-50" />
-                  <p>No amenities information available for this property.</p>
-                </div>
-              )}
             </div>
           );
         })()}

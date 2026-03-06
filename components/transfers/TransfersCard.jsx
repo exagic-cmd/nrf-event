@@ -27,6 +27,18 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
    const largeBags = car.baggages?.find((b) => b.name === "Large")?.quantity;
   const cabinBags = car.baggages?.find((b) => b.name === "Cabin")?.quantity;
 
+  const isAttractionTrip = [searchParams?.pickup?.type, searchParams?.dropoff?.type].some((t) =>
+    ["attraction", "landmark"].includes(t?.toLowerCase())
+  );
+
+  let hasLuggageCapacity = false;
+  if (car.baggages && Array.isArray(car.baggages)) {
+    if (car.baggages.length > 0) hasLuggageCapacity = true;
+  } else if (!car.baggages) {
+    if (parseInt(car.suitcases || 0) > 0) hasLuggageCapacity = true;
+  }
+  const showLuggage = !isAttractionTrip && hasLuggageCapacity;
+
   const handleBookNow = async () => {
     setIsLoading(true);
     try {
@@ -112,15 +124,15 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
             <h2 className="font-bold text-lg text-[#D3202D]">{car.name}</h2>
             
             <div className="flex items-center gap-4 text-sm text-gray-600 mt-2 mb-2">
-              <span className="flex items-center gap-1">
-                <Users size={16} /> Max {car.passengers}
+             <span className="flex items-center gap-1">
+                <Users size={14} /> {car.passengers}
               </span>
+              {showLuggage && (
               <span className="flex items-center gap-1">
-                <Briefcase size={16} />
-                {largeBags !== undefined || cabinBags !== undefined
-                  ? `Luggage (Large: ${largeBags || 0}, Cabin: ${cabinBags || 0})`
-                  : car.suitcases}
+                <Briefcase size={14} /> {largeBags || 0}
+                 
               </span>
+              )}
             </div>
 
             <p className="text-sm text-gray-600 mb-2 line-clamp-2">{car.subtitle || car.desc || car.description}</p>
@@ -200,15 +212,17 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
             <div>
               <h2 className="font-bold text-sm text-[#D3202D] line-clamp-1">{car.name}</h2>
               
-              <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
-                <span className="flex items-center gap-1">
-                  <Users size={12} /> {car.passengers}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Briefcase size={12} />
-                  {car.suitcases}
-                </span>
-              </div>
+                <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+              <span className="flex items-center gap-1">
+                <Users className="text-black" size={12} /> {car.passengers}
+              </span>
+              {showLuggage && (
+              <span className="flex items-center gap-1">
+                <Briefcase  className="text-black" size={12} />
+                {largeBags}
+              </span>
+              )}
+            </div>
 
               <p className="text-xs text-gray-500 mt-1 line-clamp-1">
                 {car.subtitle || car.desc || car.description}

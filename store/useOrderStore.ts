@@ -85,12 +85,19 @@ fetchWeatherInfo: async ( userId) => {
           pickupPoint = firstItinerary.dropoff_point;
         }
 
+        const originalDate = new Date(orderDate + "T00:00:00");
+        originalDate.setDate(originalDate.getDate() + 1);
+
+        const year = originalDate.getFullYear();
+        const month = String(originalDate.getMonth() + 1).padStart(2, '0');
+        const day = String(originalDate.getDate()).padStart(2, '0');
+        const nextDayDate = `${year}-${month}-${day}`;
+
         const prefillData = {
           order_id: firstOrder.order_id,
           itinerary_id: firstItinerary.id,
           title: firstItinerary.title,
-          date: orderDate,
-          pickup_time: firstItinerary.pickup_time,
+          date: nextDayDate,
           pickup_point: pickupPoint, 
           total_adult: firstOrder.total_adult ?? 0,
           total_child: firstOrder.total_child ?? 0,

@@ -454,6 +454,7 @@ const handleVariantSelect = async (variant) => {
 
         <div className="px-4 sm:px-6 lg:px-12 py-4 lg:pt-4">
        
+          {apiData?.category_id !== 2 && (
             <TourRoute
               prod_id={productid}
               lang_id={languageMap[router.locale] || 1}
@@ -461,6 +462,7 @@ const handleVariantSelect = async (variant) => {
               colorheading="#000000"
               fromOrderScreen={fromOrderScreen}
             />
+          )}
           <TourAccordion apiData={apiData} />
         </div>
 

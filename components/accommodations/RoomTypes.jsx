@@ -49,8 +49,10 @@ const StubaRoomList = ({
         ? { ok: true }
         : (typeof result === 'boolean' ? { ok: result } : result);
 
-      if (!normalized.ok) {
+      if (normalized.ok) {
+        // Validation passed - proceed with selection and booking
         try {
+          setInternalSelectedRoomKey(uniqueKey);
           if (typeof onProceedBooking === 'function') {
             onProceedBooking(ratePlan);
           }
@@ -59,9 +61,14 @@ const StubaRoomList = ({
           console.error('onProceedBooking threw:', err);
           setLoadingKey(null);
         }
-        return;
+        } else {
+        // Validation failed - show error message
+        setRoomMessages({ 
+          ...roomMessages, 
+          [uniqueKey]: normalized.message || "Unable to select this room" 
+        });
+        setLoadingKey(null);
       }
-      setInternalSelectedRoomKey(uniqueKey);
     }, 200);
   };
 
@@ -359,7 +366,10 @@ const RoomTypes = ({
   selectedRoom,
   amenities,
 }) => {
-  const roomsToDisplay = isNonStuba ? normalizedRoomData : allRooms;
+  const roomsToDisplay = (isNonStuba ? normalizedRoomData : allRooms).map(room => ({
+  ...room,
+  amenities: room.amenities?.length > 0 ? room.amenities : (amenities || []), // ✅ fallback to hotel amenities
+}));
   const { searchParams } = useAccommodationsStore();
 
   const totalGuests = useMemo(() => {
@@ -385,29 +395,7 @@ const RoomTypes = ({
   }, [searchParams?.start_date, searchParams?.end_date]);
 
   const validateAndSelect = (room) => {
-    if (!isNonStuba) {
-      onRoomSelect?.(room);
-      return true;
-    }
-
-    if (!room.isHotelAvailable) return false;
-
-    for (const date of stayDates) {
-      const entry = allotments.find(a => String(a.date) === String(date));
-      if (!entry || entry.available === false) {
-        return { ok: false, message: `Room unavailable on ${date}.` };
-      }
-      const availQty = Number(entry.value ?? entry.available_qty ?? 0);
-      if (availQty < totalRoomsRequested) {
-        return { ok: false, message: `Only ${availQty} room(s) available on ${date}.` };
-      }
-    }
-
-    if (!room.canAccommodate) {
-      return { ok: false, message: room.paxMessage || "This room is too small for your group." };
-    }
-
-    onRoomSelect?.(room);
+    // Validation already done during search, just return success
     return { ok: true };
   };
 
