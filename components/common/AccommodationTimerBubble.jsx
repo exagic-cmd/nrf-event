@@ -6,10 +6,12 @@ import { getFullImageUrl } from "@/utils/imageService";
 import dynamic from "next/dynamic";
 import ExpireHoldModal from "./ExpireHoldModal";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 const CartDrawerContent = dynamic(() => import("./CartDrawerContent"));
 
 const AccommodationTimerBubble = () => {
+  const router = useRouter();
   const { items, extendHoldForItem, removeItem } = useCartStore();
   const { setDrawerContent, openDrawer } = useDrawerStore();
   const [timeNow, setTimeNow] = useState(Date.now());
@@ -90,14 +92,28 @@ const AccommodationTimerBubble = () => {
             setModalItem(null);
           }}
           onExtend={async () => {
-            const res = await extendHoldForItem(modalItem.key);
-            if (res.success) {
-              toast.success("Reservation extended successfully for 7 minutes!");
+            const isStuba = !!modalItem.hotel_info?.stuba_response;
+
+            if (isStuba && modalItem.bookingData) {
+              // Re-booking flow for Stuba
+              const bookingData = { ...modalItem.bookingData, isRebooking: true };
+              sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
+              await removeItem(modalItem.key);
+              setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
+              setModalItem(null);
+              router.push(`/accommodation/booking/${modalItem.product_id}`);
+              toast.info("Your session expired. Please review and add to cart again.");
             } else {
-              toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
+              // Existing extend flow (for non-stuba or if bookingData is missing)
+              const res = await extendHoldForItem(modalItem.key);
+              if (res.success) {
+                toast.success("Reservation extended successfully for 7 minutes!");
+              } else {
+                toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
+              }
+              setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
+              setModalItem(null);
             }
-            setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
-            setModalItem(null);
           }}
           onRelease={async () => {
             removeItem(modalItem.key);

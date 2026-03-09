@@ -162,6 +162,25 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
 
     // Collect all candidate prices
     const prices = accommodations.map(acc => {
+      // Handle Stuba (link_type_id === 9)
+      if (acc.link_type_id === 9 || acc.Hotel_Data) {
+        if (acc.Result) {
+          const allPrices = [];
+          Object.values(acc.Result).forEach(roomType => {
+            if (Array.isArray(roomType)) {
+              roomType.forEach(option => {
+                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
+                if (room?.Price?.["@attributes"]?.amt) {
+                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
+                }
+              });
+            }
+          });
+          if (allPrices.length > 0) return Math.min(...allPrices);
+        }
+        return parseFloat(acc.Hotel_Data?.starting_price || acc.price || 0);
+      }
+
       return (
         acc.room?.rate_plan?.pricing?.total_promo ||
         acc.room?.rate_plan?.pricing?.total ||
@@ -184,8 +203,8 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   // Determine currency to display in the Price Range title (fallback to USD)
   const currency = useMemo(() => {
     if (!accommodations || accommodations.length === 0) return 'USD';
-    const found = accommodations.find(acc => acc.room?.rate_plan?.pricing?.currency || acc.currency);
-    return found?.room?.rate_plan?.pricing?.currency || found?.currency || 'USD';
+    const found = accommodations.find(acc => acc.room?.rate_plan?.pricing?.currency || acc.currency || acc.Hotel_Data?.currency);
+    return found?.room?.rate_plan?.pricing?.currency || found?.currency || found?.Hotel_Data?.currency || 'USD';
   }, [accommodations]);
 
   const [selectedMin, setSelectedMin] = useState(0);

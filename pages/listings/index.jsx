@@ -167,12 +167,11 @@ function ListingsPage() {
 
       // Create lookup maps for performance
       const generalAmenitiesMap = new Map((accommodationFilters?.general_amenities || []).map(a => [a.id, a.label]));
-      const cancellationPolicyMap = new Map((accommodationFilters?.cancellation_policies || []).map(p => [p.id, p.name]));
 
-       const hotelAmenitiesSet = new Set(hotelData.amenities || []);
+      const hotelAmenitiesSet = new Set(hotelData.amenities || []);
 
       const searchTextMatch = !hasSearchText || (
-        (hotelData.title || hotelData.name || "").toLowerCase().includes(activeFilters.searchText.toLowerCase())
+        (hotelData.product_title || hotelData.title || hotelData.name || "").toLowerCase().includes(activeFilters.searchText.toLowerCase())
       );
 
       const amenityMatch = !hasSelectedAmenities || activeFilters.amenities.every(id => {
@@ -188,22 +187,42 @@ function ListingsPage() {
       
       const cancellationPolicyMatch = !hasSelectedCancellation || activeFilters.cancellation_policies.includes(accommodation.room?.rate_plan?.cancellation_policy?.id);
 
-      const priceMatch = !hasPriceRange || (
-        ( // Use total_promo or total first, then fallback to per_room or base_price
+      // Calculate Price for Filtering
+      let price = 0;
+      if (accommodation.link_type_id == 9 || accommodation.Hotel_Data) {
+        // Stuba Price Logic
+        if (accommodation.Result) {
+          const allPrices = [];
+          Object.values(accommodation.Result).forEach(roomType => {
+            if (Array.isArray(roomType)) {
+              roomType.forEach(option => {
+                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
+                if (room?.Price?.["@attributes"]?.amt) {
+                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
+                }
+              });
+            }
+          });
+          if (allPrices.length > 0) price = Math.min(...allPrices);
+        }
+        if (price === 0) {
+           price = parseFloat(accommodation.Hotel_Data?.starting_price || accommodation.price || 0);
+        }
+      } else {
+        // Standard Price Logic
+        price = (
           accommodation.room?.rate_plan?.pricing?.total_promo ||
           accommodation.room?.rate_plan?.pricing?.total ||
           accommodation.room?.rate_plan?.pricing?.per_room_total_promo ||
           accommodation.room?.rate_plan?.pricing?.per_room_total ||
           accommodation.room?.base_price ||
           accommodation.price || 0
-        ) >= activeFilters.priceRange.min &&
-        ( // Use total_promo or total first, then fallback to per_room or base_price
-          accommodation.room?.rate_plan?.pricing?.total_promo ||
-          accommodation.room?.rate_plan?.pricing?.total ||
-          accommodation.room?.rate_plan?.pricing?.per_room_total_promo ||
-          accommodation.room?.rate_plan?.pricing?.per_room_total ||
-          accommodation.room?.base_price || accommodation.price || 0
-        ) <= activeFilters.priceRange.max
+        );
+      }
+
+      const priceMatch = !hasPriceRange || (
+        price >= activeFilters.priceRange.min &&
+        price <= activeFilters.priceRange.max
       );
 
       return searchTextMatch && amenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;

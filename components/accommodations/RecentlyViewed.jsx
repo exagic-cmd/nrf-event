@@ -24,7 +24,11 @@ const RecentlyViewed = () => {
             <div key={item.id} className="relative"> {/* Added key to the outer div */}
               {/* The Link component now wraps the entire card content */}
               <Link
-                href={`/accommodation/${slugify(item.name)}/${item.id}`}
+                href={
+                  item.hotel_id
+                    ? `/hotel/${slugify(item.name)}/${item.hotel_id}`
+                    : `/accommodation/${slugify(item.name)}/${item.id}`
+                }
                 onClick={(e) => {
                   if (isActive) {
                     e.preventDefault();

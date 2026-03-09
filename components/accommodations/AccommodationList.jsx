@@ -23,19 +23,37 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
     const accommodationsCopy = [...accommodations];
 
     const getPrice = (acc) => {
+      // Handle Stuba (link_type_id === 9 or has Hotel_Data)
+      if (acc.link_type_id == 9 || acc.Hotel_Data) {
+        if (acc.Result) {
+          const allPrices = [];
+          Object.values(acc.Result).forEach(roomType => {
+            if (Array.isArray(roomType)) {
+              roomType.forEach(option => {
+                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
+                if (room?.Price?.["@attributes"]?.amt) {
+                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
+                }
+              });
+            }
+          });
+          if (allPrices.length > 0) return Math.min(...allPrices);
+        }
+        return parseFloat(acc.Hotel_Data?.starting_price || acc.price || 0);
+      }
+
       return (
         acc?.room?.rate_plan?.pricing?.per_room_total_promo ||
         acc?.room?.rate_plan?.pricing?.per_room_total ||
-        acc?.room?.base_price * (acc?.meta?.nights || 1) || 0
+        acc?.room?.base_price || 
+        acc?.price || 0
       );
     };
 
     switch (sortBy) {
       case "price_desc":
-        return accommodationsCopy.sort((a, b) => (b.room?.base_price || b.price || 0) - (a.room?.base_price || a.price || 0));
         return accommodationsCopy.sort((a, b) => getPrice(b) - getPrice(a));
       case "price_asc":
-        return accommodationsCopy.sort((a, b) => (a.room?.base_price || a.price || 0) - (b.room?.base_price || b.price || 0));
         return accommodationsCopy.sort((a, b) => getPrice(a) - getPrice(b));
       case "rating_desc":
         return accommodationsCopy.sort((a, b) => (b.star_rating || b.stars || 0) - (a.star_rating || a.stars || 0));

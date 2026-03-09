@@ -285,7 +285,11 @@ const [showRecommendations, setShowRecommendations] = useState(false);
     // If booking data with guest details exists in session, it means it was added to cart.
     if (storedData?.guestDetailsByRoom) {
       setGuestsByRoom(storedData.guestDetailsByRoom);
-      setShowCartOptions(true); // Show "Continue Shopping" / "Checkout" buttons
+      if (storedData.isRebooking) {
+        setShowCartOptions(false);
+      } else {
+        setShowCartOptions(true); // Show "Continue Shopping" / "Checkout" buttons
+      }
       // Restore any previously entered special requests so user can see what was saved
       if (storedData?.specialRequests) setSpecialRequests(storedData.specialRequests);
     } else {
@@ -521,6 +525,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       recommendedProducts,
       guestDetailsByRoom: guestsByRoom,
       specialRequests,
+      isRebooking: false,
     };
 
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
@@ -575,6 +580,8 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
       hotel_ref_no: hotelId,
       image: bookingData.hotelData?.images?.[0]?.url || null,
+      holdExpiresAt: Date.now() + 7 * 60 * 1000, // 7 minute hold
+      bookingData: updatedBookingData,
     };
     useCartStore.getState().addAccommodationItem(cartItem);
     setJustAdded(true);
@@ -602,6 +609,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       specialRequests,
       request_response: bookingResponse?.apiResponse ?? null,
       request: bookingResponse?.requestPayload ? { callPreBookingAPI: bookingResponse.requestPayload } : null,
+      isRebooking: false,
     };
 
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
@@ -659,6 +667,8 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
       hotel_ref_no: hotelId,
       image: bookingData.hotelData?.images?.[0]?.url || null,
+      holdExpiresAt: Date.now() + 7 * 60 * 1000, // 7 minute hold
+      bookingData: updatedBookingData,
     };
     console.log("cartItem: accomodation Booking", cartItem);
     useCartStore.getState().addAccommodationItem(cartItem);
