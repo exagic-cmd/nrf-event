@@ -503,7 +503,6 @@ export default function AccommodationDetailPage() {
   useEffect(() => {
     if (accommodation?.normalizedHotelData && accommodation.normalizedHotelData.title) {
       const { id, title, image, stars, rating } = accommodation.normalizedHotelData;
-      console.log("Adding to recently viewed::::", accommodation);
       // Get the lowest total_promo price from all rate plans
       let lowestPrice = accommodation.normalizedHotelData.starting_price; // fallback
 
@@ -522,6 +521,7 @@ export default function AccommodationDetailPage() {
         id: id,
         name: title,
         image: image,
+        hotel_id: accommodationId,
         price: lowestPrice,
         rating: stars || rating?.rating || 0,
         currency: hotelData?.currency,
