@@ -8,6 +8,7 @@ import ExpireHoldModal from "./ExpireHoldModal";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 
+
 const CartDrawerContent = dynamic(() => import("./CartDrawerContent"));
 
 const AccommodationTimerBubble = () => {
@@ -16,7 +17,9 @@ const AccommodationTimerBubble = () => {
   const { setDrawerContent, openDrawer } = useDrawerStore();
   const [timeNow, setTimeNow] = useState(Date.now());
   const [expiredQueue, setExpiredQueue] = useState([]);
+  const [itemToExtend, setItemToExtend] = useState(null);
   const [modalItem, setModalItem] = useState(null);
+  const [isProcessingRedirect, setIsProcessingRedirect] = useState(false);
 
   useEffect(() => {
     const t = setInterval(() => setTimeNow(Date.now()), 1000);
@@ -41,6 +44,44 @@ const AccommodationTimerBubble = () => {
       else setExpiredQueue((q) => q.slice(1));
     }
   }, [expiredQueue, modalItem, items]);
+
+  useEffect(() => {
+    if (!itemToExtend) return;
+
+    const extendLogic = async () => {
+      const isStuba = !!itemToExtend.hotel_info?.stuba_response;
+      
+      console.log('🔄 Extend Logic triggered - isStuba:', isStuba, 'bookingData:', !!itemToExtend.bookingData);
+
+      if (isStuba && itemToExtend.bookingData) {
+        // Set flag to prevent modal from re-appearing during redirect
+        setIsProcessingRedirect(true);
+        // Re-booking flow for Stuba
+        console.log('📍 Stuba redirect flow initiated');
+        const bookingData = { ...itemToExtend.bookingData, isRebooking: true, replaceKey: itemToExtend.key };
+        sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
+        //toast.info("Your session expired. Please re-confirm to keep your room.");
+        // Delay redirect to allow modal to close and toast to appear
+        setTimeout(() => {
+          console.log('🚀 Redirecting to booking page');
+          router.push(`/accommodation/booking/${itemToExtend.bookingData.accommodationId}`);
+        }, 500);
+      } else {
+        // Existing extend flow for non-stuba items
+        console.log('⏱️ Standard extend flow for non-Stuba item');
+        const res = await extendHoldForItem(itemToExtend.key);
+        if (res.success) {
+            toast.success("Reservation extended successfully for 7 minutes!");
+        } else {
+          toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
+        }
+      }
+      // Reset the trigger
+      setItemToExtend(null);
+    };
+
+    extendLogic();
+  }, [itemToExtend, extendHoldForItem, router]);
 
   const accommodationHolds = items.filter((i) => i.type === "accommodation" && i.holdExpiresAt);
   if (!accommodationHolds || accommodationHolds.length === 0) return null;
@@ -83,7 +124,7 @@ const AccommodationTimerBubble = () => {
         </div>
       </button>
 
-      {modalItem && (
+      {modalItem && !isProcessingRedirect && (
         <ExpireHoldModal
           open={!!modalItem}
           item={modalItem}
@@ -91,29 +132,19 @@ const AccommodationTimerBubble = () => {
             // simply close modal but keep in queue so it can be shown again if needed
             setModalItem(null);
           }}
-          onExtend={async () => {
-            const isStuba = !!modalItem.hotel_info?.stuba_response;
-
-            if (isStuba && modalItem.bookingData) {
-              // Re-booking flow for Stuba
-              const bookingData = { ...modalItem.bookingData, isRebooking: true };
-              sessionStorage.setItem("accommodationBookingData", JSON.stringify(bookingData));
-              await removeItem(modalItem.key);
-              setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
-              setModalItem(null);
-              router.push(`/accommodation/booking/${modalItem.product_id}`);
-              toast.info("Your session expired. Please review and add to cart again.");
-            } else {
-              // Existing extend flow (for non-stuba or if bookingData is missing)
-              const res = await extendHoldForItem(modalItem.key);
-              if (res.success) {
-                toast.success("Reservation extended successfully for 7 minutes!");
-              } else {
-                toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
-              }
-              setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
-              setModalItem(null);
-            }
+          onConfirm={() => {
+            console.log('🔘 "Yes, reserve" button clicked - closing modal now');
+            // Capture the item BEFORE any state changes
+            const itemToExtendNow = modalItem;
+            // FIRST: Remove from queue to prevent it from re-appearing
+            setExpiredQueue((q) => q.filter((k) => k !== itemToExtendNow.key));
+            // SECOND: Close the modal immediately
+            setModalItem(null);
+            // THIRD: Queue the extension logic for the next cycle
+            setTimeout(() => {
+              console.log('⏰ Processing extend after modal close');
+              setItemToExtend(itemToExtendNow);
+            }, 0);
           }}
           onRelease={async () => {
             removeItem(modalItem.key);
