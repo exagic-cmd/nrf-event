@@ -339,6 +339,9 @@ const CartDrawerContent = () => {
             }
             setItemToExtend(null);
           }}
+          onRelease={() => {
+            setItemToExtend(null);
+          }}
         />
       )}
     </div>

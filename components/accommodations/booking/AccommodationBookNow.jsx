@@ -264,6 +264,8 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
   const [modalOpen, setModalOpen] = useState(false);
   const [bookingResponse, setBookingResponse] = useState(null);
   const [itemToReplace, setItemToReplace] = useState(null);
+  const [isRebookingFlow, setIsRebookingFlow] = useState(false);
+  const [keyToReplaceOnRebook, setKeyToReplaceOnRebook] = useState(null);
 const [showRecommendations, setShowRecommendations] = useState(false);
 
   useEffect(() => {
@@ -286,7 +288,10 @@ const [showRecommendations, setShowRecommendations] = useState(false);
     if (storedData?.guestDetailsByRoom) {
       setGuestsByRoom(storedData.guestDetailsByRoom);
       if (storedData.isRebooking) {
-        setShowCartOptions(false);
+        setIsRebookingFlow(true);
+        if (storedData.replaceKey) {
+          setKeyToReplaceOnRebook(storedData.replaceKey);
+        }
       } else {
         setShowCartOptions(true); // Show "Continue Shopping" / "Checkout" buttons
       }
@@ -405,6 +410,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
           title: c.title,
           firstName: c.firstName,
           lastName: c.lastName,
+          age: c.age,
         });
       });
     });
@@ -505,13 +511,15 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       setItemToReplace(existingItem);
       setIsSubmitting(false); // Reset submitting state
       setLoadingButton(null); // Reset button loading state
-      return; // This will trigger the useEffect to show the modal
+      return false; // This will trigger the useEffect to show the modal
     }
     
-    // toast.success(availabilityResult.message || "Room is available!");
-    toast.success("Successfully added to your cart.")
-
      addToCartDirectly(selectedProducts);
+     try {
+      toast.success("Successfully added to your cart.");
+    } catch (toastError) {
+      console.error("Toast error:", toastError);
+    }
     setShowCartOptions(true);
     setLoadingButton(null);
     setIsSubmitting(false);
@@ -590,18 +598,37 @@ const [showRecommendations, setShowRecommendations] = useState(false);
 
   const handleReplaceItem = async () => {
     setLoadingButton("replace");
-
+    try {
+      toast.success("Replacing accommodation booking...", {
+        autoClose: 4000,
+        closeButton: true,
+      });
+    } catch (error) {
+      console.error("Toast error:", error);
+    }
     if (itemToReplace) {
       useCartStore.getState().removeItem(itemToReplace.key);
     }
     addToCartDirectly();
-    setItemToReplace(null);
+    setItemToReplace(null); 
     setLoadingButton(null);
-    setShowRecommendations(true);
-  }
+  };
 
   // === CONFIRM & ADD (STUBA) ===
   const confirmAndAddToCart = () => {
+    setIsRebookingFlow(false);
+    // If this is a rebook flow with an item to replace, remove the old item first.
+    if (keyToReplaceOnRebook) {
+      useCartStore.getState().removeItem(keyToReplaceOnRebook);
+      // Clean up the key from session storage
+      const storedData = JSON.parse(sessionStorage.getItem("accommodationBookingData"));
+      if (storedData?.replaceKey) {
+        delete storedData.replaceKey;
+        sessionStorage.setItem("accommodationBookingData", JSON.stringify(storedData));
+      }
+      setKeyToReplaceOnRebook(null); // Clean up state
+    }
+
     // Same logic as addToCartDirectly but with bookingResponse
     const updatedBookingData = {
       ...bookingData,
@@ -609,7 +636,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       specialRequests,
       request_response: bookingResponse?.apiResponse ?? null,
       request: bookingResponse?.requestPayload ? { callPreBookingAPI: bookingResponse.requestPayload } : null,
-      isRebooking: false,
+    isRebooking: false,
     };
 
     const roomsDetailsArray = guestsByRoom.map((roomGuests, idx) => ({
@@ -655,26 +682,32 @@ const [showRecommendations, setShowRecommendations] = useState(false);
         request_response: bookingResponse?.apiResponse ?? null,
         guestDetailsByRoom: guestsByRoom,
         request: bookingResponse?.requestPayload ? { callPreBookingAPI: bookingResponse.requestPayload } : null,
-       stuba_response: bookingResponse?.apiResponse ?? null,
+        stuba_response: bookingResponse?.apiResponse ?? null,
         stuba_payload: bookingResponse?.requestPayload ?? null,
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: "Sajid" || "",
-      meal_plan: 0,
-      check_in_time: null,
-      check_out_time: null,
+      meal_plan:0,
+      check_in_time:null,
+      check_out_time:null,
       bed_type: bookingData.selectedRoom?.rawData?.cat?.id || null,
       room_type: bookingData.selectedRoom?.rawData?.type?.id || null,
-      hotel_ref_no: hotelId,
+      hotel_ref_no:hotelId,
       image: bookingData.hotelData?.images?.[0]?.url || null,
       holdExpiresAt: Date.now() + 7 * 60 * 1000, // 7 minute hold
       bookingData: updatedBookingData,
     };
-    console.log("cartItem: accomodation Booking", cartItem);
+ console.log("cartItem: accomodation Booking", cartItem);
     useCartStore.getState().addAccommodationItem(cartItem);
     setJustAdded(true);
     setModalOpen(false);
     setShowCartOptions(true);
+    // Use a more specific toast for rebooking
+    if (keyToReplaceOnRebook) {
+      toast.success("Reservation successfully re-confirmed and updated.");
+    } else {
+      toast.success("Successfully added to your cart.");
+    }
   };
 
   const handleContinueShopping = async () => {
@@ -716,7 +749,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
                 {roomGuests.adults.map((adult, i) => (
                   <div
                     key={`adult-${i}`}
-                    className="bg-gray-100  p-2 grid grid-cols-1 md:grid-cols-3 gap-4"
+                    className="bg-gray-100  p-2 grid grid-cols-1 md:grid-cols-3 gap-4 mt-2"
                   >
                     {/* Title */}
                     <div>
@@ -793,7 +826,7 @@ const [showRecommendations, setShowRecommendations] = useState(false);
                 {roomGuests.children.map((child, i) => (
                   <div
                     key={`child-${i}`}
-                    className="bg-gray-200 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
+                    className="bg-gray-200 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 mt-2"
                   >
                     {/* Title */}
                     <div>

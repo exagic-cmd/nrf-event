@@ -189,16 +189,27 @@ export const useCartStore = create<CartState>()(
         const item = get().items.find((i) => i.key === key);
         if (!item) return { success: false, message: "Item not found" };
 
+        // Stuba items are held on the client-side only, without calling the hold API.
+        if (item.hotel_info?.stuba_response) {
+          console.log('[startHoldForItem] Stuba item detected. Applying client-side hold.');
+          const expiresAt = Date.now() + 7 * 60 * 1000;
+          get().setHoldForItem(key, expiresAt);
+          const roomCount = get().getAccommodationItems().length;
+          toast.success(`${roomCount} ${roomCount === 1 ? 'room' : 'rooms'} reserved for 7 mins`);
+          return { success: true, expiresAt };
+        }
+
+
         try {
-        const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
-        const startDate = item.check_in || item.checkIn;
+          const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
+          const startDate = item.check_in || item.checkIn;
           const endDate = item.check_out || item.checkOut;
 
           if (!ratePlanId || !startDate || !endDate) {
             console.warn('Hold API missing required fields:', { ratePlanId, startDate, endDate });
             return { success: false, message: 'Missing required hold fields' };
           }
- const cartId = key.split('#').pop() || key;
+          const cartId = key.split('#').pop() || key;
 
           const payload = {
             cart_id: cartId,
@@ -208,9 +219,9 @@ export const useCartStore = create<CartState>()(
             qty: item.qty || 1,
           };
 
-         // console.log('🔓 Calling POST /inventory/hold with payload:', payload);
+          // console.log('🔓 Calling POST /inventory/hold with payload:', payload);
 
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold`, {
+          const res = await fetch($helpers.getApiAbsoluteURL('/inventory/hold'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -236,9 +247,18 @@ export const useCartStore = create<CartState>()(
         const item = get().items.find((i) => i.key === key);
         if (!item) return { success: false, message: "Item not found" };
 
+        // Stuba items are held on the client-side only, so we just extend the local timer.
+        if (item.hotel_info?.stuba_response) {
+          console.log('[extendHoldForItem] Stuba item detected. Applying client-side hold extension.');
+          const newExpires = Date.now() + 7 * 60 * 1000;
+          get().setHoldForItem(key, newExpires);
+          return { success: true, expiresAt: newExpires };
+        }
+
+
         try {
           const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
-          
+
           if (!ratePlanId) {
             console.warn('Extend hold API missing rate_plan_id');
             return { success: false, message: 'Missing rate plan ID' };
@@ -253,7 +273,7 @@ export const useCartStore = create<CartState>()(
 
           console.log('⏱️ Calling POST /inventory/hold/extend with payload:', payload);
 
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/extend`, {
+          const res = await fetch($helpers.getApiAbsoluteURL('/inventory/hold/extend'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -284,7 +304,7 @@ export const useCartStore = create<CartState>()(
 
         try {
           console.log('⏱️ Calling POST /inventory/hold/extend by cart:', payload);
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/extend`, {
+          const res = await fetch($helpers.getApiAbsoluteURL('/inventory/hold/extend'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
