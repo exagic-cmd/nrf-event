@@ -20,6 +20,7 @@ const AccommodationTimerBubble = () => {
   const [itemToExtend, setItemToExtend] = useState(null);
   const [modalItem, setModalItem] = useState(null);
   const [isProcessingRedirect, setIsProcessingRedirect] = useState(false);
+  const [processingKeys, setProcessingKeys] = useState([]);
 
   useEffect(() => {
     const t = setInterval(() => setTimeNow(Date.now()), 1000);
@@ -27,21 +28,28 @@ const AccommodationTimerBubble = () => {
   }, []);
 
   useEffect(() => {
+    // Prevent detection during redirect
+    if (sessionStorage.getItem("accommodationRedirecting")) return;
+    
     // detect newly expired holds and queue them
     const now = Date.now();
     const accommodationHolds = items.filter((i) => i.type === "accommodation" && i.holdExpiresAt);
-    const newlyExpired = accommodationHolds.filter((i) => i.holdExpiresAt <= now && !expiredQueue.includes(i.key) && (!modalItem || modalItem.key !== i.key));
+    const newlyExpired = accommodationHolds.filter((i) => i.holdExpiresAt <= now && !expiredQueue.includes(i.key) && (!modalItem || modalItem.key !== i.key) && !processingKeys.includes(i.key));
     if (newlyExpired.length > 0) {
       setExpiredQueue((q) => [...q, ...newlyExpired.map((i) => i.key)]);
     }
-  }, [items, timeNow, expiredQueue, modalItem]);
+  }, [items, timeNow, expiredQueue, modalItem, processingKeys]);
 
   useEffect(() => {
     if (!modalItem && expiredQueue.length > 0) {
       const key = expiredQueue[0];
       const item = items.find((i) => i.key === key);
-      if (item) setModalItem(item);
-      else setExpiredQueue((q) => q.slice(1));
+      // Don't show modal if we're in redirect flow
+      if (item && !sessionStorage.getItem("accommodationRedirecting")) {
+        setModalItem(item);
+      } else if (!item) {
+        setExpiredQueue((q) => q.slice(1));
+      }
     }
   }, [expiredQueue, modalItem, items]);
 
@@ -56,6 +64,8 @@ const AccommodationTimerBubble = () => {
       if (isStuba && itemToExtend.bookingData) {
         // Set flag to prevent modal from re-appearing during redirect
         setIsProcessingRedirect(true);
+        // Set sessionStorage flag to prevent re-detection during redirect
+        sessionStorage.setItem("accommodationRedirecting", "true");
         // Re-booking flow for Stuba
         console.log('📍 Stuba redirect flow initiated');
         const bookingData = { ...itemToExtend.bookingData, isRebooking: true, replaceKey: itemToExtend.key };
@@ -64,7 +74,12 @@ const AccommodationTimerBubble = () => {
         // Delay redirect to allow modal to close and toast to appear
         setTimeout(() => {
           console.log('🚀 Redirecting to booking page');
+          // DO NOT remove flag here - let the new page clean it up
           router.push(`/accommodation/booking/${itemToExtend.bookingData.accommodationId}`);
+          // Remove from processing keys AFTER redirect is initiated
+          setProcessingKeys((k) => k.filter((key) => key !== itemToExtend.key));
+          // Reset the trigger after redirect
+          setItemToExtend(null);
         }, 500);
       } else {
         // Existing extend flow for non-stuba items
@@ -75,9 +90,11 @@ const AccommodationTimerBubble = () => {
         } else {
           toast.error(`Failed to extend hold: ${res.message || "Unknown error"}`);
         }
+        // Remove from processing keys for non-Stuba items
+        setProcessingKeys((k) => k.filter((key) => key !== itemToExtend.key));
+        // Reset the trigger
+        setItemToExtend(null);
       }
-      // Reset the trigger
-      setItemToExtend(null);
     };
 
     extendLogic();
@@ -136,6 +153,8 @@ const AccommodationTimerBubble = () => {
             console.log('🔘 "Yes, reserve" button clicked - closing modal now');
             // Capture the item BEFORE any state changes
             const itemToExtendNow = modalItem;
+            // Mark as processing to prevent re-queuing
+            setProcessingKeys((k) => [...k, itemToExtendNow.key]);
             // FIRST: Remove from queue to prevent it from re-appearing
             setExpiredQueue((q) => q.filter((k) => k !== itemToExtendNow.key));
             // SECOND: Close the modal immediately
@@ -150,6 +169,7 @@ const AccommodationTimerBubble = () => {
             removeItem(modalItem.key);
             toast.info("Accommodation removed from your cart.");
             setExpiredQueue((q) => q.filter((k) => k !== modalItem.key));
+            setProcessingKeys((k) => k.filter((key) => key !== modalItem.key));
             setModalItem(null);
           }}
         />
