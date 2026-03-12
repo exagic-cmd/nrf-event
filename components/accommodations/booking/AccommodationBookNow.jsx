@@ -1,5 +1,5 @@
 // components/accommodations/booking/AccommodationBookNow.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import useUserStore from "@/store/useAuthStore";
@@ -266,7 +266,8 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
   const [itemToReplace, setItemToReplace] = useState(null);
   const [isRebookingFlow, setIsRebookingFlow] = useState(false);
   const [keyToReplaceOnRebook, setKeyToReplaceOnRebook] = useState(null);
-const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const autoSubmitFiredRef = useRef(false);
 
   useEffect(() => {
     const initialGuests = initGuestsByRoom();
@@ -301,6 +302,34 @@ const [showRecommendations, setShowRecommendations] = useState(false);
       setGuestsByRoom(initialGuests);
     }
   }, [bookingData, user]);
+
+  // Auto-submit validation when in rebooking flow with guest details already filled
+  useEffect(() => {
+    // Clean up redirect flag when page loads with rebooking flow
+    if (isRebookingFlow && sessionStorage.getItem("accommodationRedirecting")) {
+      sessionStorage.removeItem("accommodationRedirecting");
+    }
+
+    // Only auto-submit once per page load
+    if (isRebookingFlow && guestsByRoom.length > 0 && !isSubmitting && !autoSubmitFiredRef.current && !modalOpen) {
+      autoSubmitFiredRef.current = true;
+      const timer = setTimeout(() => {
+        const form = document.querySelector('form');
+        if (form) {
+          console.log('🤖 Auto-triggering validation for rebooking flow');
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isRebookingFlow, guestsByRoom.length, modalOpen]);
+
+  // Reset auto-submit flag when modal opens (after validation completes)
+  useEffect(() => {
+    if (modalOpen) {
+      autoSubmitFiredRef.current = false;
+    }
+  }, [modalOpen]);
 
   const updateGuest = (roomIdx, type, guestIdx, field, value) => {
     setGuestsByRoom((prev) =>
