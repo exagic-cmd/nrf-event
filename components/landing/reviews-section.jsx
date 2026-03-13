@@ -9,7 +9,7 @@ export const ReviewsSection = () => {
   const icon3 =
     "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1764333286/External%20Links/card.png";
 
-  const bannerSm = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1769150769/External%20Links/Explore_singapore.png";
+  const bannerSm = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1769150433/External%20Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png";
   const bannerLg = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1769150433/External%20Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png";
 
   return (
@@ -45,28 +45,28 @@ export const ReviewsSection = () => {
     </div>
 
     {/* ================= Mobile Banner (FIXED) ================= */}
-    <div className="relative block md:hidden">
-      <img
-        src={bannerSm}
-        alt="Explore Singapore"
-        className="w-full h-auto rounded-2xl shadow-md"
-      />
+  <div className="relative block md:hidden">
+  <img
+    src={bannerSm}
+    alt="Explore Singapore"
+    className="w-full h-48 rounded-2xl shadow-md"
+  />
 
-      {/* Mobile Overlay */}
-      <div className="absolute inset-0 flex items-start justify-start px-4">
-        <div className="max-w-sm  text-white p-4 rounded-2xl text-start shadow-lg">
-          <h2 className="text-lg font-semibold mb-2">
-            Singapore Shuttle Services
-          </h2>
-          <p className="text-xs opacity-90 mb-3">
-            Airport & city shuttle transfers — simple & reliable
-          </p>
-          <div className="inline-block bg-white text-black text-xs font-semibold px-4 py-2 rounded-lg">
-            Book Shuttle
-          </div>
-        </div>
+  {/* Mobile Overlay */}
+  <div className="absolute inset-4 flex items-start justify-start px-0">
+    <div className="max-w-sm text-white p-2 rounded-2xl text-start shadow-lg">
+      <h2 className="text-lg font-semibold mb-2">
+       
+      </h2>
+      <p className="text-xs opacity-90 mb-3">
+        Airport & city shuttle transfers simple & reliable
+      </p>
+      <div className="inline-block bg-white text-black text-xs font-semibold px-4 py-2 rounded-lg">
+        Book Shuttle
       </div>
     </div>
+  </div>
+</div>
 
   </Link>
 </div>
@@ -110,7 +110,24 @@ export const ReviewsSection = () => {
           </p>
         </div>
       </div>
-      
+           <div className="w-full my-8 px-2 lg:px-6 ">
+          
+                  <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="hidden lg:block w-full">
+                    <img
+                      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1765190391/External%20Links/TourEast_Banner_1080x350.png"
+                      alt="TourEast Banner Large"
+                      className="w-full h-auto rounded-lg shadow-md"
+                    />
+                  </a>
+                  {/* Small Banner */}
+                  <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="lg:hidden w-full">
+                    <img
+                      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1765190391/External%20Links/TourEast_Banner_350_x_350_px.png"
+                      alt="TourEast Banner Small"
+                      className="w-full h-auto rounded-lg shadow-md"
+                    />
+                  </a>
+                </div>
         </section>
   );
 };
