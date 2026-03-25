@@ -4,7 +4,7 @@ import SvgLoader2 from "@/components/common/Loader2Svg";
 import Pagination from "@/components/common/Pagination";
 import { ChevronDown } from "lucide-react";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
   const [showNoResults, setShowNoResults] = useState(false);

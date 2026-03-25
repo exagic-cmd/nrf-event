@@ -197,93 +197,120 @@ export const useAccommodationsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     console.log("🔍 Fetching accommodations with payload:", searchPayload);
 
-    try {
-      // Build the query string from the payload
-      const params = {
-        text: searchPayload.text || '',
-        start_date: searchPayload.start_date,
-       // get_stb_items: true,
-        region: 18196,
-        is_b2b_only: 1,
-      };
-      if (searchPayload.end_date) {
-        params.end_date = searchPayload.end_date;
-      }
+    set({ 
+      isLoading: true, 
+      error: null,
+      accommodations: [],
+      searchResults: [],
+      filteredResults: [],
+      accommodationFilters: null 
+    });
 
-      const baseParams = new URLSearchParams(params).toString();
-
-      const rooms = searchPayload.rooms || [{ adult: 1, children: [] }];
-      
-      const roomsParams = rooms.map((room, index) => {
-        const adultParam = `rooms[${index}][adult]=${room.adult}`;
-        let childrenParams = '';
-        if (room.children && room.children.length > 0) {
-          childrenParams = room.children.map(childAge => `rooms[${index}][children][]=${childAge}`).join('&');
-        }
-        return [adultParam, childrenParams].filter(Boolean).join('&');
-      }).join('&');
-
-      const queryString = [baseParams, roomsParams].filter(Boolean).join('&');
-      const url = `${helpers.getApiAbsoluteURL(`/accommodations/search?${queryString}`)}`;
-
-      //console.log("🧾 Final GET Request URL:", url);
-
-      const res = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      //  body: JSON.stringify(apiPayload),
-      });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => null);
-        throw new Error(`Network response was not ok: ${res.status} ${res.statusText} ${txt || ''}`);
-      }
-
-      const data = await res.json();
-      // Handle cases where the API call is successful but finds no results.
-      if (data.success === true && (!data.data || !data.data.accommodations || data.data.accommodations.length === 0)) {
-        //console.log("✅ API returned success but no accommodations found.");
-        set({
-          accommodations: [],
-          searchResults: [],
-          filteredResults: [],
-          isLoading: false,
-          accommodationFilters: data?.data?.meta?.filters || null,
-          error: null,
-        });
-        return []; // Return an empty array to signify no results
-      }
-
-      // Assume API returns accommodations in data.accommodations or data.data
+    // process&append
+    const processAndAppend = (sourceName, data) => {
       const results = data?.data?.accommodations || data?.accommodations || data?.data || data || [];
       const filters = data?.data?.meta?.filters || null;
 
-      // Normalize and enrich each result: attach hotelQuoteId and a normalized hotelId
-      const enrichedResults = Array.isArray(results)
+      const enriched = Array.isArray(results)
         ? results.map((r) => {
-            return {
-              ...r,
-              // Add any future normalization here if needed
-              hotelId: r.id, 
-            };
+            const price = parseFloat(r.starting_price || r.min_rate || r.price || r?.pricing?.min_price || 0);
+            return { ...r, hotelId: r.id, starting_price: price, price: price };
           })
-        : (results && typeof results === 'object'
-            ? [{
-                ...results,
-                hotelId: results.id,
-              }]
-            : []);
+        : (results && typeof results === 'object' ? [{ 
+            ...results, 
+            hotelId: results.id,
+            starting_price: parseFloat(results.starting_price || results.min_rate || results.price || 0) 
+          }] : []);
 
-      // Update store with enriched results and the extracted quote id(s)
-      set((state) => ({
-        accommodations: enrichedResults,
-        searchResults: enrichedResults,
-        filteredResults: enrichedResults,
-        isLoading: false,
-        accommodationFilters: filters,
-      }));
+      if (enriched.length > 0) {
+        set((state) => {
+          const combined = [...state.accommodations, ...enriched];
+          const newFilters = state.accommodationFilters || filters;
+          return {
+            accommodations: combined,
+            searchResults: combined,
+            filteredResults: combined,
+            accommodationFilters: newFilters,
+          };
+        });
+      }
+      console.log(`✅ ${sourceName} loaded ${enriched.length} items`);
+    };
 
-     // console.log("✅ Accommodations API Response:", data);
-      return enrichedResults;
+    try {
+      // --- API 1 (GET) ---
+      const fetchApi1 = async () => {
+        try {
+          const params = {
+            text: searchPayload.text || '',
+            start_date: searchPayload.start_date,
+          //  get_stb_items: true,
+            region: 18196,
+            is_b2b_only: 1,
+          };
+          if (searchPayload.end_date) params.end_date = searchPayload.end_date;
+          const baseParams = new URLSearchParams(params).toString();
+          const rooms = searchPayload.rooms || [{ adult: 1, children: [] }];
+          const roomsParams = rooms.map((room, index) => {
+            const adultParam = `rooms[${index}][adult]=${room.adult}`;
+            let childrenParams = '';
+            if (room.children && room.children.length > 0) {
+              childrenParams = room.children.map(childAge => `rooms[${index}][children][]=${childAge}`).join('&');
+            }
+            return [adultParam, childrenParams].filter(Boolean).join('&');
+          }).join('&');
+          const queryString = [baseParams, roomsParams].filter(Boolean).join('&');
+          const url = `${helpers.getApiAbsoluteURL(`/accommodations/search?${queryString}`)}`;
+          const res = await fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } });
+          if (!res.ok) throw new Error(`API 1 Failed: ${res.status}`);
+          const data = await res.json();
+          processAndAppend("API 1", data);
+        } catch (err) {
+          console.error("API 1 Error:", err);
+        }
+      };
+
+      await fetchApi1();
+
+   // API 2 & 3 
+      const postPayload = {
+        text: searchPayload.text || '',
+        start_date: searchPayload.start_date,
+        end_date: searchPayload.end_date,
+        region: 18196,
+        rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
+       // get_stb_items: true,
+        is_b2b_only: 1
+      };
+
+      const fetchPostApi = async (endpoint, label) => {
+        try {
+          const specificPayload = { ...postPayload };
+          if (label === 'Ratehawk') {
+            specificPayload.rh_type = 'search_by_ids';
+          }
+
+          const url = helpers.getApiAbsoluteURL(endpoint);
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(specificPayload)
+          });
+          if (!res.ok) throw new Error(`${label} Failed: ${res.status}`);
+          const data = await res.json();
+          processAndAppend(label, data);
+        } catch (err) {
+          console.error(`${label} Error:`, err);
+        }
+      };
+
+      await Promise.allSettled([
+        fetchPostApi('/customer/stuba', 'Stuba'),
+        fetchPostApi('/ratehawk/get_hotels', 'Ratehawk')
+      ]);
+
+      set({ isLoading: false });
+      return get().accommodations;
     } catch (err) {
       console.error("fetchAccommodations error:", err);
       set({

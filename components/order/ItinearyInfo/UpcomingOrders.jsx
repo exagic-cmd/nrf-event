@@ -3,12 +3,10 @@
 import { Calendar, Eye, AlertCircle } from "lucide-react"
 import { useOrderStore } from "@/store/useOrderStore"
 import { getFullImageUrl } from "@/utils/imageService"
-import CancelModal from "./CancelModal"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Loader2Svg from "@/components/common/Loader2Svg"
-
 const UpcomingOrders = ({ onViewDetails }) => {
   const { t } = useTranslation("order")
   const { upcomingBookings,accommodations } = useOrderStore()
@@ -64,7 +62,7 @@ const handleVirtualTourClick = (item) => {
   });
 };
 
-  if (!allItineraryItems || allItineraryItems.length === 0 && accommodations?.length === 0) {
+  if ((!allItineraryItems || allItineraryItems.length === 0) && (!accommodations || accommodations.length === 0)) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-xl">
         <Calendar className="w-16 h-16 text-[#D3202D] mx-auto mb-4" />
@@ -78,6 +76,8 @@ const handleVirtualTourClick = (item) => {
     )
   }
 
+  const totalItems = allItineraryItems.length + (accommodations?.length || 0);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -85,8 +85,7 @@ const handleVirtualTourClick = (item) => {
           {t("upcomingOrders")}
         </h2>
         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-          {allItineraryItems.length}{" "}
-          {allItineraryItems.length === 1 ? t("item") : t("items")}
+          {totalItems} {totalItems === 1 ? t("item") : t("items")}
         </span>
       </div>
 
@@ -106,7 +105,7 @@ const handleVirtualTourClick = (item) => {
               <img
                 src={getItineraryImage(item) || "/placeholder.svg"}
                 alt={item.title || t("activity")}
-                className="w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-t-none"
+                className="w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-t-none cursor-pointer"
               />
               <span
                 className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${
