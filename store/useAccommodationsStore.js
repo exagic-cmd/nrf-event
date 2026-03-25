@@ -202,7 +202,7 @@ export const useAccommodationsStore = create((set, get) => ({
       const params = {
         text: searchPayload.text || '',
         start_date: searchPayload.start_date,
-        get_stb_items: true,
+       // get_stb_items: true,
         region: 18196,
         is_b2b_only: 1,
       };
