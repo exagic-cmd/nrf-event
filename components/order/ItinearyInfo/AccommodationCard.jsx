@@ -31,7 +31,8 @@ export default function AccommodationCard({ data }) {
   };
 
  const nights = calculateNights();
-  const hotelImage = accommodation?.pictures?.[0]?.image || '/placeholder.svg';
+  const hotelImage = accommodation?.pictures?.[0]?.image;
+  const finalImageUrl = hotelImage ? getFullImageUrl(hotelImage) : "/placeholder.svg";
   const goToDetail = (order_id ,itinerary_id) => {
     setIsLoading(true); // Set loading to true
     if (itinerary_id) {
@@ -48,7 +49,7 @@ export default function AccommodationCard({ data }) {
       {/* Image Section */}
       <div className="relative h-40 w-full bg-gray-200">
         <Image
-          src={getFullImageUrl(hotelImage)||"/placeholder.svg"}
+          src={finalImageUrl || "/placeholder.svg"}
           alt={accommodation?.hotel_name || 'Hotel'}
           layout="fill"
           objectFit="cover"

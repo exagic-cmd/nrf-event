@@ -1,5 +1,5 @@
 "use client"
-import {CarFront, Mail,ArrowLeft,MonitorPlay, Expand, ChevronDown, CheckCircle2, XCircle } from "lucide-react"
+import {CarFront, Mail,ArrowLeft,MonitorPlay, Expand,Hotel } from "lucide-react"
 import WhatsappIcon from "@/components/common/whatsapp-icon";
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
@@ -16,7 +16,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import TourRoute from "@/components/daytours/tour-detail/TourRoute.jsx";
 import VouchersAndQRSection from "@/components/order/ItinearyInfo/VouchersAndQRSection.jsx";
 import { formatDateForDisplay } from "@/utils/dateTimeUtils.js";
-
+import ImageGallery from "@/components/order/ItinearyInfo/ImageGallery";
 const Field = ({ label, value }) => {
   if (value === null || value === undefined || value === "" || value === "-") return null
   return (
@@ -32,7 +32,7 @@ const Field = ({ label, value }) => {
   if (price == null || isNaN(price)) return "—";
   return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "", 
+    currency: "SGD", 
     minimumFractionDigits: 0,
   }).format(price);
 };
@@ -118,43 +118,30 @@ const handleCancelClick = (itineraryId) => {
   setCancelModalOpen(true)
 }
 
-const parsePickupDateTimeAsSGT = (itinerary) => {
+const canCancel = (itinerary) => {
   const pickupTime = itinerary?.pickup_time;
   const tourDate = itinerary?.date;
-  if (!pickupTime || !tourDate) return null;
+  if (!pickupTime || !tourDate) return false;
 
   let hours = 0, minutes = 0;
+
   if (pickupTime.includes("AM") || pickupTime.includes("PM")) {
-    const timeParts = pickupTime.split(/[: ]/);
-    hours = parseInt(timeParts[0], 10);
-    minutes = parseInt(timeParts[1], 10);
+    const [h, m] = pickupTime.split(/[: ]/);
+    hours = parseInt(h, 10);
+    minutes = parseInt(m, 10);
     if (pickupTime.includes("PM") && hours !== 12) hours += 12;
     if (pickupTime.includes("AM") && hours === 12) hours = 0;
   } else {
-    [hours, minutes] = pickupTime.split(':').map(Number);
+    [hours, minutes] = pickupTime.split(":").map(Number);
   }
 
-  const pickupDateTimeStr = `${tourDate}T${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
-  // Create a date string with timezone offset to ensure it's parsed as SGT
-  const pickupDateTimeWithOffset = formatInTimeZone(pickupDateTimeStr, 'Asia/Singapore', "yyyy-MM-dd'T'HH:mm:ssXXX");
-  return new Date(pickupDateTimeWithOffset);
-};
+  const pickupDateTimeStr = `${tourDate}T${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:00`;
 
-const getCancellationDeadline = (itinerary) => {
-  const pickupDateTime = parsePickupDateTimeAsSGT(itinerary);
-  if (!pickupDateTime) return null;
-
-  // Subtract 24 hours to get the deadline
-  const deadline = new Date(pickupDateTime.getTime() - 24 * 60 * 60 * 1000);
-
-  // Format it for display
-  return formatInTimeZone(deadline, "Asia/Singapore", "dd MMM yyyy, hh:mm a (zzz)");
-};
-
-const canCancel = (itinerary) => {
-  const pickupDateTime = parsePickupDateTimeAsSGT(itinerary);
-  if (!pickupDateTime) return false;
-
+  const pickupDateTime = new Date(
+    formatInTimeZone(pickupDateTimeStr, "Asia/Singapore", "yyyy-MM-dd'T'HH:mm:ssXXX")
+  );
   const nowSGT = new Date(
     formatInTimeZone(new Date(), "Asia/Singapore", "yyyy-MM-dd'T'HH:mm:ssXXX")
   );
@@ -173,7 +160,7 @@ const confirmCancel = (id, reason) => {
   useEffect(() => {
     if (error === "Invalid or unknown access token.") {
       logout();
-      router.push('/');
+      router.push('/login');
     }
   }, [error, logout, router]);
 
@@ -293,17 +280,128 @@ const confirmCancel = (id, reason) => {
   <SectionCard title="" className="mt-0">
     <div className="space-y-8">
       {displayItineraries.map((it, idx) => (
-        <div key={`${it.id}-${idx}`} className="pt-1 space-y-6">
+        <div key={`${it.id}-${idx}`} className="pt-1 space-y-6 md:space-y-8 ">
         <p className="font-semibold"> Itinerary Details - <span>{it?.title}</span></p>
-         
+      {it.category_id !== 4 && (
+                    <>    
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <Field label={t("date", "Date")} value={formatDateForDisplay(it.date)} />
-        <Field label={t("pickupTime", "Pickup Time")} value={it.pickup_time} />
-        <Field label={t("totalPax")} value={it.total_adult} />
-        <Field label={t("bookingStatus", "Booking Status")} value={order?.booking_status} />
-    </div>
- 
-        
+                  
+                     <Field label={t("date", "Date")} value={formatDateForDisplay(it?.date)} />
+        <Field label={t("pickupTime", "Pickup Time")} value={it?.pickup_time} />
+         <Field label={t("bookingStatus", "Booking Status")} value={order?.booking_status} />          
+    </div>  
+    </>
+       )}
+        {/* Hotel Information */}
+        {it.hotel_info && (
+          <div className="">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Field label={t("bookingStatus", "Booking Status")} value={order?.booking_status} />
+              <Field label={t("hotelAddress", "Hotel Address")} value={it.hotel_info.hotel_address} />
+              <Field label={t("checkInDate", "Check-in Date")} value={formatDateForDisplay(it.hotel_info.checkin_date)} />
+              <Field label={t("checkOutDate", "Check-out Date")} value={formatDateForDisplay(it.hotel_info.checkout_date)} />
+              <Field label={t("nights", "Nights")} value={it.hotel_info.nights} />
+            </div>
+
+           {it.hotel_info.rooms && it.hotel_info.rooms.length > 0 && (
+  <div className="space-y-6 mt-6">
+
+    {it.hotel_info.rooms.map((room, roomIdx) => (
+      <div
+        key={roomIdx}
+        className="bg-white relative rounded-xl shadow-sm p-1 border border-gray-200"
+      >
+        <div className="flex absolute right-2 top-1 items-center gap-3">
+          <Hotel className="w-4 h-4 text-[#D3202D]" />
+          <h4 className="text-xs md:text-sm font-semibold text-black">
+            {t("room", "Room")} {roomIdx + 1}
+          </h4>
+        </div>
+        <div className="flex flex-col md:flex-row gap-6 mt-4 md:mt-6">
+
+         
+          <div className="flex-grow space-y-4">
+
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div>
+              <p className="text-sm md:text-md font-semibold text-black">
+                {t("roomType", "Room Type")}
+              </p>
+              <p className="text-sm text-black font-medium">
+                {room.room_type}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm md:text-md font-semibold text-black">
+                {t("mealPlan", "Meal Plan")}
+              </p>
+              <p className="text-sm text-black">
+                {room.meal_plan} 
+              </p>
+            </div>
+           </div>
+            {/* Guests */}
+            {room.guests && room.guests.length > 0 && (
+              <div>
+                <p className="text-sm md:text-md font-semibold text-black mb-2">
+                  {t("guests", "Guests")}
+                </p>
+                
+                {(() => {
+                  const adults = room.guests.filter(g => g.type === 'Adult');
+                  const children = room.guests.filter(g => g.type === 'Child');
+
+                  return (
+                    <div className="space-y-2">
+                      {adults.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold  text-[#D3202D] tracking-wider">{t("adults", "Adults")}</p>
+                          <p className="text-sm text-black">
+                            {adults.map((g) => `${g.title} ${g.first} ${g.last}`).join(", ")}
+                          </p>
+                        </div>
+                      )}
+                      {children.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold  text-[#D3202D] tracking-wider">{t("children", "Children")}</p>
+                          <p className="text-sm text-black">
+                            {children.map((g) => `${g.first} ${g.last}`).join(", ")}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+            
+          </div>
+
+          {/* RIGHT — IMAGE GALLERY */}
+          <div className="md:w-80 w-full flex-shrink-0">
+            <ImageGallery
+              images={
+                it.product_images ||
+                it.hotel_info?.pictures ||
+                it.hotel_info?.product_images ||
+                []
+              }
+              onImageClick={(img) => setFullscreenImage(getFullImageUrl(img))}
+              autoPlay={true}
+              interval={3000}
+              compact={true}
+            />
+          </div>
+        </div>
+      </div>
+    ))}
+
+  </div>
+)}
+
+          </div>
+        )}
 
                     {/* Pickup & Dropoff */}
                     {(it.pickup_point || it.dropoff_point) && (
@@ -343,62 +441,6 @@ const confirmCancel = (id, reason) => {
                          </div>
                      )}
                     
-                    {/* Addon Info Section */}
-                    {it.category_id === 11 && it.addon_info && (() => {
-                      const descriptionParts = it.addon_info.long_desc?.split('\n\n') || [];
-                      const initialDescription = descriptionParts[0] || '';
-                      const remainingDescription = descriptionParts.slice(1);
-                      const hasMoreDetails = remainingDescription.length > 0 || it.addon_info.inclusion || it.addon_info.exclusion;
-
-                      return (
-                        <div className="bg-white rounded-2xl shadow-sm p-4 border space-y-4">
-                          <div className="flex justify-between items-start gap-4">
-                            <div className="flex-1">
-                              <h3 className="md:text-lg text-md font-semibold text-black">
-                                {it.addon_info.title}
-                              </h3>
-                              <p className="text-sm text-gray-700 mt-1 leading-relaxed">
-                                {initialDescription}
-                              </p>
-                            </div>
-                            {it.addon_info.image && (
-                              <div className="relative w-24 h-24 flex-shrink-0">
-                                <Image src={getFullImageUrl(it.addon_info.image)} alt={it.addon_info.title} fill className="object-cover rounded-lg" />
-                              </div>
-                            )}
-                          </div>
-
-                          {hasMoreDetails && (
-                            <details className="group">
-                              <summary className="list-none flex justify-between items-center cursor-pointer text-sm font-semibold text-[#D3202D]">
-                                <div>
-                                  <span className="group-open:hidden">{t('viewMoreDetails', 'View More Details')}</span>
-                                  <span className="hidden group-open:inline">{t('viewLessDetails', 'View Less Details')}</span>
-                                </div>
-                                <ChevronDown size={20} className="text-black group-open:rotate-180 transition-transform" />
-                              </summary>
-                              <div className="mt-4 space-y-4">
-                                {remainingDescription.map((paragraph, pIdx) => (
-                                  <p key={pIdx} className="text-sm text-gray-700 leading-relaxed">{paragraph}</p>
-                                ))}
-                                <div className="border-t border-dashed"></div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                  <div>
-                                    <h4 className="font-semibold text-black mb-3 flex items-center gap-2"><CheckCircle2 size={18} className="text-green-600" />{t('inclusionTitle', 'What\'s Included')}</h4>
-                                    <ul className="space-y-2 text-sm text-gray-800 pl-1">{it.addon_info.inclusion?.split('\n').map((item, index) => item.trim() && <li key={index} className="flex items-start gap-2"><span className="text-green-600 mt-1">✓</span><span>{item}</span></li>)}</ul>
-                                  </div>
-                                  <div>
-                                    <h4 className="font-semibold text-black mb-3 flex items-center gap-2"><XCircle size={18} className="text-red-600" />{t('exclusionTitle', 'What\'s Not Included')}</h4>
-                                    <ul className="space-y-2 text-sm text-gray-800 pl-1">{it.addon_info.exclusion?.split('\n').map((item, index) => item.trim() && <li key={index} className="flex items-start gap-2"><span className="text-red-600 mt-1">✗</span><span>{item}</span></li>)}</ul>
-                                  </div>
-                                </div>
-                              </div>
-                            </details>
-                          )}
-                        </div>
-                      );
-                    })()}
-
  {/* Driver Section */}
         
          <div>
@@ -431,11 +473,9 @@ const confirmCancel = (id, reason) => {
 
            
             <div className="hidden lg:block mt-2">
-              {it.vehicle.description && it.vehicle.description.trim().toLowerCase() !== it.vehicle.vehicle_type?.trim().toLowerCase() && (
-                <p className="text-sm text-black leading-relaxed">
-                  {it.vehicle.description}
-                </p>
-              )}
+              <p className="text-sm text-black leading-relaxed">
+                {it.vehicle.description || t("NoVehicleDescriptionAvailable")}
+              </p>
             </div>
           </div>
          
@@ -456,53 +496,10 @@ const confirmCancel = (id, reason) => {
       </>
                         )}
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-  {it.vehicle?.baggages?.length > 0 ? (
-    <div className="col-span-2 md:col-span-4"> 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
-        <Field label={t("totalPax")} value={it.total_adult} />
-        <Field label={t("baggageInfo", "Baggage Info")} value={it.vehicle.baggages.map(b => `${b.name} ${b.quantity}`).join(" & ")} />
-      </div>
-
-      <div className="space-y-3">
-       {(() => {
-          const displayBag = it.vehicle.baggages.find(b => b.name === "Cabin" && (b.description || b.image)) || 
-                             it.vehicle.baggages.find(b => b.description || b.image);
-          
-          if (!displayBag) return null;
-
-          return (
-            <div className="border-b border-dashed border-gray-200 pb-3 last:border-0 last:pb-0">
-              <div className="flex items-center justify-between gap-4 mt-2">
-                {displayBag.description && (
-                  <p className="text-sm text-gray-600 leading-snug">{displayBag.description}</p>
-                )}
-                {displayBag.image && (
-                  <div 
-                    className="relative h-14 w-14 shrink-0 cursor-pointer group rounded-md overflow-hidden"
-                    onClick={() => setFullscreenImage(getFullImageUrl(displayBag.image))}
-                  >
-                    <Image
-                      src={getFullImageUrl(displayBag.image)}
-                      alt={displayBag.name}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                      <span className="text-white text-[10px] font-medium opacity-0 group-hover:opacity-100">View</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-       })()}
-      </div>
-    </div>
-  ) : (
-    <Field className="py-" label={t("baggageInfo")} value={it.baggage_info} />
-  )}
-</div>
-
+   
+    <Field label={t("totalPax")} value={it.total_adult} />
+    <Field label={t("baggageInfo")} value={it.baggage_info} />
+  </div>
                         {it.features?.length > 0 && (
                           <>
                             
@@ -682,16 +679,12 @@ const confirmCancel = (id, reason) => {
         setSelectedItineraryId(it.id);
         setCancelModalOpen(true);
       }} className="font-semibold text-[#D3202D] cursor-pointer">cancel your service </span> without incurring any charges 24 hours before the pickup time.
-      <span> Until{" "}
-     
-      <span className="font-semibold bg-slate-100 py-0.5 rounded mx-2 text-black">{getCancellationDeadline(it)}</span>.
-    </span>
       
     </p>
 
   
   </div>
-  )}
+)}
 
 
   {/* {!canCancel(it) && (
