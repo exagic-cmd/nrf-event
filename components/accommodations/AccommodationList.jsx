@@ -28,18 +28,17 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
         if (acc.Result) {
           const allPrices = [];
           Object.values(acc.Result).forEach(roomType => {
-            if (Array.isArray(roomType)) {
-              roomType.forEach(option => {
-                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-                if (room?.Price?.["@attributes"]?.amt) {
-                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
+            if (roomType && typeof roomType === 'object') {
+              Object.values(roomType).forEach(option => {
+                if (option?.TotalPrice) {
+                  allPrices.push(parseFloat(option.TotalPrice));
                 }
               });
             }
           });
           if (allPrices.length > 0) return Math.min(...allPrices);
         }
-        return parseFloat(acc.Hotel_Data?.starting_price || acc.price || 0);
+        return parseFloat(acc.price || acc.Hotel_Data?.starting_price || 0);
       }
 
       return (
@@ -105,8 +104,11 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
           <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
         </div>
       </div> */}
-      {paginatedAccommodations.map((accommodation) => (
-        <AccommodationCard key={accommodation.id} accommodation={accommodation} />
+      {paginatedAccommodations.map((accommodation, index) => (
+        <AccommodationCard
+          key={accommodation.Hotel_Data?.id || accommodation.id || index}
+          accommodation={accommodation}
+        />
       ))}
       {totalPages > 1 && (
         <Pagination

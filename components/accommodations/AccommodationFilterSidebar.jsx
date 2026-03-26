@@ -162,23 +162,28 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
 
     // Collect all candidate prices
     const prices = accommodations.map(acc => {
-      // Handle Stuba (link_type_id === 9)
-      if (acc.link_type_id === 9 || acc.Hotel_Data) {
+      // Stuba (Result) or Ratehawk (rates): use pre-computed acc.price from store
+      if (acc.link_type_id === 9 || acc.link_type_id === 10 || acc.Hotel_Data) {
+        // Stuba: extract from Result.TotalPrice
         if (acc.Result) {
           const allPrices = [];
           Object.values(acc.Result).forEach(roomType => {
-            if (Array.isArray(roomType)) {
-              roomType.forEach(option => {
-                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-                if (room?.Price?.["@attributes"]?.amt) {
-                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
-                }
+            if (roomType && typeof roomType === 'object') {
+              Object.values(roomType).forEach(option => {
+                if (option?.TotalPrice) allPrices.push(parseFloat(option.TotalPrice));
               });
             }
           });
           if (allPrices.length > 0) return Math.min(...allPrices);
         }
-        return parseFloat(acc.Hotel_Data?.starting_price || acc.price || 0);
+        // Ratehawk: extract from rates
+        if (Array.isArray(acc.rates) && acc.rates.length > 0) {
+          const ratePrices = acc.rates
+            .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
+            .filter(p => p > 0);
+          if (ratePrices.length > 0) return Math.min(...ratePrices);
+        }
+        return parseFloat(acc.price || 0);
       }
 
       return (

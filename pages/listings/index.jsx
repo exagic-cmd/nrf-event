@@ -35,6 +35,7 @@ function ListingsPage() {
   const { t } = useTranslation("common", "transfer");
   const urlSearchParams = useSearchParams();
   const resultsRef = useRef(null);
+  const isFetchingRef = useRef(false);
   const router = useRouter();
 
   const [cardRooms, setCardRooms] = useState([{ adult: 2, children: [] }]);
@@ -96,7 +97,7 @@ function ListingsPage() {
         checkin: cardCheckin,
         checkout: cardCheckout,
       };
-      setAccommodationSearchParams(updatedPayload); // This will also trigger fetchAccommodations
+      setStoreAccommodationSearchParams(updatedPayload); // This will also trigger fetchAccommodations via Effect 2
       router.push(`/listings?searched=true&type=accommodation`);
       setHasSearched(true);
       setSearchCategory("accommodation");
@@ -142,7 +143,7 @@ function ListingsPage() {
     accommodationFilters,
     fetchAccommodations,
     applyAccommodationFilter,
-    setSearchParams: setAccommodationSearchParams,
+    setSearchParams: setStoreAccommodationSearchParams,
   } = useAccommodationsStore();
   const {
     setSelectedPickup, setSelectedDropoff, setTripType,
@@ -189,25 +190,27 @@ function ListingsPage() {
 
       // Calculate Price for Filtering
       let price = 0;
-      if (accommodation.link_type_id == 9 || accommodation.Hotel_Data) {
-        // Stuba Price Logic
+      if (accommodation.link_type_id == 9 || accommodation.link_type_id == 10 || accommodation.Hotel_Data) {
+        // Stuba: extract from Result.TotalPrice
         if (accommodation.Result) {
           const allPrices = [];
           Object.values(accommodation.Result).forEach(roomType => {
-            if (Array.isArray(roomType)) {
-              roomType.forEach(option => {
-                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-                if (room?.Price?.["@attributes"]?.amt) {
-                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
-                }
+            if (roomType && typeof roomType === 'object') {
+              Object.values(roomType).forEach(option => {
+                if (option?.TotalPrice) allPrices.push(parseFloat(option.TotalPrice));
               });
             }
           });
           if (allPrices.length > 0) price = Math.min(...allPrices);
         }
-        if (price === 0) {
-           price = parseFloat(accommodation.Hotel_Data?.starting_price || accommodation.price || 0);
+        // Ratehawk: extract from rates
+        if (price === 0 && Array.isArray(accommodation.rates) && accommodation.rates.length > 0) {
+          const ratePrices = accommodation.rates
+            .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
+            .filter(p => p > 0);
+          if (ratePrices.length > 0) price = Math.min(...ratePrices);
         }
+        if (price === 0) price = parseFloat(accommodation.price || 0);
       } else {
         // Standard Price Logic
         price = (
@@ -279,6 +282,7 @@ function ListingsPage() {
     }
   }, [urlSearchParams, searchDaytourParams, setSearchDaytourParams, fetchDaytours]);
 
+  // Fix 1: Only sync UI card state from store — fetch is handled exclusively by Effect 2 below
   useEffect(() => {
     const type = urlSearchParams.get("type");
     if (type === "accommodation") {
@@ -293,28 +297,25 @@ function ListingsPage() {
       if (searchAccommodationParams.rooms) {
         setCardRooms(searchAccommodationParams.rooms);
       } else {
-        setCardRooms([{ adult: 2, children: [] }]); 
-      }
-
-      // Trigger fetch on page load if payload exists
-      if (searchAccommodationParams && Object.keys(searchAccommodationParams).length > 0) {
-        fetchAccommodations(searchAccommodationParams);
+        setCardRooms([{ adult: 2, children: [] }]);
       }
     }
-  }, [urlSearchParams, searchAccommodationParams, setAccommodationSearchParams, fetchAccommodations]);
+  }, [urlSearchParams, searchAccommodationParams]);
 
+  // Fix 5: Single source of truth for fetching — guarded by isFetchingRef to prevent concurrent duplicate calls
   useEffect(() => {
     if (
       (searchCategory === "accommodation" || searchCategory === "hotels") &&
       accommodationPayload
     ) {
-      fetchAccommodations(accommodationPayload);
-      // Filters will be applied by handleFilterChange when activeFilters state changes in sidebar
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+      fetchAccommodations(accommodationPayload).finally(() => {
+        isFetchingRef.current = false;
+      });
       if (accommodationPayload.ids && accommodationPayload.ids.length > 0) {
-        const targetHotelId = accommodationPayload.ids[0]; 
-        applyAccommodationFilter((accommodation) => {
-          return accommodation.id === targetHotelId;
-        });
+        const targetHotelId = accommodationPayload.ids[0];
+        applyAccommodationFilter((accommodation) => accommodation.id === targetHotelId);
       }
     }
   }, [searchCategory, accommodationPayload, fetchAccommodations, applyAccommodationFilter]);

@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocalizedRouter } from "@/components/localizedRouter";
-import { Star, Wifi, Car, Utensils, Bed, Bath, Tv, Coffee, CircleParking, ParkingCircle, Baby, Waves, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
+import { Star, Wifi, Car, Utensils, Bed, Tv, CircleParking, Baby, Waves, Dumbbell, Fan, Accessibility, Hotel } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
-import SvgLoader2 from "@/components/common/Loader2Svg";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { formatPrice } from "@/utils/priceUtils";
 import { getFullImageUrl } from "@/utils/imageService";
 import { slugify } from "@/utils/slugify";
 
-function AccommodationCard({ accommodation, category = "accommodation" }) {
+function AccommodationCard({ accommodation }) {
 
   const amenityIconMap = {
     wifi: Wifi,
@@ -69,17 +68,23 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
     lowestPrice = (room?.rate_plan?.pricing?.total_promo) || (room?.rate_plan?.pricing?.total) || 0;
   } else if (resultData) {
     // Extract lowest price from Result data
+    // Structure: { "Room Type Name": { "optionId": { TotalPrice: 251.52, Rooms: [], Count: 1 } } }
     const allPrices = [];
     Object.values(resultData).forEach(roomType => {
-      if (Array.isArray(roomType)) {
-        roomType.forEach(option => {
-          if (option?.Room?.[0]?.Price?.["@attributes"]?.amt) {
-            allPrices.push(parseFloat(option.Room[0].Price["@attributes"].amt));
+      if (roomType && typeof roomType === 'object') {
+        Object.values(roomType).forEach(option => {
+          if (option?.TotalPrice) {
+            allPrices.push(parseFloat(option.TotalPrice));
           }
         });
       }
     });
-    lowestPrice = allPrices.length > 0 ? Math.min(...allPrices) : 0;
+    lowestPrice = allPrices.length > 0
+      ? Math.min(...allPrices)
+      : parseFloat(hotelData?.starting_price || accommodation?.starting_price || accommodation?.price || 0);
+  } else {
+    // isNewFormat but no Result (e.g. Ratehawk) — use computed price set by store
+    lowestPrice = parseFloat(accommodation?.price || accommodation?.starting_price || 0);
   }
 
   const handleCardClick = async () => {
@@ -94,27 +99,34 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
         setShowModal(true);
         setIsLoading(false);
       } else {
-        // Stuba flow - check top-level link_type_id
-	  if (accommodation?.link_type_id === 9) {
-      const stubaHotelId = accommodation?.Hotel?.["@attributes"]?.id;
+        // Route based on link_type_id
+      if (accommodation?.link_type_id === 9) {
+        // Stuba flow
+        const stubaHotelId = accommodation?.Hotel?.["@attributes"]?.id;
 
-	    const payload = {
-	      "region": null,
-	      "hotel_id": stubaHotelId,
-	      "start_date": searchParams?.start_date,
-	      "nights": searchParams?.nights || 1,
-	      "rooms": searchParams?.rooms || [{ "adult": 2, "children": [] }],
-	      "nationality": "all",
-	      "stars": null,
-	      "pax": totalAdults + totalChildren
-	    };
+        const payload = {
+          "region": null,
+          "hotel_id": stubaHotelId,
+          "start_date": searchParams?.start_date,
+          "nights": searchParams?.nights || 1,
+          "rooms": searchParams?.rooms || [{ "adult": 2, "children": [] }],
+          "nationality": "all",
+          "stars": null,
+          "pax": totalAdults + totalChildren
+        };
 
-	    sessionStorage.setItem("stubaAccommodationPayload", JSON.stringify(payload));
-	    localizedPush({
-	      pathname: `/hotel/${slugify(name)}/${stubaHotelId}`,
-	    });
-	  } else {
-      // Non-Stuba flow
+        sessionStorage.setItem("stubaAccommodationPayload", JSON.stringify(payload));
+        localizedPush({
+          pathname: `/hotel/${slugify(name)}/${stubaHotelId}`,
+        });
+      } else if (accommodation?.link_type_id === 10) {
+        // RateHawk flow — use hid from get_hotels response
+        const hid = accommodation?.hid;
+        localizedPush({
+          pathname: `/rh/${slugify(name)}/${hid}`,
+        });
+      } else {
+        // Non-Stuba / default flow
         localizedPush({
           pathname: `/accommodation/detail/${id}`,
         });
@@ -211,7 +223,6 @@ function AccommodationCard({ accommodation, category = "accommodation" }) {
                     }
                   }
                   const iconsToShow = availableIcons.slice(0, 5);
-                  const remainingCount = availableIcons.length - iconsToShow.length;
 
                   return (
                     <>

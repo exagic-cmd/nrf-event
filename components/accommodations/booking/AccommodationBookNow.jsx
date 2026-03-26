@@ -600,13 +600,15 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
       quoteId: bookingData.selectedRoom?.id || null,
       rate_plan_id: bookingData.selectedRoom?.id || null,
+      link_type_id: bookingData.link_type_id || null,
       hotel_info: {
         id: hotelId,
         roomsDetails: roomsDetailsArray,
         checkInDate: bookingData.checkIn,
         checkOutDate: bookingData.checkOut,
         Guests: guestsByRoom,
-
+        book_hash: bookingData.book_hash || null,
+        rate: bookingData.prebooking_rates?.[0] || null,
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: specialRequests || "",
@@ -703,6 +705,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
       quoteId: bookingData.selectedRoom?.id || null,
       rate_plan_id: bookingData.selectedRoom?.id || null,
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
+      link_type_id: bookingData.link_type_id || null,
       hotel_info: {
         id: hotelId,
         roomsDetails: roomsDetailsArray,

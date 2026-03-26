@@ -20,6 +20,8 @@ export const useDaytoursStore = create((set, get) => ({
 
   // Fetch countries & cities
   fetchCountriesCities: async () => {
+    // Skip if already loading or already fetched
+    if (get().isLoading || get().countries.length > 0) return;
     set({ isLoading: true, error: null });
     try {
       const res = await apiRequest({
