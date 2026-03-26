@@ -1,5 +1,5 @@
 // components/accommodations/AccommodationDetailPage.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Layout from "@/components/layout/Layout";
@@ -66,15 +66,17 @@ const normalizeStubaAccommodationData = (stubaItem) => {
   };
 
   const normalizedRooms = Object.entries(Result || {}).map(([roomTypeName, options]) => {
-    const ratePlans = options.map((option) => {
-      const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-      const price = parseFloat(room?.Price?.["@attributes"]?.amt || 0);
+    // options is an object keyed by option ids (e.g. "28767155-0")
+    const ratePlans = Object.entries(options).map(([optionId, option]) => {
+      const rooms = option.Rooms || [];
+      const room = rooms[0] || {};
+      const price = parseFloat(option.TotalPrice || room?.Price?.["@attributes"]?.amt || 0);
       const isRefundable = room?.CancellationPolicyStatus === "Refundable";
 
       return {
         amenities: hotelAmenities,
         images: hotelImages,
-        id: option["@attributes"]?.id,
+        id: optionId,
         roomTypeId: room?.RoomType?.["@attributes"]?.code,
         roomTypeName,
         name: `${roomTypeName} — ${room?.MealType?.["@attributes"]?.text}`,
@@ -94,13 +96,13 @@ const normalizeStubaAccommodationData = (stubaItem) => {
           ...option,
           pricing: {
             total: price,
-            currency,  // ✅ now in scope
+            currency,
             nights: [],
           },
         },
         images: [],
         view: null,
-        pricing: { total: price,  currency, nights: [] },
+        pricing: { total: price, currency, nights: [] },
       };
     });
 
@@ -154,9 +156,7 @@ export default function AccommodationDetailPage() {
   const { t } = useTranslation(["common", "accommodation"]);
   const router = useRouter();
   const { id: accommodationId, productname, link_type_id } = router.query;
-  const urlLinkTypeId = link_type_id ? Number(link_type_id) : null;
   const { localizedReplace, localizedPush } = useLocalizedRouter();
-
   const {
     selectedRegion,
     searchParams,
@@ -167,6 +167,8 @@ export default function AccommodationDetailPage() {
   const { items, removeItem } = useCartStore();
   const { openDrawer, setDrawerContent } = useDrawerStore();
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addRecentlyViewed);
+
+  const lastFetchedIdRef = useRef(null);
 
   const [accommodation, setAccommodation] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -354,6 +356,7 @@ export default function AccommodationDetailPage() {
       checkIn: searchParams?.start_date,
       checkOut: searchParams?.end_date,
       isStuba: true,
+      link_type_id: 9,
       timestamp: new Date().toISOString()
     };
 
@@ -390,6 +393,9 @@ export default function AccommodationDetailPage() {
   useEffect(() => {
     const fetchAccommodationDetail = async () => {
       if (!router.isReady || !accommodationId) return;
+      // Guard against double invocation (React 18 StrictMode) and same-ID re-renders
+      if (lastFetchedIdRef.current === accommodationId) return;
+      lastFetchedIdRef.current = accommodationId;
 
       setLoading(true);
       setError(null);
@@ -527,7 +533,6 @@ export default function AccommodationDetailPage() {
         currency: hotelData?.currency,
         type: "accommodation",
         link: router.asPath,
-        link_type_id: urlLinkTypeId,
       });
     }
   }, [accommodation, addRecentlyViewed, router.asPath]);
@@ -537,7 +542,7 @@ export default function AccommodationDetailPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="flex bg-[#000000] items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -620,6 +625,7 @@ export default function AccommodationDetailPage() {
             allotments={accommodation.allotments}
             selectedRoom={selectedRoom}
             amenities={hotelData.amenities}
+            link_type_id={9}
           />
           <div className="grid grid-cols-1">
             <AccommodationMap hotelData={hotelData} landmarks={accommodation?.hotel?.nearby_landmarks} />

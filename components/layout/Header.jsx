@@ -17,22 +17,27 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const dropdownRef = useRef(null);
+  const hasFetchedEventRef = useRef(false);
+  const hasRunUserCheckRef = useRef(false);
 
   useEffect(() => {
     setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (hasFetchedEventRef.current) return;
+    hasFetchedEventRef.current = true;
     async function loadEvent() {
       const data = await $helpers.getEventData();
       setEvent(data);
     }
-
     loadEvent();
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
+    if (hasRunUserCheckRef.current) return;
+    hasRunUserCheckRef.current = true;
 
     const timer = setTimeout(() => {
       if (!user && router.pathname !== '/error') {
@@ -49,8 +54,6 @@ export default function Header() {
           }
         })();
       }
-      
-      console.log('user is here', user)
     }, 500);
 
     return () => clearTimeout(timer);

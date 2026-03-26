@@ -48,6 +48,7 @@ const PayNow = ({ totalPrice }) => {
   const [phone, setPhone] = useState("");
   const [promo, setPromo] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
+  const [userComment, setUserComment] = useState('');
   const [errors, setErrors] = useState({});
  const [communicationMode, setCommunicationMode] = useState(user?.communication_mode || '');
   const [isCommModeOpen, setIsCommModeOpen] = useState(false);
@@ -57,6 +58,7 @@ const PayNow = ({ totalPrice }) => {
   ); const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoMessage, setPromoMessage] = useState({ text: '', type: '' });
   const commModeRef = useRef(null);
+  const lastPaymentFetchIdRef = useRef(null);
 
   const communicationOptions = [
     { value: "whatsapp", label: "WhatsApp" },
@@ -100,6 +102,8 @@ const PayNow = ({ totalPrice }) => {
     return [];
   })();
 
+  const hasLinkType10 = items.some(item => item.link_type_id === 10);
+
   useEffect(() => {
     const hasPendingPayment = typeof window !== "undefined" && !!localStorage.getItem("pendingPaymentOrderId");
     if (items.length === 0 && !hasPendingPayment && !isPopupVisible) {
@@ -121,9 +125,15 @@ const PayNow = ({ totalPrice }) => {
         const firstProductId = items[0]?.tourId || items[0]?.id;
         if (!firstProductId) return;
 
+        // Guard: skip if already fetched for this product ID and languageId combination
+        const fetchKey = `${firstProductId}_${languageId}`;
+        if (lastPaymentFetchIdRef.current === fetchKey) return;
+        lastPaymentFetchIdRef.current = fetchKey;
+
         const res = await getPaymentOptions(firstProductId, 1);
         setPaymentOptions(res?.data?.paymentmethods || []);
       } catch (err) {
+        lastPaymentFetchIdRef.current = null; // allow retry on error
         setPaymentOptions([]);
         setShowPromoField(false);
       }
@@ -156,6 +166,8 @@ const PayNow = ({ totalPrice }) => {
 
     if (!phone.trim()) errs.phone = "validation.phoneRequired";
     else if (!/^\+?\d{7,15}$/.test(phone)) errs.phone = "validation.phoneInvalid";
+
+    if (hasLinkType10 && !userComment.trim()) errs.userComment = "Comment is required";
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -427,7 +439,8 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     agent_id: event?.event?.user_id || null,
     event_id:event?.event?.id|| null,
     ref_type: refType || null,
-    track_agent_id: track_agent_id || null
+    track_agent_id: track_agent_id || null,
+    user_comment: userComment || null
   };
 
   return payload;
@@ -446,6 +459,12 @@ console.log("cart_items:PAYNOW #####################", cart_items);
         
         if (!ratePlanId) {
           console.warn('Accommodation item missing rate_plan_id:', item);
+          continue;
+        }
+
+        // Skip inventory/hold/status check for link_type_id 9 (hotel) or 10 (ratehawk) — client-side hold only.
+        if (item.link_type_id === 9 || item.link_type_id === 10) {
+          console.log('[paynow] Skipping hold status check for link_type_id', item.link_type_id);
           continue;
         }
 
@@ -677,6 +696,27 @@ console.log("cart_items:PAYNOW #####################", cart_items);
               )}
             </div>
               
+            {/* User Comment */}
+            {hasLinkType10 && (
+              <div className="md:col-span-2">
+                <label className="text-sm text-gray-500 flex items-center gap-3">
+                  <MessageSquare className="w-4 h-4 text-gray-400" />
+                  Comment <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  placeholder="comment here"
+                  value={userComment}
+                  onChange={e => {
+                    setUserComment(e.target.value);
+                    setErrors(prev => ({ ...prev, userComment: undefined }));
+                  }}
+                  rows={3}
+                  className="w-full border border-gray-300 text-base rounded px-4 py-3 mt-1 focus:outline-none resize-none"
+                />
+                {errors.userComment && <p className="text-red-500 text-xs mt-1">{errors.userComment}</p>}
+              </div>
+            )}
+
             {/* {!showPromoField && (
              <div>
                 <label className="text-sm text-gray-500 flex justify-between items-center gap-3">

@@ -189,9 +189,9 @@ export const useCartStore = create<CartState>()(
         const item = get().items.find((i) => i.key === key);
         if (!item) return { success: false, message: "Item not found" };
 
-        // Stuba items are held on the client-side only, without calling the hold API.
-        if (item.hotel_info?.stuba_response) {
-          console.log('[startHoldForItem] Stuba item detected. Applying client-side hold.');
+        // Stuba/RateHawk/hotel items (link_type_id 9 or 10) are held on the client-side only, without calling the hold API.
+        if (item.hotel_info?.stuba_response || item.link_type_id === 9 || item.link_type_id === 10) {
+          console.log('[startHoldForItem] Client-side hold only (stuba/link_type_id 9 or 10).');
           const expiresAt = Date.now() + 7 * 60 * 1000;
           get().setHoldForItem(key, expiresAt);
           const roomCount = get().getAccommodationItems().length;
@@ -247,9 +247,9 @@ export const useCartStore = create<CartState>()(
         const item = get().items.find((i) => i.key === key);
         if (!item) return { success: false, message: "Item not found" };
 
-        // Stuba items are held on the client-side only, so we just extend the local timer.
-        if (item.hotel_info?.stuba_response) {
-          console.log('[extendHoldForItem] Stuba item detected. Applying client-side hold extension.');
+        // Stuba/RateHawk/hotel items (link_type_id 9 or 10) are held on the client-side only.
+        if (item.hotel_info?.stuba_response || item.link_type_id === 9 || item.link_type_id === 10) {
+          console.log('[extendHoldForItem] Client-side hold extension only (stuba/link_type_id 9 or 10).');
           const newExpires = Date.now() + 7 * 60 * 1000;
           get().setHoldForItem(key, newExpires);
           return { success: true, expiresAt: newExpires };
@@ -341,8 +341,18 @@ export const useCartStore = create<CartState>()(
 
         try {
           for (const item of accommodationItems) {
+            // Skip inventory/hold status check for link_type_id 9 (hotel) or 10 (ratehawk) — client-side hold only.
+            if (item.link_type_id === 9 || item.link_type_id === 10) {
+              const now = Date.now();
+              if (item.holdExpiresAt && item.holdExpiresAt <= now) {
+                get().removeItem(item.key);
+                removedKeys.push(item.key);
+              }
+              continue;
+            }
+
             const ratePlanId = item.quoteId || item.rate_plan_id || item.ratePlanId || item.selectedRoomId;
-            
+
            const cartId = item.key.split('#').pop() || item.key;
 
             const params = new URLSearchParams({

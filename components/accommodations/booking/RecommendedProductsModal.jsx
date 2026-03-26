@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,13 +24,16 @@ const fetchRecommendedProducts = async () => {
 export default function RecommendedProductsModal({ isOpen, onClose, hotelName }) {
   const router = useRouter();
   const { setTransferParams } = useSearchValuesStore();
+  const hasFetchedRef = useRef(false);
+
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
   const [activeCategory, setActiveCategory] = useState("");
   const [productLoading, setProductLoading] = useState(null);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
       setLoading(true);
       setProductLoading(null);
       fetchRecommendedProducts().then((res) => {
@@ -45,6 +48,10 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
         }
         setLoading(false);
       });
+    }
+    // Reset on close so next open fetches fresh data
+    if (!isOpen) {
+      hasFetchedRef.current = false;
     }
   }, [isOpen]);
   

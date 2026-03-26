@@ -15,7 +15,7 @@ import {
   Ship,
   Train,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Head from "next/head";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ new import
@@ -63,19 +63,15 @@ export default function HomePage() {
   // }, [resetTransferStore, fetchVehicles]);
 
  const [event, setEvent] = useState(null);
-
-  // Clear all persisted search values on initial load of the homepage
-  // useEffect(() => {
-  //   clearAllSearchParams();
-  // }, [clearAllSearchParams]);
+  const hasFetchedEventRef = useRef(false);
 
   useEffect(() => {
+    if (hasFetchedEventRef.current) return;
+    hasFetchedEventRef.current = true;
     async function loadEvent() {
       const data = await $helpers.getEventData();
-      console.log("EVENT FROM herosection:", data);
       setEvent(data);
     }
-
     loadEvent();
   }, []);
 

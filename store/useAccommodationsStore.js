@@ -18,7 +18,8 @@ export const useAccommodationsStore = create((set, get) => ({
   hotelQuoteMap: {},
   isLoading: false,
   isCheckingAvailability: false,
-  accommodationFilters: null, 
+  accommodationFilters: null,
+  lastFetchSignature: null,
   error: null,
 
   // Selected search context
@@ -194,26 +195,42 @@ export const useAccommodationsStore = create((set, get) => ({
       return [];
     }
 
-    set({ isLoading: true, error: null });
-    console.log("🔍 Fetching accommodations with payload:", searchPayload);
+    // Fix 2: Deduplication guard — skip if same params are already being fetched
+    const fetchSig = JSON.stringify(searchPayload);
+    if (get().lastFetchSignature === fetchSig && get().isLoading) {
+      console.warn("⚠️ Duplicate fetchAccommodations call skipped");
+      return get().accommodations;
+    }
 
-    set({ 
-      isLoading: true, 
+    // Fix 3: Single set() call instead of two to avoid double re-renders
+    console.log("🔍 Fetching accommodations with payload:", searchPayload);
+    set({
+      isLoading: true,
       error: null,
       accommodations: [],
       searchResults: [],
       filteredResults: [],
-      accommodationFilters: null 
+      accommodationFilters: null,
+      lastFetchSignature: fetchSig,
     });
 
     // process&append
     const processAndAppend = (sourceName, data) => {
-      const results = data?.data?.accommodations || data?.accommodations || data?.data || data || [];
+      const results = data?.data?.accommodations || data?.accommodations || data?.data?.data || data?.data || data || [];
       const filters = data?.data?.meta?.filters || null;
 
       const enriched = Array.isArray(results)
         ? results.map((r) => {
-            const price = parseFloat(r.starting_price || r.min_rate || r.price || r?.pricing?.min_price || 0);
+            let price;
+            // Ratehawk: extract min price from rates[].payment_options.payment_types[0].amount
+            if ((r.link_type_id === 10 || r.Hotel_Data?.link_type_id === 10) && Array.isArray(r.rates) && r.rates.length > 0) {
+              const ratePrices = r.rates
+                .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
+                .filter(p => p > 0);
+              price = ratePrices.length > 0 ? Math.min(...ratePrices) : 0;
+            } else {
+              price = parseFloat(r.starting_price || r.min_rate || r.price || r?.pricing?.min_price || 0);
+            }
             return { ...r, hotelId: r.id, starting_price: price, price: price };
           })
         : (results && typeof results === 'object' ? [{ 
