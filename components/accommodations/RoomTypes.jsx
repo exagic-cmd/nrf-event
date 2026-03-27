@@ -296,6 +296,7 @@ const StubaRoomList = ({
   const [roomMessages, setRoomMessages] = useState({});
   const [breakdownModal, setBreakdownModal] = useState({ open: false, ratePlan: null });
   const [prebookingModal, setPrebookingModal] = useState({ open: false, data: null, ratePlan: null, loading: false });
+  const [expandedRooms, setExpandedRooms] = useState(new Set());
   const isMediumOrUp = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
@@ -387,6 +388,30 @@ const StubaRoomList = ({
     return "Room Only";
   };
 
+  const getPrice = (rp) => Number(rp?.pricing?.total_promo || rp?.pricing?.total || Infinity);
+
+  const isFreeCancellation = (rp) => {
+    const p = (rp.cancellationPolicy || "").toString().toLowerCase();
+    if (p.includes("nonrefundable") || p.includes("non-refundable") || p.includes("non_refundable")) return false;
+    return p.includes("refundable") || p.includes("free");
+  };
+
+  const getSortedRatePlans = (ratePlans) => {
+    if (!ratePlans || ratePlans.length === 0) return ratePlans;
+    const free = ratePlans.filter(isFreeCancellation).sort((a, b) => getPrice(a) - getPrice(b));
+    const rest = ratePlans.filter(rp => !isFreeCancellation(rp)).sort((a, b) => getPrice(a) - getPrice(b));
+    return [...free, ...rest];
+  };
+
+  const toggleExpandedRoom = (roomId) => {
+    setExpandedRooms(prev => {
+      const next = new Set(prev);
+      if (next.has(roomId)) next.delete(roomId);
+      else next.add(roomId);
+      return next;
+    });
+  };
+
   return (
     <div id="room-types-section" className="py-2">
       <div className="">
@@ -400,7 +425,15 @@ const StubaRoomList = ({
         </div>
 
         <div className="space-y-5">
-          {allRooms.map((roomType) => (
+          {allRooms.map((roomType) => {
+            const isExpanded = expandedRooms.has(roomType.id);
+            const sortedRatePlans = link_type_id === 9 ? getSortedRatePlans(roomType.ratePlans) : roomType.ratePlans;
+            const visibleRatePlans = (link_type_id === 9 && !isExpanded && sortedRatePlans.length > 1)
+              ? [sortedRatePlans[0]]
+              : sortedRatePlans;
+            const hiddenCount = sortedRatePlans.length - visibleRatePlans.length;
+
+            return (
             <div key={roomType.id} className="bg-white rounded-2xl overflow-hidden border border-gray-200">
               {/* Room Header */}
               <div className="bg-white lg:border-b border-gray-200 p-4">
@@ -452,7 +485,7 @@ const StubaRoomList = ({
                 isMediumOrUp ? (
                   /* Desktop View */
                   <div className="divide-y divide-gray-200">
-                    {roomType.ratePlans.map((ratePlan, index) => {
+                    {visibleRatePlans.map((ratePlan, index) => {
                       const uniqueKey = `${ratePlan.id}-${index}`;
                       const isSelected = internalSelectedRoomKey === uniqueKey;
                       const isLoading = loadingKey === uniqueKey;
@@ -547,7 +580,7 @@ const StubaRoomList = ({
                 ) : (
                   /* Mobile View */
                   <div className="flex overflow-x-auto space-x-4 p-4 no-scrollbar">
-                    {roomType.ratePlans.map((ratePlan, index) => {
+                    {visibleRatePlans.map((ratePlan, index) => {
                       const uniqueKey = `${ratePlan.id}-${index}`;
                       const isSelected = internalSelectedRoomKey === uniqueKey;
                       const isLoading = loadingKey === uniqueKey;
@@ -649,8 +682,22 @@ const StubaRoomList = ({
               ) : (
                 <div className="p-8 text-center text-gray-500">No rate plans available for this room type.</div>
               )}
+
+              {link_type_id === 9 && roomType.ratePlans.length > 1 && (
+                <div className="p-4 border-t border-gray-200 text-center">
+                  <button
+                    onClick={() => toggleExpandedRoom(roomType.id)}
+                    className="text-sm text-[#233BA0] font-semibold hover:underline"
+                  >
+                    {isExpanded
+                      ? "Show less"
+                      : `Show ${hiddenCount} more option${hiddenCount !== 1 ? "s" : ""}`}
+                  </button>
+                </div>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <style jsx>{`
