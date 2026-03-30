@@ -20,6 +20,7 @@ export const useAccommodationsStore = create((set, get) => ({
   isCheckingAvailability: false,
   accommodationFilters: null,
   lastFetchSignature: null,
+  lastFetchTime: null,
   error: null,
 
   // Selected search context
@@ -150,41 +151,41 @@ export const useAccommodationsStore = create((set, get) => ({
 
   // Set search parameters and trigger search immediately
   setSearchParamsAndSearch: async (payload) => {
-  console.log("Setting search params and triggering search:", payload);
-  
-  set({ searchParams: payload, isLoading: true, error: null });
+    console.log("Setting search params and triggering search:", payload);
 
-  try {
-    const results = await get().fetchAccommodations(payload);
-    
-    // If no results (likely due to !data.status), return null
-    if (!results || results.length === 0) {
+    set({ searchParams: payload, isLoading: true, error: null });
+
+    try {
+      const results = await get().fetchAccommodations(payload);
+
+      // If no results (likely due to !data.status), return null
+      if (!results || results.length === 0) {
+        set({ isLoading: false });
+        return null;
+      }
+
       set({ isLoading: false });
+      return results;
+    } catch (err) {
+      set({ isLoading: false, error: err.message || "Search failed" });
       return null;
     }
-
-    set({ isLoading: false });
-    return results;
-  } catch (err) {
-    set({ isLoading: false, error: err.message || "Search failed" });
-    return null;
-  }
-},
+  },
 
   // Fetch accommodations search results
   fetchAccommodations: async (payload) => {
 
     if (
-  !payload ||
-  !payload.start_date ||
-  payload.start_date === "" ||
-  !payload.end_date ||
-  payload.end_date === ""
-) {
-  console.warn("❌ fetchAccommodations skipped — missing dates:", payload);
-  set({ isLoading: false, error: "Missing start or end date" });
-  return [];
-}
+      !payload ||
+      !payload.start_date ||
+      payload.start_date === "" ||
+      !payload.end_date ||
+      payload.end_date === ""
+    ) {
+      console.warn("❌ fetchAccommodations skipped — missing dates:", payload);
+      set({ isLoading: false, error: "Missing start or end date" });
+      return [];
+    }
 
     // If no payload provided, use existing searchParams
     const searchPayload = payload;
@@ -197,9 +198,18 @@ export const useAccommodationsStore = create((set, get) => ({
 
     // Fix 2: Deduplication guard — skip if same params are already being fetched
     const fetchSig = JSON.stringify(searchPayload);
-    if (get().lastFetchSignature === fetchSig && get().isLoading) {
-      console.warn("⚠️ Duplicate fetchAccommodations call skipped");
-      return get().accommodations;
+    const now = Date.now();
+
+    if (get().lastFetchSignature === fetchSig) {
+      if (get().isLoading) {
+        console.warn("⚠️ Duplicate fetchAccommodations call skipped (already loading)");
+        return get().accommodations;
+      }
+      // If we fetched the exact same payload within the last 5 seconds, it's definitely a double-fire bug.
+      if (get().lastFetchTime && (now - get().lastFetchTime < 5000)) {
+        console.warn("⚠️ Duplicate fetchAccommodations call skipped (debounced within 5s)");
+        return get().accommodations;
+      }
     }
 
     // Fix 3: Single set() call instead of two to avoid double re-renders
@@ -212,6 +222,7 @@ export const useAccommodationsStore = create((set, get) => ({
       filteredResults: [],
       accommodationFilters: null,
       lastFetchSignature: fetchSig,
+      lastFetchTime: now,
     });
 
     // process&append
@@ -221,23 +232,23 @@ export const useAccommodationsStore = create((set, get) => ({
 
       const enriched = Array.isArray(results)
         ? results.map((r) => {
-            let price;
-            // Ratehawk: extract min price from rates[].payment_options.payment_types[0].amount
-            if ((r.link_type_id === 10 || r.Hotel_Data?.link_type_id === 10) && Array.isArray(r.rates) && r.rates.length > 0) {
-              const ratePrices = r.rates
-                .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
-                .filter(p => p > 0);
-              price = ratePrices.length > 0 ? Math.min(...ratePrices) : 0;
-            } else {
-              price = parseFloat(r.starting_price || r.min_rate || r.price || r?.pricing?.min_price || 0);
-            }
-            return { ...r, hotelId: r.id, starting_price: price, price: price };
-          })
-        : (results && typeof results === 'object' ? [{ 
-            ...results, 
-            hotelId: results.id,
-            starting_price: parseFloat(results.starting_price || results.min_rate || results.price || 0) 
-          }] : []);
+          let price;
+          // Ratehawk: extract min price from rates[].payment_options.payment_types[0].amount
+          if ((r.link_type_id === 10 || r.Hotel_Data?.link_type_id === 10) && Array.isArray(r.rates) && r.rates.length > 0) {
+            const ratePrices = r.rates
+              .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
+              .filter(p => p > 0);
+            price = ratePrices.length > 0 ? Math.min(...ratePrices) : 0;
+          } else {
+            price = parseFloat(r.starting_price || r.min_rate || r.price || r?.pricing?.min_price || 0);
+          }
+          return { ...r, hotelId: r.id, starting_price: price, price: price };
+        })
+        : (results && typeof results === 'object' ? [{
+          ...results,
+          hotelId: results.id,
+          starting_price: parseFloat(results.starting_price || results.min_rate || results.price || 0)
+        }] : []);
 
       if (enriched.length > 0) {
         set((state) => {
@@ -252,6 +263,13 @@ export const useAccommodationsStore = create((set, get) => ({
         });
       }
       console.log(`✅ ${sourceName} loaded ${enriched.length} items`);
+
+      // Only hide loading state early if the API call actually returned some accommodations.
+      // If the first API returns success: true but accommodations: [], we should keep the loader
+      // spinning until Ratehawk or Stuba finishes, to prevent the screen from flashing "0 results"
+      if (enriched.length > 0 && (data?.success === true || data?.status === true || data?.data?.success === true || data?.data?.status === true)) {
+        set({ isLoading: false });
+      }
     };
 
     try {
@@ -261,7 +279,7 @@ export const useAccommodationsStore = create((set, get) => ({
           const params = {
             text: searchPayload.text || '',
             start_date: searchPayload.start_date,
-          //  get_stb_items: true,
+            //  get_stb_items: true,
             region: 18196,
             is_b2b_only: 1,
           };
@@ -282,21 +300,23 @@ export const useAccommodationsStore = create((set, get) => ({
           if (!res.ok) throw new Error(`API 1 Failed: ${res.status}`);
           const data = await res.json();
           processAndAppend("API 1", data);
+          return true;
         } catch (err) {
-          console.error("API 1 Error:", err);
+          console.error("API 1 Error:", err.message);
+          return false;
         }
       };
 
-      await fetchApi1();
+      const api1Success = await fetchApi1();
 
-   // API 2 & 3 
+      // API 2 & 3 
       const postPayload = {
         text: searchPayload.text || '',
         start_date: searchPayload.start_date,
         end_date: searchPayload.end_date,
         region: 18196,
         rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
-       // get_stb_items: true,
+        // get_stb_items: true,
         is_b2b_only: 1
       };
 
@@ -316,20 +336,25 @@ export const useAccommodationsStore = create((set, get) => ({
           if (!res.ok) throw new Error(`${label} Failed: ${res.status}`);
           const data = await res.json();
           processAndAppend(label, data);
+          return true;
         } catch (err) {
-          console.error(`${label} Error:`, err);
+          console.error(`${label} Error:`, err.message);
+          return false;
         }
       };
 
-      await Promise.allSettled([
-        fetchPostApi('/customer/stuba', 'Stuba'),
-        fetchPostApi('/ratehawk/get_hotels', 'Ratehawk')
-      ]);
+      // Call sequentially after the first successfully loaded
+      if (api1Success) {
+        const stubaSuccess = await fetchPostApi('/customer/stuba', 'Stuba');
+        if (stubaSuccess) {
+          await fetchPostApi('/ratehawk/get_hotels', 'Ratehawk');
+        }
+      }
 
       set({ isLoading: false });
       return get().accommodations;
     } catch (err) {
-      console.error("fetchAccommodations error:", err);
+      console.error("fetchAccommodations error:", err.message);
       set({
         isLoading: false,
         error: err.message || "Failed to fetch accommodations",
@@ -339,91 +364,91 @@ export const useAccommodationsStore = create((set, get) => ({
   },
 
 
-// stores/useAccommodationsStore.js
-fetchNonStubaAccommodation: async (hotelId) => {
-  set({ isLoading: true, error: null });
+  // stores/useAccommodationsStore.js
+  fetchNonStubaAccommodation: async (hotelId) => {
+    set({ isLoading: true, error: null });
 
-  try {
-    const payload = { ids: [Number(hotelId)] };
+    try {
+      const payload = { ids: [Number(hotelId)] };
 
-   // console.log("Calling /affliate/get_public_products with:", payload);
+      // console.log("Calling /affliate/get_public_products with:", payload);
 
-    const res = await fetch(
-      `${helpers.getApiAbsoluteURL("/affliate/get_public_products")}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      const res = await fetch(
+        `${helpers.getApiAbsoluteURL("/affliate/get_public_products")}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const rawResponse = await res.json();
+      // console.log("Raw non-Stuba API response:", rawResponse);
+
+      if (!res.ok) {
+        throw new Error(rawResponse.message || `HTTP ${res.status}`);
       }
-    );
 
-    const rawResponse = await res.json();
-   // console.log("Raw non-Stuba API response:", rawResponse);
+      // ———————————————————————————————
+      // 1. CORRECT PATH: rawResponse.products (NOT rawResponse.data)
+      // ———————————————————————————————
+      const allProducts = Array.isArray(rawResponse?.products) ? rawResponse.products : [];
+      // console.log("All products from API:", allProducts);
 
-    if (!res.ok) {
-      throw new Error(rawResponse.message || `HTTP ${res.status}`);
+      // Choose a product from the returned products without filtering by link_type_id/category_id.
+      // Prefer the product that matches the requested hotelId (if present), otherwise fall back to the first product.
+      if (allProducts.length === 0) {
+        throw new Error("No non-Stuba products returned from API");
+      }
+
+      const hotel = allProducts.find(item => Number(item.id) === Number(hotelId)) || allProducts[0];
+      // console.log("Selected non-Stuba hotel product:", hotel);
+
+      // ———————————————————————————————
+      // 4. NORMALIZE (match your UI)
+      // ———————————————————————————————
+      const normalized = {
+        normalizedHotelData: {
+          id: hotel.id,
+          stuba_id: null,
+          title: hotel.product_title || hotel.product_content_title,
+          name: hotel.product_title || hotel.product_content_title,
+          description: hotel.short_desc,
+          country: hotel.country_name || "Singapore", // fallback
+          city: hotel.city_name || "Singapore",       // fallback
+          address: hotel.address || hotel.short_desc.split('.')[0],
+          latitude: hotel.latitude || 1.3521,         // Singapore default
+          longitude: hotel.longitude || 103.8198,     // Singapore default
+          image: hotel.image,
+          images: hotel.image ? [{
+            url: hotel.image,
+            thumb: hotel.image,
+            type: "photo"
+          }] : [],
+          stars: hotel.stars || 4,                    // fallback
+          //  amenities: hotel?.amenities || "WiFi, AC, TV",
+          //  features: (hotel?.amenities || "WiFi, AC, TV").split(",").map(s => s.trim()),
+          starting_price: parseFloat(hotel.starting_price) || 0,
+          price: parseFloat(hotel.starting_price) || 0,
+          category_name: hotel.category_name,
+          currency: hotel.currency || "SGD"
+        },
+        normalizedRoomData: [], // No rooms in response → empty for now
+        lowestPriceRoom: null
+      };
+
+      const result = { ...hotel, ...normalized };
+
+      // console.log("✅ Normalized non-Stuba data:", result);
+
+      set({ isLoading: false });
+      return result;
+    } catch (err) {
+      console.error("❌ fetchNonStubaAccommodation failed:", err);
+      set({ isLoading: false, error: err.message });
+      return null;
     }
-
-    // ———————————————————————————————
-    // 1. CORRECT PATH: rawResponse.products (NOT rawResponse.data)
-    // ———————————————————————————————
-    const allProducts = Array.isArray(rawResponse?.products) ? rawResponse.products : [];
-   // console.log("All products from API:", allProducts);
-
-    // Choose a product from the returned products without filtering by link_type_id/category_id.
-    // Prefer the product that matches the requested hotelId (if present), otherwise fall back to the first product.
-    if (allProducts.length === 0) {
-      throw new Error("No non-Stuba products returned from API");
-    }
-
-    const hotel = allProducts.find(item => Number(item.id) === Number(hotelId)) || allProducts[0];
-   // console.log("Selected non-Stuba hotel product:", hotel);
-
-    // ———————————————————————————————
-    // 4. NORMALIZE (match your UI)
-    // ———————————————————————————————
-    const normalized = {
-      normalizedHotelData: {
-        id: hotel.id,
-        stuba_id: null,
-        title: hotel.product_title || hotel.product_content_title,
-        name: hotel.product_title || hotel.product_content_title,
-        description: hotel.short_desc,
-        country: hotel.country_name || "Singapore", // fallback
-        city: hotel.city_name || "Singapore",       // fallback
-        address: hotel.address || hotel.short_desc.split('.')[0],
-        latitude: hotel.latitude || 1.3521,         // Singapore default
-        longitude: hotel.longitude || 103.8198,     // Singapore default
-        image: hotel.image,
-        images: hotel.image ? [{
-          url: hotel.image,
-          thumb: hotel.image,
-          type: "photo"
-        }] : [],
-        stars: hotel.stars || 4,                    // fallback
-      //  amenities: hotel?.amenities || "WiFi, AC, TV",
-      //  features: (hotel?.amenities || "WiFi, AC, TV").split(",").map(s => s.trim()),
-        starting_price: parseFloat(hotel.starting_price) || 0,
-        price: parseFloat(hotel.starting_price) || 0,
-        category_name: hotel.category_name,
-        currency: hotel.currency || "SGD"
-      },
-      normalizedRoomData: [], // No rooms in response → empty for now
-      lowestPriceRoom: null
-    };
-
-    const result = { ...hotel, ...normalized };
-
-   // console.log("✅ Normalized non-Stuba data:", result);
-
-    set({ isLoading: false });
-    return result;
-  } catch (err) {
-    console.error("❌ fetchNonStubaAccommodation failed:", err);
-    set({ isLoading: false, error: err.message });
-    return null;
-  }
-},
+  },
 
 
 
@@ -460,12 +485,12 @@ fetchNonStubaAccommodation: async (hotelId) => {
 
   // Local filtering (no API call)
   applyAccommodationFilter: (filterFn) => {
-  const all = get().searchResults;
-  setTimeout(() => {
-    const filtered = typeof filterFn === "function" ? all.filter(filterFn) : all;
-    set({ filteredResults: filtered });
-  }, 0);
-},
+    const all = get().searchResults;
+    setTimeout(() => {
+      const filtered = typeof filterFn === "function" ? all.filter(filterFn) : all;
+      set({ filteredResults: filtered });
+    }, 0);
+  },
 
   resetAccommodationFilters: () => {
     const all = get().searchResults;
@@ -481,7 +506,7 @@ fetchNonStubaAccommodation: async (hotelId) => {
       filteredResults: results,
     }),
   setSuggestedResults: (results) => set({ suggestedResults: results }),
-  
+
   // Set search params without triggering search
   setSearchParams: (params) => {
     const current = get().searchParams;
