@@ -34,7 +34,7 @@ const AccommodationInfoCard = ({
     }
 
     // Multiply by number of rooms to get total
-    setLowestPrice(priceFor1Room * roomsCount);
+    setLowestPrice(priceFor1Room);
   }, [allRooms, startingPrice, selectedRoom, roomsCount]);
 
   useEffect(() => {
