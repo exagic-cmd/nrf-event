@@ -63,7 +63,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
                 <div className="flex flex-wrap gap-2">
                   {rate.daily_prices.map((p, i) => (
                     <span key={i} className="text-sm bg-gray-100 text-gray-800 px-3 py-1 rounded-full font-medium">
-                      Day {i + 1}: {parseFloat(p).toFixed(2)} {paymentType?.currency_code || "USD"}
+                      Day {i + 1}: {paymentType?.currency_code } {parseFloat(p).toFixed(2)} 
                     </span>
                   ))}
                 </div>
@@ -75,7 +75,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
               <div className="border border-gray-200 rounded-xl p-3 text-center">
                 <p className="text-xs text-gray-500 mb-1">Total Price</p>
                 <p className="text-base font-bold text-[#233BA0]">
-                  {paymentType?.show_currency_code || paymentType?.currency_code || "USD"}{" "}
+                  {paymentType?.show_currency_code || paymentType?.currency_code }{" "}
                   {parseFloat(paymentType?.show_amount || paymentType?.amount || 0).toFixed(2)}
                 </p>
               </div>
@@ -161,7 +161,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
             className="flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-[#D3202D] text-white font-semibold text-sm hover:bg-[#B81E29] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Check size={16} />
-            Proceed Booking
+            Proceed
           </button>
         </div>
       </div>
