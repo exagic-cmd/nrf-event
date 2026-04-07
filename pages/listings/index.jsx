@@ -140,6 +140,7 @@ function ListingsPage() {
     accommodations,
     filteredResults,
     isLoading: accommodationLoading,
+    isSubLoading: accommodationSubLoading,
     accommodationFilters,
     fetchAccommodations,
     applyAccommodationFilter,
@@ -153,16 +154,26 @@ function ListingsPage() {
   } = useTransferStore();
 
 
+  const normalizeMeal = (val) => {
+    const map = {
+      nomeal: 'room_only', breakfast: 'breakfast', halfboard: 'half_board',
+      fullboard: 'full_board', allinclusive: 'all_inclusive',
+      'room only': 'room_only', 'half board': 'half_board',
+      'full board': 'full_board', 'all inclusive': 'all_inclusive', 'all-inclusive': 'all_inclusive',
+    };
+    const lower = (val || '').toLowerCase().trim();
+    return map[lower] || lower;
+  };
+
   const handleFilterChange = useCallback((activeFilters) => {
     applyAccommodationFilter((accommodation) => {
       const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
       const hasSelectedRatings = activeFilters.ratings && activeFilters.ratings.length > 0;
-      const hasSelectedMealPlans = activeFilters.meal_plans && activeFilters.meal_plans.length > 0;
       const hasSelectedPaymentTypes = activeFilters.payment_types && activeFilters.payment_types.length > 0;
-      const hasSelectedCancellation = activeFilters.cancellation_policies && activeFilters.cancellation_policies.length > 0;
-      const hasSelectedRoomAmenities = activeFilters.room_amenities && activeFilters.room_amenities.length > 0;
       const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
       const hasSearchText = activeFilters.searchText && activeFilters.searchText.trim().length > 1;
+      const hasUnifiedMealPlans = activeFilters.unified_meal_plans?.length > 0;
+      const hasUnifiedCancellation = activeFilters.unified_cancellation?.length > 0;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
@@ -182,11 +193,69 @@ function ListingsPage() {
 
       const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(Math.floor(parseFloat(hotelData.star_rating)));
 
-      const mealPlanMatch = !hasSelectedMealPlans || activeFilters.meal_plans.includes(accommodation.room?.rate_plan?.meal?.id);
-
       const paymentTypeMatch = !hasSelectedPaymentTypes || activeFilters.payment_types.includes(accommodation.room?.rate_plan?.payment_type);
-      
-      const cancellationPolicyMatch = !hasSelectedCancellation || activeFilters.cancellation_policies.includes(accommodation.room?.rate_plan?.cancellation_policy?.id);
+
+      // Unified meal plan filter — string keys = Stuba/RH, numeric = API
+      let mealPlanMatch = true;
+      if (hasUnifiedMealPlans) {
+        const sel = activeFilters.unified_meal_plans;
+        const strSel = sel.filter(v => typeof v === 'string');
+        const numSel = sel.filter(v => typeof v === 'number');
+        if (accommodation.link_type_id === 9 && accommodation.Result) {
+          const mealSet = new Set();
+          Object.values(accommodation.Result).forEach(roomType => {
+            if (!roomType || typeof roomType !== 'object') return;
+            Object.values(roomType).forEach(option => {
+              const t = option?.lowest_price_room?.MealType?.['@attributes']?.text;
+              if (t) mealSet.add(normalizeMeal(t));
+            });
+          });
+          mealPlanMatch = strSel.length === 0 || strSel.some(s => mealSet.has(s));
+        } else if (accommodation.link_type_id === 10 && Array.isArray(accommodation.rates)) {
+          const mealSet = new Set();
+          accommodation.rates.forEach(rate => { if (rate?.meal) mealSet.add(normalizeMeal(rate.meal)); });
+          mealPlanMatch = strSel.length === 0 || strSel.some(s => mealSet.has(s));
+        } else {
+          // Standard accommodation: only checked when numeric API IDs are selected
+          mealPlanMatch = numSel.length === 0 || numSel.includes(accommodation.room?.rate_plan?.meal?.id);
+        }
+      }
+
+      // Unified cancellation filter — string keys = Stuba/RH, numeric = API
+      let cancellationPolicyMatch = true;
+      if (hasUnifiedCancellation) {
+        const sel = activeFilters.unified_cancellation;
+        const strSel = sel.filter(v => typeof v === 'string');
+        const numSel = sel.filter(v => typeof v === 'number');
+        if (accommodation.link_type_id === 9 && accommodation.Result) {
+          let hasRef = false, hasNonRef = false;
+          Object.values(accommodation.Result).forEach(roomType => {
+            if (!roomType || typeof roomType !== 'object') return;
+            Object.values(roomType).forEach(option => {
+              if (typeof option?.cancellable_rooms === 'number') {
+                if (option.cancellable_rooms > 0) hasRef = true;
+                else hasNonRef = true;
+              }
+            });
+          });
+          cancellationPolicyMatch = strSel.length === 0 || strSel.some(s =>
+            (s === 'refundable' && hasRef) || (s === 'non_refundable' && hasNonRef)
+          );
+        } else if (accommodation.link_type_id === 10 && Array.isArray(accommodation.rates)) {
+          let hasRef = false, hasNonRef = false;
+          accommodation.rates.forEach(rate => {
+            const penalty = rate?.payment_options?.payment_types?.[0]?.cancellation_penalties;
+            if (penalty?.free_cancellation_before) hasRef = true;
+            else hasNonRef = true;
+          });
+          cancellationPolicyMatch = strSel.length === 0 || strSel.some(s =>
+            (s === 'refundable' && hasRef) || (s === 'non_refundable' && hasNonRef)
+          );
+        } else {
+          // Standard accommodation: only checked when numeric API IDs are selected
+          cancellationPolicyMatch = numSel.length === 0 || numSel.includes(accommodation.room?.rate_plan?.cancellation_policy?.id);
+        }
+      }
 
       // Calculate Price for Filtering
       let price = 0;
@@ -230,7 +299,7 @@ function ListingsPage() {
 
       return searchTextMatch && amenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
     });
-  }, [applyAccommodationFilter, accommodationFilters]); 
+  }, [applyAccommodationFilter, accommodationFilters]);
   useEffect(() => {
     const searched = urlSearchParams.get("searched");
     const type = urlSearchParams.get("type");
@@ -381,8 +450,9 @@ useEffect(() => {
       case "hotels":
         return (
           <AccommodationList
-            accommodations={filteredResults} 
+            accommodations={filteredResults}
             isLoading={accommodationLoading}
+            isSubLoading={accommodationSubLoading}
             searchPerformed={hasSearched}
             sortBy={accommodationSortBy}
             setSortBy={setAccommodationSortBy}

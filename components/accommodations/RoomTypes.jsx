@@ -178,13 +178,23 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
   const currency = ratePlan.pricing?.currency || "";
 
   const getCancellationStyle = (status) => {
-    const s = (status || "").toLowerCase();
-    if (s.includes("nonrefundable") || s.includes("non-refundable"))
-      return { label: "Non-Refundable", cls: "bg-red-100 text-red-700" };
-    if (s.includes("refundable") || s.includes("free"))
-      return { label: "Free Cancellation", cls: "bg-green-100 text-green-700" };
-    return { label: status || "See terms", cls: "bg-yellow-100 text-yellow-700" };
-  };
+  const s = (status || "").toLowerCase().trim();
+
+  // Treat unknown as non-refundable
+  if (
+    s === "unknown" ||
+    s.includes("nonrefundable") ||
+    s.includes("non-refundable")
+  ) {
+    return { label: "Non-Refundable", cls: "bg-red-100 text-red-700" };
+  }
+
+  if (s.includes("refundable") || s.includes("free")) {
+    return { label: "Free Cancellation", cls: "bg-green-100 text-green-700" };
+  }
+
+  return { label: status || "Non-Refundable", cls: "bg-red-100 text-red-700" };
+};
 
   return (
     <div
@@ -275,7 +285,7 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
   );
 };
 import { getFullImageUrl } from "@/utils/imageService";
-import { formatPrice } from "@/utils/priceUtils";
+import { roundOff } from "@/utils/priceUtils";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import AmenitiesCarousel from "@/components/accommodations/AmenitiesCarousel";
@@ -502,8 +512,8 @@ const StubaRoomList = ({
                       const finalOriginal = Number(ratePlan?.pricing?.total);
                       const savings = finalOriginal - finalPayable;
 
-                      const displayPayable = `${ratePlan?.pricing?.currency} ${formatPrice(finalPayable)}`;
-                      const displayOriginal = hasDiscount ? `${ratePlan?.pricing?.currency} ${formatPrice(finalOriginal)}` : null;
+                      const displayPayable = `${ratePlan?.pricing?.currency} ${roundOff(finalPayable)}`;
+                      const displayOriginal = hasDiscount ? `${ratePlan?.pricing?.currency} ${roundOff(finalOriginal)}` : null;
 
                       return (
                         <div
@@ -513,10 +523,10 @@ const StubaRoomList = ({
                         >
                           <div className="p-4 border-r border-gray-200">
                             <div className="font-medium text-black">{ratePlan.name || ratePlan.mealType}</div>
-                            <div className="text-sm text-gray-600 capitalize">{ratePlan.smokingType || "Non-Smoking"}</div>
+                            <div className="text-sm text-gray-600 capitalize">{ratePlan.smokingType}</div>
                           </div>
                           <div className="p-4 border-r border-gray-200 text-sm text-gray-800">
-                            {mealText}
+                            {ratePlan.mealType}
                           </div>
                           <div className="p-4 border-r justify-between border-gray-200 text-sm text-gray-800 relative group flex items-center gap-1">
                             <span className="cursor-pointer">
@@ -551,7 +561,7 @@ const StubaRoomList = ({
 
                             {/* {hasDiscount && savings > 0 && (
                               <div className="text-sm text-green-600 font-medium mt-1">
-                                Save {currency} {formatPrice(savings)}
+                                Save {currency} {roundOff(savings)}
                               </div>
                             )} */}
                           </div>
@@ -597,8 +607,8 @@ const StubaRoomList = ({
 
                       const savings = finalOriginal - finalPayable;
 
-                      const displayPayable = `${currency} ${formatPrice(finalPayable)}`;
-                      const displayOriginal = hasDiscount ? `${currency} ${formatPrice(finalOriginal)}` : null;
+                      const displayPayable = `${currency} ${roundOff(finalPayable)}`;
+                      const displayOriginal = hasDiscount ? `${currency} ${roundOff(finalOriginal)}` : null;
 
                       return (
                         <div
@@ -613,7 +623,7 @@ const StubaRoomList = ({
                               </div>
                               <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
                                 <span className="font-medium text-gray-800">Meal</span>
-                                <span>{mealText}</span>
+                                <span>{ratePlan.mealType}</span>
                               </div>
                               <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
                                 <span className="font-medium text-gray-800">Cancellation</span>
@@ -649,7 +659,7 @@ const StubaRoomList = ({
                                   </div>
                                   {/* {hasDiscount && savings > 0 && (
                                     <div className="text-sm text-green-600 font-medium mt-1">
-                                      Save {currency} {formatPrice(savings)}
+                                      Save {currency} {roundOff(savings)}
                                     </div>
                                   )} */}
                                 </div>

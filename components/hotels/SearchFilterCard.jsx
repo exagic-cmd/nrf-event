@@ -524,6 +524,9 @@ export default function SearchFilterCard({
 
   const handleAccommodationSearch = (data) => {
     setIsSearching(true);
+    // Pre-mark the auto-run ref so the auto-run effect doesn't fire a second
+    // time when setAccommodationParams triggers its dependency update below.
+    accAutoRunRef.current = JSON.stringify(data);
     setAccommodationParams(data);
     onFilterTransfer?.({
       category: "accommodation",

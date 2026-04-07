@@ -5,7 +5,7 @@ import { useTranslation } from "next-i18next";
 import { useCartStore } from "@/store/useCartStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import LoaderSvg from "@/components/common/LoaderSvg";
-import { formatPrice } from "@/utils/priceUtils";
+import { roundOff } from "@/utils/priceUtils";
 import { getFullImageUrl } from "@/utils/imageService";
 import { slugify } from "@/utils/slugify";
 
@@ -39,14 +39,14 @@ function AccommodationCard({ accommodation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const roomsArr = Array.isArray(searchParams?.rooms) ? searchParams.rooms : (typeof searchParams?.rooms === 'number' ? new Array(Number(searchParams.rooms)).fill({}) : [{ adult: 1, children: [] }]);
-      const roomsCount = Array.isArray(searchParams?.rooms) ? searchParams.rooms.length : (Number(searchParams?.rooms) || roomsArr.length);
-      const totalAdults = roomsArr.reduce((sum, r) => sum + (Number(r?.adult) || 0), 0) || 0;
-      const totalChildren = roomsArr.reduce((sum, r) => {
-        if (Array.isArray(r?.children)) return sum + r.children.length;
-        return sum + (Number(r?.children) || 0);
-      }, 0) || 0;
+  const roomsCount = Array.isArray(searchParams?.rooms) ? searchParams.rooms.length : (Number(searchParams?.rooms) || roomsArr.length);
+  const totalAdults = roomsArr.reduce((sum, r) => sum + (Number(r?.adult) || 0), 0) || 0;
+  const totalChildren = roomsArr.reduce((sum, r) => {
+    if (Array.isArray(r?.children)) return sum + r.children.length;
+    return sum + (Number(r?.children) || 0);
+  }, 0) || 0;
 
-       // Support both old and new API response formats
+  // Support both old and new API response formats
   const isNewFormat = !!accommodation?.Hotel_Data;
   const hotelData = isNewFormat ? accommodation.Hotel_Data : accommodation;
   const resultData = isNewFormat ? accommodation.Result : null;
@@ -61,7 +61,7 @@ function AccommodationCard({ accommodation }) {
     room = null,
     amenities = hotelData?.amenities || [],
   } = isNewFormat ? {} : accommodation;
-  
+
   // Get lowest price - from old format or new format
   let lowestPrice = 0;
   if (!isNewFormat) {
@@ -100,37 +100,37 @@ function AccommodationCard({ accommodation }) {
         setIsLoading(false);
       } else {
         // Route based on link_type_id
-      if (accommodation?.link_type_id === 9) {
-        // Stuba flow
-        const stubaHotelId = accommodation?.Hotel?.["@attributes"]?.id;
+        if (accommodation?.link_type_id === 9) {
+          // Stuba flow
+          const stubaHotelId = accommodation?.Hotel?.["@attributes"]?.id;
 
-        const payload = {
-          "region": null,
-          "hotel_id": stubaHotelId,
-          "start_date": searchParams?.start_date,
-          "nights": searchParams?.nights || 1,
-          "rooms": searchParams?.rooms || [{ "adult": 2, "children": [] }],
-          "nationality": "all",
-          "stars": null,
-          "pax": totalAdults + totalChildren
-        };
+          const payload = {
+            "region": null,
+            "hotel_id": stubaHotelId,
+            "start_date": searchParams?.start_date,
+            "nights": searchParams?.nights || 1,
+            "rooms": searchParams?.rooms || [{ "adult": 2, "children": [] }],
+            "nationality": "all",
+            "stars": null,
+            "pax": totalAdults + totalChildren
+          };
 
-        sessionStorage.setItem("stubaAccommodationPayload", JSON.stringify(payload));
-        localizedPush({
-          pathname: `/hotel/${slugify(name)}/${stubaHotelId}`,
-        });
-      } else if (accommodation?.link_type_id === 10) {
-        // RateHawk flow — use hid from get_hotels response
-        const hid = accommodation?.hid;
-        localizedPush({
-          pathname: `/rh/${slugify(name)}/${hid}`,
-        });
-      } else {
-        // Non-Stuba / default flow
-        localizedPush({
-          pathname: `/accommodation/detail/${id}`,
-        });
-      }
+          sessionStorage.setItem("stubaAccommodationPayload", JSON.stringify(payload));
+          localizedPush({
+            pathname: `/hotel/${slugify(name)}/${stubaHotelId}`,
+          });
+        } else if (accommodation?.link_type_id === 10) {
+          // RateHawk flow — use hid from get_hotels response
+          const hid = accommodation?.hid;
+          localizedPush({
+            pathname: `/rh/${slugify(name)}/${hid}`,
+          });
+        } else {
+          // Non-Stuba / default flow
+          localizedPush({
+            pathname: `/accommodation/detail/${id}`,
+          });
+        }
       }
     } catch (err) {
       console.error("Booking failed", err);
@@ -168,92 +168,114 @@ function AccommodationCard({ accommodation }) {
         {/* Image */}
         <div className="relative w-full md:w-[300px] flex-shrink-0 flex justify-center items-center">
           <img
-          src={getFullImageUrl(isNewFormat ? hotelData?.image : photo?.image) || '/images/placeholder-hotel.jpg'}
+            src={getFullImageUrl(isNewFormat ? hotelData?.image : photo?.image) || '/images/placeholder-hotel.jpg'}
             alt={name}
             className="object-cover h-[235px] w-full md:w-[300px]"
           />
-          {/* Star Rating Badge */}
-          {star_rating && (
-            <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white rounded-md bg-yellow-500">
-              <Star size={10} />
-              <span>{parseFloat(star_rating).toFixed(1)}</span>
-            </span>
-          )}
+          {/* Badge: Tag or Star Rating */}
+          {(() => {
+            const firstTag = Array.isArray(accommodation?.tags) && accommodation.tags.length > 0 ? accommodation.tags[0] : null;
+            if (firstTag) {
+              return (
+                <span className="absolute top-1 left-1 flex items-center px-2 py-1 text-xs font-semibold text-white rounded-md bg-[#D3202D]">
+                  {firstTag}
+                </span>
+              );
+            }
+            if (star_rating) {
+              return (
+                <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white rounded-md bg-yellow-500">
+                  <Star size={10} />
+                  <span>{parseFloat(star_rating).toFixed(1)}</span>
+                </span>
+              );
+            }
+            return null;
+          })()}
         </div>
 
         {/* Info Section */}
         <div className="flex-1 flex flex-col justify-between pr-2.5 pl-2.5">
           <div>
-           <div className="flex flex-col justify-between my-1">
-             <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D]">{name}</h2>
-            
-            {/* Location and Rating */}
-            <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
-              {address && (
-                <div className="flex items-center gap-1">
-                  <Hotel className="" size={12} />
-                  <span className="">{accommodation_type}</span>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center justify-between gap-1 mt-2">
-              <ul>
-                
-                <li className="text-[12px]">{address}</li>
-              </ul>
-              <div className="flex items-center gap-2 text-gray-700">
-                {(() => {
-                  const availableIcons = [];
-                  const amenityKeywords = Object.keys(amenityIconMap);
-                  
+            <div className="flex flex-col justify-between my-1">
+              <div className="flex justify-between items-start gap-2">
+                <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D] flex-1">
+                  {name}
+                </h2>
+                {star_rating && (
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold text-white rounded bg-yellow-500 shrink-0 mt-0.5">
+                    <Star size={10} fill="white" />
+                    <span>{parseFloat(star_rating).toFixed(1)}</span>
+                  </span>
+                )}
+              </div>
+              {/* Location and Rating */}
+              <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
+                {address && (
+                  <div className="flex items-center gap-1">
+                    <Hotel className="" size={12} />
+                    <span className="">{accommodation_type}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-between gap-1 mt-2">
+                <ul>
+
+                  <li className="text-[12px]">{address}</li>
+                </ul>
+                <div className="flex items-center gap-2 text-gray-700">
+                  {(() => {
+                    const availableIcons = [];
+                    const amenityKeywords = Object.keys(amenityIconMap);
+
                     // Use amenities from hotel or highlight field
                     let amenitiesList = Array.isArray(amenities) ? amenities : [];
                     if (isNewFormat && hotelData?.highlight && amenitiesList.length === 0) {
                       amenitiesList = hotelData.highlight.split(',').map(a => a.trim());
                     }
-                    
+
                     if (amenitiesList.length > 0) {
                       for (const amenity of amenitiesList) {
-                      
-                      const lowerAmenity = amenity.toLowerCase();
-                      const foundKeyword = amenityKeywords.find(keyword => lowerAmenity.includes(keyword));
-                      if (foundKeyword && !availableIcons.some(icon => icon.keyword === foundKeyword)) {
-                        availableIcons.push({ Icon: amenityIconMap[foundKeyword], keyword: foundKeyword });
+
+                        const lowerAmenity = amenity.toLowerCase();
+                        const foundKeyword = amenityKeywords.find(keyword => lowerAmenity.includes(keyword));
+                        if (foundKeyword && !availableIcons.some(icon => icon.keyword === foundKeyword)) {
+                          availableIcons.push({ Icon: amenityIconMap[foundKeyword], keyword: foundKeyword });
+                        }
                       }
                     }
-                  }
-                  const iconsToShow = availableIcons.slice(0, 5);
+                    const iconsToShow = availableIcons.slice(0, 5);
+
+                    return (
+                      <>
+                        {iconsToShow.map(({ Icon }, index) => <Icon key={index} className="w-4 h-4" />)}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+            {/* Room Info Section */}
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-[#f5f5f5] p-2 rounded">
+
+              {/* First Column: Guests */}
+              <div>
+                {(() => {
+                  // derive counts from searchParams
+
 
                   return (
                     <>
-                      {iconsToShow.map(({ Icon }, index) => <Icon key={index} className="w-4 h-4" />)}
+                      <p className="font-semibold">{roomsCount} room{roomsCount !== 1 ? 's' : ''}</p>
+                      <p className="text-gray-700 text-[12px]">For {totalAdults} adult{totalAdults !== 1 ? 's' : ''} and {totalChildren} child{totalChildren !== 1 ? 'ren' : ''}</p>
                     </>
                   );
                 })()}
               </div>
-            </div>
-           </div>
-            {/* Room Info Section */}
-<div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-[#f5f5f5] p-2 rounded">
 
-  {/* First Column: Guests */}
-  <div>
-    {(() => {
-      // derive counts from searchParams
-      
-
-      return (
-        <>
-          <p className="font-semibold">{roomsCount} room{roomsCount !== 1 ? 's' : ''}</p>
-          <p className="text-gray-700 text-[12px]">For {totalAdults} adult{totalAdults !== 1 ? 's' : ''} and {totalChildren} child{totalChildren !== 1 ? 'ren' : ''}</p>
-        </>
-      );
-    })()}
-  </div>
-
-  {/* Second Column: Policies/Amenities */}
-<div>
-    <ul className="space-y-1 text-gray-700 text-[12px]">
+              {/* Second Column: Policies/Amenities */}
+              <div>
+                <ul className="space-y-1 text-gray-700 text-[12px]">
                   {(() => {
                     let amenitiesList = Array.isArray(amenities) ? amenities : [];
                     if (isNewFormat && hotelData?.highlight && amenitiesList.length === 0) {
@@ -281,49 +303,49 @@ function AccommodationCard({ accommodation }) {
                     ) : null;
                   })()}
                 </ul>
-</div>
+              </div>
 
-  {/* Third Column: Price */}
-  <div className="text-right">
-    <p className="text-lg font-bold text-primary">
-       {isNewFormat ? accommodation?.currency || 'USD' : (room?.rate_plan?.pricing?.currency || 'SGD')} {formatPrice(lowestPrice)}
+              {/* Third Column: Price */}
+              <div className="text-right">
+                <p className="text-lg font-bold text-primary">
+                  {isNewFormat ? accommodation?.currency : (room?.rate_plan?.pricing?.currency)} {roundOff(lowestPrice)}
 
-    </p>
-   <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
-      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
-    </p>
-  </div>
+                </p>
+                <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
+                  for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
+                </p>
+              </div>
 
-</div>
+            </div>
 
 
           </div>
 
           {/* Bottom Section */}
-<div className="flex items-end mt-1">
-  {/* Left side: price (mobile only) */}
-  <div className="block md:hidden mr-auto">
-    <p className="text-lg font-bold text-primary">
-      {isNewFormat ? accommodation?.currency || 'USD' : (room?.rate_plan?.pricing?.currency || 'SGD')} {formatPrice(lowestPrice)}
-      </p>
-    <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
-      for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
-    </p>
-  </div>
+          <div className="flex items-end mt-1">
+            {/* Left side: price (mobile only) */}
+            <div className="block md:hidden mr-auto">
+              <p className="text-lg font-bold text-primary">
+                {isNewFormat ? accommodation?.currency || 'USD' : (room?.rate_plan?.pricing?.currency || 'SGD')} {roundOff(lowestPrice)}
+              </p>
+              <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
+                for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
+              </p>
+            </div>
 
-  {/* Right side button */}
-  <button
-    type="button"
-    onClick={handleCardClick}
-    className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
-  >
-    {isLoading ? (
-      <LoaderSvg className="h-5 w-5" />
-    ) : (
-      "Book Now"
-    )}
-  </button>
-</div>
+            {/* Right side button */}
+            <button
+              type="button"
+              onClick={handleCardClick}
+              className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
+            >
+              {isLoading ? (
+                <LoaderSvg className="h-5 w-5" />
+              ) : (
+                "Book Now"
+              )}
+            </button>
+          </div>
 
 
 
