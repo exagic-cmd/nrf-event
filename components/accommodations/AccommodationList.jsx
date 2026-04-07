@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10;
 
-function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
+function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, setSortBy }) {
   const [showNoResults, setShowNoResults] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -110,6 +110,14 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
           accommodation={accommodation}
         />
       ))}
+      {isSubLoading && (
+        <div className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3 min-h-[120px] items-center justify-center px-6 py-8">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-[#D3202D] border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-medium text-gray-600 tracking-wide">Crafting hotels...</p>
+          </div>
+        </div>
+      )}
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}

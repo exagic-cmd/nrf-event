@@ -17,11 +17,13 @@ export const useAccommodationsStore = create((set, get) => ({
   lastHotelQuoteId: null,
   hotelQuoteMap: {},
   isLoading: false,
+  isSubLoading: false,
   isCheckingAvailability: false,
   accommodationFilters: null,
   lastFetchSignature: null,
   lastFetchTime: null,
   error: null,
+  subLoadingText: "", // Sub-loader message
 
   // Selected search context
   selectedRegion: null,
@@ -223,6 +225,7 @@ export const useAccommodationsStore = create((set, get) => ({
       accommodationFilters: null,
       lastFetchSignature: fetchSig,
       lastFetchTime: now,
+      subLoadingText: "",
     });
 
     // process&append
@@ -308,8 +311,17 @@ export const useAccommodationsStore = create((set, get) => ({
       };
 
       const api1Success = await fetchApi1();
+      
+      // Set sub-loading text after the first API response (API 1 finished)
+      if (api1Success) {
+        set({ subLoadingText: "crafting hotels" });
+      }
 
-      // API 2 & 3 
+      if (api1Success) {
+        set({ isSubLoading: true });
+      }
+
+      // API 2 & 3
       const postPayload = {
         text: searchPayload.text || '',
         start_date: searchPayload.start_date,
@@ -351,12 +363,13 @@ export const useAccommodationsStore = create((set, get) => ({
         }
       }
 
-      set({ isLoading: false });
+      set({ isLoading: false, isSubLoading: false });
       return get().accommodations;
     } catch (err) {
       console.error("fetchAccommodations error:", err.message);
       set({
         isLoading: false,
+        isSubLoading: false,
         error: err.message || "Failed to fetch accommodations",
       });
       return [];
@@ -530,5 +543,6 @@ export const useAccommodationsStore = create((set, get) => ({
       searchParams: null,
       selectedRegion: null,
       selectedHotel: null,
+      isSubLoading: false,
     }),
 }));

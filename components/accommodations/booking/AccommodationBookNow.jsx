@@ -111,7 +111,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                         <div className="flex items-center gap-3"><Calendar className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Check-in</p><p className="font-bold">{checkIn}</p></div></div>
                         <div className="flex items-center gap-3"><Calendar className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Nights</p><p className="font-bold">{nights}</p></div></div>
                         <div className="flex items-center gap-3"><Utensils className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Meal</p><p className="font-bold">{mealType}</p></div></div>
-                        <div className="flex items-center gap-3"><AlertCircle className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Cancel Policy</p><p className="font-bold">{cancellationStatus}</p></div></div>
+                        <div className="flex items-center gap-3"><AlertCircle className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Cancellation Policy</p><p className="font-bold">{cancellationStatus}</p></div></div>
                       </div>
 
                       <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-8 border border-gray-200">
