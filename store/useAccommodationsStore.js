@@ -235,22 +235,38 @@ export const useAccommodationsStore = create((set, get) => ({
 
       const enriched = Array.isArray(results)
         ? results.map((r) => {
-          let price;
+          let price = 0;
+          let currency = '';
+
           // Ratehawk: extract min price from rates[].payment_options.payment_types[0].amount
           if ((r.link_type_id === 10 || r.Hotel_Data?.link_type_id === 10) && Array.isArray(r.rates) && r.rates.length > 0) {
             const ratePrices = r.rates
               .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
               .filter(p => p > 0);
             price = ratePrices.length > 0 ? Math.min(...ratePrices) : 0;
+
+            // Extract currency from the first valid payment type
+            currency = r.rates[0]?.payment_options?.payment_types?.[0]?.currency_code ||
+              r.rates[0]?.payment_options?.payment_types?.[0]?.show_currency_code ||
+              'USD';
           } else {
             price = parseFloat(r.starting_price || r.min_rate || r.price || r?.pricing?.min_price || 0);
+            currency = r.currency || r.Hotel_Data?.currency || r.pricing?.currency || 'USD';
           }
-          return { ...r, hotelId: r.id, starting_price: price, price: price };
+
+          return {
+            ...r,
+            hotelId: r.id,
+            starting_price: price,
+            price: price,
+            currency: currency
+          };
         })
         : (results && typeof results === 'object' ? [{
           ...results,
           hotelId: results.id,
-          starting_price: parseFloat(results.starting_price || results.min_rate || results.price || 0)
+          starting_price: parseFloat(results.starting_price || results.min_rate || results.price || 0),
+          currency: results.currency || results.Hotel_Data?.currency || results.pricing?.currency || 'USD'
         }] : []);
 
       if (enriched.length > 0) {
