@@ -398,6 +398,15 @@ const StubaRoomList = ({
     return "Room Only";
   };
 
+  const getFormattedCancellationPolicy = (policy) => {
+    if (!policy) return null;
+    if (Array.isArray(policy.time_slots) && policy.time_slots.length > 0) {
+      const slot = policy.time_slots[0];
+      return `Free cancellation up to ${slot.end_hours}h before check-in (after 15:00); later cancellations incur ${slot.cancellation_charges}% fee.`;
+    }
+    return policy.description;
+  };
+
   const getPrice = (rp) => Number(rp?.pricing?.total_promo || rp?.pricing?.total || Infinity);
 
   const isFreeCancellation = (rp) => {
@@ -533,9 +542,9 @@ const StubaRoomList = ({
                               {cancellation.staticDate}
                             </span>
                             <Info size={14} className="text-gray-400 cursor-pointer" />
-                            {ratePlan.rawPricing?.cancellation_policy?.description && (
+                            {ratePlan.rawPricing?.cancellation_policy && (
                               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                                {ratePlan.rawPricing.cancellation_policy.description}
+                                {getFormattedCancellationPolicy(ratePlan.rawPricing.cancellation_policy)}
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-800"></div>
                               </div>
                             )}
@@ -630,9 +639,9 @@ const StubaRoomList = ({
                                 <span className="relative group flex items-center gap-1">
                                   <span className="cursor-pointer">{cancellation.staticDate}</span>
                                   <Info size={14} className="text-gray-400 cursor-pointer" />
-                                  {ratePlan.rawPricing?.cancellation_policy?.description && (
+                                  {ratePlan.rawPricing?.cancellation_policy && (
                                     <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                                      {ratePlan.rawPricing.cancellation_policy.description}
+                                      {getFormattedCancellationPolicy(ratePlan.rawPricing.cancellation_policy)}
                                       <div className="absolute top-full right-3 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-800"></div>
                                     </div>
                                   )}
