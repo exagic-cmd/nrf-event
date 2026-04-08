@@ -285,7 +285,7 @@ const PayNow = ({ totalPrice }) => {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = "validation.emailInvalid";
 
     if (!phone.trim()) errs.phone = "validation.phoneRequired";
-    else if (!/^\+?\d{7,15}$/.test(phone)) errs.phone = "validation.phoneInvalid";
+    else if (!phone || phone.replace(/\D/g, '').length < 7) errs.phone = "validation.phoneInvalid";
 
     if (hasLinkType10 && !userComment.trim()) errs.userComment = "Comment is required";
 
@@ -560,7 +560,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     event_id:event?.event?.id|| null,
     ref_type: refType || null,
     track_agent_id: track_agent_id || null,
-    user_comment: userComment || null
+    user_comment: userComment.trim() || null,
   };
 
   return payload;
@@ -825,7 +825,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   Comment <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  placeholder="comment here"
+                  placeholder="Enter your comment..."
                   value={userComment}
                   onChange={e => {
                     setUserComment(e.target.value);
