@@ -55,16 +55,22 @@ function MapInteractionHandler({ isInteractive }) {
 const TransferMap = ({ mapDetails }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  if (!mapDetails?.pickup?.lat || !mapDetails?.dropoff?.lat) {
+  const pLat = Number(mapDetails?.pickup?.lat)
+  const pLng = Number(mapDetails?.pickup?.lng)
+  const dLat = Number(mapDetails?.dropoff?.lat)
+  const dLng = Number(mapDetails?.dropoff?.lng)
+
+  // Rely on API coordinates: Ensure we have valid numbers before rendering
+  if (isNaN(pLat) || isNaN(pLng) || isNaN(dLat) || isNaN(dLng) || !pLat || !dLat) {
     return (
       <div className="h-full w-full bg-gray-800 flex items-center justify-center text-gray-400">
         <p>Loading map...</p>
       </div>
-    );
+    )
   }
 
-  const pickupPosition = [mapDetails.pickup.lat, mapDetails.pickup.lng]
-  const dropoffPosition = [mapDetails.dropoff.lat, mapDetails.dropoff.lng]
+  const pickupPosition = [pLat, pLng];
+  const dropoffPosition = [dLat, dLng];
   const bounds = [pickupPosition, dropoffPosition]
 
   const mapThemeUrl = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -83,6 +89,7 @@ const TransferMap = ({ mapDetails }) => {
         attributionControl={false}
       >
         <MapInteractionHandler isInteractive={isExpanded} />
+        <MapBounds bounds={bounds} />
         {isExpanded && <ZoomControl position="topleft" />}
         <TileLayer url={mapThemeUrl} />
         <Marker position={pickupPosition} icon={pickupIcon}>
