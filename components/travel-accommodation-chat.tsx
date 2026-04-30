@@ -496,7 +496,7 @@ export default function TravelPlannerChat() {
       // ✅ Fetch user itinerary
       try {
         const itineraryRes = await fetch(
-          `https://app.exploresingapore.ai/api/get-user-itinerary-grouped/${userId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-user-itinerary-grouped/${userId}`
         );
         if (!itineraryRes.ok) throw new Error(`Itinerary fetch failed: ${itineraryRes.status}`);
         const itinerary = await itineraryRes.json();
@@ -683,7 +683,7 @@ export default function TravelPlannerChat() {
       try {
         // ✅ Fetch user itinerary
         const itineraryRes = await fetch(
-          `https://app.exploresingapore.ai/api/get-user-itinerary-grouped/${userId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-user-itinerary-grouped/${userId}`
         );
 
         if (!itineraryRes.ok) {

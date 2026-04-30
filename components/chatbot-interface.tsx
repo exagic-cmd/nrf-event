@@ -877,7 +877,7 @@ function VehicleSlider({
           return;
         }
 
-        const response = await fetch("https://app.exploresingapore.ai/api/transfer/search", {
+        const response = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

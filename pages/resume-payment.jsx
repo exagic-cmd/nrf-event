@@ -21,7 +21,7 @@ export default function ResumePayment() {
     const fetchOrder = async () => {
       try {
         const res = await fetch(
-          `https://app.exploresingapore.ai/api/orderInfo/${orderId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/orderInfo/${orderId}`
         );
         const data = await res.json();
 
