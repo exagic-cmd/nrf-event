@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 
 const fetchRecommendedProducts = async () => {
   try {
-    const res = await fetch(`https://app.exploresingapore.ai/api/get-recommended-products`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/get-recommended-products`);
     if (!res.ok) {
       throw new Error('Network response was not ok');
     }

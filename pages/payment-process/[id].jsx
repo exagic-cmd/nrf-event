@@ -29,7 +29,7 @@ export default function OrderPaymentPage() {
 
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`https://app.exploresingapore.ai/api/orderInfo/${returnOrderId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orderInfo/${returnOrderId}`);
         const data = await res.json();
 
 if (data?.status === "success" && data?.data) {
@@ -80,7 +80,7 @@ console.log(order.email)
         const statusParams = new URLSearchParams({ cart_id: cartId, rate_plan_id: ratePlanId });
 
         try {
-          const statusRes = await fetch(`https://app.exploresingapore.ai/api/inventory/hold/status?${statusParams.toString()}`);
+          const statusRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/status?${statusParams.toString()}`);
           const statusData = await statusRes.json();
 
           const isExpired = statusRes.ok && statusData?.data?.is_expired === true;
