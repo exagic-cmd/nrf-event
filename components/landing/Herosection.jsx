@@ -21,6 +21,7 @@ import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ new import
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useSearchValuesStore } from "@/store/searchValues.store.js";
+import { useEventStore } from "@/store/useEventStore";
 import { useRouter } from "next/navigation";
 import { getFullImageUrl } from "@/utils/imageService";
 import { useTranslation } from "next-i18next";
@@ -29,6 +30,7 @@ import SearchFilterCard from "@/components/hotels/SearchFilterCard"; // ✅ your
 export default function HomePage() {
   const router = useRouter();
   const { t } = useTranslation("common");
+  const { event, FetchEvent } = useEventStore();
 
   // ---- Zustand stores ----
   const {
@@ -76,16 +78,37 @@ export default function HomePage() {
   }, []);
 
   // Tabs
-  const [filterActiveTab, setFilterActiveTab] = useState(4);
-  const filterTabs = [
-    
+  const filterTabs = useMemo(() => [
     { id: 4, label: "hotels", name: "Accommodations" },
     { id: 3, label: "day-tours", name: "DayTours" },
     { id: 2, label: "transfer", name: "Transfers" },
     { id: 1, label: "coming-soon", name: "Coming Soon" },
     { id: 5, label: "search", name: "Search Text" },
     { id: 8, label: "packages", name: "Package Tours" },
-  ];
+  ], []);
+
+  const visibleTabs = useMemo(() => {
+    const eventDetails = event?.event;
+    if (!eventDetails || (!eventDetails.categories && !eventDetails.category_ids)) return filterTabs;
+
+    const categoryIds = eventDetails.category_ids 
+      ? eventDetails.category_ids.map(Number)
+      : (eventDetails.categories ? eventDetails.categories.map((c) => Number(c.id)) : []);
+
+    return filterTabs.filter((tab) => {
+      if (tab.id === 4) return categoryIds.includes(4); // Accommodations
+      if (tab.id === 3) return categoryIds.includes(1); // DayTours (API ID 1)
+      if (tab.id === 2) return categoryIds.includes(2); // Transfers (API ID 2)
+      return false; });
+  }, [event, filterTabs]);
+
+  const [filterActiveTab, setFilterActiveTab] = useState(4);
+
+  useEffect(() => {
+    if (visibleTabs.length > 0 && !visibleTabs.some(t => t.id === filterActiveTab)) {
+      setFilterActiveTab(visibleTabs[0].id);
+    }
+  }, [visibleTabs, filterActiveTab]);
 
   // Hotels tab state
   const [rooms, setRooms] = useState([{ adult: 2, children: [] }]);
@@ -193,7 +216,7 @@ export default function HomePage() {
                 <SearchFilterCard
                 isHomepage={true}
                   filterActiveTab={filterActiveTab}
-                  filterTabs={filterTabs}
+                  filterTabs={visibleTabs}
                   onSetTab={handleSetTab}
                   items={typeaheadItems}
                   all_hotels={[]}

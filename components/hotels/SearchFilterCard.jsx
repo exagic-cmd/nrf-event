@@ -562,7 +562,6 @@ export default function SearchFilterCard({
     <div className="w-full">
       <div className="flex flex-wrap gap-1 lg:gap-1">
         {filterTabs
-          ?.filter((t) => [4, 3, 2].includes(t.id))
           .map((t) => (
             <Pill key={t.id} tab={t} />
           ))}
