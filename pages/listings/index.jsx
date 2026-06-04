@@ -36,6 +36,7 @@ function ListingsPage() {
   const { t } = useTranslation("common", "transfer");
   const urlSearchParams = useSearchParams();
   const resultsRef = useRef(null);
+  const isFetchingRef = useRef(false);
   const router = useRouter();
   const { event, FetchEvent } = useEventStore();
 
@@ -126,7 +127,7 @@ function ListingsPage() {
         checkin: cardCheckin,
         checkout: cardCheckout,
       };
-      setAccommodationSearchParams(updatedPayload); // This will also trigger fetchAccommodations
+      setStoreAccommodationSearchParams(updatedPayload); // This will also trigger fetchAccommodations via Effect 2
       router.push(`/listings?searched=true&type=accommodation`);
       setHasSearched(true);
       setSearchCategory("accommodation");
@@ -169,10 +170,11 @@ function ListingsPage() {
     accommodations,
     filteredResults,
     isLoading: accommodationLoading,
+    isSubLoading: accommodationSubLoading,
     accommodationFilters,
     fetchAccommodations,
     applyAccommodationFilter,
-    setSearchParams: setAccommodationSearchParams,
+    setSearchParams: setStoreAccommodationSearchParams,
   } = useAccommodationsStore();
   const {
     setSelectedPickup, setSelectedDropoff, setTripType,
@@ -182,16 +184,26 @@ function ListingsPage() {
   } = useTransferStore();
 
 
+  const normalizeMeal = (val) => {
+    const map = {
+      nomeal: 'room_only', breakfast: 'breakfast', halfboard: 'half_board',
+      fullboard: 'full_board', allinclusive: 'all_inclusive',
+      'room only': 'room_only', 'half board': 'half_board',
+      'full board': 'full_board', 'all inclusive': 'all_inclusive', 'all-inclusive': 'all_inclusive',
+    };
+    const lower = (val || '').toLowerCase().trim();
+    return map[lower] || lower;
+  };
+
   const handleFilterChange = useCallback((activeFilters) => {
     applyAccommodationFilter((accommodation) => {
       const hasSelectedAmenities = activeFilters.amenities && activeFilters.amenities.length > 0;
       const hasSelectedRatings = activeFilters.ratings && activeFilters.ratings.length > 0;
-      const hasSelectedMealPlans = activeFilters.meal_plans && activeFilters.meal_plans.length > 0;
       const hasSelectedPaymentTypes = activeFilters.payment_types && activeFilters.payment_types.length > 0;
-      const hasSelectedCancellation = activeFilters.cancellation_policies && activeFilters.cancellation_policies.length > 0;
-      const hasSelectedRoomAmenities = activeFilters.room_amenities && activeFilters.room_amenities.length > 0;
       const hasPriceRange = activeFilters.priceRange && activeFilters.priceRange.max > 0;
       const hasSearchText = activeFilters.searchText && activeFilters.searchText.trim().length > 1;
+      const hasUnifiedMealPlans = activeFilters.unified_meal_plans?.length > 0;
+      const hasUnifiedCancellation = activeFilters.unified_cancellation?.length > 0;
 
       const hotelData = accommodation.Hotel_Data || accommodation.normalizedHotelData || accommodation;
 
@@ -211,33 +223,93 @@ function ListingsPage() {
 
       const ratingMatch = !hasSelectedRatings || activeFilters.ratings.includes(Math.floor(parseFloat(hotelData.star_rating)));
 
-      const mealPlanMatch = !hasSelectedMealPlans || activeFilters.meal_plans.includes(accommodation.room?.rate_plan?.meal?.id);
-
       const paymentTypeMatch = !hasSelectedPaymentTypes || activeFilters.payment_types.includes(accommodation.room?.rate_plan?.payment_type);
-      
-      const cancellationPolicyMatch = !hasSelectedCancellation || activeFilters.cancellation_policies.includes(accommodation.room?.rate_plan?.cancellation_policy?.id);
+
+      // Unified meal plan filter — string keys = Stuba/RH, numeric = API
+      let mealPlanMatch = true;
+      if (hasUnifiedMealPlans) {
+        const sel = activeFilters.unified_meal_plans;
+        const strSel = sel.filter(v => typeof v === 'string');
+        const numSel = sel.filter(v => typeof v === 'number');
+        if (accommodation.link_type_id === 9 && accommodation.Result) {
+          const mealSet = new Set();
+          Object.values(accommodation.Result).forEach(roomType => {
+            if (!roomType || typeof roomType !== 'object') return;
+            Object.values(roomType).forEach(option => {
+              const t = option?.lowest_price_room?.MealType?.['@attributes']?.text;
+              if (t) mealSet.add(normalizeMeal(t));
+            });
+          });
+          mealPlanMatch = strSel.length === 0 || strSel.some(s => mealSet.has(s));
+        } else if (accommodation.link_type_id === 10 && Array.isArray(accommodation.rates)) {
+          const mealSet = new Set();
+          accommodation.rates.forEach(rate => { if (rate?.meal) mealSet.add(normalizeMeal(rate.meal)); });
+          mealPlanMatch = strSel.length === 0 || strSel.some(s => mealSet.has(s));
+        } else {
+          // Standard accommodation: only checked when numeric API IDs are selected
+          mealPlanMatch = numSel.length === 0 || numSel.includes(accommodation.room?.rate_plan?.meal?.id);
+        }
+      }
+
+      // Unified cancellation filter — string keys = Stuba/RH, numeric = API
+      let cancellationPolicyMatch = true;
+      if (hasUnifiedCancellation) {
+        const sel = activeFilters.unified_cancellation;
+        const strSel = sel.filter(v => typeof v === 'string');
+        const numSel = sel.filter(v => typeof v === 'number');
+        if (accommodation.link_type_id === 9 && accommodation.Result) {
+          let hasRef = false, hasNonRef = false;
+          Object.values(accommodation.Result).forEach(roomType => {
+            if (!roomType || typeof roomType !== 'object') return;
+            Object.values(roomType).forEach(option => {
+              if (typeof option?.cancellable_rooms === 'number') {
+                if (option.cancellable_rooms > 0) hasRef = true;
+                else hasNonRef = true;
+              }
+            });
+          });
+          cancellationPolicyMatch = strSel.length === 0 || strSel.some(s =>
+            (s === 'refundable' && hasRef) || (s === 'non_refundable' && hasNonRef)
+          );
+        } else if (accommodation.link_type_id === 10 && Array.isArray(accommodation.rates)) {
+          let hasRef = false, hasNonRef = false;
+          accommodation.rates.forEach(rate => {
+            const penalty = rate?.payment_options?.payment_types?.[0]?.cancellation_penalties;
+            if (penalty?.free_cancellation_before) hasRef = true;
+            else hasNonRef = true;
+          });
+          cancellationPolicyMatch = strSel.length === 0 || strSel.some(s =>
+            (s === 'refundable' && hasRef) || (s === 'non_refundable' && hasNonRef)
+          );
+        } else {
+          // Standard accommodation: only checked when numeric API IDs are selected
+          cancellationPolicyMatch = numSel.length === 0 || numSel.includes(accommodation.room?.rate_plan?.cancellation_policy?.id);
+        }
+      }
 
       // Calculate Price for Filtering
       let price = 0;
-      if (accommodation.link_type_id == 9 || accommodation.Hotel_Data) {
-        // Stuba Price Logic
+      if (accommodation.link_type_id == 9 || accommodation.link_type_id == 10 || accommodation.Hotel_Data) {
+        // Stuba: extract from Result.TotalPrice
         if (accommodation.Result) {
           const allPrices = [];
           Object.values(accommodation.Result).forEach(roomType => {
-            if (Array.isArray(roomType)) {
-              roomType.forEach(option => {
-                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-                if (room?.Price?.["@attributes"]?.amt) {
-                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
-                }
+            if (roomType && typeof roomType === 'object') {
+              Object.values(roomType).forEach(option => {
+                if (option?.TotalPrice) allPrices.push(parseFloat(option.TotalPrice));
               });
             }
           });
           if (allPrices.length > 0) price = Math.min(...allPrices);
         }
-        if (price === 0) {
-           price = parseFloat(accommodation.Hotel_Data?.starting_price || accommodation.price || 0);
+        // Ratehawk: extract from rates
+        if (price === 0 && Array.isArray(accommodation.rates) && accommodation.rates.length > 0) {
+          const ratePrices = accommodation.rates
+            .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
+            .filter(p => p > 0);
+          if (ratePrices.length > 0) price = Math.min(...ratePrices);
         }
+        if (price === 0) price = parseFloat(accommodation.price || 0);
       } else {
         // Standard Price Logic
         price = (
@@ -257,7 +329,7 @@ function ListingsPage() {
 
       return searchTextMatch && amenityMatch && ratingMatch && mealPlanMatch && paymentTypeMatch && cancellationPolicyMatch && priceMatch;
     });
-  }, [applyAccommodationFilter, accommodationFilters]); 
+  }, [applyAccommodationFilter, accommodationFilters]);
   useEffect(() => {
     const searched = urlSearchParams.get("searched");
     const type = urlSearchParams.get("type");
@@ -309,6 +381,7 @@ function ListingsPage() {
     }
   }, [urlSearchParams, searchDaytourParams, setSearchDaytourParams, fetchDaytours]);
 
+  // Fix 1: Only sync UI card state from store — fetch is handled exclusively by Effect 2 below
   useEffect(() => {
     const type = urlSearchParams.get("type");
     if (type === "accommodation") {
@@ -323,28 +396,25 @@ function ListingsPage() {
       if (searchAccommodationParams.rooms) {
         setCardRooms(searchAccommodationParams.rooms);
       } else {
-        setCardRooms([{ adult: 2, children: [] }]); 
-      }
-
-      // Trigger fetch on page load if payload exists
-      if (searchAccommodationParams && Object.keys(searchAccommodationParams).length > 0) {
-        fetchAccommodations(searchAccommodationParams);
+        setCardRooms([{ adult: 2, children: [] }]);
       }
     }
-  }, [urlSearchParams, searchAccommodationParams, setAccommodationSearchParams, fetchAccommodations]);
+  }, [urlSearchParams, searchAccommodationParams]);
 
+  // Fix 5: Single source of truth for fetching — guarded by isFetchingRef to prevent concurrent duplicate calls
   useEffect(() => {
     if (
       (searchCategory === "accommodation" || searchCategory === "hotels") &&
       accommodationPayload
     ) {
-      fetchAccommodations(accommodationPayload);
-      // Filters will be applied by handleFilterChange when activeFilters state changes in sidebar
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+      fetchAccommodations(accommodationPayload).finally(() => {
+        isFetchingRef.current = false;
+      });
       if (accommodationPayload.ids && accommodationPayload.ids.length > 0) {
-        const targetHotelId = accommodationPayload.ids[0]; 
-        applyAccommodationFilter((accommodation) => {
-          return accommodation.id === targetHotelId;
-        });
+        const targetHotelId = accommodationPayload.ids[0];
+        applyAccommodationFilter((accommodation) => accommodation.id === targetHotelId);
       }
     }
   }, [searchCategory, accommodationPayload, fetchAccommodations, applyAccommodationFilter]);
@@ -410,8 +480,9 @@ useEffect(() => {
       case "hotels":
         return (
           <AccommodationList
-            accommodations={filteredResults} 
+            accommodations={filteredResults}
             isLoading={accommodationLoading}
+            isSubLoading={accommodationSubLoading}
             searchPerformed={hasSearched}
             sortBy={accommodationSortBy}
             setSortBy={setAccommodationSortBy}

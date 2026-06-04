@@ -29,6 +29,7 @@ const AccommodationListMap = ({ accommodations = [] }) => {
     if (markersData.length === 0) return;
 
     const initMap = () => {
+      if (!mapRef.current) return;
       try {
         const first = markersData[0];
         const map = new window.google.maps.Map(mapRef.current, {

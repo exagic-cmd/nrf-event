@@ -95,17 +95,20 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                   </p>
                 )} */}
                 <div
-                  className={`text-gray-800 text-[15px] leading-relaxed transition-all duration-300 ${
-                    !isDescExpanded
+                  className={`text-gray-800 text-[15px] leading-relaxed transition-all duration-300 ${!isDescExpanded
                       ? "line-clamp-4 max-h-[6em] overflow-hidden"
                       : ""
-                  }`}
+                    }`}
                 >
-                  <p className="whitespace-pre-line text-gray-700">
-                    {product?.long_desc && product.long_desc.trim().length > 0
-                      ? product.long_desc
-                      : FALLBACKS.description}
-                  </p>
+                  <p
+                    className="whitespace-pre-line text-gray-700"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        product?.long_desc && product.long_desc.trim().length > 0
+                          ? product.long_desc
+                          : FALLBACKS.description,
+                    }}
+                  />
                 </div>
 
                 <button
@@ -176,50 +179,48 @@ const AccommodationHotelDetail = ({ hotelData }) => {
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <h2 className="text-xl font-bold mb-8">Services and amenities</h2>
 
-                <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-                  {sortedAmenities.map((category, index) => {
-                    let subItems = category?.descriptions || [];
-                    if (!Array.isArray(subItems) || subItems.length === 0)
-                      subItems = [FALLBACKS.amenityItem];
-                    const isPopular = category?.name === "Popular";
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
+                {sortedAmenities.map((category, index) => {
+                  let subItems = category?.descriptions || [];
+                  if (!Array.isArray(subItems) || subItems.length === 0)
+                    subItems = [FALLBACKS.amenityItem];
+                  const isPopular = category?.name === "Popular";
 
-                    return (
-                      <div
-                        key={category?.id || `category-${index}`}
-                        className={`break-inside-avoid mb-6 flex flex-col rounded-xl ${
-                          isPopular
-                            ? "bg-orange-50 border border-orange-200 p-4"
-                            : ""
+                  return (
+                    <div
+                      key={category?.id || `category-${index}`}
+                      className={`break-inside-avoid mb-6 flex flex-col rounded-xl ${isPopular
+                          ? "bg-orange-50 border border-orange-200 p-4"
+                          : ""
                         }`}
-                      >
-                        <div className="flex items-center gap-3 mb-4">
-                          {getAmenityIcon(category)}
-                          <h3
-                            className={`font-bold text-[16px] ${
-                              isPopular ? "text-orange-600" : "text-gray-900"
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        {getAmenityIcon(category)}
+                        <h3
+                          className={`font-bold text-[16px] ${isPopular ? "text-orange-600" : "text-gray-900"
                             }`}
-                          >
-                            {category?.name || FALLBACKS.amenityCategory}
-                          </h3>
-                        </div>
-
-                        <ul className="space-y-2.5">
-                          {subItems.map((item, subIndex) => (
-                            <li
-                              key={item?.id || subIndex}
-                              className="flex items-start text-[14px] text-gray-600 pl-1 group"
-                            >
-                              <span className="mr-2 text-gray-400 text-[10px] mt-1 group-hover:text-blue-400 transition-colors">
-                                ●
-                              </span>
-                              <span className="leading-snug">{item?.text || item}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        >
+                          {category?.name || FALLBACKS.amenityCategory}
+                        </h3>
                       </div>
-                    );
-                  })}
-                </div>
+
+                      <ul className="space-y-2.5">
+                        {subItems.map((item, subIndex) => (
+                          <li
+                            key={item?.id || subIndex}
+                            className="flex items-start text-[14px] text-gray-600 pl-1 group"
+                          >
+                            <span className="mr-2 text-gray-400 text-[10px] mt-1 group-hover:text-blue-400 transition-colors">
+                              ●
+                            </span>
+                            <span className="leading-snug">{item?.text || item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })()}

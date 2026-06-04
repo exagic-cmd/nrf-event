@@ -12,7 +12,7 @@ import RecommendedProductsModal from '@/components/accommodations/booking/Recomm
 
 import {
   Calendar, Home, Bed, Utensils, AlertCircle,
-  CheckCircle, XCircle, DollarSign, Info, Loader2, RefreshCw
+  CheckCircle, XCircle, DollarSign, Info, Loader2, RefreshCw, ChevronUp, ChevronDown
 } from "lucide-react";
 
 const TITLE_OPTIONS = [
@@ -26,28 +26,24 @@ const handleKeepExistingAndCheckout = async () => {
 };
 // === CONFIRMATION MODAL (ONLY FOR STUBA) ===
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price }) => {
+  const [expandedRoomIndex, setExpandedRoomIndex] = useState(0);
+
   const api = bookingResponse?.apiResponse || bookingResponse;
-  if (!isOpen || !api?.data?.[0]) return null;
+  if (!isOpen || !api?.data?.length) return null;
 
-  const item = api.data[0];
-  const room = item.Room;
-  const totalPrice = price;
+  const items = api.data;
+  const overallTotalPrice = price;
   const currency = api.currency || "USD";
-  const roomType = room.RoomType?.["@attributes"]?.text || "N/A";
-  const mealType = room.MealType?.["@attributes"]?.text || "N/A";
-  const hotelName = item.HotelName || "Unknown Hotel";
-  const checkIn = item.ArrivalDate;
-  const nights = parseInt(item.Nights) || 1;
-  const cancellationStatus = room.CancellationPolicyStatus || "Unknown";
+  const hotelName = items[0]?.HotelName || "Unknown Hotel";
 
-  const nightCosts = Array.isArray(room.NightCost) ? room.NightCost : [room.NightCost].filter(Boolean);
-  const perNightPrice = nightCosts.length > 0
-    ? (parseFloat(nightCosts[0]?.SellingPrice?.["@attributes"]?.amt) || 0).toFixed(2)
-    : (parseFloat(totalPrice) / nights).toFixed(2);
-
-  const messages = room.Messages?.Message || [];
-  const generalMessages = messages.filter(m => m.Type === "General");
-  const internalNotes = messages.filter(m => m.Type === "Internal Note");
+  const formatCancelDate = (dateString, subtractDays = 0) => {
+    const d = new Date(dateString);
+    if (isNaN(d)) return dateString;
+    if (subtractDays) d.setDate(d.getDate() - subtractDays);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
@@ -68,115 +64,197 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
               <Home className="h-7 w-7" />
               {hotelName}
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-5 text-sm">
-              <div className="flex items-center gap-3"><Calendar className="h-5 w-5" /><div><p className="opacity-90">Check-in</p><p className="font-bold text-lg">{checkIn}</p></div></div>
-              <div className="flex items-center gap-3"><Calendar className="h-5 w-5" /><div><p className="opacity-90">Nights</p><p className="font-bold text-lg">{nights}</p></div></div>
-              <div className="flex items-center gap-3"><Bed className="h-5 w-5" /><div><p className="opacity-90">Room</p><p className="font-bold">{roomType}</p></div></div>
-              <div className="flex items-center gap-3"><Utensils className="h-5 w-5" /><div><p className="opacity-90">Meal</p><p className="font-bold">{mealType}</p></div></div>
-              <div className="flex items-center gap-3"><AlertCircle className="h-5 w-5" /><div><p className="opacity-90">Cancellation Policy</p><p className="font-bold">{cancellationStatus}</p></div></div>
-            </div>
           </div>
 
-          <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-8 border border-gray-200">
-            <h4 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
-              <DollarSign className="h-6 w-6 text-[#D3202D]" />
-              Price Details
-            </h4>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-6 md:grid-cols-7 gap-3">
-                {(Array.isArray(nightCosts) && nightCosts.length > 0
-                  ? nightCosts
-                  : Array.from({ length: nights }, (_, i) => ({
-                    SellingPrice: { "@attributes": { amt: perNightPrice } },
-                    Date: null,
-                  }))
-                ).map((nc, idx) => {
-                  const amt = parseFloat(nc?.SellingPrice?.["@attributes"]?.amt) || parseFloat(perNightPrice);
-                  const label = nc?.Date || nc?.["@attributes"]?.date || `Night ${idx + 1}`;
-                  return (
-                    <div key={idx} className="bg-white rounded-xl shadow p-1 flex flex-col items-center justify-center text-center border border-gray-500/50">
-                      <div className="text-sm text-gray-600 mb-2">{label}</div>
-                      <div className="text-lg font-semibold text-gray-800">{amt.toFixed(2)} {currency}</div>
+          <div className="space-y-6 mb-8">
+            {items.map((item, idx) => {
+              const room = item.Room;
+              const checkIn = item.ArrivalDate;
+              const nights = parseInt(item.Nights) || 1;
+              const roomType = room.RoomType?.["@attributes"]?.text || "N/A";
+              const mealType = room.MealType?.["@attributes"]?.text || "N/A";
+              const cancellationStatus = room.CancellationPolicyStatus || "Unknown";
+              const canxFees = Array.isArray(room.CanxFees?.Fee) ? room.CanxFees.Fee : (room.CanxFees?.Fee ? [room.CanxFees.Fee] : []);
+
+              const nightCosts = Array.isArray(room.NightCost) ? room.NightCost : [room.NightCost].filter(Boolean);
+              
+              const roomTotalPrice = parseFloat(room.TotalSellingPrice?.["@attributes"]?.amt) || 
+                                     (parseFloat(overallTotalPrice) / items.length);
+
+              const perNightPrice = nightCosts.length > 0
+                ? (parseFloat(nightCosts[0]?.SellingPrice?.["@attributes"]?.amt) || 0).toFixed(2)
+                : (roomTotalPrice / nights).toFixed(2);
+
+              const messages = room.Messages?.Message || [];
+              const generalMessages = messages.filter(m => m.Type === "General");
+              const internalNotes = messages.filter(m => m.Type === "Internal Note");
+
+              const isExpanded = expandedRoomIndex === idx;
+
+              return (
+                <div key={idx} className="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                  <div 
+                    className="bg-gray-50 hover:bg-gray-100 transition p-4 md:px-6 flex justify-between items-center cursor-pointer select-none"
+                    onClick={() => setExpandedRoomIndex(isExpanded ? -1 : idx)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Bed className="h-6 w-6 text-[#D3202D]" />
+                      <h4 className="text-lg font-bold text-gray-800">Room {idx + 1}: <span className="font-medium text-gray-600">{roomType}</span></h4>
                     </div>
-                  );
-                })}
-              </div>
+                    {isExpanded ? <ChevronUp className="h-6 w-6 text-gray-500" /> : <ChevronDown className="h-6 w-6 text-gray-500" />}
+                  </div>
 
-            </div>
-            <div className="flex justify-between items-center pt-5 border-t-4 border-double border-gray-300">
-              <span className="text-1xl font-bold text-gray-800">Total Amount</span>
-              <span className="text-2xl font-extrabold text-[#D3202D]">
-                {totalPrice} {currency}
-              </span>
-            </div>
+                  {isExpanded && (
+                    <div className="p-4 md:p-6 border-t border-gray-200 bg-white">
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div className="flex items-center gap-3"><Calendar className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Check-in</p><p className="font-bold">{checkIn}</p></div></div>
+                        <div className="flex items-center gap-3"><Calendar className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Nights</p><p className="font-bold">{nights}</p></div></div>
+                        <div className="flex items-center gap-3"><Utensils className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Meal</p><p className="font-bold">{mealType}</p></div></div>
+                        <div className="flex items-center gap-3"><AlertCircle className="h-5 w-5 text-gray-500" /><div><p className="opacity-90 text-sm">Cancellation Policy</p><p className="font-bold">{cancellationStatus}</p></div></div>
+                      </div>
+
+                      <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-8 border border-gray-200">
+                        <h4 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+                          <DollarSign className="h-6 w-6 text-[#D3202D]" />
+                          Price Details
+                        </h4>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3">
+                            {(Array.isArray(nightCosts) && nightCosts.length > 0
+                              ? nightCosts
+                              : Array.from({ length: nights }, (_, i) => ({
+                                SellingPrice: { "@attributes": { amt: perNightPrice } },
+                                Date: null,
+                              }))
+                            ).map((nc, cIdx) => {
+                              const amt = parseFloat(nc?.SellingPrice?.["@attributes"]?.amt) || parseFloat(perNightPrice);
+                              const label = nc?.Date || nc?.["@attributes"]?.date || `Night ${cIdx + 1}`;
+                              return (
+                                <div key={cIdx} className="bg-white rounded-xl shadow-sm p-2 flex flex-col items-center justify-center text-center border border-gray-200">
+                                  <div className="text-sm text-gray-600 mb-1">{label}</div>
+                                  <div className="text-md font-semibold text-gray-800">{currency}{amt.toFixed(2)}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center pt-5 mt-5 border-t border-gray-300">
+                          <span className="text-lg font-semibold text-gray-800">Room Total</span>
+                          <span className="text-xl font-bold text-[#D3202D]">
+                            {currency}{roomTotalPrice.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mb-8 border-b pb-8 border-gray-100">
+                        <h5 className="text-[17px] font-bold text-[#334155] mb-4">
+                          Cancellation Policy
+                        </h5>
+                        
+                        {cancellationStatus === "NonRefundable" ? (
+                          <div className="text-[#f26e6e] space-y-4">
+                            <div>
+                              <p className="font-semibold text-[15px]">Non-Refundable</p>
+                              <p className="text-[15px] font-normal opacity-90 mt-1">100% charge will be applied on cancellation.</p>
+                            </div>
+                          </div>
+                        ) : canxFees.length > 0 ? (
+                          <div className="space-y-4">
+                            {canxFees[0]?.["@attributes"]?.from && (
+                              <div className="text-[#f26e6e]">
+                                <p className="font-semibold text-[15px]">Cancel up to {formatCancelDate(canxFees[0]["@attributes"].from, 1)}</p>
+                                <p className="text-[15px] font-normal opacity-90 mt-1">The full cost of the booking will be refunded to you. No cancellation charge applied.</p>
+                              </div>
+                            )}
+                            {canxFees.map((fee, fIdx) => {
+                              const fromDate = fee?.["@attributes"]?.from;
+                              const amtStr = fee?.Amount?.["@attributes"]?.amt;
+                              const amt = parseFloat(amtStr);
+                              if (!fromDate || isNaN(amt)) return null;
+                              const formattedAmt = amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                              
+                              return (
+                                <div key={fIdx} className="text-[#f26e6e] mt-4">
+                                  <p className="font-semibold text-[15px]">Cancel on or after {formatCancelDate(fromDate)}</p>
+                                  <p className="text-[15px] font-normal opacity-90 mt-1">A cancellation charge of {currency}{formattedAmt} will be applied</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-green-600 space-y-4">
+                            <div>
+                              <p className="font-semibold text-[15px]">Refundable</p>
+                              <p className="text-[15px] font-normal opacity-90 mt-1">Free cancellation available.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
+                          <div className="flex items-center gap-3 mb-4">
+                            <Info className="h-5 w-5 text-blue-600" />
+                            <h5 className="text-lg font-semibold text-gray-800">General Messages</h5>
+                            <span className="ml-auto text-sm text-gray-500">{(generalMessages?.length || 0)}</span>
+                          </div>
+
+                          {generalMessages && generalMessages.length > 0 ? (
+                            <div className="space-y-3">
+                              {generalMessages.map((m, i) => {
+                                const rawText =
+                                  m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
+                                return (
+                                  <div
+                                    key={i}
+                                    className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700 max-h-40 overflow-y-auto"
+                                    dangerouslySetInnerHTML={{ __html: rawText || "No message text available" }}
+                                  />
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="text-sm text-gray-500">No general messages provided.</div>
+                          )}
+                        </div>
+
+                        <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
+                          <div className="flex items-center gap-3 mb-4">
+                            <Info className="h-5 w-5 text-yellow-600" />
+                            <h5 className="text-lg font-semibold text-gray-800">Internal Notes</h5>
+                            <span className="ml-auto text-sm text-gray-500">{(internalNotes?.length || 0)}</span>
+                          </div>
+
+                          {internalNotes && internalNotes.length > 0 ? (
+                            <div className="space-y-3">
+                              {internalNotes.map((m, i) => {
+                                const text = m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
+                                return (
+                                  <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700 max-h-40 overflow-y-auto">
+                                    {text || "No note text available"}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="text-sm text-gray-500">No internal notes available.</div>
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* <div className="mb-8">
-            <h5 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <AlertCircle className={`h-6 w-6 ${cancellationStatus === "NonRefundable" ? "text-red-600" : "text-green-600"}`} />
-              Cancellation Policy
-            </h5>
-            <div className={`inline-block px-6 py-3 rounded-xl font-semibold text-md ${
-              cancellationStatus === "NonRefundable"
-                ? "bg-red-100 text-red-800 border-2 border-red-300"
-                : "bg-green-100 text-green-800 border-2 border-green-300"
-            }`}>
-              {cancellationStatus === "NonRefundable"
-                ? "Non-Refundable – 100% charge on cancellation"
-                : "Refundable – Free cancellation available"}
-            </div>
-          </div> */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
-                <Info className="h-5 w-5 text-blue-600" />
-                <h5 className="text-lg font-semibold text-gray-800">General Messages</h5>
-                <span className="ml-auto text-sm text-gray-500">{(generalMessages?.length || 0)} found</span>
-              </div>
-
-              {generalMessages && generalMessages.length > 0 ? (
-                <div className="space-y-3">
-                  {generalMessages.map((m, i) => {
-                    const rawText =
-                      m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
-
-                    return (
-                      <div
-                        key={i}
-                        className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700"
-                        dangerouslySetInnerHTML={{ __html: rawText || "No message text available" }}
-                      />
-                    );
-                  })}
-                </div>
-
-              ) : (
-                <div className="text-sm text-gray-500">No general messages provided.</div>
-              )}
-            </div>
-
-            <div className="bg-white/0 p-4 rounded-2xl border border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
-                <Info className="h-5 w-5 text-yellow-600" />
-                <h5 className="text-lg font-semibold text-gray-800">Internal Notes</h5>
-                <span className="ml-auto text-sm text-gray-500">{(internalNotes?.length || 0)} found</span>
-              </div>
-
-              {internalNotes && internalNotes.length > 0 ? (
-                <div className="space-y-3">
-                  {internalNotes.map((m, i) => {
-                    const text = m?.Text || m?.Message || m?.["@attributes"]?.text || (typeof m === "string" ? m : "");
-                    return (
-                      <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700">
-                        {text || "No note text available"}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500">No internal notes available.</div>
-              )}
-            </div>
+          <div className="flex justify-between items-center pt-5 border-t-4 border-double border-gray-300">
+            <span className="text-1xl font-bold text-gray-800">Grand Total Amount</span>
+            <span className="text-2xl font-extrabold text-[#D3202D]">
+              {currency}{overallTotalPrice}
+            </span>
           </div>
 
           <div className="flex gap-5 mt-10">
@@ -600,13 +678,15 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
       quoteId: bookingData.selectedRoom?.id || null,
       rate_plan_id: bookingData.selectedRoom?.id || null,
+      link_type_id: bookingData.link_type_id || null,
       hotel_info: {
         id: hotelId,
         roomsDetails: roomsDetailsArray,
         checkInDate: bookingData.checkIn,
         checkOutDate: bookingData.checkOut,
         Guests: guestsByRoom,
-
+        book_hash: bookingData.book_hash || null,
+        rate: bookingData.prebooking_rates?.[0] || null,
       },
       guestDetailsByRoom: guestsByRoom,
       special_request: specialRequests || "",
@@ -703,6 +783,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
       quoteId: bookingData.selectedRoom?.id || null,
       rate_plan_id: bookingData.selectedRoom?.id || null,
       cancellationPolicy: bookingData.selectedRoom?.cancellationPolicy || null,
+      link_type_id: bookingData.link_type_id || null,
       hotel_info: {
         id: hotelId,
         roomsDetails: roomsDetailsArray,

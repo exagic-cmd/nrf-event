@@ -9,3 +9,9 @@ export const formatPrice = (value) => {
   if (isNaN(num)) return "0";
   return Number.isInteger(num) ? num.toString() : num.toFixed(2);
 };
+
+export const roundOff = (value) => {
+  const num = Number(value);
+  if (isNaN(num)) return "0";
+  return Math.round(num).toString();
+};

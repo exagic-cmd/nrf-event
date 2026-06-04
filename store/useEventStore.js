@@ -13,6 +13,17 @@ export const useEventStore = create(
       setEvent: data => set({ event: data, lastFetched: Date.now() }),
 
       FetchEvent: async (router) => {
+        const { isLoading, lastFetched, event } = get();
+
+        // Skip if already fetching (concurrent call guard)
+        if (isLoading) return event;
+
+        // Skip if data is still fresh (within 1 hour)
+        const ONE_HOUR = 60 * 60 * 1000;
+        if (lastFetched && Date.now() - lastFetched < ONE_HOUR && event?.event) {
+          return event;
+        }
+
         set({ isLoading: true, error: null });
 
         try {

@@ -90,6 +90,34 @@ const StarRatingFilter = ({ ratings, activeRatings, onRatingChange }) => (
   </div>
 );
 
+const MEAL_NORMALIZE_MAP = {
+  // Ratehawk values
+  nomeal: 'room_only',
+  breakfast: 'breakfast',
+  halfboard: 'half_board',
+  fullboard: 'full_board',
+  allinclusive: 'all_inclusive',
+  // Stuba text values (lowercased)
+  'room only': 'room_only',
+  'half board': 'half_board',
+  'full board': 'full_board',
+  'all inclusive': 'all_inclusive',
+  'all-inclusive': 'all_inclusive',
+};
+
+const MEAL_LABELS = {
+  room_only: 'Room Only',
+  breakfast: 'Breakfast',
+  half_board: 'Half Board',
+  full_board: 'Full Board',
+  all_inclusive: 'All Inclusive',
+};
+
+const normalizeMeal = (val) => {
+  const lower = (val || '').toLowerCase().trim();
+  return MEAL_NORMALIZE_MAP[lower] || lower;
+};
+
 const FILTER_CONFIG = {
   rating: {
     title: "Star Rating",
@@ -145,9 +173,9 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
     ratings: [],
     amenities: [],
     room_amenities: [],
-    meal_plans: [], // by code
-    payment_types: [], // by value
-    cancellation_policies: [], // by id
+    payment_types: [],
+    unified_meal_plans: [],   // numeric API ids + normalized string keys (room_only, breakfast…)
+    unified_cancellation: [], // numeric API ids + 'refundable' | 'non_refundable'
     priceRange: null,
     searchText: "",
   });
@@ -162,23 +190,28 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
 
     // Collect all candidate prices
     const prices = accommodations.map(acc => {
-      // Handle Stuba (link_type_id === 9)
-      if (acc.link_type_id === 9 || acc.Hotel_Data) {
+      // Stuba (Result) or Ratehawk (rates): use pre-computed acc.price from store
+      if (acc.link_type_id === 9 || acc.link_type_id === 10 || acc.Hotel_Data) {
+        // Stuba: extract from Result.TotalPrice
         if (acc.Result) {
           const allPrices = [];
           Object.values(acc.Result).forEach(roomType => {
-            if (Array.isArray(roomType)) {
-              roomType.forEach(option => {
-                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-                if (room?.Price?.["@attributes"]?.amt) {
-                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
-                }
+            if (roomType && typeof roomType === 'object') {
+              Object.values(roomType).forEach(option => {
+                if (option?.TotalPrice) allPrices.push(parseFloat(option.TotalPrice));
               });
             }
           });
           if (allPrices.length > 0) return Math.min(...allPrices);
         }
-        return parseFloat(acc.Hotel_Data?.starting_price || acc.price || 0);
+        // Ratehawk: extract from rates
+        if (Array.isArray(acc.rates) && acc.rates.length > 0) {
+          const ratePrices = acc.rates
+            .map(rate => parseFloat(rate?.payment_options?.payment_types?.[0]?.amount || 0))
+            .filter(p => p > 0);
+          if (ratePrices.length > 0) return Math.min(...ratePrices);
+        }
+        return parseFloat(acc.price || 0);
       }
 
       return (
@@ -207,6 +240,71 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
     return found?.room?.rate_plan?.pricing?.currency || found?.currency || found?.Hotel_Data?.currency || 'USD';
   }, [accommodations]);
 
+  // Unified cancellation & meal plan options from all 3 sources
+  const unifiedFilters = useMemo(() => {
+    const cancellationCounts = { refundable: 0, non_refundable: 0 };
+    const mealCounts = {};
+
+    accommodations.forEach(acc => {
+      if (acc.link_type_id === 9 && acc.Result) {
+        let hasRefundable = false, hasNonRefundable = false;
+        const mealSet = new Set();
+        Object.values(acc.Result).forEach(roomType => {
+          if (!roomType || typeof roomType !== 'object') return;
+          Object.values(roomType).forEach(option => {
+            if (!option || typeof option !== 'object') return;
+            if (typeof option.cancellable_rooms === 'number') {
+              if (option.cancellable_rooms > 0) hasRefundable = true;
+              else hasNonRefundable = true;
+            }
+            const mealText = option.lowest_price_room?.MealType?.['@attributes']?.text;
+            if (mealText) mealSet.add(normalizeMeal(mealText));
+          });
+        });
+        if (hasRefundable) cancellationCounts.refundable++;
+        if (hasNonRefundable) cancellationCounts.non_refundable++;
+        mealSet.forEach(m => { mealCounts[m] = (mealCounts[m] || 0) + 1; });
+      } else if (acc.link_type_id === 10 && Array.isArray(acc.rates)) {
+        let hasRefundable = false, hasNonRefundable = false;
+        const mealSet = new Set();
+        acc.rates.forEach(rate => {
+          const penalty = rate?.payment_options?.payment_types?.[0]?.cancellation_penalties;
+          if (penalty?.free_cancellation_before) hasRefundable = true;
+          else hasNonRefundable = true;
+          if (rate?.meal) mealSet.add(normalizeMeal(rate.meal));
+        });
+        if (hasRefundable) cancellationCounts.refundable++;
+        if (hasNonRefundable) cancellationCounts.non_refundable++;
+        mealSet.forEach(m => { mealCounts[m] = (mealCounts[m] || 0) + 1; });
+      }
+    });
+
+    // API-provided options (from /accommodations/search)
+    const apiMealPlans = (filters?.meal_plans || [])
+      .filter(item => item.count > 0)
+      .map(item => ({ id: item.id, label: item.title || item.name || String(item.id), count: item.count }));
+
+    const apiCancellationPolicies = (filters?.cancellation_policies || [])
+      .filter(item => item.count > 0)
+      .map(item => ({ id: item.id, label: item.name || item.title || String(item.id), count: item.count }));
+
+    const stubaRhMealOptions = Object.entries(mealCounts).map(([id, count]) => ({
+      id,
+      label: MEAL_LABELS[id] || id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      count,
+    }));
+
+    const stubaRhCancellationOptions = [
+      ...(cancellationCounts.refundable > 0 ? [{ id: 'refundable', label: 'Refundable', count: cancellationCounts.refundable }] : []),
+      ...(cancellationCounts.non_refundable > 0 ? [{ id: 'non_refundable', label: 'Non-Refundable', count: cancellationCounts.non_refundable }] : []),
+    ];
+
+    return {
+      mealPlanOptions: [...apiMealPlans, ...stubaRhMealOptions],
+      cancellationOptions: [...apiCancellationPolicies, ...stubaRhCancellationOptions],
+    };
+  }, [accommodations, filters]);
+
   const [selectedMin, setSelectedMin] = useState(0);
   const [selectedMax, setSelectedMax] = useState(0);
 
@@ -229,7 +327,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   };
 
   const clearAllFilters = () => {
-    setActiveFilters({ ratings: [], amenities: [], room_amenities: [], meal_plans: [], payment_types: [], cancellation_policies: [], priceRange: null, searchText: "" });
+    setActiveFilters({ ratings: [], amenities: [], room_amenities: [], payment_types: [], unified_meal_plans: [], unified_cancellation: [], priceRange: null, searchText: "" });
     setSelectedMin(priceBounds.min);
     setSelectedMax(priceBounds.max);
     onSortChange("default");
@@ -332,8 +430,36 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
         </div>
       </FilterSection>
 
+      {unifiedFilters.cancellationOptions.length > 0 && (
+        <FilterSection title="Cancellation Policy" defaultOpen={true}>
+          {unifiedFilters.cancellationOptions.map(option => (
+            <Checkbox
+              key={option.id}
+              label={option.label}
+              count={option.count}
+              checked={(activeFilters.unified_cancellation || []).includes(option.id)}
+              onChange={() => handleFilterArrayChange('unified_cancellation', option.id)}
+            />
+          ))}
+        </FilterSection>
+      )}
+
+      {unifiedFilters.mealPlanOptions.length > 0 && (
+        <FilterSection title="Meal Plan" defaultOpen={true}>
+          {unifiedFilters.mealPlanOptions.map(option => (
+            <Checkbox
+              key={option.id}
+              label={option.label}
+              count={option.count}
+              checked={(activeFilters.unified_meal_plans || []).includes(option.id)}
+              onChange={() => handleFilterArrayChange('unified_meal_plans', option.id)}
+            />
+          ))}
+        </FilterSection>
+      )}
+
       {Object.entries(filters || {}).map(([key, items]) => {
-        if (!items || items.length === 0 || key === 'room_amenities') return null;
+        if (!items || items.length === 0 || key === 'room_amenities' || key === 'meal_plans' || key === 'cancellation_policies') return null;
 
         // Filter out items with count === 0
         const filteredItems = items.filter(item => item.count > 0);

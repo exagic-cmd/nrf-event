@@ -38,8 +38,13 @@ export function TransferBenefitsSection() {
     return () => clearInterval(interval);
   }, [benefits.length]);
 
+  const hasFetchedToursRef = useRef(false);
+
   /* Load top day tours */
   useEffect(() => {
+    if (hasFetchedToursRef.current) return;
+    hasFetchedToursRef.current = true;
+
     const loadDayTours = async () => {
       setIsLoadingDay(true);
       try {
@@ -53,6 +58,7 @@ export function TransferBenefitsSection() {
           setTopDayTours(results.slice(0, 6));
         }
       } catch (err) {
+        hasFetchedToursRef.current = false; // allow retry on error
         console.error("Error loading day tours:", err);
       } finally {
         setIsLoadingDay(false);

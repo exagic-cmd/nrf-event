@@ -259,17 +259,25 @@ useEffect(() => {
 
   try {
     setIsSearching(true);
-    // This will now return [] if !data.status
+
+    if (!isHomepage) {
+      // On listings page: let the parent + Effect 5 own the fetch — calling
+      // setSearchParamsAndSearch here causes a duplicate set of API calls.
+      if (onSearch) onSearch(payload);
+      return;
+    }
+
+    // Homepage: fetch first so we can validate results before navigating.
     const results = await setSearchParamsAndSearch(payload);
-  if (!results || results.length === 0) {
-    toast.error("No options for selected dates/guests.");
-    toast.error("Try different dates or guest.");
-    return;
+    if (!results || results.length === 0) {
+      toast.error("No options for selected dates/guests.");
+      toast.error("Try different dates or guest.");
+      return;
     }
     const { error } = useAccommodationsStore.getState();
     if (error) {
-       toast.error(error);
-       return;
+      toast.error(error);
+      return;
     }
     if (onSearch) onSearch(payload);
 

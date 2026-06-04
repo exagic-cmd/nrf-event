@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10;
 
-function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
+function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, setSortBy }) {
   const [showNoResults, setShowNoResults] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -28,18 +28,17 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
         if (acc.Result) {
           const allPrices = [];
           Object.values(acc.Result).forEach(roomType => {
-            if (Array.isArray(roomType)) {
-              roomType.forEach(option => {
-                const room = Array.isArray(option.Room) ? option.Room[0] : option.Room;
-                if (room?.Price?.["@attributes"]?.amt) {
-                  allPrices.push(parseFloat(room.Price["@attributes"].amt));
+            if (roomType && typeof roomType === 'object') {
+              Object.values(roomType).forEach(option => {
+                if (option?.TotalPrice) {
+                  allPrices.push(parseFloat(option.TotalPrice));
                 }
               });
             }
           });
           if (allPrices.length > 0) return Math.min(...allPrices);
         }
-        return parseFloat(acc.Hotel_Data?.starting_price || acc.price || 0);
+        return parseFloat(acc.price || acc.Hotel_Data?.starting_price || 0);
       }
 
       return (
@@ -105,9 +104,20 @@ function AccommodationList({ accommodations, isLoading, sortBy, setSortBy }) {
           <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
         </div>
       </div> */}
-      {paginatedAccommodations.map((accommodation) => (
-        <AccommodationCard key={accommodation.id} accommodation={accommodation} />
+      {paginatedAccommodations.map((accommodation, index) => (
+        <AccommodationCard
+          key={accommodation.Hotel_Data?.id || accommodation.id || index}
+          accommodation={accommodation}
+        />
       ))}
+      {isSubLoading && (
+        <div className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3 min-h-[120px] items-center justify-center px-6 py-8">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-[#D3202D] border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-medium text-gray-600 tracking-wide">Crafting hotels...</p>
+          </div>
+        </div>
+      )}
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}

@@ -1,5 +1,5 @@
 // components/accommodations/AccommodationDetailPage.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Layout from "@/components/layout/Layout";
@@ -50,6 +50,8 @@ export default function AccommodationDetailPage() {
   const { items, removeItem } = useCartStore();
   const { openDrawer, setDrawerContent } = useDrawerStore();
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addRecentlyViewed);
+
+  const lastFetchedIdRef = useRef(null);
 
   const [accommodation, setAccommodation] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -204,7 +206,7 @@ const detectedCurrency =
 
   // Handle proceed to booking with cart validation
   // Accept an optional `roomArg` so callers (e.g. RoomTypes) can pass the room directly
-  const handleProceedBooking = (roomArg = null) => {
+  const handleProceedBooking = (roomArg = null, bookHash = null) => {
     const roomToUse = roomArg || selectedRoom;
     if (!roomToUse) {
       alert("Please select a room first");
@@ -218,7 +220,7 @@ const detectedCurrency =
       setSelectedRoom(roomToUse);
     }
 
-    const exists = items.some(item => 
+    const exists = items.some(item =>
       item.tourId === accommodationId && item.type === 'accommodation'
     );
 
@@ -235,8 +237,9 @@ const detectedCurrency =
       nights: searchParams?.nights || 1,
       checkIn: searchParams?.start_date,
       checkOut: searchParams?.end_date,
-      isNonStuba, // optional
       isNonStuba: isNonStuba,
+      link_type_id: urlLinkTypeId,
+      book_hash: bookHash || null,
       timestamp: new Date().toISOString()
     };
 
@@ -273,6 +276,9 @@ const detectedCurrency =
 useEffect(() => {
   const fetchAccommodationDetail = async () => {
     if (!router.isReady || !accommodationId) return;
+    // Guard against React 18 StrictMode double-invoke and same-ID re-renders
+    if (lastFetchedIdRef.current === accommodationId) return;
+    lastFetchedIdRef.current = accommodationId;
 
     setLoading(true);
     setError(null);

@@ -21,6 +21,125 @@ import BookingPreviewSlider from "@/components/transfers/BookingPreviewSlider";
 import useUserStore from '@/store/useAuthStore';
 import { useEventStore } from "@/store/useEventStore";
 import { toast } from 'react-toastify';
+// === CANCELLATION POLICY MODAL FOR STUBA (link_type_id 9) ===
+const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => {
+  const [expandedRoomIndex, setExpandedRoomIndex] = useState(0);
+
+  if (!isOpen || !stubaItems?.length) return null;
+
+  const formatCancelDate = (dateString, subtractDays = 0) => {
+    const d = new Date(dateString);
+    if (isNaN(d)) return dateString;
+    if (subtractDays) d.setDate(d.getDate() - subtractDays);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-3xl">
+        <div className="p-6 md:p-8">
+          <div className="flex justify-between items-start mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Cancellation Policy</h3>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <p className="text-sm text-gray-600 mb-6">Please review the cancellation policy before confirming your booking.</p>
+
+          <div className="space-y-4 mb-6">
+            {stubaItems.map((entry, idx) => {
+              const api = entry.hotel_info?.stuba_response;
+              if (!api?.data?.length) return null;
+              const currency = api.currency || "SGD";
+
+              return api.data.map((item, roomIdx) => {
+                const room = item.Room;
+                const cancellationStatus = room?.CancellationPolicyStatus || "Unknown";
+                const canxFees = Array.isArray(room?.CanxFees?.Fee)
+                  ? room.CanxFees.Fee
+                  : room?.CanxFees?.Fee ? [room.CanxFees.Fee] : [];
+                const roomType = room?.RoomType?.["@attributes"]?.text || entry.productTitle || "Room";
+                const key = `${idx}-${roomIdx}`;
+                const isExpanded = expandedRoomIndex === key;
+
+                return (
+                  <div key={key} className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div
+                      className="bg-gray-50 hover:bg-gray-100 transition p-4 flex justify-between items-center cursor-pointer"
+                      onClick={() => setExpandedRoomIndex(isExpanded ? null : key)}
+                    >
+                      <span className="font-semibold text-gray-800">{roomType}</span>
+                      <svg className={`h-5 w-5 text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="p-4 border-t border-gray-200 bg-white">
+                        <h5 className="text-sm font-bold text-gray-700 mb-3">Cancellation Policy</h5>
+
+                        {cancellationStatus === "NonRefundable" ? (
+                          <div className="text-[#f26e6e] space-y-1">
+                            <p className="font-semibold text-sm">Non-Refundable</p>
+                            <p className="text-sm opacity-90">100% charge will be applied on cancellation.</p>
+                          </div>
+                        ) : canxFees.length > 0 ? (
+                          <div className="space-y-3">
+                            {canxFees[0]?.["@attributes"]?.from && (
+                              <div className="text-green-600">
+                                <p className="font-semibold text-sm">Cancel up to {formatCancelDate(canxFees[0]["@attributes"].from, 1)}</p>
+                                <p className="text-sm opacity-90 mt-0.5">Full refund — no cancellation charge.</p>
+                              </div>
+                            )}
+                            {canxFees.map((fee, fIdx) => {
+                              const fromDate = fee?.["@attributes"]?.from;
+                              const amtStr = fee?.Amount?.["@attributes"]?.amt;
+                              const amt = parseFloat(amtStr);
+                              if (!fromDate || isNaN(amt)) return null;
+                              const formattedAmt = amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                              return (
+                                <div key={fIdx} className="text-[#f26e6e] mt-2">
+                                  <p className="font-semibold text-sm">Cancel on or after {formatCancelDate(fromDate)}</p>
+                                  <p className="text-sm opacity-90 mt-0.5">Cancellation charge of {currency}{formattedAmt} will be applied.</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-green-600">
+                            <p className="font-semibold text-sm">Refundable</p>
+                            <p className="text-sm opacity-90 mt-0.5">Free cancellation available.</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })}
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              onClick={onClose}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl transition"
+            >
+              No, Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="flex-1 bg-[#D3202D] hover:bg-[#b88a45] text-white font-semibold py-3 rounded-xl transition"
+            >
+              Yes, Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PayNow = ({ totalPrice }) => {
   const { t } = useTranslation("daytour");
   const { languageId, currentLocale } = useLanguageStore.getState();
@@ -48,6 +167,7 @@ const PayNow = ({ totalPrice }) => {
   const [phone, setPhone] = useState("");
   const [promo, setPromo] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
+  const [userComment, setUserComment] = useState('');
   const [errors, setErrors] = useState({});
  const [communicationMode, setCommunicationMode] = useState(user?.communication_mode || '');
   const [isCommModeOpen, setIsCommModeOpen] = useState(false);
@@ -56,7 +176,9 @@ const PayNow = ({ totalPrice }) => {
     (user?.roaming_enabled === 0 || user?.roaming_enabled === false ? 'no' : '')
   ); const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoMessage, setPromoMessage] = useState({ text: '', type: '' });
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
   const commModeRef = useRef(null);
+  const lastPaymentFetchIdRef = useRef(null);
 
   const communicationOptions = [
     { value: "whatsapp", label: "WhatsApp" },
@@ -100,6 +222,8 @@ const PayNow = ({ totalPrice }) => {
     return [];
   })();
 
+  const hasLinkType10 = items.some(item => item.link_type_id === 10);
+
   useEffect(() => {
     const hasPendingPayment = typeof window !== "undefined" && !!localStorage.getItem("pendingPaymentOrderId");
     if (items.length === 0 && !hasPendingPayment && !isPopupVisible) {
@@ -121,9 +245,15 @@ const PayNow = ({ totalPrice }) => {
         const firstProductId = items[0]?.tourId || items[0]?.id;
         if (!firstProductId) return;
 
+        // Guard: skip if already fetched for this product ID and languageId combination
+        const fetchKey = `${firstProductId}_${languageId}`;
+        if (lastPaymentFetchIdRef.current === fetchKey) return;
+        lastPaymentFetchIdRef.current = fetchKey;
+
         const res = await getPaymentOptions(firstProductId, 1);
         setPaymentOptions(res?.data?.paymentmethods || []);
       } catch (err) {
+        lastPaymentFetchIdRef.current = null; // allow retry on error
         setPaymentOptions([]);
         setShowPromoField(false);
       }
@@ -155,7 +285,9 @@ const PayNow = ({ totalPrice }) => {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = "validation.emailInvalid";
 
     if (!phone.trim()) errs.phone = "validation.phoneRequired";
-    else if (!/^\+?\d{7,15}$/.test(phone)) errs.phone = "validation.phoneInvalid";
+    else if (!phone || phone.replace(/\D/g, '').length < 7) errs.phone = "validation.phoneInvalid";
+
+    if (hasLinkType10 && !userComment.trim()) errs.userComment = "Comment is required";
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -427,36 +559,38 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     agent_id: event?.event?.user_id || null,
     event_id:event?.event?.id|| null,
     ref_type: refType || null,
-    track_agent_id: track_agent_id || null
+    track_agent_id: track_agent_id || null,
+    user_comment: userComment.trim() || null,
   };
 
   return payload;
 };
 
-  const handlePayNow = async (e) => {
-    e.preventDefault();
-    if (!validate() || isSubmitting) return;
-
+  // Shared hold-validation + submitBooking logic
+  const executePayment = async () => {
     setIsSubmitting(true);
     try {
       const accommodationItems = items.filter(item => item.type === 'accommodation' && item.holdExpiresAt);
-      
+
       for (const item of accommodationItems) {
         const ratePlanId = item.quoteId || item.rate_plan_id;
-        
+
         if (!ratePlanId) {
           console.warn('Accommodation item missing rate_plan_id:', item);
           continue;
         }
 
+        // Skip hold check for link_type_id 9 (stuba) or 10 (ratehawk) — client-side hold only.
+        if (item.link_type_id === 9 || item.link_type_id === 10) {
+          console.log('[paynow] Skipping hold status check for link_type_id', item.link_type_id);
+          continue;
+        }
+
         try {
           const cartId = item.key.split('#').pop() || item.key;
-          const params = new URLSearchParams({
-            cart_id: cartId,
-                      rate_plan_id: ratePlanId,
-          });
+          const params = new URLSearchParams({ cart_id: cartId, rate_plan_id: ratePlanId });
 
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/status?${params.toString()}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/inventory/hold/status?${params.toString()}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           });
@@ -465,17 +599,17 @@ console.log("cart_items:PAYNOW #####################", cart_items);
           if (!res.ok || data.success === false || data.data?.is_expired === true || data.data?.status === 'expired') {
             console.warn('Hold expired for accommodation:', item.productTitle, data);
             useCartStore.getState().removeItem(item.key);
-            
+
             const alertMessage = (data.data?.is_expired === true || data.data?.status === 'expired')
               ? `The allotment for "${item.productTitle}" has been released`
               : `Could not verify hold status for "${item.productTitle}". Please try again.`;
-              
+
             toast.error(alertMessage);
             setIsSubmitting(false);
             return;
           }
-          
-         console.log(`✅ Hold valid for ${item.productTitle}. Extending it now...`);
+
+          console.log(`✅ Hold valid for ${item.productTitle}. Extending it now...`);
           const extendResult = await useCartStore.getState().extendHoldForItem(item.key);
           if (!extendResult.success) {
             toast.error(`Could not secure the hold for "${item.productTitle}". Please try again.`);
@@ -496,25 +630,31 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       const response = await submitBooking(finalPayload);
       const orderId = response?.order_id;
       const totalPrice = response?.total_price;
-      //console.log('submitBooking response:', response, 'orderId:', orderId, 'selected paymentOption:', paymentOption);
 
-     // const creditCardOption = paymentOptions.find(opt => opt.name === "Credit Card" || opt.id === 2);
+      setReturnOrderId(orderId);
+      setFlywireTotal(totalPrice);
+      setShowFlywire(true);
+      useCartStore.getState().clearCart();
+    } catch (error) {
+      alert("Booking failed: " + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-   // if (paymentOption == creditCardOption?.id) {
-         setReturnOrderId(orderId);
-         setFlywireTotal(totalPrice);
-         setShowFlywire(true); 
-         useCartStore.getState().clearCart();
-       // } else {
+  const handlePayNow = async (e) => {
+    e.preventDefault();
+    if (!validate() || isSubmitting) return;
 
-       // setIsPopupVisible(true);
-      // }
-      } catch (error) {
-        alert("Booking failed: " + error.message);
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
+    // For link_type_id 9 (stuba) items, show cancellation policy modal first
+    const stubaItems = items.filter(item => item.link_type_id === 9 && item.hotel_info?.stuba_response);
+    if (stubaItems.length > 0) {
+      setShowCancellationModal(true);
+      return;
+    }
+
+    await executePayment();
+  };
 
   const closePopup = () => {
     localizedPush('/');
@@ -677,6 +817,27 @@ console.log("cart_items:PAYNOW #####################", cart_items);
               )}
             </div>
               
+            {/* User Comment */}
+            {hasLinkType10 && (
+              <div className="md:col-span-2">
+                <label className="text-sm text-gray-500 flex items-center gap-3">
+                  <MessageSquare className="w-4 h-4 text-gray-400" />
+                  Comment <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  placeholder="Enter your comment..."
+                  value={userComment}
+                  onChange={e => {
+                    setUserComment(e.target.value);
+                    setErrors(prev => ({ ...prev, userComment: undefined }));
+                  }}
+                  rows={3}
+                  className="w-full border border-gray-300 text-base rounded px-4 py-3 mt-1 focus:outline-none resize-none"
+                />
+                {errors.userComment && <p className="text-red-500 text-xs mt-1">{errors.userComment}</p>}
+              </div>
+            )}
+
             {/* {!showPromoField && (
              <div>
                 <label className="text-sm text-gray-500 flex justify-between items-center gap-3">
@@ -837,6 +998,17 @@ console.log("cart_items:PAYNOW #####################", cart_items);
 </>
       {isPopupVisible && <PopupMsg closePopup={closePopup} />}
       
+        {/* Cancellation Policy Modal for Stuba (link_type_id 9) */}
+        <CancellationPolicyModal
+          isOpen={showCancellationModal}
+          onClose={() => setShowCancellationModal(false)}
+          onConfirm={() => {
+            setShowCancellationModal(false);
+            executePayment();
+          }}
+          stubaItems={items.filter(item => item.link_type_id === 9 && item.hotel_info?.stuba_response)}
+        />
+
         {/* Flywire Modal */}
         {showFlywire && returnOrderId && (
           <PayNowFlywire

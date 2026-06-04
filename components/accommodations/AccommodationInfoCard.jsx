@@ -1,6 +1,6 @@
 // components/accommodations/AccommodationInfoCard.jsx
 import { Star, Check, MapPin, Clock, Bed } from "lucide-react";
-import { formatPrice } from "@/utils/priceUtils";
+import { roundOff } from "@/utils/priceUtils";
 import { useState, useEffect } from "react";
 
 const AccommodationInfoCard = ({
@@ -34,7 +34,7 @@ const AccommodationInfoCard = ({
     }
 
     // Multiply by number of rooms to get total
-    setLowestPrice(priceFor1Room * roomsCount);
+    setLowestPrice(priceFor1Room);
   }, [allRooms, startingPrice, selectedRoom, roomsCount]);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const AccommodationInfoCard = ({
         <div className="mb-0 flex justify-end">
           <div className="text-lg lg:text-2xl text-[#D3202D] mb-1">
             <span className="text-sm md:text-md text-black">  Starting Price </span>
-            <span className="font-semibold">{currencyToShow} {formatPrice(lowestPrice)}</span>
+            <span className="font-semibold">{currencyToShow} {roundOff(lowestPrice)}</span>
           </div>
          
             

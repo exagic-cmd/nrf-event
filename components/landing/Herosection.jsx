@@ -15,7 +15,7 @@ import {
   Ship,
   Train,
 } from "lucide-react";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Head from "next/head";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ new import
@@ -64,11 +64,18 @@ export default function HomePage() {
   //   fetchVehicles();
   // }, [resetTransferStore, fetchVehicles]);
 
+ const [event, setEvent] = useState(null);
+  const hasFetchedEventRef = useRef(false);
+
   useEffect(() => {
-    if (!event) {
-      FetchEvent(router);
+    if (hasFetchedEventRef.current) return;
+    hasFetchedEventRef.current = true;
+    async function loadEvent() {
+      const data = await $helpers.getEventData();
+      setEvent(data);
     }
-  }, [event, FetchEvent, router]);
+    loadEvent();
+  }, []);
 
   // Tabs
   const filterTabs = useMemo(() => [
