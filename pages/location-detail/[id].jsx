@@ -220,7 +220,7 @@ export default function TourDetailPage() {
           const displayImage = images.length > 0
               ? images[currentImageIndex].startsWith("http")
                 ? images[currentImageIndex]
-                : `https://res.cloudinary.com/www-travelpakistani-com/image/upload/${images[currentImageIndex]}` : "/placeholder.svg";
+                :`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${images[currentImageIndex]}` : "/placeholder.svg";
   
           const details = Object.fromEntries(
             Object.entries(location?.details || {}).filter(

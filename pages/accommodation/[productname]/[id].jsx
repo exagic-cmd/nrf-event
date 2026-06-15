@@ -22,6 +22,7 @@ import RecentlyViewed from "@/components/accommodations/RecentlyViewed.jsx";
 import NearbyLandmarks from "@/components/accommodations/NearbyLandmarks.jsx";
 import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
+import { getFullImageUrl } from "@/utils/imageService";
 import { Hotel } from "lucide-react";
 
 export async function getServerSideProps({ locale }) {
@@ -118,8 +119,8 @@ const detectedCurrency =
     address: hotel.address,
     latitude: hotel.latitude,
     longitude: hotel.longitude,
-    image: hotel.photos?.[0]?.image || "",
-    images: (hotel.photos || []).map(p => ({ url: p.image, thumb: p.image, type: 'photo' })),
+    image: getFullImageUrl(hotel.photos?.[0]?.image) || "",
+    images: (hotel.photos || []).map(p => ({ url: getFullImageUrl(p.image), thumb: getFullImageUrl(p.image), type: 'photo' })),
     stars: parseFloat(hotel.star_rating) || 0,
     amenities: data.hotel.amenities || [],
     review_count: 0,
@@ -148,7 +149,7 @@ const detectedCurrency =
         occupancyAdults: plan.occupancy_adults,
         occupancyChildren: plan.occupancy_children,
         isAvailable: true,
-        canAccommodate: true,
+        canAccommodate: true, 
         rawPricing: plan,
         images: (room.images || []).map(img => img.image),
         view: room.view,
@@ -161,7 +162,7 @@ const detectedCurrency =
       name: room.name,
       size: room.size,
       view: room.view,
-      images: (room.images || []).map(img => img.image),
+      images: (room.images || []).map(img => getFullImageUrl(img.image)),
       bedDetails: room.beds?.[0]?.bed_type_title,
       ratePlans: roomRatePlans,
       amenities: room.amenities || [], // Add room-specific amenities
@@ -362,7 +363,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
     normalizedHotelData: {
       ...hotelData.normalizedHotelData,
       starting_price: lowestPriceRoom.price,
-      price: lowestPriceRoom.price,
+      price: lowestPriceRoom.price, 
       currency: hotelData.normalizedHotelData.currency || "SGD"
     },
     normalizedRoomData: normalizedRooms,
@@ -476,7 +477,7 @@ useEffect(() => {
     if (accommodation.normalizedRoomData && accommodation.normalizedRoomData.length > 0) {
       // Extract all total_promo prices from all rate plans
       const allPromoPrices = accommodation.normalizedRoomData.flatMap(room => 
-        room.ratePlans?.map(plan => plan.rawPricing?.pricing?.total_promo || plan.price || 0) || []
+        room.ratePlans?.map(plan => plan.rawPricing?.pricing?.total_promo || plan.price || 0) || [] 
       ).filter(price => price > 0);
       
       if (allPromoPrices.length > 0) {

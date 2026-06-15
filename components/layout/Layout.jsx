@@ -138,7 +138,7 @@ export default function Layout({ children }) {
       <Head>
         <title>NRF</title>
         <meta name="agd-partner-manual-verification" content="" />
-        <link rel="icon" type="image/png" href="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1768826953/nrf_sg_icon.png" />
+        <link rel="icon" type="image/png" href= { `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1768826953/nrf_sg_icon.png`} />
       </Head>
 
     

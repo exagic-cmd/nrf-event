@@ -204,7 +204,7 @@ function BaggagePassengerSelector({
             
             {modalBaggageInfo.image && (
               <img 
-                src={`https://res.cloudinary.com/www-travelpakistani-com/image/upload/${modalBaggageInfo.image}`} 
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${modalBaggageInfo.image}`} 
                 alt={modalBaggageInfo.name}
                 className="w-full h-48 object-contain mb-4"
               />

@@ -47,6 +47,7 @@ import usePusher from "@/hooks/usePusher";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
 import ProductList from "@/components/chat/ProductList";
+import { getFullImageUrl } from "@/utils/imageService";
 import VehicleList from "@/components/chat/VehicleList";
 
 // Define types based on the API response structure
@@ -1049,7 +1050,7 @@ export default function TravelPlannerChat() {
               <div className="flex items-center">
                 <Avatar className="h-10 w-10 text-white">
                   <AvatarImage
-                    src="/ai.png"
+                    src={getFullImageUrl("/ai.png")}
                     alt="AI Assistant"
                   />
                   <AvatarFallback>AI</AvatarFallback>
@@ -1131,7 +1132,7 @@ export default function TravelPlannerChat() {
                         )}
                       >
                         {message.sender === "ai" ? (
-                          <>
+                          <> 
                             <AvatarImage
                               src="/ai.png"
                               alt="AI Assistant"
@@ -1140,7 +1141,7 @@ export default function TravelPlannerChat() {
                           </>
                         ) : (
                           <>
-                            <AvatarImage
+                            <AvatarImage 
                               src="/ai.png"
                               alt="Human Agent"
                             />
@@ -1331,7 +1332,7 @@ export default function TravelPlannerChat() {
                         )}
                       >
                         {currentResponder === "ai" ? (
-                          <>
+                          <> 
                             <AvatarImage src="/ai.png" alt="AI Assistant" />
                             <AvatarFallback>AI</AvatarFallback>
                           </>
@@ -1339,7 +1340,7 @@ export default function TravelPlannerChat() {
                           <>
                             <AvatarImage src="/ai.png" alt="Human Agent" />
                             <AvatarFallback>HA</AvatarFallback>
-                          </>
+                          </> 
                         )}
                       </Avatar>
                       <Card
@@ -1466,7 +1467,7 @@ const TransferCard = ({
         {/* Transfer Image */}
         <div className="h-40 w-full relative overflow-hidden">
           <img
-            src={transfer.image || "/placeholder.svg"}
+            src={getFullImageUrl(transfer.image) || "/placeholder.svg"}
             alt={transfer.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
@@ -1546,7 +1547,7 @@ const MealCard = ({
         {/* Meal Image */}
         <div className="h-40 w-full relative overflow-hidden">
           <img
-            src={meal.image || "/placeholder.svg"}
+            src={getFullImageUrl(meal.image) || "/placeholder.svg"}
             alt={meal.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
@@ -1626,7 +1627,7 @@ const ActivityCard = ({
         {/* Activity Image */}
         <div className="h-40 w-full relative overflow-hidden">
           <img
-            src={activity.image || "/placeholder.svg"}
+            src={getFullImageUrl(activity.image) || "/placeholder.svg"}
             alt={activity.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

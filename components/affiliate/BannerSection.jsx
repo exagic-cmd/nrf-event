@@ -7,7 +7,7 @@ export default function BannerSection() {
     <div 
       className="relative flex flex-col md:flex-row items-center justify-between h-[300px] md:h-[379px] px-6 md:px-12 py-8  overflow-hidden"
       style={{
-        backgroundImage: `url('https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1753355608/External%20Links/front-view-young-beautiful-lady-grey-shirt-working-with-documents-laptop-sitting-inside-her-office-daytime-building-job-activity-min.jpg')`,
+        backgroundImage: `url('${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1753355608/External%20Links/front-view-young-beautiful-lady-grey-shirt-working-with-documents-laptop-sitting-inside-her-office-daytime-building-job-activity-min.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

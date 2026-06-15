@@ -311,7 +311,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
         </div>
         <div className="flex justify-center mt-4">
           <img
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744797488/External%20Links/yrgzbjyvjvyziduap2zr.svg"
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797488/External%20Links/yrgzbjyvjvyziduap2zr.svg`}
             alt="Tour"
             className="rounded-lg mb-4 h-28 object-cover w-32 opacity-30 my-12"
           />

@@ -20,11 +20,11 @@ export function TransferTypeServices() {
         id: index + 1,
         image:
           [
-            "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756795512/External%20Links/download_2.jpg",
-            "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756795512/External%20Links/download.jpg",
-            "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756795512/External%20Links/images_1.jpg",
-            "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756795512/External%20Links/images_2.jpg",
-            "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756795512/External%20Links/images.jpg",
+             `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External%20Links/download_2.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External%20Links/download.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External%20Links/images_1.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External%20Links/images_2.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External%20Links/images.jpg`,
           ][index] || "/singapore-transfer-service.png",
       }))
     : []
