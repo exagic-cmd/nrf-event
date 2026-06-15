@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 const getFullImageUrl = (relativePath) => {
   if (!relativePath) return '';
-  return `https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1746530123/${relativePath}`;
+  return  `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1746530123/${relativePath}`;
 };
 const AccommodationListMap = ({ accommodations = [] }) => {
   const mapRef = useRef(null);

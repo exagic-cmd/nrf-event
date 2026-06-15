@@ -72,7 +72,7 @@ export default function RegisterPage() {
         {/* Left: Banner */}
         <div className="hidden md:block md:w-1/2 justify-items-center">
           <img
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1752497934/External%20Links/Pic.png"
+            src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752497934/External%20Links/Pic.png`}
             alt="Register Banner"
             className="inset-0 w-full h-full object-cover"
           />

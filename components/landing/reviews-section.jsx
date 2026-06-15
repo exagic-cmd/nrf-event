@@ -3,14 +3,14 @@ import Link from "next/link";
 
 export const ReviewsSection = () => {
   const icon1 =
-    "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1764333338/External%20Links/Travel_anywhere_in_the_world_with_a_suitcase.png";
+     `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1764333338/External%20Links/Travel_anywhere_in_the_world_with_a_suitcase.png`;
   const icon2 =
-    "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1764333320/External%20Links/yellow_paper_airplane.png";
+    `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1764333320/External%20Links/yellow_paper_airplane.png`;
   const icon3 =
-    "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1764333286/External%20Links/card.png";
+    `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1764333286/External%20Links/card.png`;
 
-  const bannerSm = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1769150433/External%20Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png";
-  const bannerLg = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1769150433/External%20Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png";
+  const bannerSm = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1769150433/External%20Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png`;
+  const bannerLg = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1769150433/External%20Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png`;
 
   return (
     <section className="w-full mt-32 md:mt-4 ">
@@ -114,7 +114,7 @@ export const ReviewsSection = () => {
           
                   <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="hidden lg:block w-full">
                     <img
-                      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1765190391/External%20Links/TourEast_Banner_1080x350.png"
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1765190391/External%20Links/TourEast_Banner_1080x350.png`}
                       alt="TourEast Banner Large"
                       className="w-full h-auto rounded-lg shadow-md"
                     />
@@ -122,7 +122,7 @@ export const ReviewsSection = () => {
                   {/* Small Banner */}
                   <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="lg:hidden w-full">
                     <img
-                      src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1765190391/External%20Links/TourEast_Banner_350_x_350_px.png"
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1765190391/External%20Links/TourEast_Banner_350_x_350_px.png`}
                       alt="TourEast Banner Small"
                       className="w-full h-auto rounded-lg shadow-md"
                     />

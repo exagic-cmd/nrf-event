@@ -63,7 +63,7 @@ export default function TourLocationPage() {
     selectedLocation.images?.length > 0
       ? selectedLocation.images[0].startsWith("http")
         ? selectedLocation.images[0]
-        : `https://res.cloudinary.com/www-travelpakistani-com/image/upload/${selectedLocation.images[0]}`
+        : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${selectedLocation.images[0]}`
       : "/abstract-location.png";
 
   return (

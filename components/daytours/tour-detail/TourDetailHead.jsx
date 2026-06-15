@@ -20,7 +20,7 @@ const highlightsKeywords = highlightsRaw
   const shortDescription = product_description.short_desc?.trim() || 
     `Explore details about ${formattedTitle}. Book your adventure today!`;
   const imageUrl = images[0]?.image
-    ? `https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1746530123/${images[0].image}`
+    ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1746530123/${images[0].image}`
     : "https://www.exploresingapore.ai/default-tour-image.jpg";
       const price = basicInfo.starting_price || "0.00";
   const currency = basicInfo.currency || "SGD";

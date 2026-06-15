@@ -22,6 +22,7 @@ import RecentlyViewed from "@/components/accommodations/RecentlyViewed.jsx";
 import NearbyLandmarks from "@/components/accommodations/NearbyLandmarks.jsx";
 import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
+import { getFullImageUrl } from "@/utils/imageService";
 import helpers from "@/lib/helpers";
 import { Hotel } from "lucide-react";
 
@@ -31,7 +32,7 @@ const normalizeStubaAccommodationData = (stubaItem) => {
   const { Hotel_Data, Result } = stubaItem;
   const currency = stubaItem.currency || Hotel_Data.currency
   const hotelImages = (Hotel_Data.media || []).map(m => m.image);
-   const hotelAmenities = Hotel_Data.highlight
+   const hotelAmenities = Hotel_Data.highlight 
     ? Hotel_Data.highlight.split(",").map((item, index) => ({
         id: index,
         name: item.trim(),
@@ -52,10 +53,10 @@ const normalizeStubaAccommodationData = (stubaItem) => {
     address: Hotel_Data.address,
     latitude: Hotel_Data.latitude,
     longitude: Hotel_Data.longitude,
-    image: Hotel_Data.media?.[0]?.image || Hotel_Data.image || "",
+    image: getFullImageUrl(Hotel_Data.media?.[0]?.image || Hotel_Data.image) || "",
     images: (Hotel_Data.media || []).map(m => ({
-      url: m.image,
-      thumb: m.image,
+      url: getFullImageUrl(m.image),
+      thumb: getFullImageUrl(m.image),
       type: "photo",
     })),
     stars: 0,
@@ -111,7 +112,7 @@ const normalizeStubaAccommodationData = (stubaItem) => {
       name: roomTypeName,
       size: null,
       view: null,
-      images: [],
+      images: [], 
       bedDetails: null,
       images: hotelImages,
       ratePlans,
@@ -237,7 +238,7 @@ export default function AccommodationDetailPage() {
       latitude: hotel.latitude,
       longitude: hotel.longitude,
       image: hotel.photos?.[0]?.image || "",
-      images: (hotel.photos || []).map(p => ({ url: p.image, thumb: p.image, type: 'photo' })),
+    images: (hotel.photos || []).map(p => ({ url: getFullImageUrl(p.image), thumb: getFullImageUrl(p.image), type: 'photo' })),
       stars: parseFloat(hotel.star_rating) || 0,
       amenities: data.hotel.amenities || [],
       review_count: 0,
@@ -266,7 +267,7 @@ export default function AccommodationDetailPage() {
           occupancyAdults: plan.occupancy_adults,
           occupancyChildren: plan.occupancy_children,
           isAvailable: true,
-          canAccommodate: true,
+        canAccommodate: true, 
           rawPricing: plan,
           images: (room.images || []).map(img => img.image),
           view: room.view,
@@ -279,7 +280,7 @@ export default function AccommodationDetailPage() {
         name: room.name,
         size: room.size,
         view: room.view,
-        images: (room.images || []).map(img => img.image),
+      images: (room.images || []).map(img => getFullImageUrl(img.image)),
         bedDetails: room.beds?.[0]?.bed_type_title,
         ratePlans: roomRatePlans,
         amenities: room.amenities || [], // Add room-specific amenities
@@ -515,7 +516,7 @@ export default function AccommodationDetailPage() {
       if (accommodation.normalizedRoomData && accommodation.normalizedRoomData.length > 0) {
         // Extract all total_promo prices from all rate plans
         const allPromoPrices = accommodation.normalizedRoomData.flatMap(room =>
-          room.ratePlans?.map(plan => plan.rawPricing?.pricing?.total_promo || plan.price || 0) || []
+          room.ratePlans?.map(plan => plan.rawPricing?.pricing?.total_promo || plan.price || 0) || [] 
         ).filter(price => price > 0);
 
         if (allPromoPrices.length > 0) {

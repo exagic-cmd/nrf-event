@@ -19,11 +19,11 @@ const travelerTypes = Array.isArray(rawTypes)
   id: index + 1,
   image:
     [
-      "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1752747798/External%20Links/family.avif",
-      "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1752747799/External%20Links/solo.avif",
-      "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1752747798/External%20Links/adventure.avif",
-      "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1752747799/External%20Links/culture.avif",
-      "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1752747798/External%20Links/couple.avif",
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747798/External%20Links/family.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747799/External%20Links/solo.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747798/External%20Links/adventure.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747799/External%20Links/culture.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747798/External%20Links/couple.avif`,
       
     ][index] || "/placeholder.svg"
 }))

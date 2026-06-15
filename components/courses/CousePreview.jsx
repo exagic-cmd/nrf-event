@@ -15,7 +15,7 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
       <section className="relative bg-gradient-to-r from-[#FE6F4F] to-[#FE6F4F]/80 text-white">
         <div className="absolute inset-0">
           <Image
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744797479/External%20Links/nkfcjd8vlm4vcphzt5vv.svg"
+            src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797479/External%20Links/nkfcjd8vlm4vcphzt5vv.svg` }
             alt="Singapore Skyline"
             fill
             className="object-cover opacity-20"

@@ -23,28 +23,28 @@ export default function Banner() {
                 </div>
                 <div className="md:w-1/2 md:mt-2 mt-4 flex justify-center relative">
                     <img
-                        src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744973735/External%20Links/fajvtmcexqcequ2jw0ib.svg"
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744973735/External%20Links/fajvtmcexqcequ2jw0ib.svg`}
                        alt="Illustration of AI travel planner for Singapore"
                         className="block sm:hidden"
                         width={2000}
                         height={2000}
                     />
                     <img
-                        src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1743665326/External%20Links/s0xu2tzpohho94zmvmru.svg"
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1743665326/External%20Links/s0xu2tzpohho94zmvmru.svg`}
                       alt="Illustration of AI travel planner for Singapore"
                         className="hidden sm:block"
                     />
                     <div className="hidden md:hidden lg:block absolute top-4 left-0">
-                        <img src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1743665429/External%20Links/gvdtuzdjigjgdjqnzchp.svg" alt="hotline" />
+                        <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1743665429/External%20Links/gvdtuzdjigjgdjqnzchp.svg`} alt="hotline" />
                     </div>
                     <div className="hidden md:hidden lg:block absolute bottom-4 right-0 md:right-20">
-                        <img src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1747127096/External%20Links/xitzdvx70fpat1j2qv6z.svg" alt="hotline2" />
+                        <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1747127096/External%20Links/xitzdvx70fpat1j2qv6z.svg`} alt="hotline2" />
                     </div>
                 </div>
             </div>
 
             <div className="absolute top-[5] left-[50%] transform -translate-x-1/2 -translate-y-1/2 hidden lg:block">
-                <img src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744797482/External%20Links/pcrzo75z5womwynfwpih.svg" alt="Sparkle Large" className="h-24 w-24 " />
+                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797482/External%20Links/pcrzo75z5womwynfwpih.svg`} alt="Sparkle Large" className="h-24 w-24 " />
             </div>
          
         </section>

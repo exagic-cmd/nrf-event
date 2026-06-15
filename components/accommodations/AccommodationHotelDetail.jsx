@@ -34,7 +34,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
   const getFullImageUrl = (path) => {
     if (!path || typeof path !== 'string') return null;
     if (path.startsWith("http")) return path;
-    const base = "https://res.cloudinary.com/www-travelpakistani-com/image/upload/";
+    const base = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}`;
     return `${base}${path.replace(/^\//, "")}`;
   };
   // --- Iconshere ---

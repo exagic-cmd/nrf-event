@@ -63,8 +63,8 @@ const Footer = () => {
           <div className="space-y-2">
             <LocalizedLink href="/">
               <img
-                src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1763642543/External%20Links/Desktop_red.png"
-       alt="Logo"
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External%20Links/Desktop_red.png`}
+                alt="Logo"
                 className="h-12 w-auto"
               />
             </LocalizedLink>

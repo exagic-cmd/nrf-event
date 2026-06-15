@@ -23,7 +23,7 @@ const AddedToCartDialog = ({
           <>
             <div className="flex justify-center mb-4">
               <img
-                src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1757933800/External%20Links/check.png"
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1757933800/External%20Links/check.png`}
                 alt={t("addedToCartAlt")}
                 className="w-16 h-16 rounded-full bg-orange-50 p-2 shadow-sm"
               />
