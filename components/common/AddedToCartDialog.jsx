@@ -29,7 +29,7 @@ const AddedToCartDialog = ({
           successMessage: getTranslation("accommodationAddedToCart") || "Your accommodation has been added to cart!",
           altText: getTranslation("accommodationAddedToCartAlt") || "Accommodation added to cart",
           continueButtonText: getTranslation("browseMoreHotels") || "Browse More Hotels",
-          iconUrl:  `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External%20Links/vg5ld1wrkipqk9y8vy33.svg`
+          iconUrl:  `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External+Links/vg5ld1wrkipqk9y8vy33.svg`
         };
       case "transfer":
         return {
@@ -37,7 +37,7 @@ const AddedToCartDialog = ({
           successMessage: getTranslation("transferAddedToCart") || "Your transfer has been added to cart!",
           altText: getTranslation("transferAddedToCartAlt") || "Transfer added to cart",
           continueButtonText: getTranslation("browseMoreTransfers") || "Browse More Transfers",
-          iconUrl: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External%20Links/vg5ld1wrkipqk9y8vy33.svg`
+          iconUrl: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External+Links/vg5ld1wrkipqk9y8vy33.svg`
         };
       default: // daytour
         return {
@@ -45,7 +45,7 @@ const AddedToCartDialog = ({
           successMessage: getTranslation("addedToCart") || "Added to Cart!",
           altText: getTranslation("addedToCartAlt") || "Tour added to cart",
           continueButtonText: getTranslation("continueShopping") || "Continue Shopping",
-          iconUrl: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External%20Links/vg5ld1wrkipqk9y8vy33.svg`
+          iconUrl: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External+Links/vg5ld1wrkipqk9y8vy33.svg`
         };
     }
   };

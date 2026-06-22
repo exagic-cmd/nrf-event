@@ -6,14 +6,14 @@ export default function AffiliateBottomBanner() {
 
       <div className="absolute top-2 left-1 md:left-6 h-8 w-8 md:h-18 md:h-18">
         
-          <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797488/External%20Links/yrgzbjyvjvyziduap2zr.svg`} alt="" />
+          <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797488/External+Links/yrgzbjyvjvyziduap2zr.svg`} alt="" />
         
       </div>
       
       
       {/* Curved line decoration */}
       <div className="absolute -right-0 md:-right-2 lg:-right-10 -rotate-6 top-14 h-full w-1/3 md:w-1/3 lg:w-3/3">
-      <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797456/External%20Links/rtjzw49gojwwafkigfea.svg`} alt="" />
+      <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797456/External+Links/rtjzw49gojwwafkigfea.svg`} alt="" />
       </div>
       
       {/* Content */}

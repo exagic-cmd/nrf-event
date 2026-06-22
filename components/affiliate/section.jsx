@@ -89,7 +89,7 @@ const AffiliateSections = () => {
                 <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden mb-4 sm:mb-6">
                   <img 
                     className='w-full h-32 sm:h-40 md:h-48 object-cover' 
-                    src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1753355608/External%20Links/close-up-people-working-from-home-min.jpg`} 
+                    src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1753355608/External+Links/close-up-people-working-from-home-min.jpg`} 
                     alt="People working from home" 
                   />
                 </div>
@@ -136,7 +136,7 @@ const AffiliateSections = () => {
                   <div className="bg-gradient-to-r from-[#CC9A55] to-teal-500 rounded-2xl overflow-hidden mb-4">
                     <img 
                       className='w-full h-32 sm:h-40 md:h-48 object-cover' 
-                      src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1754543928/External%20Links/WhatsApp_Image_2025-08-07_at_10.15.44_ab74f60f.jpg` } 
+                      src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1754543928/External+Links/WhatsApp_Image_2025-08-07_at_10.15.44_ab74f60f.jpg` } 
                       alt="Certification program" 
                     />
                   </div>

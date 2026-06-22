@@ -720,7 +720,7 @@ useEffect(() => {
        </div>
          <div className="flex justify-end gap-1 mt-3">
             <span className="text-xs text-gray-400">Powered by </span>
-            <img className="h-5 w-auto" src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763694508/External%20Links/toureast_logo.png` } alt="Toureast Logo" />
+            <img className="h-5 w-auto" src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763694508/External+Links/toureast_logo.png` } alt="Toureast Logo" />
           </div>
     </form>
   );

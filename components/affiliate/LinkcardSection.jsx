@@ -28,7 +28,7 @@ Affiliate Links on airporttransfers</h2>
         <div className="mt-auto flex justify-center w-full">
           <div className="relative  min-h-[404px] min-w-[241px] md:min-h-[504px] md:min-w-[341px]">
           <img 
-              src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744890545/External%20Links/Group_1000006875.png`} 
+              src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744890545/External+Links/Group_1000006875.png`} 
               alt="Phone frame" 
               className="w-full h-full object-cover"
             />
@@ -47,7 +47,7 @@ Affiliate Links on airporttransfers</h2>
         <div className=" flex justify-center w-full">
         <div className="relative    min-h-[404px] min-w-[241px] md:min-h-[504px] md:min-w-[341px]">
           <img 
-              src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744798056/External%20Links/rstgi83pb3pjvmfptmjc.svg` }
+              src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744798056/External+Links/rstgi83pb3pjvmfptmjc.svg` }
               alt="Phone frame" 
               className="w-full h-full object-cover"
             />
@@ -68,7 +68,7 @@ Affiliate Links on airporttransfers</h2>
         <div className="flex justify-center w-full">
         <div className="relative    min-h-[404px] min-w-[241px] md:min-h-[504px] md:min-w-[341px]">
           <img 
-              src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744798422/External%20Links/Group_1000006866.png` } 
+              src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744798422/External+Links/Group_1000006866.png` } 
               alt="Phone frame" 
               className="w-full h-full object-cover"
             />

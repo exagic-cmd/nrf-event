@@ -35,7 +35,7 @@ const vehicles: Vehicle[] = [
     price: 45,
     estimatedTime: "45 mins",
     rating: 4.5,
-    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External%20Links/Screenshot_2025-09-02_173322.png",
+    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External+Links/Screenshot_2025-09-02_173322.png",
     description: "Comfortable and affordable option for small groups",
   },
   {
@@ -48,7 +48,7 @@ const vehicles: Vehicle[] = [
     price: 65,
     estimatedTime: "45 mins",
     rating: 4.7,
-    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External%20Links/Screenshot_2025-09-02_173305.png",
+    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External+Links/Screenshot_2025-09-02_173305.png",
     description: "Spacious and comfortable for medium groups",
   },
   {
@@ -61,7 +61,7 @@ const vehicles: Vehicle[] = [
     price: 85,
     estimatedTime: "50 mins",
     rating: 4.6,
-    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External%20Links/Screenshot_2025-09-02_173346.png",
+    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External+Links/Screenshot_2025-09-02_173346.png",
     description: "Perfect for large groups and families",
   },
   {
@@ -74,7 +74,7 @@ const vehicles: Vehicle[] = [
     price: 120,
     estimatedTime: "40 mins",
     rating: 4.9,
-    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External%20Links/Screenshot_2025-09-02_173332.png",
+    image: "https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1756816607/External+Links/Screenshot_2025-09-02_173332.png",
     description: "Premium experience with luxury amenities",
   },
 ]
@@ -91,9 +91,8 @@ export function VehicleSelection({ onVehicleSelect, selectedVehicle }: VehicleSe
         {vehicles.map((vehicle) => (
           <Card
             key={vehicle.id}
-            className={`cursor-pointer transition-all hover:shadow-md ${
-              selectedVehicle === vehicle.name ? "ring-2 ring-primary bg-accent/50" : ""
-            }`}
+            className={`cursor-pointer transition-all hover:shadow-md ${selectedVehicle === vehicle.name ? "ring-2 ring-primary bg-accent/50" : ""
+              }`}
             onClick={() => onVehicleSelect(vehicle)}
           >
             <CardHeader className="pb-3">

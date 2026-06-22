@@ -55,7 +55,7 @@ export default function ProductFiltersView({ onBackClick }) {
           className="flex items-center px-5 py-2 border border-gray-400 rounded-full text-gray-600 hover:bg-gray-100"
         >
           <img
-            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744783776/External%20Links/lvpxygbjx15x2czmgqfu.svg"
+            src="https://res.cloudinary.com/www-travelpakistani-com/image/upload/v1744783776/External+Links/lvpxygbjx15x2czmgqfu.svg"
             alt="Filter Icon"
             className="w-5 h-5 mr-2"
           />

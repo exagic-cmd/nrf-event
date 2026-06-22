@@ -21,7 +21,7 @@ export function Preloader() {
       <div className="flex flex-col items-center space-y-4">
         <div className="w-20 h-20 bg-[#f4f4f4] rounded-full flex items-center justify-center animate-spin-slow">
           <img
-             src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1765185574/External%20Links/mobb.png` }
+             src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1765185574/External+Links/mobb.png` }
             alt="Loading icon"
             className=" h-12"
           />
