@@ -9,7 +9,7 @@ export function MustDoSection() {
     {
       id: 1,
       name: "The 10 Tastings of Singapore: Street Food",
-      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}c_thumb,g_face/v1617894191/TourEast/img/landmark_images/enknzzhwkfweepwy1s0s.webp`,
+      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/TourEast/img/landmark_images/enknzzhwkfweepwy1s0s.webp`,
       localImages: ["/placeholder.svg?height=40&width=40&text=L1", "/placeholder.svg?height=40&width=40&text=L2"],
       rating: 4.5,
       reviews: 689,
@@ -24,7 +24,7 @@ export function MustDoSection() {
     {
       id: 2,
       name: "Full Coverage Singapore City Tour",
-      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}c_thumb,g_face/v1617894191/TourEast/img/landmark_images/landmark_421_1052.jpg`,
+      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/TourEast/img/landmark_images/landmark_421_1052.jpg`,
       localImages: ["/placeholder.svg?height=40&width=40&text=L3", "/placeholder.svg?height=40&width=40&text=L4"],
       rating: 4.0,
       reviews: 410,
@@ -39,7 +39,7 @@ export function MustDoSection() {
     {
       id: 3,
       name: "Gardens by the Bay & Marina Bay Sands",
-      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}c_thumb,g_face/v1617894191/TourEast/img/products/products_images/p2o7rtmiuh6koev0fyya.webp`,
+      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/TourEast/img/products/products_images/p2o7rtmiuh6koev0fyya.webp`,
       localImages: ["/placeholder.svg?height=40&width=40&text=L5", "/placeholder.svg?height=40&width=40&text=L6"],
       rating: 4.8,
       reviews: 750,
@@ -54,7 +54,7 @@ export function MustDoSection() {
     {
       id: 4,
       name: "Sentosa Island Adventure Pass",
-      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}c_thumb,g_face/v1617894191/TourEast/img/products/products_images/farfm2cuhwwf11eakmek.webp`,
+      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/TourEast/img/products/products_images/farfm2cuhwwf11eakmek.webp`,
       localImages: ["/placeholder.svg?height=40&width=40&text=L7", "/placeholder.svg?height=40&width=40&text=L8"],
       rating: 4.3,
       reviews: 520,
@@ -69,7 +69,7 @@ export function MustDoSection() {
     {
       id: 5,
       name: "Night Safari Experience",
-      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}c_thumb,g_face/v1617894191/TourEast/img/products/products_images/rosrtxxqd42semkvjbzh.webp`,
+      image: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/TourEast/img/products/products_images/rosrtxxqd42semkvjbzh.webp`,
       localImages: ["/placeholder.svg?height=40&width=40&text=L9", "/placeholder.svg?height=40&width=40&text=L10"],
       rating: 4.7,
       reviews: 900,

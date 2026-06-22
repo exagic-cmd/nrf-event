@@ -12,24 +12,24 @@ import { series2 } from "@/lib/data2"
 const courseContent = {
   "introduction-to-singapore": {
     title: "Introduction to Singapore",
-    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081484/External%20Links/Introduction_to_Singapore.jpg`,
+    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081484/External+Links/Introduction_to_Singapore.jpg`,
     
     sections: series,
   },
   "singapore-for-leisure-travel": {
     title: "Singapore for Leisure Travel",
-    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081490/External%20Links/Singapore_for_Leisure_Travel.jpg`,
+    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081490/External+Links/Singapore_for_Leisure_Travel.jpg`,
     sections: series2, 
   },
   "singapore-as-mices-destination": {
     title: "Singapore as a MICE Destination",
-    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081485/External%20Links/Singapore_as_a_MICE_Destination.jpg`,
+    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081485/External+Links/Singapore_as_a_MICE_Destination.jpg`,
  
     sections: series, 
   },
   "cruising-from-singapore": {
     title: "Cruising From Singapore",
-    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081483/External%20Links/Cruising_From_Singapore.jpg`,
+    headerImage: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1755081483/External+Links/Cruising_From_Singapore.jpg`,
     
     sections: series, 
   },

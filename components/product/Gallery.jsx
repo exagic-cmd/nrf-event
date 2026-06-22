@@ -52,7 +52,7 @@ const Gallery = ({ images = [] }) => {
         <div className="absolute bottom-0 bg-white m-2 p-1 cursor-pointer rounded right-0">
           
           <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744017946/External%20Links/icons/svvajkpaqnzkppzwhwuj.svg`}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744017946/External+Links/icons/svvajkpaqnzkppzwhwuj.svg`}
             alt="gallery"
             onClick={() => openModal(0)}
           />

@@ -116,7 +116,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
   // Helper to construct image URL based on pattern in other files
   const getImageUrl = (path) => {
     if (!path) return null;
-    return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}c_thumb,g_face/v1617894191/${path}`;
+    return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/${path}`;
   };
 
   return (

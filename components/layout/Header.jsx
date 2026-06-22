@@ -118,14 +118,14 @@ export default function Header() {
   <LocalizedLink href="/">
     {/* Mobile + Tablet Logo */}
     <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External%20Links/Desktop_red.png`}
+      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External+Links/Desktop_red.png`}
       alt="Mobile Logo"
       className="h-14 w-auto object-contain lg:hidden"
     />
 
     {/* Desktop Logo */}
     <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External%20Links/Desktop_red.png`}
+      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External+Links/Desktop_red.png`}
       alt="Desktop Logo"
       className="hidden lg:block h-16 w-auto object-contain"
     />

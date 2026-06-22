@@ -22,7 +22,7 @@ const ItineraryCard = () => {
 
           <div className="flex items-center text-sm text-gray-600 mb-2">
             <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744017947/External%20Links/icons/hvkgizeaibo75aogptaa.svg`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744017947/External+Links/icons/hvkgizeaibo75aogptaa.svg`}
               alt="hotel icon"
               className="w-4 h-4 mr-1"
             />
@@ -59,7 +59,7 @@ const ItineraryCard = () => {
 
           <div className="flex items-center text-sm text-gray-600 mb-2">
             <img
-              src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744017946/External%20Links/icons/svvajkpaqnzkppzwhwuj.svg`}
+              src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744017946/External+Links/icons/svvajkpaqnzkppzwhwuj.svg`}
               alt="hotel icon"
               className="w-4 h-4 mr-1"
             />

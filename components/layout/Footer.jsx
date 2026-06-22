@@ -63,7 +63,7 @@ const Footer = () => {
           <div className="space-y-2">
             <LocalizedLink href="/">
               <img
-                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External%20Links/Desktop_red.png`}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External+Links/Desktop_red.png`}
                 alt="Logo"
                 className="h-12 w-auto"
               />

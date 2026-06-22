@@ -25,13 +25,13 @@ closePopup()
         {/* Images */}
         <div className="flex relative justify-center mb-4">
           <img
-            src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External%20Links/vg5ld1wrkipqk9y8vy33.svg` }
+            src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External+Links/vg5ld1wrkipqk9y8vy33.svg` }
             alt="Success"
             className="h-24 object-cover opacity-30"
           />
           
           <img
-            src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797488/External%20Links/yrgzbjyvjvyziduap2zr.svg` }
+            src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797488/External+Links/yrgzbjyvjvyziduap2zr.svg` }
             alt="Tour"
             className="rounded-lg h-16 object-cover absolute right-0 opacity-30 w-20"
           />

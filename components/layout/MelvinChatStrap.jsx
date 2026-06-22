@@ -52,7 +52,7 @@ const handleAskAI = async () => {
           <>
            Ask Teressa!
             <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1751621393/External%20Links/robot.gif`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1751621393/External+Links/robot.gif`}
               alt="AI assistant"
               className="w-10 h-10 rounded-full animate-pop-bounce"
             />
