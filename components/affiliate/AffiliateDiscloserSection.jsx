@@ -72,7 +72,7 @@ function AffiliateDiscloserSection() {
         {/* Image Section */}
         <div className="flex justify-center">
           <img
-            src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1753355608/External+Links/front-view-young-beautiful-lady-grey-shirt-working-with-documents-laptop-sitting-inside-her-office-daytime-building-job-activity-min.jpg`}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/front-view-young-beautiful-lady-grey-shirt-working-with-documents-laptop-sitting-inside-her-office-daytime-building-job-activity-min.jpg`}
             alt="Affiliate Partners"
             className="w-full max-w-[550px] rounded-lg"
           />

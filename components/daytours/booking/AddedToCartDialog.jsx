@@ -23,7 +23,7 @@ const AddedToCartDialog = ({
           <>
             <div className="flex justify-center mb-4">
               <img
-                src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797481/External+Links/vg5ld1wrkipqk9y8vy33.svg`}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/vg5ld1wrkipqk9y8vy33.svg`}
                 alt={t("addedToCartAlt")}
                 className="w-16 h-16 rounded-full bg-orange-50 p-2 shadow-sm"
               />

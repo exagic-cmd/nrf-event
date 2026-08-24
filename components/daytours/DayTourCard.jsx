@@ -82,9 +82,9 @@ function DaytourCard({ tour, category = "daytour" }) {
       src={tour.image}
       alt={tour.name}
       className="object-cover h-[235px] w-full md:w-[300px]"
-      onError={(e) => {
-        e.target.src = "/placeholder-tour.jpg";
-      }}
+      // onError={(e) => {
+      //  // e.target.src = "/placeholder-tour.jpg";
+      // }}
     />
 
     {/* Feature Badge */}

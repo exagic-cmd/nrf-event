@@ -12,32 +12,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
     <section className="w-full py-12 md:py-24 lg:py-32 bg-white relative overflow-hidden">
       {/* Background Images - Increased visibility and adjusted for smaller screens */}
       <img
-        src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752749244/External+Links/premium_photo-1698500034175-3520e1021c2f.avif`}
+        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/premium_photo-1698500034175-3520e1021c2f.avif`}
         alt="Traditional building"
         className="absolute top-10 left-0 w-52 h-52 object-cover opacity-10 -translate-x-1/4 rotate-3 hidden sm:block rounded-xl"
       />
       <img
-        src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752749244/External+Links/photo-1541379889336-70f26e4c4617.avif` }
+        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/photo-1541379889336-70f26e4c4617.avif`}
         alt="Vibrant street scene"
         className="absolute top-20 right-0 w-64 h-64 object-cover opacity-10 translate-x-1/4 -rotate-6 hidden sm:block rounded-xl"
       />
       <img
-        src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752749243/External+Links/photo-1527843320645-baeb96e80b5a.avif` }
+        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/photo-1527843320645-baeb96e80b5a.avif`}
         alt="Colorful traditional fabrics"
         className="absolute bottom-10 left-1/4 w-40 h-40 object-cover opacity-10 rotate-15 hidden sm:block rounded-xl"
       />
       <img
-        src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752749244/External+Links/photo-1697124949788-857cb46e94dc.avif` }
+        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/photo-1697124949788-857cb46e94dc.avif`}
         alt="Person with traditional fan"
         className="absolute bottom-20 right-1/4 w-44 h-44 object-cover opacity-10 -rotate-15 hidden sm:block rounded-xl"
       />
       <img
-        src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752749457/External+Links/premium_photo-1666299721610-5853da3427ac.avif` }
+        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/premium_photo-1666299721610-5853da3427ac.avif`}
         alt="Illuminated city structures"
         className="absolute top-1/2 left-0 w-32 h-32 object-cover opacity-10 -translate-y-1/2 -rotate-45 hidden sm:block rounded-xl"
       />
       <img
-        src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752749244/External+Links/premium_photo-1698500034175-3520e1021c2f.avif` }
+        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/premium_photo-1698500034175-3520e1021c2f.avif`} // Reusing one of the images for more coverage
         alt="Traditional building"
         className="absolute bottom-1/2 right-0 w-36 h-36 object-cover opacity-10 translate-y-1/2 rotate-45 hidden sm:block rounded-xl"
       />

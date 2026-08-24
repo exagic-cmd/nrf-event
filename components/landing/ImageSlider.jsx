@@ -2,9 +2,9 @@ import React from "react";
 
 export default function HeroSection() {
   const largeScreenImageUrl =
-    `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1775730723/External+Links/THE_NEXT_NOW.png`;
+    `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Group_39466.webp`;
   const smallScreenImageUrl =
-     `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1775730722/External+Links/THE_NEXT_NOW_488_x_522_px.png`;
+    `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/lhsjacediff4b9pgp1al.svg`;
 
   return (
     <div className="min-h-[40vh] bg-white w-full ">

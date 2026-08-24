@@ -19,6 +19,23 @@ export default function Header() {
   const dropdownRef = useRef(null);
   const hasFetchedEventRef = useRef(false);
   const hasRunUserCheckRef = useRef(false);
+  const availableLocales = [
+    {
+      code: "en",
+      name: "English",
+      flag: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/flag.png`,
+    },
+    {
+      code: "ja",
+      name: "Japanese",
+      flag: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/flag_1.png`,
+    },
+    {
+      code: "es",
+      name: "Spanish",
+      flag: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/spain.png`,
+    },
+  ];
 
   useEffect(() => {
     setHydrated(true);
@@ -118,14 +135,14 @@ export default function Header() {
   <LocalizedLink href="/">
     {/* Mobile + Tablet Logo */}
     <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External+Links/Desktop_red.png`}
+      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Desktop_red.png`}
       alt="Mobile Logo"
       className="h-14 w-auto object-contain lg:hidden"
     />
 
     {/* Desktop Logo */}
     <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1763642543/External+Links/Desktop_red.png`}
+      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Desktop_red.png`}
       alt="Desktop Logo"
       className="hidden lg:block h-16 w-auto object-contain"
     />

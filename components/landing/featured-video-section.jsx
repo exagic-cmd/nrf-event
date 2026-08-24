@@ -22,7 +22,7 @@ export function FeaturedVideoSection() {
           {/* Left Column: Text Content */}
           <div className="md:w-1/2 bg-white p-8 rounded-xl shadow-md border border-gray-200 flex flex-col items-center md:items-start text-center md:text-left">
             <div className="flex items-center space-x-2 mb-4 ">
-              <img className="w-44 h-10" src={ `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744262462/Logo_1__1_-removebg-preview.png` } alt="" />
+              <img className="w-44 h-10" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}Logo_1__1_-removebg-preview.png`} alt="" />
             </div>
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-900 mb-4">
               {t("videoSection.title")}

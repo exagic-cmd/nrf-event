@@ -34,7 +34,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
   const getFullImageUrl = (path) => {
     if (!path || typeof path !== 'string') return null;
     if (path.startsWith("http")) return path;
-    const base = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}`;
+    const base = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}upload/`;
     return `${base}${path.replace(/^\//, "")}`;
   };
   // --- Iconshere ---

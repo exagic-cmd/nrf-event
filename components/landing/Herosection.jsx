@@ -199,7 +199,7 @@ export default function HomePage() {
             <Head>
               <link
                 rel="icon"
-                href={`https://res.cloudinary.com/www-travelpakistani-com/${event?.event?.logo}`}
+                href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
               />
             </Head>
           )}

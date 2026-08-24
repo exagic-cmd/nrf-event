@@ -292,7 +292,7 @@ How can I assist you today?`,
                         <div className="p-3">
                           <div className="relative mb-2">
                             <img
-                              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${v.image}`}
+                              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}image/upload/${v.image}`}
                               alt={v.vehicle_name}
                               className="w-full h-28 object-cover rounded-md"
                               onError={(e) => {

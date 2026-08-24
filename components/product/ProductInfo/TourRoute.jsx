@@ -53,7 +53,7 @@ const ItineraryTimeline = ({
                 <div className="mt-12 absolute left-0 bottom-1 z-10 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center border border-gray-300 shadow-md">
                   <img
                     className="h-6 w-6"
-                    src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1749022226/External+Links/lf2qbooh2bgk15b01xdq.svg`}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/lf2qbooh2bgk15b01xdq.svg`}
                     alt=""
                   />
                 </div>
@@ -61,7 +61,7 @@ const ItineraryTimeline = ({
                 <div className="mt-12 absolute left-0 bottom-1 z-10 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center border border-gray-300 shadow-md">
                   <img
                     className="h-6 w-6"
-                    src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1749022225/External+Links/wxi5gj9uzfrsydu3kdfj.svg`}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/wxi5gj9uzfrsydu3kdfj.svg`}
                     alt=""
                   />
                 </div>
