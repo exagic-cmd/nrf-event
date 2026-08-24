@@ -20,11 +20,11 @@ export function TransferTypeServices() {
         id: index + 1,
         image:
           [
-             `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External+Links/download_2.jpg`,
-            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External+Links/download.jpg`,
-            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External+Links/images_1.jpg`,
-            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External+Links/images_2.jpg`,
-            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1756795512/External+Links/images.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/download_2.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/download.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/images_1.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/images_2.jpg`,
+            `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/images.jpg`,
           ][index] || "/singapore-transfer-service.png",
       }))
     : []

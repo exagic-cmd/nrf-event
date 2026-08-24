@@ -228,7 +228,7 @@ export default function BookingForm({ onSearchVehicles }) {
         <div className="hidden lg:block">
           <div className="relative">
             <img
-              src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1757328212/External+Links/modern-urban-cityscape-with-person-getting-into-bl_2.jpg`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/modern-urban-cityscape-with-person-getting-into-bl_2.jpg`}
               alt="Airport transfer illustration showing a person getting into a modern car in an urban setting"
               className="w-full h-full rounded-2xl shadow-2xl"
             />

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 const getFullImageUrl = (relativePath) => {
   if (!relativePath) return '';
-  return  `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1746530123/${relativePath}`;
+  return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${relativePath}`;
 };
 const AccommodationListMap = ({ accommodations = [] }) => {
   const mapRef = useRef(null);

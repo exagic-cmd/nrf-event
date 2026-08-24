@@ -19,11 +19,11 @@ const travelerTypes = Array.isArray(rawTypes)
   id: index + 1,
   image:
     [
-      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747798/External+Links/family.avif`,
-      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747799/External+Links/solo.avif`,
-      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747798/External+Links/adventure.avif`,
-      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747799/External+Links/culture.avif`,
-      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1752747798/External+Links/couple.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/family.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/solo.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/adventure.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/culture.avif`,
+      `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/couple.avif`,
       
     ][index] || "/placeholder.svg"
 }))

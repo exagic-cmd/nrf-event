@@ -47,6 +47,7 @@ export const useDaytoursStore = create((set, get) => ({
   // Unified fetch for Day Tours (3) and Accommodation (4)
   fetchSearchResults: async (payload) => {
     set({ isLoading: true, error: null });
+    console.log("fetchSearchResults payload:", payload);
 
     try {
       const res = await fetch(
@@ -58,7 +59,19 @@ export const useDaytoursStore = create((set, get) => ({
         }
       );
 
-      if (!res.ok) throw new Error("Network response was not ok");
+      if (!res.ok) {
+        let errorBody = "";
+        try {
+          errorBody = await res.text();
+        } catch (_) {}
+        console.error(
+          `fetchSearchResults failed: HTTP ${res.status} ${res.statusText}`,
+          errorBody
+        );
+        throw new Error(
+          `API request failed with status ${res.status}: ${res.statusText}`
+        );
+      }
 
       const data = await res.json();
       const results = data?.products || data?.data || [];
@@ -110,7 +123,19 @@ export const useDaytoursStore = create((set, get) => ({
         }
       );
 
-      if (!res.ok) throw new Error("Network response was not ok");
+      if (!res.ok) {
+        let errorBody = "";
+        try {
+          errorBody = await res.text();
+        } catch (_) {}
+        console.error(
+          `fetchSuggestedResults failed: HTTP ${res.status} ${res.statusText}`,
+          errorBody
+        );
+        throw new Error(
+          `API request failed with status ${res.status}: ${res.statusText}`
+        );
+      }
 
       const data = await res.json();
       const suggestions = data?.products || data?.data || [];

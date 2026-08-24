@@ -21,7 +21,7 @@ function DiscoverSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Card 1 */}
               <div className="p-1 flex items-start gap-4">
-                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797457/External+Links/ghucj0rj36ocynxgn371.svg`} alt="Tour Types" />
+                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/ghucj0rj36ocynxgn371.svg`} alt="Tour Types" />
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">Tours Types</h2>
                   <p className="md:text-normal text-sm text-gray-600">Explore diverse tours: city, cultural, adventure, and more.</p>
@@ -30,7 +30,7 @@ function DiscoverSection() {
 
               {/* Card 2 */}
               <div className="p-1 flex items-start gap-4">
-                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797456/External+Links/jhrknqowjuddg7cflspy.svg`} alt="Accommodation" />
+                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/jhrknqowjuddg7cflspy.svg`} alt="Accommodation" />
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">Accommodation</h2>
                   <p className="text-gray-600 md:text-normal text-sm">Comfortable stays tailored to enhance your travel experience.</p>
@@ -39,7 +39,7 @@ function DiscoverSection() {
 
               {/* Card 3 */}
               <div className="p-1 flex items-start gap-4">
-                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797457/External+Links/ddu7rwsxejrxy3xl5pb6.svg`} alt="Affiliate Program" />
+                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/ddu7rwsxejrxy3xl5pb6.svg`} alt="Affiliate Program" />
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">Affiliate Program</h2>
                   <p className="text-gray-600 md:text-normal text-sm">Earn by promoting our city tours and cultural experiences.</p>
@@ -48,7 +48,7 @@ function DiscoverSection() {
 
               {/* Card 4 */}
               <div className="p-1 flex items-start gap-4">
-                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797456/External+Links/gf99gdggyxyrsgyx3h3b.svg`} alt="Transfers" />
+                <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/gf99gdggyxyrsgyx3h3b.svg`} alt="Transfers" />
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">Transfers</h2>
                   <p className="text-gray-600 md:text-normal text-sm">Seamless transfers with guided tours and cultural adventures.</p>
@@ -64,7 +64,7 @@ function DiscoverSection() {
           {/* Right Column: Image Section */}
           <div className="md:absolute md:bottom-0 md:right-12 mt-10 md:mt-0 w-[280px]">
             <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797467/External+Links/imcnm76fxa6agxkjsscr.svg`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/imcnm76fxa6agxkjsscr.svg`}
               alt="img"
               className="w-full h-full object-cover"
             />
@@ -73,7 +73,7 @@ function DiscoverSection() {
           {/* Decorative Stars */}
           <div className="absolute top-[60px] left-80 md:left-2/3  text-[#FE6F4F] ">
             <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1744797488/External+Links/yrgzbjyvjvyziduap2zr.svg`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/yrgzbjyvjvyziduap2zr.svg`}
               alt="star"
               
             />

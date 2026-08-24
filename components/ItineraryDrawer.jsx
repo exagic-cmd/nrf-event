@@ -256,7 +256,7 @@ const ItineraryDrawer = ({
                                 <img
                                   src={
                                     item.image
-                                      ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${item.image}`
+                                      ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}image/upload/${item.image}`
                                       : "/placeholder.svg?height=40&width=40"
                                   }
                                   alt={item.title}
