@@ -89,10 +89,10 @@ export default function RecommendedProducts() {
   };
 
   return (
-    <section className="relative w-full py-2 md:py-4 bg-[#f4f4f4]">
+    <section className="relative w-full py-2 md:py-4 bg-surface-muted">
       {/* Loader Overlay */}
       {loading && (
-        <div className="absolute inset-0 z-50 flex justify-center items-center bg-[#f4f4f4] pointer-events-none">
+        <div className="absolute inset-0 z-50 flex justify-center items-center bg-surface-muted pointer-events-none">
           <SvgLoader2 />
         </div>
       )}
@@ -100,7 +100,7 @@ export default function RecommendedProducts() {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Header with arrows */}
         <div className="flex items-center justify-between mb-6 md:mb-10">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#D3202D]">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-primary">
             {t("recommended_products", "Recommended Products")}
           </h2>
 
@@ -108,10 +108,10 @@ export default function RecommendedProducts() {
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
-              className={`p-2 rounded-full border border-gray-600 transition ${
+              className={`p-2 rounded-full border border-border transition ${
                 canScrollLeft
-                  ? "hover:bg-gray-800 text-black"
-                  : "opacity-40 cursor-not-allowed text-gray-500"
+                  ? "hover:bg-secondary text-surface-foreground"
+                  : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronLeft size={20} />
@@ -119,10 +119,10 @@ export default function RecommendedProducts() {
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
-              className={`p-2 rounded-full border border-gray-600 transition ${
+              className={`p-2 rounded-full border border-border transition ${
                 canScrollRight
-                  ? "hover:bg-gray-800 text-black"
-                  : "opacity-40 cursor-not-allowed text-gray-500"
+                  ? "hover:bg-secondary text-surface-foreground"
+                  : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronRight size={20} />
@@ -140,10 +140,10 @@ export default function RecommendedProducts() {
               <div
                 key={item.id}
                 data-card
-                className="flex flex-col flex-shrink-0 w-[180px] sm:w-[200px] md:w-[220px] lg:w-[240px] xl:w-[260px] bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 overflow-hidden relative"
+                className="flex flex-col flex-shrink-0 w-[180px] sm:w-[200px] md:w-[220px] lg:w-[240px] xl:w-[260px] bg-surface rounded-xl shadow-sm hover:shadow-md transition-all border border-border overflow-hidden relative"
               >
                 {loadingCardId === item.id && (
-                  <div className="absolute inset-0 z-20 flex justify-center items-center bg-white/80 rounded-xl">
+                  <div className="absolute inset-0 z-20 flex justify-center items-center bg-surface/80 rounded-xl">
                     <SvgLoader2 />
                   </div>
                 )}
@@ -157,20 +157,20 @@ export default function RecommendedProducts() {
                 </div>
 
                 <div className="p-3 flex flex-col flex-grow">
-                  <h3 className="text-black font-medium text-xs sm:text-sm line-clamp-2 mb-1.5 h-9 sm:h-10">
+                  <h3 className="text-surface-foreground font-medium text-xs sm:text-sm line-clamp-2 mb-1.5 h-9 sm:h-10">
                     {item.title}
                   </h3>
-                  <p className="text-[11px] sm:text-xs text-gray-500 line-clamp-2 mb-2">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 mb-2">
                     {item.short_desc}
                   </p>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="font-semibold text-[#D3202D] text-xs sm:text-sm">
+                    <span className="font-semibold text-primary text-xs sm:text-sm">
                       {item.starting_price} SGD
                     </span>
                     <button
                       onClick={() => goToDetail(item)}
                       disabled={loadingCardId}
-                      className="bg-[#D3202D]  text-white px-2.5 md:py-2 py-1 rounded-md text-[11px] sm:text-xs font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="bg-primary  text-white px-2.5 md:py-2 py-1 rounded-md text-[11px] sm:text-xs font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {loadingCardId === item.id
                         ? t("loading", "Loading...")
@@ -183,7 +183,7 @@ export default function RecommendedProducts() {
           </div>
         ) : (
           !loading && (
-            <div className="py-12 text-center text-gray-500">
+            <div className="py-12 text-center text-muted-foreground">
               {t("no_products", "No Recommended Products Found")}
             </div>
           )

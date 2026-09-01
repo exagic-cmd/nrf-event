@@ -83,11 +83,11 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
     <>
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
+          <div className="bg-surface p-6 rounded-lg shadow-xl text-center">
             <p className="mb-4">{t("card.modal.alreadyInCart")}</p>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-[#D3202D] text-white px-4 py-2 rounded"
+              className="bg-primary text-primary-foreground px-4 py-2 rounded"
             >
               {t("common.close")}
             </button>
@@ -95,9 +95,9 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
         </div>
       )}
 
-      <div className="relative border rounded-xl shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden hover:shadow-lg transition-all">
+      <div className="relative border rounded-xl shadow-sm bg-card text-card-foreground w-full max-w-4xl mx-auto overflow-hidden hover:shadow-lg transition-all">
         {isLoading && (
-          <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
+          <div className="absolute inset-0 bg-surface/70 flex justify-center items-center z-20 rounded-xl">
             <SvgLoader />
           </div>
         )}
@@ -121,9 +121,9 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
 
           {/* Middle Info */}
           <div className="flex-1 px-6">
-            <h2 className="font-bold text-lg text-[#D3202D]">{car.name}</h2>
+            <h2 className="font-bold text-lg text-primary">{car.name}</h2>
             
-            <div className="flex items-center gap-4 text-sm text-gray-600 mt-2 mb-2">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2 mb-2">
              <span className="flex items-center gap-1">
                 <Users size={14} /> {car.passengers}
               </span>
@@ -135,19 +135,19 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
               )}
             </div>
 
-            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{car.subtitle || car.desc || car.description}</p>
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{car.subtitle || car.desc || car.description}</p>
 
             {/* Features Chips */}
             <div className="flex gap-2 flex-wrap mt-2 items-center">
               {(expandedFeatures ? car.features : car.features?.slice(0, FEATURE_LIMIT))?.map((feature, idx) => (
-                <span key={idx} className="px-2 py-0.5 text-xs bg-red-50 text-red-800 rounded">
+                <span key={idx} className="px-2 py-0.5 text-xs bg-muted text-red-800 rounded">
                   {typeof feature === 'string' ? feature : feature?.title}
                 </span>
               ))}
               {car.features?.length > FEATURE_LIMIT && (
                 <button
                   onClick={(e) => { e.stopPropagation(); setExpandedFeatures(!expandedFeatures); }}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-muted-foreground hover:text-muted-foreground"
                 >
                   {expandedFeatures ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </button>
@@ -159,7 +159,7 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
           <div className="flex flex-col items-end justify-between h-full min-h-[140px]">
             <div className="flex gap-2 mb-2">
               {car?.promo_tag && (
-                <span className="px-2 py-1 text-xs font-bold text-white bg-[#D3202D] rounded-md shadow-sm">
+                <span className="px-2 py-1 text-xs font-bold text-primary-foreground bg-primary rounded-md shadow-sm">
                   {car?.promo_tag}
                 </span>
               )}
@@ -167,14 +167,14 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
 
             <div className="text-right">
               {hasPromo && (
-                <p className="text-sm text-gray-400 line-through">
+                <p className="text-sm text-muted-foreground line-through">
                     {car.currency} {formatPrice(originalPrice)}
                 </p>
               )}
-              <p className="text-2xl font-bold text-[#D3202D]">
+              <p className="text-2xl font-bold text-primary">
                 {car.currency} {formatPrice(displayPrice)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {currentTripType === "round-trip" ? t("transferType.roundTrip") : t("transferType.oneWay")}
               </p>
             </div>
@@ -182,7 +182,7 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
             <button
               onClick={handleBookNow}
               disabled={isLoading}
-              className="mt-4 bg-[#D3202D] text-white text-sm px-6 py-2.5 rounded-lg hover:bg-[#b71c1c] transition disabled:opacity-70 font-medium"
+              className="mt-4 bg-primary text-primary-foreground text-sm px-6 py-2.5 rounded-lg hover:bg-primary-hover transition disabled:opacity-70 font-medium"
             >
               {t("card.bookNow", "Book Now")}
             </button>
@@ -210,33 +210,33 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
           {/* Right Section */}
           <div className="flex-1 flex flex-col justify-between min-h-[112px]">
             <div>
-              <h2 className="font-bold text-sm text-[#D3202D] line-clamp-1">{car.name}</h2>
+              <h2 className="font-bold text-sm text-primary line-clamp-1">{car.name}</h2>
               
-                <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
               <span className="flex items-center gap-1">
-                <Users className="text-black" size={12} /> {car.passengers}
+                <Users className="text-surface-foreground" size={12} /> {car.passengers}
               </span>
               {showLuggage && (
               <span className="flex items-center gap-1">
-                <Briefcase  className="text-black" size={12} />
+                <Briefcase  className="text-surface-foreground" size={12} />
                 {largeBags}
               </span>
               )}
             </div>
 
-              <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                 {car.subtitle || car.desc || car.description}
               </p>
 
               {/* Features Chips Mobile */}
               <div className="flex gap-1 flex-wrap mt-1 items-center">
                 {(expandedFeatures ? car.features : car.features?.slice(0, FEATURE_LIMIT))?.map((feature, idx) => (
-                  <span key={idx} className="px-2 py-0.5 text-[10px] bg-red-50 text-red-800 rounded">
+                  <span key={idx} className="px-2 py-0.5 text-[10px] bg-muted text-red-800 rounded">
                     {typeof feature === 'string' ? feature : feature?.title}
                   </span>
                 ))}
                 {car.features?.length > FEATURE_LIMIT && (
-                  <button onClick={(e) => { e.stopPropagation(); setExpandedFeatures(!expandedFeatures); }} className="text-gray-500 hover:text-gray-700">
+                  <button onClick={(e) => { e.stopPropagation(); setExpandedFeatures(!expandedFeatures); }} className="text-muted-foreground hover:text-muted-foreground">
                     {expandedFeatures ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </button>
                 )}
@@ -246,14 +246,14 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
             <div className="flex justify-between items-end mt-2">
               <div>
                 {hasPromo && (
-                  <p className="text-[10px] text-gray-400 line-through">
+                  <p className="text-[10px] text-muted-foreground line-through">
                     {car.currency} {formatPrice(originalPrice)}
                   </p>
                 )}
-                <p className="text-sm font-bold text-[#D3202D]">
+                <p className="text-sm font-bold text-primary">
                   {car.currency} {formatPrice(displayPrice)}
                 </p>
-                <p className="text-[10px] text-gray-500">
+                <p className="text-[10px] text-muted-foreground">
                   {currentTripType === "round-trip" ? t("transferType.roundTrip") : t("transferType.oneWay")}
                 </p>
               </div>
@@ -261,7 +261,7 @@ function TransfersCard({ car, category = "transfer", tripType, handleTripTypeCha
               <button
                 onClick={handleBookNow}
                 disabled={isLoading}
-                className="bg-[#D3202D] text-white text-xs py-1.5 px-3 rounded-md shadow-sm"
+                className="bg-primary text-primary-foreground text-xs py-1.5 px-3 rounded-md shadow-sm"
               >
                 {t("card.bookNow", "Book")}
               </button>

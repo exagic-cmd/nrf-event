@@ -150,23 +150,23 @@ if (result?.success && result?.message?.toLowerCase()?.includes("success")) {
   };
   if (isLoading)
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <LoadingSvg2 />
       </div>
     );
 if (successMessage)
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#f4f4f4] bg-opacity-50 p-4">
-      <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full text-center">
-        <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#D3202D]">
+    <div className="fixed inset-0 flex items-center justify-center bg-surface-muted bg-opacity-50 p-4">
+      <div className="bg-surface p-6 rounded-xl shadow-lg max-w-md w-full text-center">
+        <h2 className="text-lg sm:text-xl font-bold mb-4 text-primary">
           {t("success.title", { defaultValue: "Thank you!" })}
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           {successMessage || t("success.submitted")}
         </p>
         <button
           onClick={() => router.push("/order")}
-          className="px-6 py-2 bg-[#D3202D] text-white rounded-lg "
+          className="px-6 py-2 bg-primary text-white rounded-lg "
         >
           {t("button.back")}
         </button>
@@ -177,16 +177,16 @@ if (successMessage)
   if (invalidItinerary)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full text-center">
+        <div className="bg-surface p-6 rounded-xl shadow-lg max-w-md w-full text-center">
           {/* <h2 className="text-lg sm:text-xl font-bold mb-4">
             {t("invalid.title")}
           </h2> */}
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             {errorMessage || t("invalid.message")}
           </p>
           <button
             onClick={() => router.push("/order")}
-            className="px-6 py-2 bg-[#D3202D] text-white rounded-lg"
+            className="px-6 py-2 bg-primary text-white rounded-lg"
           >
             {t("button.back")}
           </button>
@@ -195,17 +195,17 @@ if (successMessage)
     );
 
   return (
-    <div className="min-h-screen lg:mt-20 md:mt-12 mt-12 bg-[#f4f4f4]">
+    <div className="min-h-screen lg:mt-20 md:mt-12 mt-12 bg-surface-muted">
       <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
         {/* Back button */}
         <button
           onClick={onBack ? onBack : () => router.push("/order")}
-          className="flex items-center mt-2  gap-2 text-gray-100 hover:text-[#D3202D] mb-6 transition-colors"
+          className="flex items-center mt-2  gap-2 text-gray-100 hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft size={20} /> {t("button.back")}
         </button>
 
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden p-6 sm:p-8 md:p-12">
+        <div className="bg-surface rounded-3xl shadow-xl overflow-hidden p-6 sm:p-8 md:p-12">
           {errors.general && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
               <ul className="list-disc list-inside">
@@ -224,7 +224,7 @@ if (successMessage)
     </p>
     <button
       onClick={() => router.push("/order")}
-      className="mt-4 px-6 py-2 bg-[#D3202D] text-white rounded-lg"
+      className="mt-4 px-6 py-2 bg-primary text-white rounded-lg"
     >
       {t('goback')}
     </button>
@@ -232,12 +232,12 @@ if (successMessage)
           ) : (
             <>
           <div className="text-center mb-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
               {t("heading.title", {
                 name: selectedTrip?.title || selectedTrip?.hotel_name,
               })}
             </h2>
-            <p className="text-gray-600">{t("heading.subtitle")}</p>
+            <p className="text-muted-foreground">{t("heading.subtitle")}</p>
           </div>
 
           <RatingSmiles
@@ -255,7 +255,7 @@ if (successMessage)
         {reviewQuestions?.length > 0 &&
                 reviewQuestions.map((q) => (
             <div key={q.id} className="space-y-2">
-              <label className="block text-base sm:text-lg font-semibold text-gray-800">
+              <label className="block text-base sm:text-lg font-semibold text-foreground">
                 {q.question}
               </label>
               {q.type === "rating" ? (
@@ -268,7 +268,7 @@ if (successMessage)
                 <textarea
                   value={reviewData.answers[q.id] || ""}
                   onChange={(e) => handleInputChange(q.id, e.target.value)}
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-24"
+                  className="w-full p-4 border-2 border-border rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-24"
                   placeholder={t("placeholder.answer")}
                 />
               )}
@@ -279,7 +279,7 @@ if (successMessage)
           ))}
 
           <div className="space-y-3">
-            <label className="block text-base sm:text-lg font-semibold text-gray-800">
+            <label className="block text-base sm:text-lg font-semibold text-foreground">
               {t("labels.comment")}
             </label>
             <textarea
@@ -291,7 +291,7 @@ if (successMessage)
                   comments: e.target.value,
                 }));
               }}
-              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-32"
+              className="w-full p-4 border-2 border-border rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-32"
               placeholder={t("placeholder.comment")}
             />
             {errors.comments && (
@@ -302,7 +302,7 @@ if (successMessage)
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
             <button
               onClick={onBack ? onBack : () => router.push("/order")}
-              className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+              className="flex-1 px-6 py-3 border-2 border-border text-muted-foreground rounded-xl font-semibold hover:bg-muted transition-colors"
             >
               {t("button.cancel")}
             </button>
@@ -311,12 +311,12 @@ if (successMessage)
               <button
                 onClick={handleSubmit}
                 disabled={storeLoading}
-                className="flex-1 px-6 py-3 bg-[#D3202D] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
               >
                 {storeLoading ? t("button.submitting") : t("button.submit")}
               </button>
             ) : (
-              <p className="bg-[#D3202D] font-semibold flex-1 text-center self-center">
+              <p className="bg-primary font-semibold flex-1 text-center self-center">
                 {t("alreadySubmitted")}
               </p>
             )}

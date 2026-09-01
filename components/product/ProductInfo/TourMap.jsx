@@ -27,8 +27,8 @@ const ItineraryTimeline = ({
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 font-sans">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="bg-muted min-h-screen p-4 font-sans">
+      <div className="max-w-3xl mx-auto bg-surface rounded-lg shadow-lg overflow-hidden">
         <div style={colorStyles ? colorStyles.bgHeader : {}} className={`p-4 text-${secondaryColor} ${!colorStyles ? 'bg-green-600' : ''}`}>
           <h1 className="text-2xl font-bold">{title}</h1>
         </div>
@@ -64,7 +64,7 @@ const ItineraryTimeline = ({
                       onClick={() => toggleExpand(stop.id)}
                     >
                       {stop.time && (
-                        <p className="text-gray-600 font-medium">{stop.time}</p>
+                        <p className="text-muted-foreground font-medium">{stop.time}</p>
                       )}
                       <h2 
                         style={colorStyles ? colorStyles.textTitle : {}}
@@ -72,9 +72,9 @@ const ItineraryTimeline = ({
                       >
                         {stop.title}
                       </h2>
-                      <p className="text-gray-600">{stop.duration}</p>
+                      <p className="text-muted-foreground">{stop.duration}</p>
                       
-                      <div className={`mt-2 text-gray-700 ${expandedStop === stop.id ? '' : 'line-clamp-2'}`}>
+                      <div className={`mt-2 text-muted-foreground ${expandedStop === stop.id ? '' : 'line-clamp-2'}`}>
                         {stop.description}
                       </div>
                       
@@ -90,7 +90,7 @@ const ItineraryTimeline = ({
                     
                     {/* Distance to next stop */}
                     {stop.distance && (
-                      <div className="mt-3 flex items-center text-gray-600">
+                      <div className="mt-3 flex items-center text-muted-foreground">
                         <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                         </svg>

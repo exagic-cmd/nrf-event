@@ -143,11 +143,11 @@ function AccommodationCard({ accommodation }) {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
+          <div className="bg-surface p-6 rounded-lg shadow-xl text-center">
             <p className="mb-4">{t("card.modal.alreadyInCart")}</p>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-[#D3202D] text-white px-4 py-2 rounded"
+              className="bg-primary text-white px-4 py-2 rounded"
             >
               {t("common.close")}
             </button>
@@ -157,10 +157,10 @@ function AccommodationCard({ accommodation }) {
 
       {/* Card */}
       <div
-        className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3"
+        className="relative border rounded-xl shadow-sm bg-surface w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3"
       >
         {isLoading && (
-          <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
+          <div className="absolute inset-0 bg-surface/70 flex justify-center items-center z-20 rounded-xl">
             <LoaderSvg />
           </div>
         )}
@@ -177,7 +177,7 @@ function AccommodationCard({ accommodation }) {
             const firstTag = Array.isArray(accommodation?.tags) && accommodation.tags.length > 0 ? accommodation.tags[0] : null;
             if (firstTag) {
               return (
-                <span className="absolute top-1 left-1 flex items-center px-2 py-1 text-xs font-semibold text-white rounded-md bg-[#D3202D]">
+                <span className="absolute top-1 left-1 flex items-center px-2 py-1 text-xs font-semibold text-white rounded-md bg-primary">
                   {firstTag}
                 </span>
               );
@@ -199,7 +199,7 @@ function AccommodationCard({ accommodation }) {
           <div>
             <div className="flex flex-col justify-between my-1">
               <div className="flex justify-between items-start gap-2">
-                <h2 className="font-bold text-md lg:text-md line-clamp-1 text-[#D3202D] flex-1">
+                <h2 className="font-bold text-md lg:text-md line-clamp-1 text-primary flex-1">
                   {name}
                 </h2>
                 {star_rating && (
@@ -210,7 +210,7 @@ function AccommodationCard({ accommodation }) {
                 )}
               </div>
               {/* Location and Rating */}
-              <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
+              <div className="flex md:flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                 {address && (
                   <div className="flex items-center gap-1">
                     <Hotel className="" size={12} />
@@ -223,7 +223,7 @@ function AccommodationCard({ accommodation }) {
 
                   <li className="text-[12px]">{address}</li>
                 </ul>
-                <div className="flex items-center gap-2 text-gray-700">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   {(() => {
                     const availableIcons = [];
                     const amenityKeywords = Object.keys(amenityIconMap);
@@ -267,7 +267,7 @@ function AccommodationCard({ accommodation }) {
                   return (
                     <>
                       <p className="font-semibold">{roomsCount} room{roomsCount !== 1 ? 's' : ''}</p>
-                      <p className="text-gray-700 text-[12px]">For {totalAdults} adult{totalAdults !== 1 ? 's' : ''} and {totalChildren} child{totalChildren !== 1 ? 'ren' : ''}</p>
+                      <p className="text-muted-foreground text-[12px]">For {totalAdults} adult{totalAdults !== 1 ? 's' : ''} and {totalChildren} child{totalChildren !== 1 ? 'ren' : ''}</p>
                     </>
                   );
                 })()}
@@ -275,15 +275,15 @@ function AccommodationCard({ accommodation }) {
 
               {/* Second Column: Policies/Amenities */}
               <div>
-                <ul className="space-y-1 text-gray-700 text-[12px]">
+                <ul className="space-y-1 text-muted-foreground text-[12px]">
                   {(() => {
                     let amenitiesList = Array.isArray(amenities) ? amenities : [];
                     if (isNewFormat && hotelData?.highlight && amenitiesList.length === 0) {
                       amenitiesList = hotelData.highlight.split(',').map(a => a.trim());
                     }
                     return amenitiesList.slice(0, 2).map((amenity, i) => (
-                      <li key={i} className="flex items-center text-gray-700">
-                        <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
+                      <li key={i} className="flex items-center text-muted-foreground">
+                        <span className="inline-block w-2 h-2 bg-secondary rounded-full mr-2" />
                         {amenity}
                       </li>
                     ));
@@ -295,8 +295,8 @@ function AccommodationCard({ accommodation }) {
                     }
                     return amenitiesList.length > 3 ? (
                       <li className="flex items-center ">
-                        <span className="inline-block w-2 h-2 bg-gray-400 rounded-full mr-2" />
-                        <span className="font-semibold text-gray-600">
+                        <span className="inline-block w-2 h-2 bg-secondary rounded-full mr-2" />
+                        <span className="font-semibold text-muted-foreground">
                           +{amenitiesList.length - 2} more
                         </span>
                       </li>
@@ -311,7 +311,7 @@ function AccommodationCard({ accommodation }) {
                   {isNewFormat ? accommodation?.currency : (room?.rate_plan?.pricing?.currency)} {roundOff(lowestPrice)}
 
                 </p>
-                <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
+                <p className="text-[11px] md:text-[12px] text-muted-foreground mb-2">
                   for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
                 </p>
               </div>
@@ -328,7 +328,7 @@ function AccommodationCard({ accommodation }) {
               <p className="text-lg font-bold text-primary">
                 {isNewFormat ? accommodation?.currency || 'USD' : (room?.rate_plan?.pricing?.currency || 'SGD')} {roundOff(lowestPrice)}
               </p>
-              <p className="text-[11px] md:text-[12px] text-gray-700 mb-2">
+              <p className="text-[11px] md:text-[12px] text-muted-foreground mb-2">
                 for {searchParams?.nights || 1} night{searchParams?.nights > 1 ? 's' : ''}
               </p>
             </div>
@@ -337,7 +337,7 @@ function AccommodationCard({ accommodation }) {
             <button
               type="button"
               onClick={handleCardClick}
-              className="rounded-lg mb-2.5 bg-[#D3202D] text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
+              className="rounded-lg mb-2.5 bg-primary text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
             >
               {isLoading ? (
                 <LoaderSvg className="h-5 w-5" />

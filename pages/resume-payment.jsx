@@ -58,7 +58,7 @@ export default function ResumePayment() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </Layout>
     );
@@ -67,8 +67,8 @@ export default function ResumePayment() {
   if (redirecting) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <p className="text-lg font-semibold text-gray-700">
+        <div className="flex items-center justify-center min-h-screen bg-muted">
+          <p className="text-lg font-semibold text-muted-foreground">
             Redirecting to secure checkout...
           </p>
         </div>
@@ -80,10 +80,10 @@ export default function ResumePayment() {
     <Layout>
       <div className="min-h-screen mt-6 md:mt-12 bg-black px-4 py-6 flex items-center justify-center">
         <div className="w-full max-w-md">
-          <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+          <div className="bg-surface shadow-xl rounded-2xl overflow-hidden">
             {/* Header */}
-            <div className="bg-[#CC9A55] px-4 py-4 text-center relative">
-              <div className="mx-auto w-12 h-12 bg-white rounded-full flex items-center justify-center mb-2 shadow-lg">
+            <div className="bg-brand-secondary px-4 py-4 text-center relative">
+              <div className="mx-auto w-12 h-12 bg-surface rounded-full flex items-center justify-center mb-2 shadow-lg">
                 <svg
                   className="w-6 h-6 text-[#CC9A55]"
                   fill="none"
@@ -107,12 +107,12 @@ export default function ResumePayment() {
             {/* Content */}
             <div className="px-4 py-4 space-y-3">
               {orderId && (
-                <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                <div className="bg-muted rounded-lg p-2 border border-border">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 text-xs font-medium">
+                    <span className="text-muted-foreground text-xs font-medium">
                       Order ID:
                     </span>
-                    <span className="font-bold text-gray-900 font-mono text-xs bg-white px-2 py-1 rounded border">
+                    <span className="font-bold text-foreground font-mono text-xs bg-surface px-2 py-1 rounded border">
                       {orderId}
                     </span>
                   </div>
@@ -131,7 +131,7 @@ export default function ResumePayment() {
                   </svg>
                   <span className="font-semibold text-xs">Payment Pending</span>
                 </div>
-                <p className="text-gray-700 text-xs leading-relaxed">
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   You have an unfinished payment!
                 </p>
               </div>
@@ -157,7 +157,7 @@ export default function ResumePayment() {
               <div className="space-y-2 pt-1">
                 <button
                   onClick={handleResume}
-                  className="w-full bg-[#CC9A55] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center space-x-2"
+                  className="w-full bg-brand-secondary text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center space-x-2"
                 >
                   <svg
                     className="w-4 h-4"
@@ -170,7 +170,7 @@ export default function ResumePayment() {
                 </button>
 
                 <Link href="/" className="block">
-                  <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 border border-gray-200">
+                  <button className="w-full bg-muted hover:bg-secondary text-muted-foreground font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 border border-border">
                     <svg
                       className="w-4 h-4"
                       fill="currentColor"

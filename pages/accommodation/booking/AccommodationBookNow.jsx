@@ -82,9 +82,9 @@ const [isSubmitted, setIsSubmitted] = useState(false);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl p-6 shadow-lg">
+    <form onSubmit={handleSubmit(onSubmit)} className="bg-surface rounded-2xl p-6 shadow-lg">
       <fieldset disabled={isSubmitted}>
-        <h2 className="text-xl font-bold mb-6 text-gray-800">Guest Information</h2>
+        <h2 className="text-xl font-bold mb-6 text-foreground">Guest Information</h2>
 
         {isSubmitted && (
           <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
@@ -94,14 +94,14 @@ const [isSubmitted, setIsSubmitted] = useState(false);
         )}
 
       {roomFields.map((roomField, roomIndex) => (
-        <div key={roomField.id} className="mb-8 p-4 border border-gray-200 rounded-lg">
-          <h3 className="font-semibold text-lg mb-4 text-gray-700">
+        <div key={roomField.id} className="mb-8 p-4 border border-border rounded-lg">
+          <h3 className="font-semibold text-lg mb-4 text-muted-foreground">
             Room {roomIndex + 1}
           </h3>
 
           {/* Lead Guest */}
           <div className="mb-6">
-            <p className="font-medium text-gray-600 mb-3">Lead Guest</p>
+            <p className="font-medium text-muted-foreground mb-3">Lead Guest</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor={`rooms.${roomIndex}.leadGuest.title`}>Title {roomIndex === 0 && <span className="text-red-500">*</span>}</Label>
@@ -134,7 +134,7 @@ const [isSubmitted, setIsSubmitted] = useState(false);
         </div>
       ))}
 
-      <h2 className="text-xl font-bold mb-6 text-gray-800 border-t pt-6 mt-8">Contact Information</h2>
+      <h2 className="text-xl font-bold mb-6 text-foreground border-t pt-6 mt-8">Contact Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
@@ -153,13 +153,13 @@ const [isSubmitted, setIsSubmitted] = useState(false);
         <textarea
           {...register("specialRequests")}
           rows="4"
-          className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          className="w-full mt-1 p-2 border border-border rounded-md focus:ring-blue-500 focus:border-blue-500"
           placeholder="Any special requests? (e.g., late check-in, specific room view)"
         ></textarea>
       </div>
 
       <div className="mt-8 text-right">
-        <Button type="submit" size="lg" className="bg-[#D3202D] hover:bg-[#b71c1c]">
+        <Button type="submit" size="lg" className="bg-primary hover:bg-[#b71c1c]">
           Confirm Booking
         </Button>
       </div>
@@ -181,9 +181,9 @@ function OtherGuestsFields({ roomIndex, control, errors, setValue }) {
 
   return (
     <div>
-      <p className="font-medium text-gray-600 mb-3 pt-6 border-t mt-6">Other Guests</p>
+      <p className="font-medium text-muted-foreground mb-3 pt-6 border-t mt-6">Other Guests</p>
       {fields.map((field, guestIndex) => (
-        <div key={field.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-3 bg-gray-50 rounded-md">
+        <div key={field.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-3 bg-muted rounded-md">
           <div>
             <Label htmlFor={`rooms.${roomIndex}.otherGuests.${guestIndex}.title`}>Title</Label>
             <Select onValueChange={(value) => setValue(`rooms.${roomIndex}.otherGuests.${guestIndex}.title`, value, { shouldValidate: true })}>

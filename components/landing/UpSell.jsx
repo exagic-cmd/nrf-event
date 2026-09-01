@@ -84,7 +84,7 @@ export default function EssentialsSection() {
               disabled={!canScrollLeft}
               className={`p-2 rounded-full border border-[#CC9A55] transition ${
                 canScrollLeft
-                  ? "hover:bg-[#CC9A55] hover:text-black text-[#CC9A55]"
+                  ? "hover:bg-brand-secondary hover:text-surface-foreground text-[#CC9A55]"
                   : "opacity-40 cursor-not-allowed text-[#CC9A55]"
               }`}
             >
@@ -95,7 +95,7 @@ export default function EssentialsSection() {
               disabled={!canScrollRight}
               className={`p-2 rounded-full border border-[#CC9A55] transition ${
                 canScrollRight
-                  ? "hover:bg-[#CC9A55] hover:text-black text-[#CC9A55]"
+                  ? "hover:bg-brand-secondary hover:text-surface-foreground text-[#CC9A55]"
                   : "opacity-40 cursor-not-allowed text-[#CC9A55]"
               }`}
             >
@@ -113,7 +113,7 @@ export default function EssentialsSection() {
             upsellProducts.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#CC9A55] text-white p-6 rounded-lg flex flex-col min-h-[360px] max-h-[360px] w-[300px] flex-shrink-0"
+                className="bg-brand-secondary text-white p-6 rounded-lg flex flex-col min-h-[360px] max-h-[360px] w-[300px] flex-shrink-0"
               >
                 {/* Fixed Image Area */}
                 <div className="relative w-full h-64 mb-4 rounded-md overflow-hidden">

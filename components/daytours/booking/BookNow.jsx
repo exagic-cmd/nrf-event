@@ -195,7 +195,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
     <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-0 md:mx-2 lg:mx-0">
       <div className="w-full lg:w-3/3">
         <div className="grid grid-cols-1 gap-6">
-          <div className="bg-white rounded-lg p-1 md:p-6 shadow-sm border border-gray-100">
+          <div className="bg-surface rounded-lg p-1 md:p-6 shadow-sm border border-border">
             {apiData?.category_id !== 2 && <BookingPriceTable id={id} />}
             <BookingForm
               value={formData}
@@ -218,13 +218,13 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   className="w-full h-44 object-cover"
                 />
                 <div className="p-4 space-y-3">
-                  <h3 className="font-semibold text-gray-900 text-base leading-tight">
+                  <h3 className="font-semibold text-foreground text-base leading-tight">
                     {productTitle}
                   </h3>
                   <Separator />
                   <div className="flex items-center gap-3 p-3 bg-\gray-50 rounded-lg">
-                    <Tag className="w-4 h-4 text-gray-600" />
-                    <p className="font-medium text-gray-900">
+                    <Tag className="w-4 h-4 text-muted-foreground" />
+                    <p className="font-medium text-foreground">
                       {t("startingFrom")} {apiData?.currency} {displayPrice}
                     </p>
                   </div>
@@ -234,9 +234,9 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
           </div>
 
           {/* 📜 Policy + Buttons */}
-          <div className="bg-white rounded-lg p-2 px-6 md:px-5 md:p-5 shadow-sm border border-gray-100">
+          <div className="bg-surface rounded-lg p-2 px-6 md:px-5 md:p-5 shadow-sm border border-border">
             {cancellationText && (
-              <p className="md:text-sm text-xs py-1 text-gray-700 whitespace-pre-line">{cancellationText}</p>
+              <p className="md:text-sm text-xs py-1 text-muted-foreground whitespace-pre-line">{cancellationText}</p>
             )}
 
             <div className="mt-2 flex flex-col sm:flex-row justify-between gap-3">
@@ -255,7 +255,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                 <button
                   onClick={handleBookNow}
                   disabled={loadingButton === "addToCart"}
-                  className="bg-[#D3202D]  text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2"
+                  className="bg-primary  text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2"
                 >
                   {loadingButton === "addToCart" ? (
                     <>
@@ -270,7 +270,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   <button
                     onClick={handleContinueShopping}
                     disabled={loadingButton === "continue"}
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
+                    className="bg-muted hover:bg-secondary text-foreground font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     {loadingButton === "continue" ? (
                       <>
@@ -284,7 +284,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   <button
                     onClick={handleViewCart}
                     disabled={loadingButton === "checkout"}
-                    className="bg-[#D3202D] text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
+                    className="bg-primary text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     {loadingButton === "checkout" ? (
                       <>

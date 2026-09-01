@@ -23,10 +23,10 @@ export default function LandmarkDetailPage({ landmarkData }) {
 
   if (!landmark) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Landmark Not Found</h2>
-          <p className="text-gray-600">We couldn't find the details for this landmark.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Landmark Not Found</h2>
+          <p className="text-muted-foreground">We couldn't find the details for this landmark.</p>
         </div>
       </div>
     );
@@ -86,7 +86,7 @@ export default function LandmarkDetailPage({ landmarkData }) {
 </Head>
 
 
-      <main className="bg-[#f4f4f4] min-h-screen pb-20 font-sans">
+      <main className="bg-surface-muted min-h-screen pb-20 font-sans">
       {/* HERO */}
       <section className="relative h-[60vh] lg:h-[70vh] w-full overflow-hidden">
         <Image
@@ -102,13 +102,13 @@ export default function LandmarkDetailPage({ landmarkData }) {
         <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 md:px-8 pb-12 text-white">
           <div className="max-w-4xl">
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="bg-[#D3202D] text-black px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
+              <span className="bg-primary text-surface-foreground px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
                 {landmark.landmark_type_name}
               </span>
               {landmark.certification?.map((cert, idx) => (
                 <span
                   key={idx}
-                  className="bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1.5 rounded-full text-sm"
+                  className="bg-surface/20 backdrop-blur-sm border border-white/30 px-3 py-1.5 rounded-full text-sm"
                 >
                   {cert}
                 </span>
@@ -120,7 +120,7 @@ export default function LandmarkDetailPage({ landmarkData }) {
             </h1>
 
             <div className="flex items-center gap-2 text-gray-200 text-lg">
-              <MapPin className="w-5 h-5 text-[#D3202D]" />
+              <MapPin className="w-5 h-5 text-primary" />
               <span>
                 {landmark.city_name}, {landmark.branch_name}
               </span>
@@ -137,31 +137,31 @@ export default function LandmarkDetailPage({ landmarkData }) {
 
           {/* Video Tour */}
           {landmark.video && (
-            <div className="bg-white rounded-3xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Video Tour</h2>
-              <div className="relative w-full h-56 md:h-96 rounded-2xl overflow-hidden bg-white">
+            <div className="bg-surface rounded-3xl shadow-xl p-8">
+              <h2 className="text-2xl font-bold text-foreground mb-6">Video Tour</h2>
+              <div className="relative w-full h-56 md:h-96 rounded-2xl overflow-hidden bg-surface">
                 <VideoPlayer url={landmark.video} />
               </div>
             </div>
           )}
 
           {/* About */}
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <div className="bg-surface rounded-3xl shadow-xl p-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
               About the Place
-              <div className="h-1 w-12 bg-[#D3202D] rounded-full ml-2"></div>
+              <div className="h-1 w-12 bg-primary rounded-full ml-2"></div>
             </h2>
-            <div className="prose prose-lg text-gray-600 leading-relaxed whitespace-pre-line max-w-none">
+            <div className="prose prose-lg text-muted-foreground leading-relaxed whitespace-pre-line max-w-none">
               {landmark.description}
             </div>
           </div>
 
           {/* Gallery */}
           {landmark.images?.length > 1 && (
-            <div className="bg-white rounded-3xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Gallery</h2>
+            <div className="bg-surface rounded-3xl shadow-xl p-8">
+              <h2 className="text-2xl font-bold text-foreground mb-6">Gallery</h2>
               <div 
-                className="relative h-56 md:h-96 w-full rounded-2xl overflow-hidden group bg-gray-100"
+                className="relative h-56 md:h-96 w-full rounded-2xl overflow-hidden group bg-muted"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
@@ -192,7 +192,7 @@ export default function LandmarkDetailPage({ landmarkData }) {
                     <button
                       key={idx}
                       onClick={() => setGalleryIndex(idx)}
-                      className={`h-2 rounded-full transition-all ${idx === galleryIndex ? "w-6 bg-[#D3202D]" : "w-2 bg-white/60"}`}
+                      className={`h-2 rounded-full transition-all ${idx === galleryIndex ? "w-6 bg-primary" : "w-2 bg-surface/60"}`}
                     />
                   ))}
                 </div>
@@ -202,20 +202,20 @@ export default function LandmarkDetailPage({ landmarkData }) {
 
           {/* How to get */}
           {landmark.how_to_get && (
-            <div className="bg-white rounded-3xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Navigation className="text-[#D3202D]" />
+            <div className="bg-surface rounded-3xl shadow-xl p-8">
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <Navigation className="text-primary" />
                 How to Get There
               </h2>
-              <p className="text-gray-600 leading-relaxed">{landmark.how_to_get}</p> via cycling
+              <p className="text-muted-foreground leading-relaxed">{landmark.how_to_get}</p> via cycling
             </div>
           )}
         </div>
 
         {/* RIGHT SIDEBAR */}
         <aside className="space-y-6">
-          <div className="bg-white rounded-3xl shadow-xl p-6 sticky top-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4">
+          <div className="bg-surface rounded-3xl shadow-xl p-6 sticky top-6">
+            <h3 className="text-xl font-bold text-foreground mb-6 border-b pb-4">
               Quick Information
             </h3>
 
@@ -261,7 +261,7 @@ export default function LandmarkDetailPage({ landmarkData }) {
                     href={landmark.website}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[#D3202D] hover:underline"
+                    className="text-primary hover:underline"
                   >
                     Visit Website
                   </a>
@@ -272,8 +272,8 @@ export default function LandmarkDetailPage({ landmarkData }) {
 
           {/* MAP */}
           <div className="mt-8 pt-6 border-t">
-            <h4 className="font-semibold text-gray-900 mb-4">Location</h4>
-            <div className="rounded-2xl overflow-hidden shadow-inner h-48 bg-gray-100 relative">
+            <h4 className="font-semibold text-foreground mb-4">Location</h4>
+            <div className="rounded-2xl overflow-hidden shadow-inner h-48 bg-muted relative">
               <iframe
                 width="100%"
                 height="100%"
@@ -288,7 +288,7 @@ export default function LandmarkDetailPage({ landmarkData }) {
               href={`https://www.google.com/maps/search/?api=1&query=${landmark.latitude},${landmark.longitude}`}
               target="_blank"
               rel="noreferrer"
-              className="block mt-3 text-center w-full py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="block mt-3 text-center w-full py-2.5 rounded-xl text-foreground text-white text-sm font-medium hover:bg-secondary transition-colors"
             >
               Open in Google Maps
             </a>
@@ -346,14 +346,14 @@ function InfoRow({ icon, label, value }) {
   if (!value) return null;
   return (
     <div className="flex items-start gap-4">
-      <div className="p-2.5 rounded-xl bg-[#D3202D]/10 text-[#D3202D] shrink-0">
+      <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
         {icon}
       </div>
       <div>
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-0.5">
           {label}
         </p>
-        <div className="text-gray-800 font-medium text-sm leading-snug">
+        <div className="text-foreground font-medium text-sm leading-snug">
           {value}
         </div>
       </div>

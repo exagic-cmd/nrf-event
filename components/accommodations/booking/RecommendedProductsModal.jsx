@@ -121,16 +121,16 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className="p-5 border-b flex justify-between items-center bg-gray-50">
+        <div className="p-5 border-b flex justify-between items-center bg-muted">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Recommended for You</h2>
-            <p className="text-sm text-gray-500">Enhance your trip with these popular add-ons</p>
+            <h2 className="text-2xl font-bold text-foreground">Recommended for You</h2>
+            <p className="text-sm text-muted-foreground">Enhance your trip with these popular add-ons</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-            <X className="w-6 h-6 text-gray-500" />
+          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full transition-colors">
+            <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
 
@@ -138,24 +138,24 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           {loading ? (
             <div className="flex-1 flex items-center justify-center p-12">
-              <Loader2 className="w-10 h-10 animate-spin text-[#D3202D]" />
+              <Loader2 className="w-10 h-10 animate-spin text-primary" />
             </div>
           ) : (
             <>
               {/* Sidebar Categories */}
-              <div className="w-full md:w-64 bg-gray-50 border-r p-3 overflow-x-auto md:overflow-y-auto flex md:flex-col gap-2 shrink-0">
+              <div className="w-full md:w-64 bg-muted border-r p-3 overflow-x-auto md:overflow-y-auto flex md:flex-col gap-2 shrink-0">
                 {recommendations.map((cat) => (
                   <button
                     key={cat.category_title}
                     onClick={() => setActiveCategory(cat.category_title)}
                     className={`px-4 py-3 rounded-lg text-left text-sm font-medium transition-all whitespace-nowrap md:whitespace-normal flex justify-between items-center
                       ${activeCategory === cat.category_title 
-                        ? "bg-white text-[#D3202D] shadow-sm border border-gray-200" 
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-surface text-primary shadow-sm border border-border" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       }`}
                   >
                     {cat.category_title}
-                    <span className="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
+                    <span className="ml-2 text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full">
                       {cat.products.length}
                     </span>
                   </button>
@@ -163,17 +163,17 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
               </div>
 
               {/* Products Grid */}
-              <div className="flex-1 overflow-y-auto p-6 bg-white">
+              <div className="flex-1 overflow-y-auto p-6 bg-surface">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                   {currentCategoryData?.products.map((product) => (
                       <div 
                         key={product.id} 
                         className={`relative border rounded-xl overflow-hidden transition-all cursor-pointer group flex flex-col
-                          border-gray-200 hover:border-gray-300 hover:shadow-md
+                          border-border hover:border-border hover:shadow-md
                         `}
                         onClick={() => productLoading !== product.id && handleProductClick(product, activeCategory)}
                       >
-                        <div className="aspect-[16/9] w-full bg-gray-100 relative overflow-hidden shrink-0">
+                        <div className="aspect-[16/9] w-full bg-muted relative overflow-hidden shrink-0">
                           {product.image ? (
                             <img 
                               src={getImageUrl(product.image)} 
@@ -181,24 +181,24 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 text-sm">
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted text-sm">
                               No Image Available
                             </div>
                           )}
                           {productLoading === product.id && (
-                            <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
-                              <Loader2 className="w-8 h-8 animate-spin text-[#D3202D]" />
+                            <div className="absolute inset-0 bg-surface/80 flex items-center justify-center z-10">
+                              <Loader2 className="w-8 h-8 animate-spin text-primary" />
                             </div>
                           )}
                         </div>
                         <div className="p-4 flex flex-col flex-1">
                           <div className="flex justify-between items-start gap-2 mb-2">
-                            <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight">{product.title}</h3>
-                            <span className="font-bold text-[#D3202D] whitespace-nowrap text-sm">
+                            <h3 className="font-semibold text-foreground line-clamp-2 text-sm leading-tight">{product.title}</h3>
+                            <span className="font-bold text-primary whitespace-nowrap text-sm">
                               {Number(product.starting_price) > 0 ? `SGD ${product.starting_price}` : 'Free'}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
                             {product.description || "No description available."}
                           </p>
                         </div>
@@ -212,10 +212,10 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t bg-white flex justify-between items-center">
-          <p className="text-sm text-gray-500">Your hotel has been added to the cart.</p>
+        <div className="p-4 border-t bg-surface flex justify-between items-center">
+          <p className="text-sm text-muted-foreground">Your hotel has been added to the cart.</p>
           <div className="flex gap-3 w-full sm:w-auto">
-            <Button onClick={onClose} className="flex-1 sm:flex-none bg-[#D3202D] hover:bg-[#b71c1c]">
+            <Button onClick={onClose} className="flex-1 sm:flex-none bg-primary hover:bg-[#b71c1c]">
               Continue
             </Button>
           </div>

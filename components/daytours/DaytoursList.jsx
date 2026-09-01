@@ -114,7 +114,7 @@ switch (sortBy) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl py-3 px-4 bg-white">
+      <div className="rounded-xl py-3 px-4 bg-surface">
         <p className="text-lg font-semibold">
           Showing {processedDaytours.length} Day Tours
         </p>
@@ -123,7 +123,7 @@ switch (sortBy) {
       {showLoading ? (
         <div className="flex justify-center items-center py-20">
           <svg
-            className="animate-spin h-8 w-8 text-[#D3202D]"
+            className="animate-spin h-8 w-8 text-primary"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -150,9 +150,9 @@ switch (sortBy) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white rounded-xl shadow-md">
-          <h3 className="text-xl font-semibold text-gray-800">No Day Tours Found</h3>
-          <p className="text-gray-500 mt-2">
+        <div className="text-center py-16 bg-surface rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold text-foreground">No Day Tours Found</h3>
+          <p className="text-muted-foreground mt-2">
             Please try adjusting your search criteria or filters.
           </p>
         </div>

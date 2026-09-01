@@ -16,13 +16,13 @@ const handleAskAI = async () => {
 
 
   return (
-    <div className="flex items-center gap-1 md:gap-4 bg-white/20 backdrop-blur-md text-white w-full rounded-full px-2 py-1 shadow-lg">
+    <div className="flex items-center gap-1 md:gap-4 bg-surface/20 backdrop-blur-md text-white w-full rounded-full px-2 py-1 shadow-lg">
       <p className="text-sm sm:text-[12px] ml-1 md:ml-4">Your AI travel Assistant.</p>
 
       <button
         onClick={handleAskAI}
         disabled={isLoading}
-        className="bg-white text-[#FE6F4F] lg:text-lg md:text-md sm:text-xs font-semibold px-2 py-1 md:px-4 md:py-2 rounded-full flex items-center gap-2 md:hover:scale-105 transition-all duration-300 shadow-md"
+        className="bg-surface text-[#FE6F4F] lg:text-lg md:text-md sm:text-xs font-semibold px-2 py-1 md:px-4 md:py-2 rounded-full flex items-center gap-2 md:hover:scale-105 transition-all duration-300 shadow-md"
       >
         {isLoading ? (
           <>

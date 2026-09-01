@@ -229,16 +229,16 @@ setFlywireTotal(totalPrice);
       </Head>
   <>
   <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-2 mt-24 p-2">
-    <div className="w-full lg-w-2/3 bg-white rounded-xl p-2 shadow-md">
+    <div className="w-full lg-w-2/3 bg-surface rounded-xl p-2 shadow-md">
       <div className="p-5">
         <h2 className="text-xl font-semibold mb-4">{t("personalInfo")}</h2>
         <form onSubmit={handlePayNow}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Name */}
             <div>
-              <label className="text-sm font-medium text-gray-500 flex items-center gap-3">
-                <User className="w-4 h-4 text-gray-400" />
-                {t("fullName")} <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-muted-foreground flex items-center gap-3">
+                <User className="w-4 h-4 text-muted-foreground" />
+                {t("fullName")} <span className="text-destructive">*</span>
               </label>
               <input
                 type="text"
@@ -248,16 +248,16 @@ setFlywireTotal(totalPrice);
                   setName(e.target.value);
                   setErrors(prev => ({ ...prev, name: undefined }));
                 }}
-                className="w-full border border-gray-300 text-sm rounded px-4 py-3 mt-1 focus:outline-none"
+                className="w-full border border-border text-sm rounded px-4 py-3 mt-1 focus:outline-none"
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{t(errors.name)}</p>}
+              {errors.name && <p className="text-destructive text-xs mt-1">{t(errors.name)}</p>}
             </div>
 
             {/* Email */}
             <div>
-              <label className="text-sm font-medium text-gray-500 flex items-center gap-3">
-                <Mail className="w-4 h-4 text-gray-400" />
-                {t("email")} <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-muted-foreground flex items-center gap-3">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                {t("email")} <span className="text-destructive">*</span>
               </label>
               <input
                 type="email"
@@ -267,16 +267,16 @@ setFlywireTotal(totalPrice);
                   setEmail(e.target.value);
                   setErrors(prev => ({ ...prev, email: undefined }));
                 }}
-                className="w-full border border-gray-300 text-sm rounded px-4 py-3 mt-1 focus:outline-none"
+                className="w-full border border-border text-sm rounded px-4 py-3 mt-1 focus:outline-none"
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{t(errors.email)}</p>}
+              {errors.email && <p className="text-destructive text-xs mt-1">{t(errors.email)}</p>}
             </div>
 
             {/* Phone */}
             <div>
-              <label className="text-sm font-medium text-gray-500 flex items-center gap-3">
-                <Phone className="w-4 h-4 text-gray-400" />
-                {t("phoneNumber")} <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-muted-foreground flex items-center gap-3">
+                <Phone className="w-4 h-4 text-muted-foreground" />
+                {t("phoneNumber")} <span className="text-destructive">*</span>
               </label>
               <PhoneInput
                 country={'sg'}
@@ -298,24 +298,24 @@ setFlywireTotal(totalPrice);
                   required: true,
                 }}
               />
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{t(errors.phone)}</p>}
+              {errors.phone && <p className="text-destructive text-xs mt-1">{t(errors.phone)}</p>}
             </div>
 
             {/* Promo Code */}
             {promoAvailable && (
               <div>
-                <label className="text-sm font-medium text-gray-500 flex justify-between items-center gap-3">
+                <label className="text-sm font-medium text-muted-foreground flex justify-between items-center gap-3">
                   <span className="flex items-center gap-1">
-                    <Tag className="w-4 h-4 text-gray-400" /> {t("promoCode")}
+                    <Tag className="w-4 h-4 text-muted-foreground" /> {t("promoCode")}
                   </span>
-                  <a href="#" className="text-sm text-[#D3202D] underline">{t("findPromo")}</a>
+                  <a href="#" className="text-sm text-primary underline">{t("findPromo")}</a>
                 </label>
                 <input
                   type="text"
                   placeholder={t("placeholders.promo")}
                   value={promo}
                   onChange={(e) => setPromo(e.target.value)}
-                  className="w-full border border-gray-300 text-sm rounded px-4 py-3 mt-1 focus:outline-none"
+                  className="w-full border border-border text-sm rounded px-4 py-3 mt-1 focus:outline-none"
                 />
               </div>
             )}
@@ -323,30 +323,30 @@ setFlywireTotal(totalPrice);
 
           {/* Payment Options */}
           <div className="mt-6">
-            <label className="text-sm font-medium text-gray-500 flex items-center gap-3">
-              <CreditCard className="w-4 h-4 text-gray-400" />
-              {t("paymentOptions")} <span className="text-red-500">*</span>
+            <label className="text-sm font-medium text-muted-foreground flex items-center gap-3">
+              <CreditCard className="w-4 h-4 text-muted-foreground" />
+              {t("paymentOptions")} <span className="text-destructive">*</span>
             </label>
               <input
               type="text"
               readOnly
               value={paymentOptions.find(opt => (opt.value || opt.id) === paymentOption)?.name || ''}
-              className="w-full border border-gray-300 text-sm rounded px-4 py-3 mt-2 focus:outline-none bg-gray-100"
+              className="w-full border border-border text-sm rounded px-4 py-3 mt-2 focus:outline-none bg-muted"
             />
-            {errors.paymentOption && <p className="text-red-500 text-xs mt-1">{t(errors.paymentOption)}</p>}
+            {errors.paymentOption && <p className="text-destructive text-xs mt-1">{t(errors.paymentOption)}</p>}
           </div>
 
           {/* Submit */}
           <div className="mt-8 flex justify-end">
             <button
               type="submit"
-              className="bg-[#D3202D] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
+              className="bg-primary text-primary-foreground text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
                   <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-foreground"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"

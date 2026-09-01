@@ -69,11 +69,11 @@ const AudioNotePlayer = ({ audioUrl, autoPlay = false }) => {
   };
 
   return (
-    <div className="bg-gray-300 p-4 rounded-2xl flex items-center gap-3 w-full">
+    <div className="bg-secondary p-4 rounded-2xl flex items-center gap-3 w-full">
       {/* Play / Pause Button */}
       <button
         onClick={togglePlay}
-        className="w-10 h-10 flex items-center justify-center bg-white/90 rounded-full text-black text-lg"
+        className="w-10 h-10 flex items-center justify-center bg-surface/90 rounded-full text-surface-foreground text-lg"
       >
         {isPlaying ? "⏸" : "▶"}
       </button>
@@ -89,7 +89,7 @@ const AudioNotePlayer = ({ audioUrl, autoPlay = false }) => {
               <div
                 key={i}
                 className={`w-[2px] rounded-sm transition-all duration-100 ${
-                  filled ? "bg-black" : "bg-gray-50"
+                  filled ? "bg-black" : "bg-muted"
                 }`}
                 style={{ height: `${height}px` }}
               />
@@ -99,7 +99,7 @@ const AudioNotePlayer = ({ audioUrl, autoPlay = false }) => {
       </div>
 
       {/* Timer */}
-      <div className="text-black text-sm w-12 text-right">
+      <div className="text-surface-foreground text-sm w-12 text-right">
         {formatMMSS(currentTime)}
       </div>
 

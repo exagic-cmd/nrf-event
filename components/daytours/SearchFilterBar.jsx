@@ -161,10 +161,10 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
       <div
         ref={barRef}
         className={`hidden lg:flex mx-2 md:mx-4 lg:mx-[320px] pl-14 sticky top-4 z-40 shadow-md rounded-full p-4 flex-wrap items-center justify-between gap-3 mt-[-24px] transition-colors duration-300 ${
-          isSticky ? "bg-gray-50 border border-1 border-gray-500 text-black" : "bg-white"
+          isSticky ? "bg-muted border border-1 border-border text-surface-foreground" : "bg-surface"
         }`}
       >
-        <div className="relative flex flex-1 gap-2 bg-white rounded-full p-1 " ref={searchRef}>
+        <div className="relative flex flex-1 gap-2 bg-surface rounded-full p-1 " ref={searchRef}>
           <input
             ref={inputRef}
             type="text"
@@ -173,24 +173,24 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
             onChange={(e) => setQuery(e.target.value)}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
-            className="flex-1 md:py-3 px-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 md:py-3 px-4 rounded-full border border-border focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={handleSearch}
-            className="px-6 bg-gray-600 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2"
+            className="px-6 text-muted-foreground text-white rounded-full font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2"
           >
             <Search size={20} />
             {t("search.button")}
           </button>
           {showDropdown && (
             
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border z-40 overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-surface rounded-2xl shadow-xl border z-40 overflow-hidden">
               <div className="p-4 space-y-3 max-h-80 overflow-y-auto">
                 {filteredSuggestions.length > 0 ? (
                   filteredSuggestions.map((item) => (
                      <div key={item.id}>
     {loadingId === item.id && (
-      <div className="absolute inset-0 bg-white/80 flex justify-center items-center z-20 rounded-lg">
+      <div className="absolute inset-0 bg-surface/80 flex justify-center items-center z-20 rounded-lg">
         <SvgLoader2 />
       </div>
     )}
@@ -203,7 +203,7 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
   }}
   className="block"
 >
-                      <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                      <div className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg cursor-pointer">
                         <Image
                           src={getFullImageUrl(item?.image) || "/placeholder.svg"}
                           alt={item.title}
@@ -212,17 +212,17 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
                           className="rounded-lg object-cover"
                         />
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-gray-900 text-sm">{item.title}</h4>
-                          <p className="text-gray-500 text-xs">Singapore</p>
+                          <h4 className="font-medium text-foreground text-sm">{item.title}</h4>
+                          <p className="text-muted-foreground text-xs">Singapore</p>
                         </div>
                       </div>
                     </a>
                     </div>
                   ))
                 ) : (
-                   <p className="text-center text-sm text-gray-500">
+                   <p className="text-center text-sm text-muted-foreground">
     <span className="block">{t("search.notFoundTitle")}</span>
-    <span className="text-gray-700 font-medium">
+    <span className="text-muted-foreground font-medium">
       {t("search.pressEnter")} <kbd className="...">Enter</kbd> {t("search.enterFor")} <b>{query}</b>.
     </span>
   </p>
@@ -234,36 +234,36 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
       </div>
       {/* Mobile Search Bar */}
       <div className="lg:hidden sticky top-2 z-30 mx-12 mt-[-24px]">
-        <div className="bg-white rounded-xl shadow-lg border p-2">
+        <div className="bg-surface rounded-xl shadow-lg border p-2">
           <div className={`grid ${searchResults.length > 0 ? "grid-cols-3" : "grid-cols-1"} gap-2`}>
             <button
               onClick={() => setShowMobileSearch(true)}
-              className="flex flex-col items-center justify-center rounded-xl p-1 bg-gray-50 hover:bg-gray-100 transition-colors"
+              className="flex flex-col items-center justify-center rounded-xl p-1 bg-muted hover:bg-muted transition-colors"
             >
-              <Search size={24} className="text-gray-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700">{t("search.search")}</span>
-              {/* <span className="text-[10px] text-gray-500 mt-1">{t("search.whatTo")}</span> */}
+              <Search size={24} className="text-muted-foreground mb-2" />
+              <span className="text-sm font-medium text-muted-foreground">{t("search.search")}</span>
+              {/* <span className="text-[10px] text-muted-foreground mt-1">{t("search.whatTo")}</span> */}
             </button>
             {searchResults.length > 0 && (
               <>
                 {/* <button
                   onClick={() => setShowMobileMap(true)}
-                  className="flex flex-col items-center justify-center p-1 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="flex flex-col items-center justify-center p-1 rounded-xl bg-muted hover:bg-muted transition-colors"
                 >
-                  <Map size={24} className="text-gray-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-700">{t("search.map")}</span>
-                  <span className="text-[10px] text-gray-500 mt-1">{t("search.viewOnMap")}</span>
+                  <Map size={24} className="text-muted-foreground mb-2" />
+                  <span className="text-sm font-medium text-muted-foreground">{t("search.map")}</span>
+                  <span className="text-[10px] text-muted-foreground mt-1">{t("search.viewOnMap")}</span>
                 </button> */}
                 {/* <button
                   onClick={() => setShowMobileFilters(true)}
-                  className="flex flex-col items-center justify-center rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors relative"
+                  className="flex flex-col items-center justify-center rounded-xl bg-muted hover:bg-muted transition-colors relative"
                 >
-                  <Filter size={24} className="text-gray-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-700">{t("search.filters")}</span>
-                  <span className="text-[10px] text-gray-500 mt-1">{t("search.refineSearch")}</span>
+                  <Filter size={24} className="text-muted-foreground mb-2" />
+                  <span className="text-sm font-medium text-muted-foreground">{t("search.filters")}</span>
+                  <span className="text-[10px] text-muted-foreground mt-1">{t("search.refineSearch")}</span>
                 
                   {Object.keys(currentFilters).length > 0 && (
-                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    <div className="absolute -top-1 -right-1 bg-muted0 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {Object.keys(currentFilters).length}
                     </div>
                   )}
@@ -275,18 +275,18 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
       </div>
       {/* Mobile Search Modal */}
       {showMobileSearch && (
-        <div className="lg:hidden fixed inset-0 bg-white z-50">
+        <div className="lg:hidden fixed inset-0 bg-surface z-50">
           <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-white">
-              <h2 className="text-xl font-bold text-gray-900">{t("search.searchTours")}</h2>
-              <button onClick={() => setShowMobileSearch(false)} className="p-2 rounded-full hover:bg-gray-100">
+            <div className="flex items-center justify-between p-4 border-b bg-surface">
+              <h2 className="text-xl font-bold text-foreground">{t("search.searchTours")}</h2>
+              <button onClick={() => setShowMobileSearch(false)} className="p-2 rounded-full hover:bg-muted">
                 <X size={24} />
               </button>
             </div>
             <div className="flex-1 p-4 space-y-6 overflow-y-auto">
               <div className="space-y-3 relative">
-                <div className="flex gap-2 bg-white rounded-full shadow-lg p-2" ref={searchRef}>
+                <div className="flex gap-2 bg-surface rounded-full shadow-lg p-2" ref={searchRef}>
                   <input
                     ref={inputRef}
                     type="text"
@@ -295,18 +295,18 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
                     onChange={(e) => setQuery(e.target.value)}
                     onFocus={handleFocus}
                     onKeyDown={handleKeyDown} 
-                    className="flex-1 py-2 px-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 py-2 px-4 rounded-full border border-border focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 {/* Search for Mobile Modal dropdown */}
                 {showDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border z-40 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-surface rounded-2xl shadow-xl border z-40 overflow-hidden">
                     <div className="p-4 space-y-3 max-h-80 overflow-y-auto">
                       {filteredSuggestions.length > 0 ? (
                            filteredSuggestions.map((item) => (
                      <div key={item.id}>
     {loadingId === item.id && (
-      <div className="absolute inset-0 bg-white/80 flex justify-center items-center z-20 rounded-lg">
+      <div className="absolute inset-0 bg-surface/80 flex justify-center items-center z-20 rounded-lg">
         <SvgLoader2 />
       </div>
     )}
@@ -320,7 +320,7 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
   }}
   className="block"
 >
-                            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg cursor-pointer">
                               <Image
                                 src={getFullImageUrl(item?.image) || "/placeholder.svg"}
                                 alt={item.title}
@@ -329,18 +329,18 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
                                 className="rounded-lg object-cover"
                               />
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-gray-900 text-sm">{item.title}</h4>
-                                <p className="text-gray-500 text-xs">Singapore</p>
+                                <h4 className="font-medium text-foreground text-sm">{item.title}</h4>
+                                <p className="text-muted-foreground text-xs">Singapore</p>
                               </div>
                             </div>
                           </a>
                           </div>
                         ))
                       ) : (
-                        <p className="text-center text-sm text-gray-500">
+                        <p className="text-center text-sm text-muted-foreground">
                           <span className="block">{t("search.notFoundTitle")}</span>
-                          <span className="text-gray-700 font-medium">
-                            {t('search.pressEnter')} <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Enter</kbd> {t('search.enterFor')}{" "}
+                          <span className="text-muted-foreground font-medium">
+                            {t('search.pressEnter')} <kbd className="px-1 py-0.5 bg-secondary rounded text-xs">Enter</kbd> {t('search.enterFor')}{" "}
                             <b>{query}</b>.
                           </span>
                         </p>
@@ -350,10 +350,10 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
                 )}
               </div>
             </div>
-            <div className="p-4 border-t justify-center flex items-center bg-white">
+            <div className="p-4 border-t justify-center flex items-center bg-surface">
               <button
                 onClick={handleMobileModalSearch}
-                className="w-1/2 py-3 bg-gray-600 text-white rounded-xl text-lg font-semibold hover:bg-gray-700 transition-colors"
+                className="w-1/2 py-3 text-muted-foreground text-white rounded-xl text-lg font-semibold hover:bg-gray-700 transition-colors"
               >
                 {t('search.searchTours')}
               </button>
@@ -363,11 +363,11 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
       )}
       {/* Mobile Map Modal */}
       {showMobileMap && (
-        <div className="lg:hidden fixed inset-0 bg-white z-50">
+        <div className="lg:hidden fixed inset-0 bg-surface z-50">
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b bg-white">
-              <h2 className="text-xl font-bold text-gray-900">{t("search.mapView")}</h2>
-              <button onClick={() => setShowMobileMap(false)} className="p-2 rounded-full hover:bg-gray-100">
+            <div className="flex items-center justify-between p-4 border-b bg-surface">
+              <h2 className="text-xl font-bold text-foreground">{t("search.mapView")}</h2>
+              <button onClick={() => setShowMobileMap(false)} className="p-2 rounded-full hover:bg-muted">
                 <X size={24} />
               </button>
             </div>
@@ -379,11 +379,11 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
       )}
       {/* Mobile Filter Modal */}
       {showMobileFilters && (
-        <div className="lg:hidden fixed inset-0 bg-white z-50">
+        <div className="lg:hidden fixed inset-0 bg-surface z-50">
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b bg-white">
-              <h2 className="text-xl font-bold text-gray-900">{t('search.filters')}</h2>
-              <button onClick={() => setShowMobileFilters(false)} className="p-2 rounded-full hover:bg-gray-100">
+            <div className="flex items-center justify-between p-4 border-b bg-surface">
+              <h2 className="text-xl font-bold text-foreground">{t('search.filters')}</h2>
+              <button onClick={() => setShowMobileFilters(false)} className="p-2 rounded-full hover:bg-muted">
                 <X size={24} />
               </button>
             </div>
@@ -394,17 +394,17 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
                 currentFilters={tempMobileFilters}
               />
             </div>
-            <div className="p-4 border-t bg-white">
+            <div className="p-4 border-t bg-surface">
               <div className="flex gap-3">
                 <button
                   onClick={handleClearMobileFilters}
-                  className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-xl text-lg font-semibold hover:bg-gray-300 transition-colors"
+                  className="flex-1 py-3 bg-secondary text-muted-foreground rounded-xl text-lg font-semibold hover:bg-secondary transition-colors"
                 >
 <button>{t('search.clearAll')}</button>
                 </button>
                 <button
                   onClick={handleApplyMobileFilters}
-                  className="flex-1 py-3 bg-gray-600 text-white rounded-xl text-lg font-semibold hover:bg-gray-700 transition-colors"
+                  className="flex-1 py-3 text-muted-foreground text-white rounded-xl text-lg font-semibold hover:bg-gray-700 transition-colors"
                 >
                 <button>{t('search.applyFilters')}</button>
                 </button>

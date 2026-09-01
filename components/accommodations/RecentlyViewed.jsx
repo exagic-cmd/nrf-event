@@ -36,7 +36,7 @@ const RecentlyViewed = () => {
                     setLoadingItemId(item.id);
                   }
                 }}
-                className={`flex w-full bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-200 ${
+                className={`flex w-full bg-surface rounded-2xl shadow-md overflow-hidden transition-all duration-200 ${
                   isActive
                     ? 'bg-slate-100/50 cursor-default opacity-70'
                     : 'border-2 border-transparent hover:shadow-lg'
@@ -53,7 +53,7 @@ const RecentlyViewed = () => {
                 </div>
                 <div className="flex-grow p-3 flex flex-col justify-between">
                   <p className="font-semibold text-sm line-clamp-2">{item?.name}</p>
-                  <div className="flex-col items-center justify-between text-xs text-gray-600 mt-1">
+                  <div className="flex-col items-center justify-between text-xs text-muted-foreground mt-1">
                     <span>From {item?.currency} {formatPrice(item?.price)}</span>
                     <div className="flex items-center">
                       {[...Array(item?.rating || 0)].map((_, i) => (
@@ -71,7 +71,7 @@ const RecentlyViewed = () => {
               </Link>
 
               {isLoading && (
-                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-2xl z-10">
+                <div className="absolute inset-0 bg-surface bg-opacity-75 flex items-center justify-center rounded-2xl z-10">
                   <LoaderSvg className="w-12 h-12" />
                 </div>
               )}

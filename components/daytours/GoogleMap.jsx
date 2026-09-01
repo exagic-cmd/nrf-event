@@ -91,10 +91,10 @@ const GoogleMap = ({
   if (!apiKey) {
     return (
       <div
-        className={`bg-gray-200 flex items-center justify-center ${className}`}
+        className={`bg-secondary flex items-center justify-center ${className}`}
         style={{ width, height }}
       >
-        <p className="text-gray-600">Google Maps API key required</p>
+        <p className="text-muted-foreground">Google Maps API key required</p>
       </div>
     );
   }

@@ -15,9 +15,9 @@ function index() {
   };
 
   return (
-  <div className="min-h-screen mt-12 bg-[#f4f4f4] flex items-center justify-center p-4">
+  <div className="min-h-screen mt-12 bg-surface-muted flex items-center justify-center p-4">
     <div className="
-      bg-white
+      bg-surface
       p-6 sm:p-8 md:p-10 lg:p-12 
       w-full
       max-w-md sm:max-w-lg md:max-w-xl lg:max-w-xl
@@ -41,20 +41,20 @@ function index() {
       </div>
 
       {/* Header */}
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#D3202D] mb-3">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-3">
         An Error Occurred
       </h2>
 
-      <p className="text-gray-600 mb-6 text-base sm:text-lg leading-relaxed">
+      <p className="text-muted-foreground mb-6 text-base sm:text-lg leading-relaxed">
         {message ? decodeURIComponent(message) : "We couldn't process your request. Please try again."}
       </p>
 
       {/* Help Section */}
-      <div className="bg-[#f4f4f4] p-4 sm:p-6 rounded-2xl mb-8 relative overflow-hidden">
+      <div className="bg-surface-muted p-4 sm:p-6 rounded-2xl mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white via-transparent opacity-50 -skew-x-12 animate-pulse"></div>
 
         <div className="relative z-10">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Need Help?
           </h3>
 
@@ -67,8 +67,8 @@ function index() {
               </div>
 
               <div class="text-left">
-                <p className="text-sm text-gray-600">Call Us</p>
-                <a href={`tel:${event?.event?.phone}`} className="font-semibold text-[#D3202D]">
+                <p className="text-sm text-muted-foreground">Call Us</p>
+                <a href={`tel:${event?.event?.phone}`} className="font-semibold text-primary">
                   {event?.event?.phone}
                 </a>
               </div>
@@ -81,8 +81,8 @@ function index() {
               </div>
 
               <div class="text-left">
-                <p className="text-sm text-gray-600">Email Us</p>
-                <a href={`mailto:${event?.event?.email}`} className="font-semibold text-[#D3202D]">
+                <p className="text-sm text-muted-foreground">Email Us</p>
+                <a href={`mailto:${event?.event?.email}`} className="font-semibold text-primary">
                   {event?.event?.email}
                 </a>
               </div>
@@ -95,7 +95,7 @@ function index() {
       {/* Try Again Button */}
       <button
         onClick={handleTryAgain}
-        className="group w-full bg-[#D3202D] text-white font-bold py-3 sm:py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+        className="group w-full bg-primary text-white font-bold py-3 sm:py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
       >
         <span className="text-lg">Try Again</span>
         <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2">

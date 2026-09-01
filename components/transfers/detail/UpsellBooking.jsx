@@ -30,7 +30,7 @@ export default function UpsellProductsRow() {
 
   if (isLoading) {
     return (
-      <div className="w-full py-2 bg-white text-black flex justify-center">
+      <div className="w-full py-2 bg-surface text-surface-foreground flex justify-center">
         Loading...
       </div>
     );
@@ -43,7 +43,7 @@ export default function UpsellProductsRow() {
           productBasedUpsell.slice(0, 12).map((item) => (
             <div
               key={item.id}
-              className="w-[120px] bg-gray-100 rounded-lg shadow-sm flex-shrink-0 flex flex-col text-center"
+              className="w-[120px] bg-muted rounded-lg shadow-sm flex-shrink-0 flex flex-col text-center"
             >
               <div className="relative w-full h-16 rounded-t-lg overflow-hidden">
                 <Image
@@ -54,12 +54,12 @@ export default function UpsellProductsRow() {
                 />
               </div>
               <div className="p-1 flex flex-col flex-grow">
-                <h4 className="font-semibold text-xs text-black line-clamp-2">
+                <h4 className="font-semibold text-xs text-surface-foreground line-clamp-2">
                   {item.title}
                 </h4>
                 <button
                   onClick={() => goToDetail(item)}
-                  className="mt-1 bg-gray-200 text-black px-2 py-1 rounded-md text-xs font-medium hover:bg-gray-300 transition"
+                  className="mt-1 bg-secondary text-surface-foreground px-2 py-1 rounded-md text-xs font-medium hover:bg-secondary transition"
                 >
                   View
                 </button>

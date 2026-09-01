@@ -57,26 +57,26 @@ export default function CheckoutRedirect({ orderId }) {
 
   if (status === "loading")
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen bg-muted">
         <p className="text-xl font-semibold">Preparing secure checkout...</p>
       </div>
     );
 
   if (status === "redirecting")
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen bg-muted">
         <p className="text-xl font-semibold">Redirecting to Stripe checkout...</p>
       </div>
     );
 
   if (status === "error")
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 gap-4">
-        <p className="text-red-600 text-lg font-semibold">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-muted gap-4">
+        <p className="text-primary text-lg font-semibold">
           ❌ Payment initiation failed.
         </p>
         <button
-          className="bg-[#CC9A55] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b68a47]"
+          className="bg-brand-secondary text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b68a47]"
           onClick={startCheckout}
         >
           Retry

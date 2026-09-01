@@ -74,7 +74,7 @@ export default function BookingPolicySection({
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">{t("booking_section.loading")}</div>;
+    return <div className="p-4 text-muted-foreground">{t("booking_section.loading")}</div>;
   }
 
   return (
@@ -100,8 +100,8 @@ export default function BookingPolicySection({
                   <span
                     className={`flex items-center justify-center w-5 h-5 border-2 rounded-sm transition-all duration-200 ${
                       isSelected
-                        ? "bg-[#D3202D] border-[#D3202D]"
-                        : "border-gray-300 bg-white"
+                        ? "bg-primary border-primary"
+                        : "border-border bg-surface"
                     }`}
                   >
                     {isSelected && (
@@ -112,7 +112,7 @@ export default function BookingPolicySection({
 
                 <label
                   htmlFor={`check-${opt.id}`}
-                  className="text-gray-800 text-sm md:text-base leading-relaxed"
+                  className="text-foreground text-sm md:text-base leading-relaxed"
                 >
                   {t("terms_conditions.accept_text")}{" "}
                   <button
@@ -120,7 +120,7 @@ export default function BookingPolicySection({
                       e.preventDefault();
                       setOpenModal(opt.id);
                     }}
-                    className="text-[#D3202D] underline"
+                    className="text-primary underline"
                   >
                     {opt.title}
                   </button>{" "}
@@ -129,17 +129,17 @@ export default function BookingPolicySection({
               </div>
             ) : (
             
-              <details className="group text-gray-700">
+              <details className="group text-muted-foreground">
                 <summary className="flex items-center justify-between cursor-pointer list-none select-none text-sm md:text-base font-medium">
                   <span>{opt.title}</span>
                   <ChevronDown
-                    className="text-gray-400 transition-transform duration-300 group-open:rotate-180"
+                    className="text-muted-foreground transition-transform duration-300 group-open:rotate-180"
                     size={18}
                   />
                 </summary>
-                <div className="mt-3 pr-1 text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                <div className="mt-3 pr-1 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                   {opt.description}
-                  <div className="mt-2 text-xs text-gray-500 italic">
+                  <div className="mt-2 text-xs text-muted-foreground italic">
                     {opt.label}
                   </div>
                 </div>
@@ -159,23 +159,23 @@ export default function BookingPolicySection({
     
       {openModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
+          <div className="bg-surface rounded-lg shadow-lg max-w-lg w-full p-6 relative">
             <button
               onClick={() => setOpenModal(null)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              className="absolute top-3 right-3 text-muted-foreground hover:text-muted-foreground"
             >
               <X size={20} />
             </button>
             <h2 className="text-lg font-semibold mb-4">
               {options.find((o) => o.id === openModal)?.title}
             </h2>
-            <div className="max-h-80 overflow-y-auto text-gray-800 whitespace-pre-line text-sm leading-relaxed">
+            <div className="max-h-80 overflow-y-auto text-foreground whitespace-pre-line text-sm leading-relaxed">
               {options.find((o) => o.id === openModal)?.description}
             </div>
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setOpenModal(null)}
-                className="bg-[#D3202D] text-white px-4 py-2 rounded-md text-sm"
+                className="bg-primary text-white px-4 py-2 rounded-md text-sm"
               >
                 Close
               </button>

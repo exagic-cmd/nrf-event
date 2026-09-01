@@ -27,16 +27,16 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto"
+        className="bg-surface rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200 sticky top-0 bg-white rounded-t-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface rounded-t-2xl">
           <div className="flex items-center gap-2">
             <Check size={20} className="text-[#233BA0]" />
-            <h2 className="text-lg font-bold text-gray-900">Confirm Your Booking</h2>
+            <h2 className="text-lg font-bold text-foreground">Confirm Your Booking</h2>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -51,18 +51,18 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
             <div className="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-3 border border-blue-100">
               <div className="flex items-center gap-2">
                 <Bed size={18} className="text-[#233BA0]" />
-                <span className="font-semibold text-gray-900">{rate.room_name}</span>
+                <span className="font-semibold text-foreground">{rate.room_name}</span>
               </div>
-              <span className="text-xs bg-gray-800 text-white px-2 py-1 rounded-full">{rate.meal || "nomeal"}</span>
+              <span className="text-xs bg-secondary text-white px-2 py-1 rounded-full">{rate.meal || "nomeal"}</span>
             </div>
 
             {/* Daily Prices */}
             {rate.daily_prices?.length > 0 && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Daily Prices</p>
+                <p className="text-sm font-semibold text-muted-foreground mb-2">Daily Prices</p>
                 <div className="flex flex-wrap gap-2">
                   {rate.daily_prices.map((p, i) => (
-                    <span key={i} className="text-sm bg-gray-100 text-gray-800 px-3 py-1 rounded-full font-medium">
+                    <span key={i} className="text-sm bg-muted text-foreground px-3 py-1 rounded-full font-medium">
                       Day {i + 1}: {paymentType?.currency_code } {parseFloat(p).toFixed(2)} 
                     </span>
                   ))}
@@ -72,27 +72,27 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
 
             {/* Total / Payment Type / Availability */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-500 mb-1">Total Price</p>
+              <div className="border border-border rounded-xl p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Total Price</p>
                 <p className="text-base font-bold text-[#233BA0]">
                   {paymentType?.show_currency_code || paymentType?.currency_code }{" "}
                   {parseFloat(paymentType?.show_amount || paymentType?.amount || 0).toFixed(2)}
                 </p>
               </div>
-              <div className="border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-500 mb-1">Payment Type</p>
-                <p className="text-base font-bold text-gray-900 capitalize">{paymentType?.type || "—"}</p>
+              <div className="border border-border rounded-xl p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Payment Type</p>
+                <p className="text-base font-bold text-foreground capitalize">{paymentType?.type || "—"}</p>
               </div>
-              <div className="border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-500 mb-1">Availability</p>
-                <p className="text-base font-bold text-gray-900">{rate.allotment ?? "—"} room(s) left</p>
+              <div className="border border-border rounded-xl p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Availability</p>
+                <p className="text-base font-bold text-foreground">{rate.allotment ?? "—"} room(s) left</p>
               </div>
             </div>
 
             {/* Cancellation Policy */}
             {freeCancelDate && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Cancellation Policy</p>
+                <p className="text-sm font-semibold text-muted-foreground mb-2">Cancellation Policy</p>
                 <span className="inline-flex items-center gap-2 bg-green-600 text-white text-sm font-medium px-3 py-1.5 rounded-full">
                   <Check size={14} />
                   Free cancellation before {freeCancelDate}
@@ -103,10 +103,10 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
             {/* Room Features */}
             {amenities.length > 0 && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Room Features</p>
+                <p className="text-sm font-semibold text-muted-foreground mb-2">Room Features</p>
                 <div className="flex flex-wrap gap-2">
                   {amenities.map((a, i) => (
-                    <span key={i} className="text-xs border border-gray-300 text-gray-700 px-2.5 py-1 rounded-full">
+                    <span key={i} className="text-xs border border-border text-muted-foreground px-2.5 py-1 rounded-full">
                       {a.replace(/-/g, " ")}
                     </span>
                   ))}
@@ -115,10 +115,10 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
             )}
 
             {/* Room meta icons */}
-            <div className="flex items-center gap-4 text-sm text-gray-600 border-t border-gray-100 pt-3 flex-wrap">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground border-t border-border pt-3 flex-wrap">
               {rg.capacity > 0 && (
                 <span className="flex items-center gap-1">
-                  <BathIcon size={14} className="text-gray-400" />
+                  <BathIcon size={14} className="text-muted-foreground" />
                   Capacity: {rg.capacity}
                 </span>
               )}
@@ -130,27 +130,27 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
               )}
               {rg.bathroom === 1 && (
                 <span className="flex items-center gap-1">
-                  <BathIcon size={14} className="text-gray-400" />
+                  <BathIcon size={14} className="text-muted-foreground" />
                   Bathroom
                 </span>
               )}
               {rg.bedding === 1 && (
                 <span className="flex items-center gap-1">
-                  <Bed size={14} className="text-gray-400" />
+                  <Bed size={14} className="text-muted-foreground" />
                   Bed Included
                 </span>
               )}
             </div>
           </div>
         ) : (
-          <div className="p-10 text-center text-gray-500">No prebooking data available.</div>
+          <div className="p-10 text-center text-muted-foreground">No prebooking data available.</div>
         )}
 
         {/* Footer buttons */}
         <div className="flex gap-3 px-5 pb-5 justify-end">
           <button
             onClick={onClose}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-border text-muted-foreground font-semibold text-sm hover:bg-muted transition-colors"
           >
             <X size={16} />
             Cancel
@@ -158,7 +158,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
           <button
             onClick={onProceed}
             disabled={loading || !rate}
-            className="flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-[#D3202D] text-white font-semibold text-sm hover:bg-[#B81E29] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-[#B81E29] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Check size={16} />
             Proceed
@@ -203,18 +203,18 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+        className="bg-surface rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200 sticky top-0 bg-white rounded-t-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface rounded-t-2xl">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{ratePlan.name}</h2>
-            <p className="text-sm text-gray-500 mt-0.5">{rooms.length} room{rooms.length !== 1 ? "s" : ""} included</p>
+            <h2 className="text-lg font-bold text-foreground">{ratePlan.name}</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">{rooms.length} room{rooms.length !== 1 ? "s" : ""} included</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+            className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors"
           >
             <X size={20} />
           </button>
@@ -229,9 +229,9 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
             const price = parseFloat(room.Price?.["@attributes"]?.amt || 0);
 
             return (
-              <div key={idx} className="border border-gray-200 rounded-xl overflow-hidden">
+              <div key={idx} className="border border-border rounded-xl overflow-hidden">
                 {/* Room title bar */}
-                <div className="flex items-center gap-2 bg-[#D3202D] px-4 py-2.5">
+                <div className="flex items-center gap-2 bg-primary px-4 py-2.5">
                   <Bed size={16} className="text-white flex-shrink-0" />
                   <span className="text-white font-semibold text-sm">Room {idx + 1} — {roomName}</span>
                 </div>
@@ -240,17 +240,17 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
                 <div className="p-4 space-y-3">
                   {/* Meal */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-gray-600 text-sm">
-                      <UtensilsCrossed size={14} className="text-gray-400" />
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                      <UtensilsCrossed size={14} className="text-muted-foreground" />
                       <span>Meal Plan</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-800">{mealName}</span>
+                    <span className="text-sm font-medium text-foreground">{mealName}</span>
                   </div>
 
                   {/* Cancellation */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-gray-600 text-sm">
-                      <Ban size={14} className="text-gray-400" />
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                      <Ban size={14} className="text-muted-foreground" />
                       <span>Cancellation</span>
                     </div>
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${cancellation.cls}`}>
@@ -259,9 +259,9 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
                   </div>
 
                   {/* Price */}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                    <span className="text-sm text-gray-600">Room Price</span>
-                    <span className="text-base font-bold text-gray-900">
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <span className="text-sm text-muted-foreground">Room Price</span>
+                    <span className="text-base font-bold text-foreground">
                       {currency} {price.toFixed(2)}
                     </span>
                   </div>
@@ -273,8 +273,8 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
 
         {/* Footer — total */}
         <div className="px-5 pb-5">
-          <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between border border-gray-200">
-            <span className="text-sm font-semibold text-gray-700">Total Price</span>
+          <div className="bg-muted rounded-xl p-4 flex items-center justify-between border border-border">
+            <span className="text-sm font-semibold text-muted-foreground">Total Price</span>
             <span className="text-xl font-bold text-[#233BA0]">
               {currency} {parseFloat(totalPrice || 0).toFixed(2)}
             </span>
@@ -316,8 +316,8 @@ const StubaRoomList = ({
   if (!allRooms || allRooms.length === 0) {
     return (
       <div className="px-4 sm:px-6 lg:px-12 py-8">
-        <h2 className="text-lg font-semibold text-black mb-6">Available Rooms</h2>
-        <div className="text-gray-400 text-center py-12 bg-gray-800 rounded-xl border border-gray-700">
+        <h2 className="text-lg font-semibold text-surface-foreground mb-6">Available Rooms</h2>
+        <div className="text-muted-foreground text-center py-12 bg-secondary rounded-xl border border-border">
           <div className="text-lg mb-2">No rooms available</div>
           <div className="text-sm">Try different dates or check back later</div>
         </div>
@@ -437,7 +437,7 @@ const StubaRoomList = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
           <div>
             <h2 className="text-xl font-bold text-[#233BA0]">Available Rooms</h2>
-            {/* <p className="text-black">
+            {/* <p className="text-surface-foreground">
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
             </p> */}
           </div>
@@ -453,9 +453,9 @@ const StubaRoomList = ({
             const hiddenCount = sortedRatePlans.length - visibleRatePlans.length;
 
             return (
-            <div key={roomType.id} className="bg-white rounded-2xl overflow-hidden border border-gray-200">
+            <div key={roomType.id} className="bg-surface rounded-2xl overflow-hidden border border-border">
               {/* Room Header */}
-              <div className="bg-white lg:border-b border-gray-200 p-4">
+              <div className="bg-surface lg:border-b border-border p-4">
                 <div className="flex gap-4 mb-2">
                   <div className="flex-shrink-0 w-32 h-24">
                     {roomType.images?.[0] && (
@@ -467,19 +467,19 @@ const StubaRoomList = ({
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg text-black">
+                    <h3 className="font-bold text-lg text-surface-foreground">
                       {totalRoomsRequested} × {roomType.name}
-                      <span className="bg-gray-100 text-black px-2 py-1 text-sm rounded-full ml-2">
+                      <span className="bg-muted text-surface-foreground px-2 py-1 text-sm rounded-full ml-2">
                         {nights} night{nights > 1 ? "s" : ""}
                       </span>
                     </h3>
                     {roomType.view && roomType.view !== "no_view" && (
-                      <span className="text-sm font-medium px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 mt-2 inline-block">
+                      <span className="text-sm font-medium px-2.5 py-1 rounded-lg bg-muted text-foreground mt-2 inline-block">
                         {typeof roomType.view === 'string' ? roomType.view.replace('_', ' ') : roomType.view}
                       </span>
                     )}
                     {roomType.size && (
-                      <span className="text-sm font-medium px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 mt-2 inline-block ml-2">
+                      <span className="text-sm font-medium px-2.5 py-1 rounded-lg bg-muted text-foreground mt-2 inline-block ml-2">
 
                         Size: {roomType.size} m²
                       </span>
@@ -492,11 +492,11 @@ const StubaRoomList = ({
               </div>
 
               {/* Desktop Table Header */}
-              <div className="hidden lg:grid grid-cols-5 text-xs uppercase text-black font-bold bg-[#dcdcdc] border-y border-gray-200">
-                <div className="py-3 px-4 border-r border-gray-500">Room</div>
-                <div className="py-3 px-4 border-r border-gray-500">Meals</div>
-                <div className="py-3 px-4 border-r border-gray-500">Cancellation</div>
-                <div className="py-3 px-4 border-r border-gray-500">NET Price</div>
+              <div className="hidden lg:grid grid-cols-5 text-xs uppercase text-surface-foreground font-bold bg-[#dcdcdc] border-y border-border">
+                <div className="py-3 px-4 border-r border-border">Room</div>
+                <div className="py-3 px-4 border-r border-border">Meals</div>
+                <div className="py-3 px-4 border-r border-border">Cancellation</div>
+                <div className="py-3 px-4 border-r border-border">NET Price</div>
                 <div className="py-3 px-4"> </div>
               </div>
 
@@ -527,42 +527,42 @@ const StubaRoomList = ({
                       return (
                         <div
                           key={uniqueKey}
-                          className={`grid grid-cols-5 items-center transition-all ${isSelected ? "bg-red-50 border-l-4 border-red-500" : "hover:bg-gray-50"
+                          className={`grid grid-cols-5 items-center transition-all ${isSelected ? "bg-muted border-l-4 border-red-500" : "hover:bg-muted"
                             }`}
                         >
-                          <div className="p-4 border-r border-gray-200">
-                            <div className="font-medium text-black">{ratePlan.name || ratePlan.mealType}</div>
-                            <div className="text-sm text-gray-600 capitalize">{ratePlan.smokingType}</div>
+                          <div className="p-4 border-r border-border">
+                            <div className="font-medium text-surface-foreground">{ratePlan.name || ratePlan.mealType}</div>
+                            <div className="text-sm text-muted-foreground capitalize">{ratePlan.smokingType}</div>
                           </div>
-                          <div className="p-4 border-r border-gray-200 text-sm text-gray-800">
+                          <div className="p-4 border-r border-border text-sm text-foreground">
                             {ratePlan.mealType}
                           </div>
-                          <div className="p-4 border-r justify-between border-gray-200 text-sm text-gray-800 relative group flex items-center gap-1">
+                          <div className="p-4 border-r justify-between border-border text-sm text-foreground relative group flex items-center gap-1">
                             <span className="cursor-pointer">
                               {cancellation.staticDate}
                             </span>
-                            <Info size={14} className="text-gray-400 cursor-pointer" />
+                            <Info size={14} className="text-muted-foreground cursor-pointer" />
                             {ratePlan.rawPricing?.cancellation_policy && (
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-secondary text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
                                 {getFormattedCancellationPolicy(ratePlan.rawPricing.cancellation_policy)}
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-800"></div>
                               </div>
                             )}
                           </div>
-                          <div className="p-4 border-r border-gray-200 text-right">
+                          <div className="p-4 border-r border-border text-right">
                             <div className="flex items-center justify-end gap-2 flex-wrap">
                               {hasDiscount && (
-                                <span className="text-sm text-gray-500 line-through">
+                                <span className="text-sm text-muted-foreground line-through">
                                   {displayOriginal}
                                 </span>
                               )}
-                              <span className={`text-xl font-bold ${hasDiscount ? "text-black-600" : "text-black"}`}>
+                              <span className={`text-xl font-bold ${hasDiscount ? "text-surface-foreground-600" : "text-surface-foreground"}`}>
                                 {displayPayable}
                               </span>
                               {link_type_id === 9 && (
                                 <BadgeInfo
                                   size={14}
-                                  className="text-gray-400 cursor-pointer hover:text-[#233BA0] transition-colors"
+                                  className="text-muted-foreground cursor-pointer hover:text-[#233BA0] transition-colors"
                                   onClick={() => setBreakdownModal({ open: true, ratePlan })}
                                 />
                               )}
@@ -579,9 +579,9 @@ const StubaRoomList = ({
                               onClick={() => handleRoomSelect(ratePlan, uniqueKey)}
                               disabled={isLoading}
                               className={`px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center min-w-[110px] h-[40px] ${isSelected
-                                ? "bg-red-500 text-white shadow-md"
-                                : "bg-[#D3202D] text-white hover:bg-red-700"
-                                } disabled:bg-gray-400 disabled:cursor-wait`}
+                                ? "bg-muted0 text-white shadow-md"
+                                : "bg-primary text-white hover:bg-red-700"
+                                } disabled:bg-secondary disabled:cursor-wait`}
                             >
                               {isLoading ? (
                                 <LoaderSvg className="h-5 w-5" />
@@ -622,25 +622,25 @@ const StubaRoomList = ({
                       return (
                         <div
                           key={uniqueKey}
-                          className={`flex-shrink-0 w-[280px] border rounded-xl transition-all ${isSelected ? "bg-red-50 border-red-300" : "bg-white border-gray-200"
+                          className={`flex-shrink-0 w-[280px] border rounded-xl transition-all ${isSelected ? "bg-muted border-red-300" : "bg-surface border-border"
                             }`}
                         >
                           <div className="p-4 flex flex-col h-full">
                             <div className="flex-grow space-y-3">
-                              <div className="pb-3 border-b border-gray-200">
-                                <div className="font-medium text-black">{ratePlan.name || ratePlan.mealType}</div>
+                              <div className="pb-3 border-b border-border">
+                                <div className="font-medium text-surface-foreground">{ratePlan.name || ratePlan.mealType}</div>
                               </div>
-                              <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
-                                <span className="font-medium text-gray-800">Meal</span>
+                              <div className="flex justify-between text-sm pb-3 border-b border-border">
+                                <span className="font-medium text-foreground">Meal</span>
                                 <span>{ratePlan.mealType}</span>
                               </div>
-                              <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
-                                <span className="font-medium text-gray-800">Cancellation</span>
+                              <div className="flex justify-between text-sm pb-3 border-b border-border">
+                                <span className="font-medium text-foreground">Cancellation</span>
                                 <span className="relative group flex items-center gap-1">
                                   <span className="cursor-pointer">{cancellation.staticDate}</span>
-                                  <Info size={14} className="text-gray-400 cursor-pointer" />
+                                  <Info size={14} className="text-muted-foreground cursor-pointer" />
                                   {ratePlan.rawPricing?.cancellation_policy && (
-                                    <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                                    <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-secondary text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
                                       {getFormattedCancellationPolicy(ratePlan.rawPricing.cancellation_policy)}
                                       <div className="absolute top-full right-3 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-800"></div>
                                     </div>
@@ -651,17 +651,17 @@ const StubaRoomList = ({
                                 <div className="text-right">
                                   <div className="flex items-center justify-end gap-2 flex-wrap">
                                     {hasDiscount && (
-                                      <span className="text-sm text-gray-500 line-through">
+                                      <span className="text-sm text-muted-foreground line-through">
                                         {displayOriginal}
                                       </span>
                                     )}
-                                    <span className={`text-2xl font-bold ${hasDiscount ? "text-black-600" : "text-black"}`}>
+                                    <span className={`text-2xl font-bold ${hasDiscount ? "text-surface-foreground-600" : "text-surface-foreground"}`}>
                                       {displayPayable}
                                     </span>
                                     {link_type_id === 9 && (
                                       <BadgeInfo
                                         size={14}
-                                        className="text-gray-400 cursor-pointer hover:text-[#233BA0] transition-colors"
+                                        className="text-muted-foreground cursor-pointer hover:text-[#233BA0] transition-colors"
                                         onClick={() => setBreakdownModal({ open: true, ratePlan })}
                                       />
                                     )}
@@ -679,9 +679,9 @@ const StubaRoomList = ({
                                 onClick={() => handleRoomSelect(ratePlan, uniqueKey)}
                                 disabled={isLoading}
                                 className={`w-full px-6 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center h-[48px] ${isSelected
-                                  ? "bg-red-500 text-white shadow-md"
-                                  : "bg-[#D3202D] text-white hover:bg-red-700"
-                                  } disabled:bg-gray-400 disabled:cursor-wait`}
+                                  ? "bg-muted0 text-white shadow-md"
+                                  : "bg-primary text-white hover:bg-red-700"
+                                  } disabled:bg-secondary disabled:cursor-wait`}
                               >
                                 {isLoading ? (
                                   <LoaderSvg className="h-6 w-6" />
@@ -699,11 +699,11 @@ const StubaRoomList = ({
                   </div>
                 )
               ) : (
-                <div className="p-8 text-center text-gray-500">No rate plans available for this room type.</div>
+                <div className="p-8 text-center text-muted-foreground">No rate plans available for this room type.</div>
               )}
 
               {link_type_id === 9 && roomType.ratePlans.length > 1 && (
-                <div className="p-4 border-t border-gray-200 text-center">
+                <div className="p-4 border-t border-border text-center">
                   <button
                     onClick={() => toggleExpandedRoom(roomType.id)}
                     className="text-sm text-[#233BA0] font-semibold hover:underline"
@@ -802,7 +802,7 @@ const RoomTypes = ({
   if (!roomsToDisplay || roomsToDisplay.length === 0) {
     return (
       <div className="px-4 sm:px-6 lg:px-12 py-16 text-center">
-        <p className="text-xl text-gray-400">No rooms available for selected dates</p>
+        <p className="text-xl text-muted-foreground">No rooms available for selected dates</p>
       </div>
     );
   }

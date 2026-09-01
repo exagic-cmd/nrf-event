@@ -63,12 +63,12 @@ function FilterSection({
               type="checkbox"
               checked={checkedOptions.includes(label)}
               onChange={() => handleCheckboxChange(label)}
-              className="w-4 h-4 rounded-sm bg-white checked:bg-[#FE6F4F] appearance-none border border-gray-300 checked:border-[#FE6F4F] relative cursor-pointer
+              className="w-4 h-4 rounded-sm bg-surface checked:bg-[#FE6F4F] appearance-none border border-border checked:border-[#FE6F4F] relative cursor-pointer
               before:content-['✓'] before:absolute before:left-[2px] before:top-[-2px] before:text-white before:text-[12px] before:opacity-0 checked:before:opacity-100"
             />
             <span>{label}</span>
             {count !== undefined && (
-              <span className="ml-auto text-xs text-gray-400">{count}</span>
+              <span className="ml-auto text-xs text-muted-foreground">{count}</span>
             )}
           </li>
         ))}
@@ -77,19 +77,19 @@ function FilterSection({
       {isPriceFilter && (
         <div className="flex items-center gap-2 mt-3">
           <div className="flex-1">
-            <label className="text-xs text-gray-500 mb-1 block">{t("filterSection.min")}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("filterSection.min")}</label>
             <input
               type="number"
               placeholder="0"
-              className="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#FE6F4F]"
+              className="w-full border border-border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#FE6F4F]"
             />
           </div>
           <div className="flex-1">
-            <label className="text-xs text-gray-500 mb-1 block">{t("filterSection.max")}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("filterSection.max")}</label>
             <input
               type="number"
               placeholder="500+"
-              className="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#FE6F4F]"
+              className="w-full border border-border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#FE6F4F]"
             />
           </div>
         </div>

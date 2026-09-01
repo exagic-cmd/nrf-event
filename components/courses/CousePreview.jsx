@@ -10,7 +10,7 @@ import Image from "next/image"
 
 export default function SingaporeCoursesList({ courses, faqData, onCourseClick }) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Hero Banner */}
       <section className="relative bg-gradient-to-r from-[#FE6F4F] to-[#FE6F4F]/80 text-white">
         <div className="absolute inset-0">
@@ -29,13 +29,13 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
               and experiences that make Singapore unique.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+              <Badge variant="secondary" className="bg-surface/20 text-white hover:bg-surface/30">
                 4 Comprehensive Courses
               </Badge>
-              <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+              <Badge variant="secondary" className="bg-surface/20 text-white hover:bg-surface/30">
                 Professional Certificate
               </Badge>
-              <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+              <Badge variant="secondary" className="bg-surface/20 text-white hover:bg-surface/30">
                 Self-Paced Learning
               </Badge>
             </div>
@@ -47,8 +47,8 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Courses Offered</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Courses Offered</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Explore our comprehensive curriculum designed to make you a Singapore destination expert
             </p>
           </div>
@@ -73,13 +73,13 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
                   </div>
                 </div>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-[#FE6F4F] transition-colors">
+                  <CardTitle className="text-lg font-semibold text-foreground group-hover:text-[#FE6F4F] transition-colors">
                     {course.title}
                   </CardTitle>
-                  <CardDescription className="text-sm text-gray-600">{course.description}</CardDescription>
+                  <CardDescription className="text-sm text-muted-foreground">{course.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                     <div className="flex items-center space-x-1">
                       <Clock className="w-4 h-4" />
                       <span>{course.duration}</span>
@@ -111,11 +111,11 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
       </section>
 
       {/* All You Need to Know */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-surface">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">All You Need to Know</h2>
-            <p className="text-lg text-gray-600">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">All You Need to Know</h2>
+            <p className="text-lg text-muted-foreground">
               Frequently asked questions about our Singapore Destination Specialist program
             </p>
           </div>
@@ -125,12 +125,12 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="border border-gray-200 rounded-lg px-6 shadow-sm hover:shadow-md transition-shadow"
+                className="border border-border rounded-lg px-6 shadow-sm hover:shadow-md transition-shadow"
               >
-                <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-[#FE6F4F] py-6">
+                <AccordionTrigger className="text-left font-semibold text-foreground hover:text-[#FE6F4F] py-6">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-6">{faq.answer}</AccordionContent>
+                <AccordionContent className="text-muted-foreground pb-6">{faq.answer}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
@@ -144,7 +144,7 @@ export default function SingaporeCoursesList({ courses, faqData, onCourseClick }
           <p className="text-xl mb-8 opacity-90">
             Join thousands of travel professionals who have enhanced their expertise with our comprehensive program
           </p>
-          <Button size="lg" className="bg-white text-[#FE6F4F] hover:bg-gray-100 font-semibold px-8 py-3 text-lg">
+          <Button size="lg" className="bg-surface text-[#FE6F4F] hover:bg-muted font-semibold px-8 py-3 text-lg">
             Start Your Journey Today
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>

@@ -54,11 +54,11 @@ function DaytourCard({ tour, category = "daytour" }) {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
+          <div className="bg-surface p-6 rounded-lg shadow-xl text-center">
             <p className="mb-4">This tour is already in your cart</p>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-[#D3202D] text-white px-4 py-2 rounded"
+              className="bg-primary text-white px-4 py-2 rounded"
             >
               Close
             </button>
@@ -68,10 +68,10 @@ function DaytourCard({ tour, category = "daytour" }) {
 
       {/* Card */}
 <div
-  className="relative border rounded-xl mb-3 shadow-sm bg-white w-full max-w-4xl mx-auto overflow-hidden flex flex-col md:flex-row gap-4 hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
+  className="relative border rounded-xl mb-3 shadow-sm bg-surface w-full max-w-4xl mx-auto overflow-hidden flex flex-col md:flex-row gap-4 hover:shadow-lg hover:-translate-y-0.5 transform transition-all"
 >
   {isLoading && (
-    <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
+    <div className="absolute inset-0 bg-surface/70 flex justify-center items-center z-20 rounded-xl">
       <SvgLoader />
     </div>
   )}
@@ -89,7 +89,7 @@ function DaytourCard({ tour, category = "daytour" }) {
 
     {/* Feature Badge */}
     {tour.feature_name && (
-      <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white rounded-md bg-[#D3202D]">
+      <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white rounded-md bg-primary">
         <Star size={10} />
         <span>{tour.feature_name}</span>
       </span>
@@ -100,18 +100,18 @@ function DaytourCard({ tour, category = "daytour" }) {
   <div className="flex-1 flex flex-col justify-between p-4">
   <div>
     <div className="flex justify-between items-start gap-2">
-      <h2 className="font-bold text-lg line-clamp-2 text-[#D3202D] flex-grow">
+      <h2 className="font-bold text-lg line-clamp-2 text-primary flex-grow">
         {tour.name}
       </h2>
      {tour.duration && (
       <div className="flex flex-shrink-0 items-center gap-1">
-        <Clock size={14} className="text-gray-500" />
-        <span className="whitespace-nowrap pl-2 text-xs text-gray-600">{tour.duration}</span>
+        <Clock size={14} className="text-muted-foreground" />
+        <span className="whitespace-nowrap pl-2 text-xs text-muted-foreground">{tour.duration}</span>
       </div>
     )}
     </div>
 
-    <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+    <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
       {tour.description}
     </p>
 
@@ -125,7 +125,7 @@ function DaytourCard({ tour, category = "daytour" }) {
         {tour.preference_activities?.map((activity, idx) => (
           <span
             key={idx}
-            className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full"
+            className="px-1.5 py-0.5 bg-muted text-muted-foreground text-[11px] rounded-full"
           >
             {activity}
           </span>
@@ -134,7 +134,7 @@ function DaytourCard({ tour, category = "daytour" }) {
       {tour.preference_activities && tour.preference_activities.length > 4 && (
         <button
           onClick={() => setActivitiesExpanded(!activitiesExpanded)}
-          className="absolute -right-2 -top-1 bg-white rounded-full p-0.5 text-gray-500 hover:text-gray-800"
+          className="absolute -right-2 -top-1 bg-surface rounded-full p-0.5 text-muted-foreground hover:text-foreground"
           aria-label={activitiesExpanded ? "Show less activities" : "Show more activities"}
         >
           <ChevronDown
@@ -149,40 +149,40 @@ function DaytourCard({ tour, category = "daytour" }) {
   </div>
 
   {/* New Info Section */}
-  {/* <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-gray-700">
+  {/* <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-muted-foreground">
      */}
 
     {/* {tour.physical_aspect && tour.physical_aspect.length > 0 && (
       <div className="flex items-center gap-1" title={`Physical: ${tour.physical_aspect.join(', ')}`}>
-        <Footprints size={14} className="text-gray-500" />
+        <Footprints size={14} className="text-muted-foreground" />
         <span>{tour.physical_aspect[0]}</span>
       </div>
     )}
 
     {tour.activity_intensity && tour.activity_intensity.length > 0 && (
       <div className="flex items-center gap-1" title={`Intensity: ${tour.activity_intensity.join(', ')}`}>
-        <Zap size={14} className="text-gray-500" />
+        <Zap size={14} className="text-muted-foreground" />
         <span>{tour.activity_intensity[0]}</span>
       </div>
     )} */}
 
     {/* {tour.tourtype && (
       <div className="flex items-center gap-1">
-        <Calendar size={14} className="text-gray-500" />
+        <Calendar size={14} className="text-muted-foreground" />
         <span>{tour.tourtype}</span>
       </div>
     )}
 
     {tour.shareTour && (
       <div className="flex items-center gap-1">
-        <Users size={14} className="text-gray-500" />
+        <Users size={14} className="text-muted-foreground" />
         <span>{tour.shareTour ? "Guided" : "Self-guided"}</span>
       </div>
     )}
 
     {tour.guidelanguage && (
       <div className="flex items-center gap-1">
-        <Star size={14} className="text-gray-500" />
+        <Star size={14} className="text-muted-foreground" />
         <span>{tour.guidelanguage}</span>
       </div>
     )}
@@ -194,11 +194,11 @@ function DaytourCard({ tour, category = "daytour" }) {
       {/* Price display */}
       <div className="flex items-center gap-2">
         {hasPromo && (
-          <p className="text-md text-gray-400 line-through">
+          <p className="text-md text-muted-foreground line-through">
            {tour.currency || "SGD"} {formatPrice(tour.originalPrice)} 
           </p>
         )}
-        <p className="text-xl font-bold text-[#D3202D]">
+        <p className="text-xl font-bold text-primary">
           {tour.currency || "SGD"} {formatPrice(tour.price)} 
         </p>
       </div>
@@ -208,7 +208,7 @@ function DaytourCard({ tour, category = "daytour" }) {
     <button
       type="button"
       onClick={handleBookNow}
-      className="rounded-lg bg-[#D3202D] text-white px-5 py-2.5 font-semibold active:bg-[#b71c1c] transition cursor-pointer flex items-center justify-center min-w-[120px] min-h-[44px]"
+      className="rounded-lg bg-primary text-white px-5 py-2.5 font-semibold active:bg-[#b71c1c] transition cursor-pointer flex items-center justify-center min-w-[120px] min-h-[44px]"
     >
       {isLoading ? (
         <span className="flex items-center justify-center">

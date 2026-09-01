@@ -31,13 +31,13 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
       <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6 sm:py-8">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 sm:mb-6 transition-colors"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 sm:mb-6 transition-colors"
         >
           <ArrowLeft size={20} />
           <span className="text-sm sm:text-base">{t("back")}</span>
         </button>
 
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
+        <div className="bg-surface rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="relative h-48 sm:h-64 md:h-80">
             <img
@@ -59,10 +59,10 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
           {/* Review Form */}
           <div className="p-4 sm:p-8 md:p-12 space-y-6 sm:space-y-8">
             <div className="text-center mb-3 sm:mb-4">
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">
+              <h2 className="text-lg sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
                 {t("howWasExperience")}
               </h2>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 {t("feedbackHelps")}
               </p>
             </div>
@@ -100,7 +100,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
             />
 
             <div className="space-y-2 sm:space-y-3">
-              <label className="block text-base sm:text-lg font-semibold text-gray-800">
+              <label className="block text-base sm:text-lg font-semibold text-foreground">
                 {t("tellUsMore")}
               </label>
               <textarea
@@ -108,7 +108,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
                 onChange={(e) =>
                   setReviewData({ ...reviewData, comments: e.target.value })
                 }
-                className="w-full p-3 sm:p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-28 sm:h-32"
+                className="w-full p-3 sm:p-4 border-2 border-border rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-28 sm:h-32"
                 placeholder={t("shareThoughts")}
               />
             </div>
@@ -116,13 +116,13 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
               <button
                 onClick={onBack}
-                className="flex-1 px-5 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors text-sm sm:text-base"
+                className="flex-1 px-5 py-3 border-2 border-border text-muted-foreground rounded-xl font-semibold hover:bg-muted transition-colors text-sm sm:text-base"
               >
                 {t("cancel")}
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-5 py-3 bg-[#D3202D] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+                className="flex-1 px-5 py-3 bg-primary text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
               >
                 {t("submitReview")}
               </button>

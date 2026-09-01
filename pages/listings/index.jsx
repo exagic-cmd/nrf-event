@@ -503,7 +503,7 @@ useEffect(() => {
         return (
           <div className="text-white text-center py-12">
             <h2 className="text-2xl font-bold mb-4">Search for Day Tours</h2>
-            <p className="text-gray-400">Enter your destination to find amazing day tours</p>
+            <p className="text-muted-foreground">Enter your destination to find amazing day tours</p>
           </div>
         );
       case "accommodation":
@@ -511,18 +511,18 @@ useEffect(() => {
         return (
           <div className="text-white text-center py-12">
             <h2 className="text-2xl font-bold mb-4">Search for Accommodations</h2>
-            <p className="text-gray-400">Enter your destination to find the perfect stay</p>
+            <p className="text-muted-foreground">Enter your destination to find the perfect stay</p>
           </div>
         );
       case "transfer":
         if (hasValidTransferSearch) return renderListComponent(); // A search was attempted but had no results
         // fallthrough for initial placeholder
       default:
-//         return  (<div className="text-center py-16 bg-white rounded-xl shadow-md">
-//           {/* <h3 className="text-xl font-semibold text-gray-800">
+//         return  (<div className="text-center py-16 bg-surface rounded-xl shadow-md">
+//           {/* <h3 className="text-xl font-semibold text-foreground">
 //             { t('results.noTransfersFound') || "Please search for a transfer"}
 //           </h3> */}
-//           <p className="text-gray-500 mt-2">
+//           <p className="text-muted-foreground mt-2">
 //  Use the search filter above to find available transfers.
 //           </p>
 //         </div>);
@@ -538,17 +538,17 @@ useEffect(() => {
 
   return (
     <Layout>
-      <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-[#f4f4f4]">
+      <div className="relative mt-12 md:mt-20 pt-6 pb-44 bg-background">
         <div className="px-6 mt-4">
           {/* Collapsible Search Filter Toggle for Mobile */}
           <div className="lg:hidden mb-2">
             <button
               onClick={() => setIsSearchFilterVisible(!isSearchFilterVisible)}
-              className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-md text-left"
+              className="w-full flex items-center justify-between p-4 bg-surface rounded-lg shadow-md text-left"
             >
-              <span className="font-semibold text-lg text-gray-800">Modify Search</span>
+              <span className="font-semibold text-lg text-foreground">Modify Search</span>
               <ChevronDown
-                className={`h-6 w-6 text-gray-600 transition-transform duration-300 ${
+                className={`h-6 w-6 text-muted-foreground transition-transform duration-300 ${
                   isSearchFilterVisible ? "rotate-180" : ""
                 }`}
               />
@@ -629,7 +629,7 @@ useEffect(() => {
             <div className="lg:hidden w-full mb-2 mt-4 "ref={resultsRef}>
               <button
                 onClick={() => setShowFilterModal(true)}
-                className="w-full border text-[#D3202D] bg-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300 flex items-center justify-center gap-2"
+                className="w-full border border-primary text-primary bg-card font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-primary/10 transition-colors duration-300 flex items-center justify-center gap-2"
               >
                 <Filter size={20} />
                 <span>Filters</span>
@@ -669,10 +669,10 @@ useEffect(() => {
 
         {/* Filter Modal for Small Screens */}
         {showFilterModal && (
-          <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
+          <div className="fixed inset-0 z-[100] bg-surface overflow-y-auto">
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-bold">Filters</h2>
-              <button onClick={() => setShowFilterModal(false)} className="text-gray-600 hover:text-gray-900">
+              <button onClick={() => setShowFilterModal(false)} className="text-muted-foreground hover:text-foreground">
                 <X size={24} />
               </button>
             </div>
@@ -690,10 +690,10 @@ useEffect(() => {
                 <FilterSidebar />
               )}
             </div>
-            <div className="sticky bottom-0 bg-white p-4 border-t shadow-lg">
+            <div className="sticky bottom-0 bg-surface p-4 border-t shadow-lg">
               <button
                 onClick={() => setShowFilterModal(false)} 
-                className="w-full bg-[#D3202D] text-white font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-[#b71c1c] active:bg-[#a31919] transition-colors duration-300"
+                className="w-full bg-primary text-primary-foreground font-semibold text-base px-6 py-3 rounded-lg shadow-md hover:bg-primary-hover transition-colors duration-300"
               >
                 Show Results
               </button>

@@ -70,7 +70,7 @@ useEffect(() => {
   return (
     <div className="flex-1  py-6 md:py-8 space-y-6">
       {/* Totals Card */}
-      <div className="bg-[#D3202D] rounded-2xl p-4">
+      <div className="bg-primary rounded-2xl p-4">
         <p className="mb-2 text-[12px] text-white md:text-sm">
           Airport Transfer by our luxury cars
         </p>
@@ -115,12 +115,12 @@ useEffect(() => {
 
       {/* Locations Section */}
       <div>
-        <h3 className="text-md md:text-2xl font-bold text-black mb-4">
+        <h3 className="text-md md:text-2xl font-bold text-surface-foreground mb-4">
           Visited Locations ({locations.length})
         </h3>
 
         {/* Map */}
-        <div className="mb-8 rounded-xl overflow-hidden border border-gray-700">
+        <div className="mb-8 rounded-xl overflow-hidden border border-border">
           <TourMap locations={locations} />
         </div>
 
@@ -177,7 +177,7 @@ useEffect(() => {
                   
               </>
             ) : (
-              <p  className="text-sm text-black font font-semibold">No audio found for this guide & language.</p>
+              <p  className="text-sm text-surface-foreground font font-semibold">No audio found for this guide & language.</p>
             )}
           </div>
         )}
@@ -187,7 +187,7 @@ useEffect(() => {
               {/* <button
                 onClick={handleStartTour}
                 disabled={loading}
-                className="px-2 py-3 bg-[#D3202D]   text-black font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
+                className="px-2 py-3 bg-primary   text-surface-foreground font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? "Starting..." : "Start Tour"}
               </button> */}

@@ -40,18 +40,18 @@ const AccommodationHotelDetail = ({ hotelData }) => {
   // --- Iconshere ---
   const amenityIcons = {
     Popular: <Flame size={20} className="text-orange-500" />,
-    Rooms: <Bed size={20} className="text-gray-500" />,
-    General: <Info size={20} className="text-gray-500" />,
-    Accessibility: <Accessibility size={20} className="text-gray-500" />,
-    Meals: <Utensils size={20} className="text-gray-500" />,
-    Internet: <Wifi size={20} className="text-gray-500" />,
-    Transfer: <Plane size={20} className="text-gray-500" />,
-    "Languages Spoken": <Languages size={20} className="text-gray-500" />,
-    Business: <Briefcase size={20} className="text-gray-500" />,
-    Sports: <Dumbbell size={20} className="text-gray-500" />,
-    "Beauty and wellness": <Sparkles size={20} className="text-gray-500" />,
-    Kids: <Baby size={20} className="text-gray-500" />,
-    default: <CheckCircle size={20} className="text-gray-500" />,
+    Rooms: <Bed size={20} className="text-muted-foreground" />,
+    General: <Info size={20} className="text-muted-foreground" />,
+    Accessibility: <Accessibility size={20} className="text-muted-foreground" />,
+    Meals: <Utensils size={20} className="text-muted-foreground" />,
+    Internet: <Wifi size={20} className="text-muted-foreground" />,
+    Transfer: <Plane size={20} className="text-muted-foreground" />,
+    "Languages Spoken": <Languages size={20} className="text-muted-foreground" />,
+    Business: <Briefcase size={20} className="text-muted-foreground" />,
+    Sports: <Dumbbell size={20} className="text-muted-foreground" />,
+    "Beauty and wellness": <Sparkles size={20} className="text-muted-foreground" />,
+    Kids: <Baby size={20} className="text-muted-foreground" />,
+    default: <CheckCircle size={20} className="text-muted-foreground" />,
   };
 
   const getAmenityIcon = (category) => {
@@ -60,7 +60,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
       return <img src={iconUrl} alt={category.name} className="w-5 h-5 object-contain" />;
     }
     // Fallback to mapped icons if no URL
-    return amenityIcons[category?.name] || <ImageIcon size={20} className="text-gray-500" />;
+    return amenityIcons[category?.name] || <ImageIcon size={20} className="text-muted-foreground" />;
   };
   const product = hotelData?.normalizedHotelData || {}; // Use normalized data directly
   const hasData = Object.keys(product).length > 0;
@@ -69,39 +69,39 @@ const AccommodationHotelDetail = ({ hotelData }) => {
 
   if (!hasData)
     return (
-      <div className="p-8 text-center text-gray-500">
+      <div className="p-8 text-center text-muted-foreground">
         Loading hotel information...
       </div>
     );
 
   return (
     <div>
-      <div className="space-y-6 mt-12 font-sans text-gray-800  ">
+      <div className="space-y-6 mt-12 font-sans text-foreground  ">
         {/* desc*/}
-        <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="p-4 bg-surface rounded-xl shadow-sm border border-border">
           <h2 className="text-xl font-bold mb-5">The hotel's description</h2>
 
           <div className="flex flex-col lg:flex-row gap-10">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-3 text-gray-900 text-sm font-semibold uppercase tracking-wide">
-                <MapPin size={16} className="text-gray-500" />
+              <div className="flex items-center gap-2 mb-3 text-foreground text-sm font-semibold uppercase tracking-wide">
+                <MapPin size={16} className="text-muted-foreground" />
                 <span>{product?.address || FALLBACKS.address}</span>
               </div>
 
               <div className="relative">
                 {/* {product.short_desc && (
-                  <p className="text-gray-800 text-[15px] font-medium leading-relaxed mb-4 italic bg-gray-50 p-3 rounded-md border-l-4 border-gray-200">
+                  <p className="text-foreground text-[15px] font-medium leading-relaxed mb-4 italic bg-muted p-3 rounded-md border-l-4 border-border">
                     {product.short_desc}
                   </p>
                 )} */}
                 <div
-                  className={`text-gray-800 text-[15px] leading-relaxed transition-all duration-300 ${!isDescExpanded
+                  className={`text-foreground text-[15px] leading-relaxed transition-all duration-300 ${!isDescExpanded
                       ? "line-clamp-4 max-h-[6em] overflow-hidden"
                       : ""
                     }`}
                 >
                   <p
-                    className="whitespace-pre-line text-gray-700"
+                    className="whitespace-pre-line text-muted-foreground"
                     dangerouslySetInnerHTML={{
                       __html:
                         product?.long_desc && product.long_desc.trim().length > 0
@@ -128,26 +128,26 @@ const AccommodationHotelDetail = ({ hotelData }) => {
             </div>
 
             {/* <div className="w-full lg:w-72 shrink-0">
-      <div className="bg-gray-50 p-5 rounded-lg border border-gray-100">
-        <h3 className="text-sm font-bold text-gray-800 mb-4">Facts about the hotel</h3>
+      <div className="bg-muted p-5 rounded-lg border border-border">
+        <h3 className="text-sm font-bold text-foreground mb-4">Facts about the hotel</h3>
 
         <div className="mb-4">
-          <span className="text-xs text-gray-400 font-medium uppercase tracking-wider block mb-1">
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider block mb-1">
             Socket type
           </span>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-900 font-semibold">
+            <span className="text-sm text-foreground font-semibold">
               {hotelFacts.socket} (grounded)
             </span>
-            <Info size={14} className="text-gray-400 cursor-help" />
+            <Info size={14} className="text-muted-foreground cursor-help" />
           </div>
         </div>
 
         <div>
-          <span className="text-xs text-gray-400 font-medium uppercase tracking-wider block mb-1">
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider block mb-1">
             Voltage
           </span>
-          <div className="text-sm text-gray-900 font-semibold">
+          <div className="text-sm text-foreground font-semibold">
             {hotelFacts.voltage} / 50 Hz
           </div>
         </div>
@@ -176,7 +176,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
           }
           if (sortedAmenities.length === 0) return null;
           return (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-surface p-6 rounded-xl shadow-sm border border-border">
               <h2 className="text-xl font-bold mb-8">Services and amenities</h2>
 
               <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
@@ -197,7 +197,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                       <div className="flex items-center gap-3 mb-4">
                         {getAmenityIcon(category)}
                         <h3
-                          className={`font-bold text-[16px] ${isPopular ? "text-orange-600" : "text-gray-900"
+                          className={`font-bold text-[16px] ${isPopular ? "text-orange-600" : "text-foreground"
                             }`}
                         >
                           {category?.name || FALLBACKS.amenityCategory}
@@ -208,9 +208,9 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                         {subItems.map((item, subIndex) => (
                           <li
                             key={item?.id || subIndex}
-                            className="flex items-start text-[14px] text-gray-600 pl-1 group"
+                            className="flex items-start text-[14px] text-muted-foreground pl-1 group"
                           >
-                            <span className="mr-2 text-gray-400 text-[10px] mt-1 group-hover:text-blue-400 transition-colors">
+                            <span className="mr-2 text-muted-foreground text-[10px] mt-1 group-hover:text-blue-400 transition-colors">
                               ●
                             </span>
                             <span className="leading-snug">{item?.text || item}</span>

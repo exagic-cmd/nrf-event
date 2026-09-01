@@ -35,11 +35,11 @@ function AffiliateDiscloserSection() {
 
         <div className="justify-items-center mb-6">
           <p className="text-[#FE6F4F] text-lg font-semibold mb-2">Why Join</p>
-          <h2 className="text-xl md:text-4xl font-bold text-gray-900 mb-6">
+          <h2 className="text-xl md:text-4xl font-bold text-foreground mb-6">
             Our Affiliate Program
           </h2>
         </div>
-      <div className="grid md:grid-cols-2 gap-12 items-center bg-white">
+      <div className="grid md:grid-cols-2 gap-12 items-center bg-surface">
         {/* Text Section */}
         <div>
 
@@ -48,8 +48,8 @@ function AffiliateDiscloserSection() {
               <div key={index} className="flex items-start space-x-4">
                 <div className="flex-shrink-0 pt-1">{feature.icon}</div>
                 <div>
-                  <h4 className="text-md font-semibold text-gray-800">{feature.title}</h4>
-                  <p className="text-gray-600 text-sm">{feature.desc}</p>
+                  <h4 className="text-md font-semibold text-foreground">{feature.title}</h4>
+                  <p className="text-muted-foreground text-sm">{feature.desc}</p>
                 </div>
               </div>
             ))}

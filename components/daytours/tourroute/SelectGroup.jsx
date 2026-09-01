@@ -69,7 +69,7 @@ export default function SelectGroup({
       <div className="px-2 md:px-4">
         <div className="flex justify-between w-full mb-2 gap-1">
           <p
-            className=" text-sm text-[#D3202D] font-semibold lg:text-lg"
+            className=" text-sm text-primary font-semibold lg:text-lg"
             style={{ color: colorheading }}
           >
             Select Your Guide & Language
@@ -78,7 +78,7 @@ export default function SelectGroup({
   {/* Globe Icon */}
   <Globe
     size={18}
-    className="absolute left-2 top-4 -translate-y-1/2 text-[#D3202D] pointer-events-none"
+    className="absolute left-2 top-4 -translate-y-1/2 text-primary pointer-events-none"
   />
 
   {/* Language Select */}
@@ -86,7 +86,7 @@ export default function SelectGroup({
     value={selectedLanguage}
     onChange={(e) => setSelectedLanguage(e.target.value)}
     style={{ backgroundColor: colortext, color: colorheading }}
-    className="border border-gray-700 rounded-lg pl-8 pr-2 py-1 appearance-none focus:outline-none focus:ring-2 focus:ring-[#D3202D] transition-all"
+    className="border border-border rounded-lg pl-8 pr-2 py-1 appearance-none focus:outline-none focus:ring-2 focus:ring-[#D3202D] transition-all"
   >
     <option value="">Select language</option>
     {languages.map((lang) => (
@@ -115,8 +115,8 @@ export default function SelectGroup({
                 <div
                   className={`w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-4 ${
                     isSelected
-                      ? "border-[#D3202D] shadow-[0_0_10px_#D3202D]"
-                      : "border-gray-600"
+                      ? "border-primary shadow-[0_0_10px_#D3202D]"
+                      : "border-border"
                   } flex items-center justify-center transition-all duration-300`}
                 >
                   <img
@@ -144,7 +144,7 @@ export default function SelectGroup({
             <button
               onClick={handleStartTour}
               disabled={loading}
-              className="w-full sm:w-auto px-4 py-2 bg-[#D3202D]   text-white font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2 bg-primary   text-white font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
             >
               {loading ? "Starting..." : "Start Tour"}
             </button>
@@ -152,7 +152,7 @@ export default function SelectGroup({
             <button
               onClick={onReview}
               disabled={!selectedGuide || !selectedLanguage || reviewDisabled}
-              className="w-full sm:w-auto px-4 py-2 bg-[#D3202D]   text-white font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2 bg-primary   text-white font-semibold rounded-lg shadow-md transition-all duration-300 disabled:opacity-50"
             >
               Preview
             </button>

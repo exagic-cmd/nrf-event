@@ -30,14 +30,14 @@ export default function BannerSection() {
           onClick={() => window.open("https://partner.airporttransfers.ai/register", "_blank")}
           className="flex flex-wrap md:flex-nowrap items-center gap-4"
         >
-          <button className="bg-[#CC9A55] text-white hover:bg-[#f3b45e] font-medium py-3 px-6 md:py-4 text-sm md:text-md rounded-full flex items-center">
+          <button className="bg-brand-secondary text-white hover:bg-[#f3b45e] font-medium py-3 px-6 md:py-4 text-sm md:text-md rounded-full flex items-center">
             {t('banner.register')}
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
-          <button className="p-2 bg-white rounded-full hover:bg-gray-100 shadow">
+          <button className="p-2 bg-surface rounded-full hover:bg-muted shadow">
             <svg className="w-6 h-6 text-[#CC9A55]" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
             </svg>

@@ -390,11 +390,11 @@ useEffect(() => {
 
   const CustomInput = React.forwardRef(({ value, onClick, className, placeholder }, ref) => (
     <div
-      className={`${className} w-full cursor-pointer border border-gray-200 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring--[#D3202D] focus:border-red-300 text-left bg-white hover:border--[#D3202D] transition-colors h-12`}
+      className={`${className} w-full cursor-pointer border border-border text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-left bg-surface hover:border-primary transition-colors h-12`}
       onClick={onClick}
       ref={ref}
     >
-      {value ? value : <span className="text-gray-500">{placeholder}</span>}
+      {value ? value : <span className="text-muted-foreground">{placeholder}</span>}
     </div>
   ))
 
@@ -407,19 +407,19 @@ useEffect(() => {
         <CardContent className="p-6 space-y-6">
           {/* Passenger Count */}
           <div className="space-y-3">
-            <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#D3202D]" />
-              {categoryId === 2 ? (t("totalPax","Total Pax") || "Total Pax") : t("bookingForm.totalPax")} <span className="text-red-500">*</span>
+            <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              {categoryId === 2 ? (t("totalPax","Total Pax") || "Total Pax") : t("bookingForm.totalPax")} <span className="text-destructive">*</span>
             </label>
             <button
               type="button"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-left flex justify-between items-center bg-white hover:border-[#D3202D] transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+              className="w-full border border-border rounded-lg px-4 py-3 text-left flex justify-between items-center bg-surface hover:border-primary transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-primary"
               onClick={handleOpenPassengerModal}
               disabled={isBookingAdded}
             >
               <span className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">
+                <Users className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">
                   {categoryId === 2 ? (
                     `${form.adults || 0} ${t("Pax") || "Pax"}`
                   ) : (
@@ -430,7 +430,7 @@ useEffect(() => {
                   )}
                 </span>
               </span>
-              <Badge variant="secondary" className="bg-[#D3202D] text-white hover:bg-[#B91C1C] ">
+              <Badge variant="secondary" className="bg-primary text-primary-foreground hover:opacity-90 ">
                 {totalPax} {t("bookingForm.total")}
               </Badge>
             </button>
@@ -454,9 +454,9 @@ useEffect(() => {
           {/* Hotel / Pickup Point */}
           {categoryId !== 2 && (
             <div className="space-y-3 ">
-              <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-                <Hotel className="w-4 h-4 text-[#D3202D]" />
-                {t("bookingForm.selectHotel")} <span className="text-red-500">*</span>
+              <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+                <Hotel className="w-4 h-4 text-primary" />
+                {t("bookingForm.selectHotel")} <span className="text-destructive">*</span>
               </label>
               <SelectField
                 required
@@ -471,16 +471,16 @@ useEffect(() => {
                 t={t}
                 isDisabled={isBookingAdded}
               />
-              {errors.hotel && <div className="text-sm text-red-500 mt-1">{t(errors.hotel)}</div>}
+              {errors.hotel && <div className="text-sm text-destructive mt-1">{t(errors.hotel)}</div>}
             </div>
           )}
 
           {/* Pickup Point - Category 2 Only */}
           {categoryId === 2 && (
             <div className="space-y-3 ">
-              <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#D3202D]" />
-                {t("Select Pickup Point") || "Select Pickup Point"} <span className="text-red-500">*</span>
+              <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary" />
+                {t("Select Pickup Point") || "Select Pickup Point"} <span className="text-destructive">*</span>
               </label>
               <StaticSelectField
                 value={form.pickupPoint ? { label: form.pickupPoint, value: form.pickupPoint } : null}
@@ -491,15 +491,15 @@ useEffect(() => {
                 isDisabled={isBookingAdded}
                 placeholder={t("Select Pickup Point") || "Select Pickup Point"}
               />
-              {errors.pickupPoint && <div className="text-sm text-red-500 mt-1">{t(errors.pickupPoint)}</div>}
+              {errors.pickupPoint && <div className="text-sm text-destructive mt-1">{t(errors.pickupPoint)}</div>}
             </div>
           )}
 
           {/* Drop-off Point - Category 2 Only */}
           {categoryId === 2 && (
             <div className="space-y-3 ">
-              <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#D3202D]" />
+              <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary" />
                 {t("Select Drop-off Point") || "Select Drop-off Point"}
               </label>
               <StaticSelectField
@@ -514,16 +514,16 @@ useEffect(() => {
                 placeholder={t("Select Drop-off Point") || "Select Drop-off Point"}
               />
               {dropoffPointGroupList?.length === 1 && (
-                <p className="text-sm text-gray-500">{t("onlyOneOption") || "Only one option available"}</p>
+                <p className="text-sm text-muted-foreground">{t("onlyOneOption") || "Only one option available"}</p>
               )}
             </div>
           )}
 
           {/* Date */}
           <div className="space-y-3">
-            <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-[#D3202D]" />
-              {t("bookingForm.selectDate")} <span className="text-red-500">*</span>
+            <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+              <CalendarDays className="w-4 h-4 text-primary" />
+              {t("bookingForm.selectDate")} <span className="text-destructive">*</span>
             </label>
           <DatePicker
   selected={
@@ -555,8 +555,8 @@ useEffect(() => {
       "-" +
       String(date.getDate()).padStart(2, "0");
     return availableDateStrings.has(localDateStr)
-      ? "bg-gray-100 text-gray-700 hover:bg-[#D3202D]"
-      : "text-gray-300 cursor-not-allowed";
+      ? "bg-muted text-muted-foreground hover:bg-primary"
+      : "text-muted-foreground cursor-not-allowed";
   }}
   customInput={React.createElement(CustomInput, { className: "w-full" })}
   wrapperClassName="w-full"
@@ -564,22 +564,22 @@ useEffect(() => {
 />
 
             {loadingDates && (
-              <div className="text-sm text-[#D3202D] mt-1 flex items-center gap-2">
-                <div className="w-4 h-4 border-[#D3202D] border-t-[#D3202D] rounded-full animate-spin"></div>
+              <div className="text-sm text-primary mt-1 flex items-center gap-2">
+                <div className="w-4 h-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                 {t("bookingForm.loadingDates")}
               </div>
             )}
             {(errorDates || errors.date) && (
-              <div className="text-sm text-red-500 mt-1">{t(errorDates || errors.date)}</div>
+              <div className="text-sm text-destructive mt-1">{t(errorDates || errors.date)}</div>
             )}
           </div>
 
          {/* Time - Regular (Category != 2) */}
          {categoryId !== 2 && (
 <div className="space-y-3">
-  <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-    <Clock className="w-4 h-4 text-[#D3202D]" />
-    Tour start time <span className="text-red-500">*</span>
+  <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+    <Clock className="w-4 h-4 text-primary" />
+    Tour start time <span className="text-destructive">*</span>
   </label>
 
   {form.date ? (
@@ -588,7 +588,7 @@ useEffect(() => {
 
       if (!times.length) {
         return (
-          <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-yellow-200">
+          <div className="text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-yellow-200">
             Time is not available for selected date
           </div>
         );
@@ -596,7 +596,7 @@ useEffect(() => {
 
       return (
         <select
-          className="w-full h-12 border border-gray-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+          className="w-full h-12 border border-border rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
           value={form.time}
           onChange={(e) => handleChange("time", e.target.value)}
           disabled={isBookingAdded}
@@ -611,7 +611,7 @@ useEffect(() => {
       );
     })()
   ) : (
-    <div className="text-sm text-gray-400">
+    <div className="text-sm text-muted-foreground">
       {t("bookingForm.selectDate")}
     </div>
   )}
@@ -621,9 +621,9 @@ useEffect(() => {
          {/* Pickup Time - Category 2 Only */}
          {categoryId === 2 && (
 <div className="space-y-3">
-  <label className="block font-medium text-sm text-gray-700 flex items-center gap-2">
-    <Clock className="w-4 h-4 text-[#D3202D]" />
-    {t("Pickup Time") || "Pickup Time"} <span className="text-red-500">*</span>
+  <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+    <Clock className="w-4 h-4 text-primary" />
+    {t("Pickup Time") || "Pickup Time"} <span className="text-destructive">*</span>
   </label>
   {form.date && form.pickupPoint ? (
     (() => {
@@ -645,7 +645,7 @@ useEffect(() => {
 
       if (adjustedTimes.length === 0) {
         return (
-          <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-yellow-200">
+          <div className="text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-yellow-200">
             Pickup time is not available, Proceed!
           </div>
         );
@@ -685,7 +685,7 @@ useEffect(() => {
       );
     })()
   ) : (
-    <div className="text-sm text-gray-400">
+    <div className="text-sm text-muted-foreground">
       {!form.date ? t("bookingForm.selectDate") : "Select a pickup point"}
     </div>
   )}
@@ -703,26 +703,51 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
       ...base,
       padding: "0.5rem 0.75rem",
       borderRadius: "0.5rem",
-      borderColor: "#e5e7eb",
+      backgroundColor: "hsl(var(--surface))",
+      borderColor: state.isFocused ? "hsl(var(--primary))" : "hsl(var(--border))",
       minHeight: "48px",
       cursor: "pointer",
+      boxShadow: "none",
       "&:hover": {
-        borderColor: "#D3202D",
+        borderColor: "hsl(var(--primary))",
       },
       transition: "all 0.2s ease",
     }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "hsl(var(--surface))",
+      border: "1px solid hsl(var(--border))",
+      zIndex: 50,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected 
+        ? "hsl(var(--primary))" 
+        : state.isFocused 
+          ? "hsl(var(--surface-muted))" 
+          : "transparent",
+      color: state.isSelected 
+        ? "hsl(var(--primary-foreground))" 
+        : "hsl(var(--surface-foreground))",
+      cursor: "pointer",
+      "&:active": {
+        backgroundColor: "hsl(var(--primary))",
+      }
+    }),
     input: (base) => ({
       ...base,
+      color: "hsl(var(--surface-foreground))",
       "input:focus": { boxShadow: "none" },
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#9ca3af",
+      color: "hsl(var(--surface-muted-foreground))",
       display: "flex",
       alignItems: "center",
     }),
     singleValue: (base) => ({
       ...base,
+      color: "hsl(var(--surface-foreground))",
       display: "flex",
       alignItems: "center",
     }),
@@ -731,12 +756,12 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
   return (
     <div>
       {loading ? (
-        <div className="text-sm text-[#D3202D] flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-[#D3202D] border-t-[#D3202D] rounded-full animate-spin"></div>
+        <div className="text-sm text-primary flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
           {t("bookingForm.loadingHotels")}
         </div>
       ) : error ? (
-        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-200">{t("bookingForm.failedToLoadHotels")}</div>
+        <div className="text-sm text-destructive bg-muted p-3 rounded-lg border border-red-200">{t("bookingForm.failedToLoadHotels")}</div>
       ) : (
         <AsyncSelect
           cacheOptions
@@ -745,7 +770,7 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
           onChange={onChange}
           placeholder={
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gray-400" />
+              <MapPin className="w-4 h-4 text-muted-foreground" />
               {t("bookingForm.searchHotel")}
             </div>
           }
@@ -764,26 +789,51 @@ const StaticSelectField = ({ value, onChange, options, isDisabled, placeholder }
       ...base,
       padding: "0.5rem 0.75rem",
       borderRadius: "0.5rem",
-      borderColor: "#e5e7eb",
+      backgroundColor: "hsl(var(--surface))",
+      borderColor: state.isFocused ? "hsl(var(--primary))" : "hsl(var(--border))",
       minHeight: "48px",
       cursor: "pointer",
+      boxShadow: "none",
       "&:hover": {
-        borderColor: "#D3202D",
+        borderColor: "hsl(var(--primary))",
       },
       transition: "all 0.2s ease",
     }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "hsl(var(--surface))",
+      border: "1px solid hsl(var(--border))",
+      zIndex: 50,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected 
+        ? "hsl(var(--primary))" 
+        : state.isFocused 
+          ? "hsl(var(--surface-muted))" 
+          : "transparent",
+      color: state.isSelected 
+        ? "hsl(var(--primary-foreground))" 
+        : "hsl(var(--surface-foreground))",
+      cursor: "pointer",
+      "&:active": {
+        backgroundColor: "hsl(var(--primary))",
+      }
+    }),
     input: (base) => ({
       ...base,
+      color: "hsl(var(--surface-foreground))",
       "input:focus": { boxShadow: "none" },
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#9ca3af",
+      color: "hsl(var(--surface-muted-foreground))",
       display: "flex",
       alignItems: "center",
     }),
     singleValue: (base) => ({
       ...base,
+      color: "hsl(var(--surface-foreground))",
       display: "flex",
       alignItems: "center",
     }),
@@ -796,7 +846,7 @@ const StaticSelectField = ({ value, onChange, options, isDisabled, placeholder }
       options={options}
       placeholder={
         <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-gray-400" />
+          <MapPin className="w-4 h-4 text-muted-foreground" />
           {placeholder}
         </div>
       }

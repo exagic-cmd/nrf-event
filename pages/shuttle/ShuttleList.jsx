@@ -53,11 +53,11 @@ const ShuttleList = () => {
 
   if (shuttles.length === 0) {
     return (
-      <div className="text-center py-16 mt-24 bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Bus className="text-gray-400" size={32} />
+      <div className="text-center py-16 mt-24 bg-surface rounded-xl shadow-sm border border-border">
+        <div className="bg-muted w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Bus className="text-muted-foreground" size={32} />
         </div>
-        <h3 className="text-xl font-semibold text-gray-800">No Shuttles Found</h3>
+        <h3 className="text-xl font-semibold text-foreground">No Shuttles Found</h3>
       </div>
     );
   }

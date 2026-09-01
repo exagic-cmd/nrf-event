@@ -149,9 +149,9 @@ export default function FilterSidebar({ mode = "daytour" }) {
   // Render
   // -----------------------------------------------------------------
   return (
-    <aside className="bg-white rounded-lg shadow p-5 space-y-6 w-full lg:w-80">
+    <aside className="bg-surface rounded-lg shadow p-5 space-y-6 w-full lg:w-80">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[#D3202D] text-lg">Filter</h3>
+        <h3 className="font-semibold text-primary text-lg">Filter</h3>
         <button
           onClick={clearAll}
           className="text-sm text-blue-600 hover:underline"
@@ -161,7 +161,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
       </div>
 
       {isPending && (
-        <p className="text-xs text-gray-500 animate-pulse">
+        <p className="text-xs text-muted-foreground animate-pulse">
           Updating results…
         </p>
       )}
@@ -188,7 +188,7 @@ export default function FilterSidebar({ mode = "daytour" }) {
 function FilterGroup({ title, options, selected, onToggle }) {
   return (
     <div>
-      <h4 className="font-medium text-[#D3202D] text-sm mb-2">{title}</h4>
+      <h4 className="font-medium text-primary text-sm mb-2">{title}</h4>
       <div className="space-y-1 max-h-48 overflow-y-auto pr-2">
         {options.map((opt) => (
           <label
@@ -199,7 +199,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
               type="checkbox"
               checked={selected.includes(opt)}
               onChange={() => onToggle(opt)}
-              className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300"
+              className="mr-2 h-4 w-4 text-blue-600 rounded border-border"
             />
             <span className="truncate">{opt}</span>
           </label>

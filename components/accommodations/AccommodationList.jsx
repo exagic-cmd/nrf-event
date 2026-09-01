@@ -73,9 +73,9 @@ function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, se
 
   if (showNoResults) {
     return (
-      <div className="text-center py-16 bg-white rounded-xl shadow-md">
-        <h3 className="text-xl font-semibold text-gray-800">No accommodations found</h3>
-        <p className="text-gray-500 mt-2">Please try different dates, guest configurations, or filters.</p>
+      <div className="text-center py-16 bg-surface rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold text-foreground">No accommodations found</h3>
+        <p className="text-muted-foreground mt-2">Please try different dates, guest configurations, or filters.</p>
       </div>
     );
   }
@@ -93,7 +93,7 @@ function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, se
           <select
             value={sortBy}
             onChange={(e) => { setCurrentPage(1); setSortBy(e.target.value); }}
-            className="appearance-none bg-white border border-gray-300 rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
+            className="appearance-none bg-surface border border-border rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
           >
             <option value="default">Sort by</option>
             <option value="price_desc">Price: High to Low</option>
@@ -101,7 +101,7 @@ function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, se
             <option value="rating_desc">Rating: High to Low</option>
             <option value="rating_asc">Rating: Low to High</option>
           </select>
-          <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+          <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         </div>
       </div> */}
       {paginatedAccommodations.map((accommodation, index) => (
@@ -111,10 +111,10 @@ function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, se
         />
       ))}
       {isSubLoading && (
-        <div className="relative border rounded-xl shadow-sm bg-white w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3 min-h-[120px] items-center justify-center px-6 py-8">
+        <div className="relative border rounded-xl shadow-sm bg-surface w-full mx-auto overflow-hidden flex flex-col md:flex-row gap-3 min-h-[120px] items-center justify-center px-6 py-8">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-10 h-10 border-4 border-[#D3202D] border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-medium text-gray-600 tracking-wide">Crafting hotels...</p>
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-medium text-muted-foreground tracking-wide">Crafting hotels...</p>
           </div>
         </div>
       )}

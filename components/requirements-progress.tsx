@@ -100,7 +100,7 @@ export default function RequirementsProgress({
           </div>
           <Progress
             value={basicProgress}
-            className="h-1.5 bg-slate-100 dark:bg-slate-800"
+            className="h-1.5 bg-slate-100 dark:text-foreground"
             indicatorClassName={cn(
               basicProgress === 100 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-indigo-500 dark:bg-indigo-400",
             )}
@@ -137,7 +137,7 @@ export default function RequirementsProgress({
           </div>
           <Progress
             value={accommodationProgress}
-            className="h-1.5 bg-slate-100 dark:bg-slate-800"
+            className="h-1.5 bg-slate-100 dark:text-foreground"
             indicatorClassName={cn(
               accommodationProgress === 100 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-indigo-500 dark:bg-indigo-400",
             )}
@@ -193,7 +193,7 @@ export default function RequirementsProgress({
           </div>
           <Progress
             value={transferProgress}
-            className="h-1.5 bg-slate-100 dark:bg-slate-800"
+            className="h-1.5 bg-slate-100 dark:text-foreground"
             indicatorClassName={cn(
               transferProgress === 100 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-indigo-500 dark:bg-indigo-400",
             )}
@@ -230,7 +230,7 @@ export default function RequirementsProgress({
           </div>
           <Progress
             value={mealsProgress}
-            className="h-1.5 bg-slate-100 dark:bg-slate-800"
+            className="h-1.5 bg-slate-100 dark:text-foreground"
             indicatorClassName={cn(
               mealsProgress === 100 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-indigo-500 dark:bg-indigo-400",
             )}
@@ -278,7 +278,7 @@ export default function RequirementsProgress({
           </div>
           <Progress
             value={activitiesProgress}
-            className="h-1.5 bg-slate-100 dark:bg-slate-800"
+            className="h-1.5 bg-slate-100 dark:text-foreground"
             indicatorClassName={cn(
               activitiesProgress === 100 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-indigo-500 dark:bg-indigo-400",
             )}
@@ -326,7 +326,7 @@ function RequirementItem({ label, value, icon }: RequirementItemProps) {
       <span className="mr-1 flex-shrink-0 text-indigo-500 dark:text-indigo-400">{icon}</span>
       <span className={isCompleted ? "font-medium" : "text-slate-400 dark:text-slate-500"}>{label}</span>
       {isCompleted && value !== true && value !== false && (
-        <span className="ml-auto text-xs truncate max-w-[100px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors">
+        <span className="ml-auto text-xs truncate max-w-[100px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:text-foreground px-1.5 py-0.5 rounded-full group-hover:bg-secondary dark:group-hover:bg-slate-700 transition-colors">
           {value}
         </span>
       )}

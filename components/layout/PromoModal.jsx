@@ -238,41 +238,41 @@ useEffect(() => {
         className="w-full max-w-md pointer-events-auto relative animate-slideUp"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative bg-white rounded-2xl shadow-2xl p-8 overflow-hidden">
+       <div className="relative bg-card rounded-2xl shadow-2xl p-8 overflow-hidden">
           
           {/* Close button */}
           <button
             aria-label="Close"
             onClick={onClose}
-            className="absolute right-4 top-4 p-2  rounded-full hover:bg-gray-100 transition-all duration-300 z-10"
+           className="absolute right-4 top-4 p-2  rounded-full hover:bg-surface transition-all duration-300 z-10"
           >
-            <X className="w-5 h-5 text-gray-400" />
+           <X className="w-5 h-5 text-muted-foreground" />
           </button>
 
           {/* Content */}
           <div className="relative">
             {/* Icon */}
             <div className="flex justify-center mb-3">
-              <Gift className="w-12 h-12 text-[#D3202D] animate-float" />
+             <Gift className="w-12 h-12 text-primary animate-float" />
             </div>
 
             {/* Main offer display */}
             {!successMessage && <div className="text-center mb-8">
-              <div className="mb-6 bg-gray-50 rounded-2xl p-8 border border-gray-200">
-                <div className="text-6xl font-black text-[#D3202D]">
+             <div className="mb-6 bg-surface-secondary rounded-2xl p-8 border border-border">
+               <div className="text-6xl font-black text-primary">
                   {discountValue}<span className="text-4xl">{" OFF"}</span>
                   
                   
                   
                 </div>
-                <div className="text-xs font-bold text-gray-600 mt-2 tracking-widest uppercase">Limited Time Offer</div>
+               <div className="text-xs font-bold text-text-secondary mt-2 tracking-widest uppercase">Limited Time Offer</div>
               </div>
 
-              <p className="text-base font-semibold text-gray-900 mb-2">
+             <p className="text-base font-semibold text-foreground mb-2">
                 {activePromo.text || "Please provide your name and email to unlock this offer"}
               </p>
-              {/* <p className="text-sm text-gray-600">
-                Use code: <span className="font-bold text-gray-900">{activePromo.promocode}</span>
+              {/* <p className="text-sm text-muted-foreground">
+                Use code: <span className="font-bold text-foreground">{activePromo.promocode}</span>
               </p> */}
             </div>}
 
@@ -280,47 +280,47 @@ useEffect(() => {
             {successMessage ? (
               <div className="text-center py-6 animate-slideUp">
                 <div className="flex justify-center mb-4">
-                  <div className="rounded-full bg-[#D3202D]/10 p-3">
-                    <Check className="w-8 h-8 text-[#D3202D]" />
+                 <div className="rounded-full bg-primary/10 p-3">
+                   <Check className="w-8 h-8 text-primary" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-[#D3202D] mb-2">
+               <h3 className="text-xl font-bold text-primary mb-2">
                   Successfully Applied!
                 </h3>
-                <p className="text-gray-600">{successMessage}</p>
+               <p className="text-text-secondary">{successMessage}</p>
               </div>
             ) : onlineAgent && !agentLoading ? (
               <div className="space-y-2">
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+               <div className="flex items-center gap-4 p-4 bg-surface-secondary rounded-xl border border-border">
                   <img
                     src={getFullImageUrl(onlineAgent.profile_photo_url)}
                     alt={onlineAgent.name}
-                    className="w-14 h-14 rounded-full border-2 border-[#D3202D] shadow-sm flex-shrink-0"
+                   className="w-14 h-14 rounded-full border-2 border-primary shadow-sm flex-shrink-0"
                   />
                   <div className="text-left">
-                    <h3 className="text-base font-bold text-gray-900">
+                   <h3 className="text-base font-bold text-foreground">
                       Hi, I'm {onlineAgent.name}
                     </h3>
-                    <p className="text-gray-600 text-xs leading-tight mt-1">
+                   <p className="text-text-secondary text-xs leading-tight mt-1">
                       Let me help you book your transfer with special discount.
                     </p>
                   </div>
                 </div>
  <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wide">Name</label>
+                   <label className="block text-[10px] font-bold text-text mb-1 uppercase tracking-wide">Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
                       disabled={loading}
-                      className="w-full px-3 py-2 bg-white border-2 border-gray-200 rounded-lg text-sm transition-all duration-300 placeholder-gray-400 disabled:opacity-60 text-gray-900"
+                     className="w-full px-3 py-2 bg-surface border-2 border-border rounded-lg text-sm transition-all duration-300 placeholder:text-text-secondary disabled:opacity-60 text-foreground"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wide">Email</label>
+                   <label className="block text-[10px] font-bold text-text mb-1 uppercase tracking-wide">Email</label>
                     <input
                       type="email"
                       value={email}
@@ -328,13 +328,13 @@ useEffect(() => {
                       onKeyDown={(e) => e.key === 'Enter' && !loading && handleStartChat()}
                       placeholder="you@example.com"
                       disabled={loading}
-                      className="w-full px-3 py-2 bg-white border-2 border-gray-200 rounded-lg text-sm transition-all duration-300 placeholder-gray-400 disabled:opacity-60 text-gray-900"
+                     className="w-full px-3 py-2 bg-surface border-2 border-border rounded-lg text-sm transition-all duration-300 placeholder:text-text-secondary disabled:opacity-60 text-foreground"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <p className="text-xs text-red-600 font-medium text-center">
+                  <p className="text-xs text-primary font-medium text-center">
                     {error}
                   </p>
                 )}
@@ -344,8 +344,8 @@ useEffect(() => {
                   disabled={loading || !name.trim() || !email.trim()}
                   className={`w-full py-2.5 px-6 rounded-lg font-semibold text-white text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
                     loading || !name.trim() || !email.trim()
-                      ? "bg-gray-400 cursor-not-allowed opacity-75"
-                      : "bg-[#D3202D] hover:bg-[#B8851F]"
+                     ? "bg-muted cursor-not-allowed opacity-75"
+                     : "bg-primary hover:bg-primary-hover"
                   }`}
                 >
                   {loading ? (
@@ -361,7 +361,7 @@ useEffect(() => {
                   )}
                 </button>
 
-                <p className="text-[10px] text-gray-400 text-center mt-2">
+                <p className="text-[10px] text-muted-foreground text-center mt-2">
                   We respect your privacy.
                 </p>
               </div>
@@ -370,19 +370,19 @@ useEffect(() => {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wide">Name</label>
+                    <label className="block text-[10px] font-bold text-text mb-1 uppercase tracking-wide">Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
                       disabled={loading || !!successMessage}
-                      className="w-full px-3 py-2 bg-white border-2 border-gray-200 rounded-lg text-sm transition-all duration-300 placeholder-gray-400 disabled:opacity-60 text-gray-900"
+                        className="w-full px-3 py-2 bg-surface border-2 border-border rounded-lg text-sm transition-all duration-300 placeholder:text-text-secondary disabled:opacity-60 text-foreground"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wide">Email</label>
+                    <label className="block text-[10px] font-bold text-text mb-1 uppercase tracking-wide">Email</label>
                     <input
                       type="email"
                       value={email}
@@ -390,13 +390,13 @@ useEffect(() => {
                       onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
                       placeholder="you@example.com"
                       disabled={loading || !!successMessage}
-                      className="w-full px-3 py-2 bg-white border-2 border-gray-200 rounded-lg text-sm transition-all duration-300 placeholder-gray-400 disabled:opacity-60 text-gray-900"
+                                          className="w-full px-3 py-2 bg-surface border-2 border-border rounded-lg text-sm transition-all duration-300 placeholder:text-text-secondary disabled:opacity-60 text-foreground"
                     />
                   </div>
                 </div>
 
               {error && (
-                <p className="text-sm text-red-600 font-medium">
+                <p className="text-sm text-primary font-medium">
                   {error}
                 </p>
               )}
@@ -406,8 +406,8 @@ useEffect(() => {
                 disabled={loading}
                 className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-300 ${
                   loading
-                    ? "bg-gray-400 cursor-not-allowed opacity-75"
-                    : "bg-[#D3202D]"
+                                  ? "bg-muted cursor-not-allowed opacity-75"
+                                  : "bg-primary hover:bg-primary-hover"
                 }`}
               >
                 {loading ? (
@@ -423,7 +423,7 @@ useEffect(() => {
             )}
 
             {/* Footer */}
-            {!successMessage && !onlineAgent && <p className="mt-5 text-xs text-gray-500 text-center">
+            {!successMessage && !onlineAgent && <p className="mt-5 text-xs text-muted-foreground text-center">
               We respect your privacy.
             </p>}
           </div>

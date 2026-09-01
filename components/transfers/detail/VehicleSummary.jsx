@@ -32,12 +32,12 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
 
   return (
     <div className="mt-8">
-      <div className="bg-white rounded-lg p-3 shadow-sm">
+      <div className="bg-surface rounded-lg p-3 shadow-sm">
 
        {/* Vehicle Image + Info Section (image left, name beside, description below both) */}
 <div className="flex flex-col">
   <div className="flex justify-between gap-1">
-     <h3 className="md:text-xl text-md font-bold text-black">{normalizedVehicle.name}</h3>
+     <h3 className="md:text-xl text-md font-bold text-surface-foreground">{normalizedVehicle.name}</h3>
     <img
       src={normalizedVehicle.image}
       className="w-32 h-16 object-contain rounded-lg shadow-sm"
@@ -47,7 +47,7 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
   </div>
 
   {normalizedVehicle.description && (
-    <p className="text-sm text-gray-500 mt-2">
+    <p className="text-sm text-muted-foreground mt-2">
       {normalizedVehicle.description}
     </p>
   )}
@@ -62,16 +62,16 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
             {/* Arrival Features */}
             {activeFeatures.some((f) => f.service_flag === "Arrival") && (
               <div>
-                <h4 className="flex items-center font-semibold text-[#D3202D] mb-2">
-                  <PlaneLanding className="w-4 h-4 mr-2 text-[#D3202D]" /> {t("Pickup")}
+                <h4 className="flex items-center font-semibold text-primary mb-2">
+                  <PlaneLanding className="w-4 h-4 mr-2 text-primary" /> {t("Pickup")}
                 </h4>
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                   {activeFeatures
                     .filter((f) => f.service_flag === "Arrival")
                     .map((feature) => (
                       <li
                         key={feature.id}
-                        className="text-gray-700"
+                        className="text-muted-foreground"
                       >
                         {feature.title || feature.desc}
                       </li>
@@ -83,16 +83,16 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
             {/* Departure Features */}
             {activeFeatures.some((f) => f.service_flag === "Departure") && (
               <div>
-                <h4 className="flex items-center font-semibold text-[#D3202D] mb-2">
-                  <PlaneTakeoff className="w-4 h-4 mr-2 text-[#D3202D]" /> {t("Return")}
+                <h4 className="flex items-center font-semibold text-primary mb-2">
+                  <PlaneTakeoff className="w-4 h-4 mr-2 text-primary" /> {t("Return")}
                 </h4>
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                   {activeFeatures
                     .filter((f) => f.service_flag === "Departure")
                     .map((feature) => (
                       <li
                         key={feature.id}
-                        className="text-black"
+                        className="text-surface-foreground"
                       >
                         {feature.title || feature.desc}
                       </li>
@@ -106,8 +106,8 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
         <div className="border-t border-dashed my-1"></div>
 
         <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">{t("vehiclePrice", "Vehicle Price")}</span>
-            <span className="text-sm font-medium text-gray-600">
+            <span className="text-sm text-muted-foreground">{t("vehiclePrice", "Vehicle Price")}</span>
+            <span className="text-sm font-medium text-muted-foreground">
              {vehicleInfo?.currency} {formatPrice(baseTotal)} 
             </span>
         </div>
@@ -115,24 +115,24 @@ function VehicleSummary({ vehicleInfo = {}, pricing = {}, onPriceChange, pickupL
         {/* Surcharges + Total */}
         {pickupAmount > 0 && (
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">{t("pickupSurcharge")}</span>
-            <span className="text-sm font-medium text-gray-600">
+            <span className="text-sm text-muted-foreground">{t("pickupSurcharge")}</span>
+            <span className="text-sm font-medium text-muted-foreground">
               {vehicleInfo?.currency} +{formatPrice(pickupAmount)} 
             </span>
           </div>
         )}
         {returnAmount > 0 && (
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">{t("returnSurcharge")}</span>
-            <span className="text-sm font-medium text-gray-600">
+            <span className="text-sm text-muted-foreground">{t("returnSurcharge")}</span>
+            <span className="text-sm font-medium text-muted-foreground">
               {vehicleInfo?.currency} +{formatPrice(returnAmount)} 
             </span>
           </div>
         )}
         {addonsTotal > 0 && (
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">{t("addons_total")}</span>
-            <span className="text-sm font-medium text-gray-600">
+            <span className="text-sm text-muted-foreground">{t("addons_total")}</span>
+            <span className="text-sm font-medium text-muted-foreground">
              {vehicleInfo?.currency} +{formatPrice(addonsTotal)} 
             </span>
           </div>

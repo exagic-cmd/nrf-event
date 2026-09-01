@@ -17,10 +17,10 @@ export default function ShuttleCard({ product }) {
   };
 
   return (
-    <div className="rounded-2xl bg-white shadow-sm hover:shadow-lg transition overflow-hidden">
+    <div className="rounded-2xl bg-surface shadow-sm hover:shadow-lg transition overflow-hidden">
       
       {/* Image */}
-      <div className="relative h-48 bg-gray-100">
+      <div className="relative h-48 bg-muted">
         <Image
           src={
             product.image
@@ -41,17 +41,17 @@ export default function ShuttleCard({ product }) {
 
       {/* Content */}
       <div className="p-4 space-y-2">
-        <h3 className="font-semibold text-gray-900 line-clamp-2">
+        <h3 className="font-semibold text-foreground line-clamp-2">
           {product.title}
         </h3>
 
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           📍 {product.City_name}, {product.Country_name}
         </p>
 
         <div className="flex items-center justify-between pt-3">
           <div>
-            <p className="text-xs text-gray-400">From</p>
+            <p className="text-xs text-muted-foreground">From</p>
             <p className="text-lg font-bold">
               {product.currency} {product.starting_price}
             </p>
@@ -60,7 +60,7 @@ export default function ShuttleCard({ product }) {
           <button
             onClick={handleNavigate}
             disabled={isLoading}
-            className="inline-flex items-center justify-center bg-[#D3202D] text-white font-semibold px-5 py-2.5 rounded-lg text-sm hover:bg-[#b71c1c] transition-colors duration-300 text-center shadow-sm hover:shadow-md min-w-[120px]"
+            className="inline-flex items-center justify-center bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-lg text-sm hover:bg-primary-hover transition-colors duration-300 text-center shadow-sm hover:shadow-md min-w-[120px]"
           >
             {isLoading ? <Loading2Svg className="w-5 h-5 text-white" /> : "View Details"}
           </button>

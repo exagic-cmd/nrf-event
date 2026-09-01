@@ -83,11 +83,11 @@ const AccommodationInfoCard = ({
 
   return (
     <div className="lg:col-span-1">
-      <div className="bg-white  lg:flex-col justify-end  py-2 sticky top-4 mr-0 lg:mr-2 ">
+      <div className="bg-surface  lg:flex-col justify-end  py-2 sticky top-4 mr-0 lg:mr-2 ">
         {/* Price */}
         <div className="mb-0 flex justify-end">
-          <div className="text-lg lg:text-2xl text-[#D3202D] mb-1">
-            <span className="text-sm md:text-md text-black">  Starting Price </span>
+          <div className="text-lg lg:text-2xl text-primary mb-1">
+            <span className="text-sm md:text-md text-surface-foreground">  Starting Price </span>
             <span className="font-semibold">{currencyToShow} {roundOff(lowestPrice)}</span>
           </div>
          
@@ -106,16 +106,16 @@ const AccommodationInfoCard = ({
             </div>
           )} */}
         </div>
- <div className="text-black text-sm flex justify-end gap-1 mb-3">
+ <div className="text-surface-foreground text-sm flex justify-end gap-1 mb-3">
                 for {roomsCount} room{roomsCount > 1 ? "s" : ""} × {nights} night{nights > 1 ? "s" : ""}
  </div>
         {/* Selected Room */}
         {/* {selectedRoom && (
-          <div className="mb-2 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-[#D3202D]/30 rounded-xl">
+          <div className="mb-2 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-primary/30 rounded-xl">
             <div className="text-[#233BA0] font-semibold text-sm mb-1">
               {selectedRoom.roomType}
             </div>
-            <div className="text-black text-xs">
+            <div className="text-surface-foreground text-xs">
               {selectedRoom.mealType}
             </div>
             {freeCancellation && (
@@ -134,7 +134,7 @@ const AccommodationInfoCard = ({
               {highlights.slice(0, 2).map((h, i) => (
                 <span
                   key={i}
-                  className="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1"
+                  className="bg-secondary text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1"
                 >
                   {h.includes("star") && <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />}
                   {h}
@@ -147,7 +147,7 @@ const AccommodationInfoCard = ({
         {/* Amenities */}
         {/* {amenities.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-[#D3202D] text-sm font-medium mb-2.5">Top Amenities</h4>
+            <h4 className="text-primary text-sm font-medium mb-2.5">Top Amenities</h4>
             <div className="flex flex-wrap gap-1.5">
               {amenities.map((a, i) => (
                 <span key={i} className="bg-blue-50 text-[#233BA0] px-2.5 py-1.5 rounded-md text-xs">
@@ -163,7 +163,7 @@ const AccommodationInfoCard = ({
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-[#D3202D]  text-white lg:py-3 font-semibold py-3 px-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-primary  text-white lg:py-3 font-semibold py-3 px-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>
@@ -171,7 +171,7 @@ const AccommodationInfoCard = ({
           {/* <button
             onClick={onProceedBooking}
             disabled={!selectedRoom}
-            className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3.5 px-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-surface hover:bg-muted text-foreground py-3.5 px-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Proceed to Book" : "Select a Room First"}
           </button> */}

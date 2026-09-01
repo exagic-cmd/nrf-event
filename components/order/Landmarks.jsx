@@ -136,14 +136,14 @@ useEffect(() => {
   };
 
   return (
-    <section style={{ backgroundColor: customColor }} className="relative w-full py-2 md:py-3 bg-[#f4f4f4]">
+    <section style={{ backgroundColor: customColor }} className="relative w-full py-2 md:py-3 bg-surface-muted">
 
 
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Filter Section */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-black flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-surface-foreground flex items-center gap-2">
             <Filter size={20} /> {t("nearby_landmarks", "Nearby Landmarks")}
           </h2>
 
@@ -153,7 +153,7 @@ useEffect(() => {
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
               className={`p-2 rounded-full border border-red-500 transition ${
-                canScrollLeft ? "hover:bg-red-600 text-black" : "opacity-40 cursor-not-allowed text-gray-700"
+                canScrollLeft ? "hover:bg-red-600 text-surface-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronLeft size={20} />
@@ -162,7 +162,7 @@ useEffect(() => {
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
               className={`p-2 rounded-full border border-red-500 transition ${
-                canScrollRight ? "hover:bg-red-600 text-black" : "opacity-40 cursor-not-allowed text-gray-700"
+                canScrollRight ? "hover:bg-red-600 text-surface-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronRight size={20} />
@@ -177,8 +177,8 @@ useEffect(() => {
       onClick={() => setSelectedType(null)}
       className={`inline-block rounded-full text-sm px-3 py-1 ${
         selectedType === null
-          ? "bg-[#D3202D] text-white"
-          : "text-[#D3202D] border border-[#D3202D] hover:bg-[#D3202D] hover:text-white"
+          ? "bg-primary text-white"
+          : "text-primary border border-primary hover:bg-primary hover:text-white"
       }`}
     >
       {t("all", "All")}
@@ -190,8 +190,8 @@ useEffect(() => {
         onClick={() => setSelectedType(type.id)}
         className={`inline-block rounded-full text-sm px-3 py-1 ${
           selectedType === type.id
-            ? "bg-[#D3202D] text-white"
-            : "text-[#D3202D] border border-[#D3202D] hover:bg-[#D3202D] hover:text-white"
+            ? "bg-primary text-white"
+            : "text-primary border border-primary hover:bg-primary hover:text-white"
         }`}
       >
         {type.name}
@@ -212,10 +212,10 @@ useEffect(() => {
                 key={item.id}
                 data-card
                
-                className="group flex flex-col flex-shrink-0 w-[180px] sm:w-[200px] md:w-[220px] lg:w-[240px] xl:w-[260px] bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden relative"
+                className="group flex flex-col flex-shrink-0 w-[180px] sm:w-[200px] md:w-[220px] lg:w-[240px] xl:w-[260px] bg-surface rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden relative"
               >
                 {navigatingId === item.id && (
-                  <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
+                  <div className="absolute inset-0 bg-surface/70 flex justify-center items-center z-20 rounded-xl">
                     <SvgLoader2 />
                   </div>
                 )}
@@ -233,15 +233,15 @@ useEffect(() => {
                   )} */}
                 </div>
                 <div className="p-3 flex flex-col flex-grow">
-                  <h3 className="text-black font-medium text-xs sm:text-sm line-clamp-2 mb-1.5 h-9 sm:h-10">
+                  <h3 className="text-surface-foreground font-medium text-xs sm:text-sm line-clamp-2 mb-1.5 h-9 sm:h-10">
                     {item.title}
                   </h3>
-                  <p className="text-[11px] sm:text-xs text-gray-800 line-clamp-4 mb-2 flex-grow">
+                  <p className="text-[11px] sm:text-xs text-foreground line-clamp-4 mb-2 flex-grow">
                     {item.description}
                   </p>
                    <div className="flex justify-between items-end mt-2">
-                    <span className="font-semibold text-black text-xs sm:text-sm mt-auto">{item.type}</span>
-                    <button  onClick={() => handleViewLandmark(item)} className="text-white text font-semibold rounded-md px-2 py-1 bg-[#D3202D] text-xs lg:text-sm">{t("details", "Details")}</button>
+                    <span className="font-semibold text-surface-foreground text-xs sm:text-sm mt-auto">{item.type}</span>
+                    <button  onClick={() => handleViewLandmark(item)} className="text-white text font-semibold rounded-md px-2 py-1 bg-primary text-xs lg:text-sm">{t("details", "Details")}</button>
                   </div>
                   
                 </div>

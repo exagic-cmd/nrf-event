@@ -6,6 +6,8 @@ import Header from '@/components/layout/Header';
 import Script from 'next/script';
 import App from 'next/app';
 import '@/styles/globals.css';
+import ThemeProvider from '@/components/ThemeProvider';
+import { eventAppearance } from '@/lib/theme.config';
 
 const GA_TRACKING_ID = 'G-5SQKF4Y54M';
 
@@ -51,8 +53,10 @@ function MyApp({ Component, pageProps }) {
           gtag('config', '${GA_TRACKING_ID}');
         `}
       </Script>
-      <Header />
-      <Component {...pageProps} />
+      <ThemeProvider appearance={eventAppearance}>
+        <Header />
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   );
 }

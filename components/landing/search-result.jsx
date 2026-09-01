@@ -68,7 +68,7 @@ export default function SearchResult() {
     <section ref={sectionRef} className="py-10">
       {/* Section Title */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold text-gray-800">
+        <h2 className="text-2xl font-semibold text-foreground">
           {t("results.showingTransfers")}
         </h2>
       </div>
@@ -118,7 +118,7 @@ export default function SearchResult() {
           )}
         </>
       ) : (
-        <div className="text-center py-10 text-gray-500">
+        <div className="text-center py-10 text-muted-foreground">
           {/* {t("results.noTransfersFound")} */}
         </div>
       )}

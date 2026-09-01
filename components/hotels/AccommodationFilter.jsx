@@ -293,14 +293,14 @@ useEffect(() => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-3 sm:p-4 md:p-6 md:pb-6">
+    <form onSubmit={handleSubmit} className="relative rounded-xl md:rounded-2xl bg-surface shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-3 sm:p-4 md:p-6 md:pb-6">
       <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3">
         {/* Search Input */}
     
           {/* Date Range Picker - SINGLE */}
 <div className="md:col-span-4 relative">
-          <div className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2">
-            <Calendar className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+          <div className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2">
+            <Calendar className="h-5 w-5 text-primary flex-shrink-0" />
             <DatePicker
               selected={startDate}
               onChange={handleStartDateChange}
@@ -341,7 +341,7 @@ useEffect(() => {
                       "Check-in - Check-out"
                     )}
                   </span>
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 </div>
               }
             />
@@ -358,12 +358,12 @@ useEffect(() => {
             selectsStart
             minDate={new Date()}
             placeholderText="Check-in"
-            className="w-full rounded-xl md:rounded-2xl border border-gray-200 px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none"
+            className="w-full rounded-xl md:rounded-2xl border border-border px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none"
             monthsShown={window.innerWidth >= 640 ? 2 : 1}
             dateFormat="MMM d, yyyy"
           />
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </div>
         </div> */}
 
@@ -377,11 +377,11 @@ useEffect(() => {
             endDate={endDate}
             minDate={startDate || new Date()}
             placeholderText="Check-out"
-            className="w-full rounded-xl md:rounded-2xl border border-gray-200 px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none"
+            className="w-full rounded-xl md:rounded-2xl border border-border px-3 py-2.5 md:py-2 text-base sm:text-lg outline-none"
             dateFormat="MMM d, yyyy"
           />
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </div>
         </div> */}
 
@@ -390,9 +390,9 @@ useEffect(() => {
           <button
             type="button"
             onClick={() => setShowGuestPopup(!showGuestPopup)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-base sm:text-lg flex items-center justify-between gap-2 disabled:bg-muted disabled:cursor-not-allowed"
           >
-            <Users className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+            <Users className="h-5 w-5 text-primary flex-shrink-0" />
             <span className="truncate flex-grow text-left">
               {totalGuests} Guest{totalGuests > 1 ? "s" : ""} • {rooms.length} Room
               {rooms.length > 1 ? "s" : ""}
@@ -402,7 +402,7 @@ useEffect(() => {
 
           {/* Guest Popup - Mobile Optimized */}
           {showGuestPopup && (
-            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto scrollbar-hide">
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-surface shadow-lg p-3 sm:p-4 max-h-72 sm:max-h-96 overflow-y-auto scrollbar-hide">
               {rooms.map((room, i) => (
                 <div key={i} className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b last:border-0 last:mb-0 last:pb-0">
                   <div className="flex justify-between items-center mb-3">
@@ -411,7 +411,7 @@ useEffect(() => {
                       <button
                         type="button"
                         onClick={() => removeRoom(i)}
-                        className="text-red-500 text-xs sm:text-sm font-medium hover:text-red-600 active:text-red-700 px-2 py-1"
+                        className="text-red-500 text-xs sm:text-sm font-medium hover:text-primary active:text-red-700 px-2 py-1"
                       >
                         Remove
                       </button>
@@ -427,8 +427,8 @@ useEffect(() => {
                         disabled={room.adult <= 1}
                         className={`w-8 h-8 sm:w-9 sm:h-9 rounded border flex items-center justify-center touch-manipulation ${
                           room.adult <= 1
-                            ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100"
+                            ? "border-border text-muted-foreground cursor-not-allowed"
+                            : "border-border text-muted-foreground hover:border-border hover:bg-muted active:bg-muted"
                         }`}
                       >
                         <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -440,8 +440,8 @@ useEffect(() => {
                         disabled={room.adult >= 10}
                         className={`w-8 h-8 sm:w-9 sm:h-9 rounded border flex items-center justify-center touch-manipulation ${
                           room.adult >= 10
-                            ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100"
+                            ? "border-border text-muted-foreground cursor-not-allowed"
+                            : "border-border text-muted-foreground hover:border-border hover:bg-muted active:bg-muted"
                         }`}
                       >
                         <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -459,14 +459,14 @@ useEffect(() => {
                             className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-full px-2 py-1"
                           >
                             <span className="text-xs sm:text-sm text-blue-800">{childAge}y</span>
-                            <button type="button" onClick={() => removeChild(i, childIndex)} className="w-4 h-4 rounded-full bg-red-400 text-white flex items-center justify-center hover:bg-red-500 active:bg-red-600 touch-manipulation flex-shrink-0">
+                            <button type="button" onClick={() => removeChild(i, childIndex)} className="w-4 h-4 rounded-full bg-red-400 text-white flex items-center justify-center hover:bg-muted0 active:bg-red-600 touch-manipulation flex-shrink-0">
                               <X className="h-2 w-2" />
                             </button>
                           </div>
                         ))}
                       </div>
                       {room.children.length < 10 && !showChildInput[i] && (
-                        <button type="button" onClick={() => setShowChildInput({ ...showChildInput, [i]: true })} className="text-xs sm:text-sm text-[#D3202D] font-medium flex-shrink-0">
+                        <button type="button" onClick={() => setShowChildInput({ ...showChildInput, [i]: true })} className="text-xs sm:text-sm text-primary font-medium flex-shrink-0">
                           + Add Child
                         </button>
                       )}
@@ -474,7 +474,7 @@ useEffect(() => {
 
                     {showChildInput[i] && room.children.length < 10 && (
                       <div className="flex items-center gap-3">
-                        <label className="text-xs text-gray-600 flex-shrink-0">Enter the child age:</label>
+                        <label className="text-xs text-muted-foreground flex-shrink-0">Enter the child age:</label>
                         <div className="relative flex-grow">
                           <input
                             type="number"
@@ -486,13 +486,13 @@ useEffect(() => {
                               setChildAges({ ...childAges, [i]: age });
                             }}
                             placeholder="Age"
-                            className="w-full bg-white text-xs sm:text-sm border border-gray-300 rounded-md px-2 py-1.5 pr-16 outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface text-xs sm:text-sm border border-border rounded-md px-2 py-1.5 pr-16 outline-none focus:ring-1 focus:ring-blue-500"
                           />
                           <button
                             type="button"
                             onClick={() => addChild(i)}
                             disabled={!childAges[i] || childAges[i] < 1}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 h-[calc(100%-0.25rem)] text-xs bg-gray-500 hover:bg-gray-600 text-white font-medium px-3 rounded transition-colors touch-manipulation"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-[calc(100%-0.25rem)] text-xs bg-muted0 hover:text-muted-foreground text-white font-medium px-3 rounded transition-colors touch-manipulation"
                           >
                             Add
                           </button>
@@ -500,7 +500,7 @@ useEffect(() => {
                       </div>
                     )}
 
-                    {/* <div className="text-right text-xs text-gray-500 mt-1">
+                    {/* <div className="text-right text-xs text-muted-foreground mt-1">
                       {room.children.length}/10 children
                     </div> */}
                   </div>
@@ -513,14 +513,14 @@ useEffect(() => {
                 <button
                   type="button"
                   onClick={addRoom}
-                  className="flex-1 text-xs sm:text-sm border border-[#D3202D] text-[#D3202D] font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
+                  className="flex-1 text-xs sm:text-sm border border-primary text-primary font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
                 >
                   + Add Room
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowGuestPopup(false)}
-                  className="flex-1 bg-[#D3202D] text-white text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
+                  className="flex-1 bg-primary text-white text-xs sm:text-sm font-medium py-2 sm:py-2.5 rounded-lg transition-colors touch-manipulation"
                 >
                   Done
                 </button>
@@ -529,9 +529,9 @@ useEffect(() => {
           )}
         </div>
     <div className="md:col-span-3 relative">
-          <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
+          <div className="rounded-lg border border-border bg-surface px-3 py-2.5 flex items-center gap-2">
 
-            <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+            <Search className="h-5 w-5 text-primary flex-shrink-0" />
             <input
               type="text"
               value={search}
@@ -540,7 +540,7 @@ useEffect(() => {
               onBlur={() => setTimeout(() => setIsInputFocused(false), 200)}
               placeholder={!startDate || !endDate ? "" : "Search hotels or regions..."}
               disabled={!startDate || !endDate}
-              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+              className="w-full bg-transparent outline-none text-base sm:text-lg disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
               autoComplete="off"
             />
             {search && search !== DEFAULT_REGION.name && (
@@ -551,7 +551,7 @@ useEffect(() => {
                   setSelectedItem({ ...DEFAULT_REGION, type: "region" });
                   setSelectedRegion(DEFAULT_REGION);
                 }}
-                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+                className="text-muted-foreground hover:text-muted-foreground flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -565,7 +565,7 @@ useEffect(() => {
   setShowDropdown(false);
 }}
 
-                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+                className="text-muted-foreground hover:text-muted-foreground flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -574,10 +574,10 @@ useEffect(() => {
 
           {/* Dropdown with Loading - Mobile Full Width */}
           {showDropdown && (
-            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-white shadow-lg max-h-64 sm:max-h-80 overflow-auto">
+            <div className="absolute z-20 mt-2 left-0 right-0 md:w-full rounded-xl border bg-surface shadow-lg max-h-64 sm:max-h-80 overflow-auto">
               {isLoading ? (
-                <div className="px-4 py-6 sm:py-8 text-center text-gray-500">
-                  <div className="inline-block animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-2 border-gray-300 border-t-yellow-500"></div>
+                <div className="px-4 py-6 sm:py-8 text-center text-muted-foreground">
+                  <div className="inline-block animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-2 border-border border-t-yellow-500"></div>
                   <p className="mt-2 text-xs sm:text-sm">Searching...</p>
                 </div>
               ) : (
@@ -592,7 +592,7 @@ useEffect(() => {
                               e.preventDefault();
                               handleSelection({ ...tagGroup, type: "tag" }, "tag");
                             }}
-                            className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 sticky top-0 capitalize hover:bg-gray-100"
+                            className="w-full text-left px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted sticky top-0 capitalize hover:bg-muted"
                           >
                             {tagGroup.tag}
                           </button>
@@ -607,10 +607,10 @@ useEffect(() => {
                                     e.preventDefault();
                                     handleSelection({ ...region, type: "region" }, "region");
                                   }}
-                                  className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                                  className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-muted active:bg-muted flex items-center gap-2 text-sm"
                                 >
-                                  <MapPin className="h-4 w-4 text-[#D3202D] flex-shrink-0" />
-                                  <span className="truncate text-black">{region.region_name}</span>
+                                  <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                                  <span className="truncate text-surface-foreground">{region.region_name}</span>
                                 </button>
                               ))}
                             </div>
@@ -626,10 +626,10 @@ useEffect(() => {
                                     e.preventDefault();
                                     handleSelection({ ...hotel, type: "hotel" }, "hotel");
                                   }}
-                                  className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-gray-50 active:bg-gray-100 flex items-center gap-2 text-sm"
+                                  className="w-full text-left px-3 py-2.5 sm:py-2 hover:bg-muted active:bg-muted flex items-center gap-2 text-sm"
                                 >
                                   <Building className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                                  <span className="truncate text-black">{hotel.title}</span>
+                                  <span className="truncate text-surface-foreground">{hotel.title}</span>
                                 </button>
                               ))}
                             </div>
@@ -638,7 +638,7 @@ useEffect(() => {
                       )
                     )
                   ) : (
-                    <div className="px-3 py-4 text-center text-sm text-gray-500">No suggestions found.</div>
+                    <div className="px-3 py-4 text-center text-sm text-muted-foreground">No suggestions found.</div>
                   )}
                 </div>
               )}
@@ -649,7 +649,7 @@ useEffect(() => {
         {/* <div className="md:flex hidden">
           <button
             type="submit"
-            className="w-full h-full min-h-[44px] rounded-xl bg-yellow-500 text-gray-900 font-semibold text-base sm:text-lg py-2.5 md:py-1.5 hover:bg-yellow-500 active:bg-yellow-500 transition touch-manipulation"
+            className="w-full h-full min-h-[44px] rounded-xl bg-yellow-500 text-foreground font-semibold text-base sm:text-lg py-2.5 md:py-1.5 hover:bg-yellow-500 active:bg-yellow-500 transition touch-manipulation"
           >
             Search
           </button>
@@ -664,7 +664,7 @@ useEffect(() => {
           <select
             value={nationality}
             onChange={(e) => setNationality(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 sm:py-2.5 text-base sm:text-lg touch-manipulation"
+            className="w-full rounded-lg border border-border px-3 py-2 sm:py-2.5 text-base sm:text-lg touch-manipulation"
           >
             {nationalities.map((n) => (
               <option key={n.id} value={n.code}>
@@ -682,8 +682,8 @@ useEffect(() => {
                 key={i}
                 className={`cursor-pointer px-3 sm:px-4 py-2 sm:py-2.5 border rounded text-xs sm:text-sm transition-all touch-manipulation ${
                   stars === String(i)
-                    ? "border-black bg-gray-200 font-medium"
-                    : "border-gray-300 hover:border-gray-500 active:bg-gray-50"
+                    ? "border-black bg-secondary font-medium"
+                    : "border-border hover:border-border active:bg-muted"
                 }`}
               >
                 <input
@@ -704,7 +704,7 @@ useEffect(() => {
       <div className="col-span-2">
           <button
             type="submit"
-            className="min-w-full h-[50px] sm:h-[54px] rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg active:bg-[#D3202D] transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
+            className="min-w-full h-[50px] sm:h-[54px] rounded-lg bg-primary text-white font-semibold text-base sm:text-lg active:bg-primary transition touch-manipulation disabled:opacity-75 flex justify-center items-center"
             disabled={isSearching}
           >
             {isSearching ? (
@@ -719,7 +719,7 @@ useEffect(() => {
      
        </div>
          <div className="flex justify-end gap-1 mt-3">
-            <span className="text-xs text-gray-400">Powered by </span>
+            <span className="text-xs text-muted-foreground">Powered by </span>
             <img className="h-5 w-auto" src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
           </div>
     </form>

@@ -11,12 +11,12 @@ closePopup()
 }
 
   return (
-    <div className="fixed inset-0 bg-white bg-opacity-100 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-6 shadow-lg text-center max-w-2xl relative">
+    <div className="fixed inset-0 bg-surface bg-opacity-100 flex justify-center items-center z-50">
+      <div className="bg-surface rounded-lg p-6 shadow-lg text-center max-w-2xl relative">
         {/* Close Icon Top Right */}
         <button
           onClick={onclose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
+          className="absolute top-3 right-3 text-muted-foreground hover:text-red-500"
           aria-label="Close popup"
         >
           <X className="w-6 h-6" />
@@ -39,7 +39,7 @@ closePopup()
 
         {/* Text and Booking Details */}
         <h2 className="text-xl font-semibold mb-2">Booking Confirmed</h2>
-        <p className="text-gray-600 mb-4">
+        <p className="text-muted-foreground mb-4">
           Your booking has been successfully confirmed.
         </p>
 
@@ -53,7 +53,7 @@ closePopup()
 
         {/* Action Button */}
         {/* <button
-          className="bg-gray-200 text-[#FE6F4F] hover:bg-[#FE6F4F] hover:text-white transition-colors font-medium py-2 px-4 rounded-full"
+          className="bg-secondary text-[#FE6F4F] hover:bg-[#FE6F4F] hover:text-white transition-colors font-medium py-2 px-4 rounded-full"
           onClick={closePopup}
         >
           View Itinerary

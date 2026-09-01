@@ -130,12 +130,12 @@ const AccommodationTimerBubble = () => {
           setDrawerContent(<CartDrawerContent />);
           openDrawer();
         }}
-        className="fixed bottom-4 left-4 z-40 bg-white border shadow-md rounded-xl p-3 flex items-center gap-3 max-w-xs"
+        className="fixed bottom-4 left-4 z-40 bg-surface border shadow-md rounded-xl p-3 flex items-center gap-3 max-w-xs"
       >
         <img src={img} alt={active.productTitle || active.title} className="w-10 h-10 rounded-md object-cover border" />
         <div className="text-left">
           <div className="text-sm font-medium">{active.productTitle || active.title || "Accommodation"}</div>
-          <div className="text-xs text-gray-600 inline-flex items-center gap-1">
+          <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
             <Clock className="w-3 h-3" />  <span>{active?.hotel_info?.roomsDetails?.length} { active?.hotel_info?.roomsDetails?.length === 1 ? 'room' : 'rooms' } reserved — expires in <strong>{mins}:{secs}.</strong></span>
           </div>
         </div>

@@ -38,16 +38,16 @@ const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-3xl">
+      <div className="bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-3xl">
         <div className="p-6 md:p-8">
           <div className="flex justify-between items-start mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Cancellation Policy</h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition">
+            <h3 className="text-lg font-bold text-foreground">Cancellation Policy</h3>
+            <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground transition">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
-          <p className="text-sm text-gray-600 mb-6">Please review the cancellation policy before confirming your booking.</p>
+          <p className="text-sm text-muted-foreground mb-6">Please review the cancellation policy before confirming your booking.</p>
 
           <div className="space-y-4 mb-6">
             {stubaItems.map((entry, idx) => {
@@ -66,18 +66,18 @@ const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => 
                 const isExpanded = expandedRoomIndex === key;
 
                 return (
-                  <div key={key} className="border border-gray-200 rounded-xl overflow-hidden">
+                  <div key={key} className="border border-border rounded-xl overflow-hidden">
                     <div
-                      className="bg-gray-50 hover:bg-gray-100 transition p-4 flex justify-between items-center cursor-pointer"
+                      className="bg-muted hover:bg-muted transition p-4 flex justify-between items-center cursor-pointer"
                       onClick={() => setExpandedRoomIndex(isExpanded ? null : key)}
                     >
-                      <span className="font-semibold text-gray-800">{roomType}</span>
-                      <svg className={`h-5 w-5 text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                      <span className="font-semibold text-foreground">{roomType}</span>
+                      <svg className={`h-5 w-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                     </div>
 
                     {isExpanded && (
-                      <div className="p-4 border-t border-gray-200 bg-white">
-                        <h5 className="text-sm font-bold text-gray-700 mb-3">Cancellation Policy</h5>
+                      <div className="p-4 border-t border-border bg-surface">
+                        <h5 className="text-sm font-bold text-muted-foreground mb-3">Cancellation Policy</h5>
 
                         {cancellationStatus === "NonRefundable" ? (
                           <div className="text-[#f26e6e] space-y-1">
@@ -123,13 +123,13 @@ const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => 
           <div className="flex gap-4 mt-6">
             <button
               onClick={onClose}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl transition"
+              className="flex-1 bg-secondary hover:bg-secondary text-foreground font-semibold py-3 rounded-xl transition"
             >
               No, Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="flex-1 bg-[#D3202D] hover:bg-[#b88a45] text-white font-semibold py-3 rounded-xl transition"
+              className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold py-3 rounded-xl transition"
             >
               Yes, Confirm
             </button>
@@ -670,16 +670,16 @@ console.log("cart_items:PAYNOW #####################", cart_items);
    <div className="lg:col-span-2 space-y-2 md:space-y-4 md:mt-3 mt-1">
               <h2></h2>
               <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-0 mt-24 p-2">
-    <div className="w-full  bg-white rounded-xl p-2 shadow-md">
+    <div className="w-full  bg-surface rounded-xl p-2 shadow-md">
       <div className="md:p-4 p-2">
         <h2 className="md:text-lg text-md font-semibold mb-4">{t("personalInfo")}</h2>
         <form onSubmit={handlePayNow}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Name */}
             <div>
-              <label className="text-sm  text-gray-500 flex items-center gap-3">
-                <User className="w-4 h-4 text-gray-400" />
-                {t("fullName")} <span className="text-red-500">*</span>
+              <label className="text-sm  text-muted-foreground flex items-center gap-3">
+                <User className="w-4 h-4 text-muted-foreground" />
+                {t("fullName")} <span className="text-destructive">*</span>
               </label>
               <input
                 type="text"
@@ -689,16 +689,16 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   setName(e.target.value);
                   setErrors(prev => ({ ...prev, name: undefined }));
                 }}
-                className={`w-full border border-gray-300 text-base rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-gray-100' : ''}`}
+                className={`w-full border border-border text-base rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-muted' : ''}`}
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{t(errors.name)}</p>}
+              {errors.name && <p className="text-destructive text-xs mt-1">{t(errors.name)}</p>}
             </div>
 
             {/* Email */}
             <div>
-              <label className="text-sm  text-gray-500 flex items-center gap-3">
-                <Mail className="w-4 h-4 text-gray-400" />
-                {t("email")} <span className="text-red-500">*</span>
+              <label className="text-sm  text-muted-foreground flex items-center gap-3">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                {t("email")} <span className="text-destructive">*</span>
               </label>
               <input
                 type="email"
@@ -709,16 +709,16 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   setErrors(prev => ({ ...prev, email: undefined }));
                 }}
                 readOnly={!!user}
-                className={`w-full border border-gray-300 text-base rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-gray-100' : ''}`}
+                className={`w-full border border-border text-base rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-muted' : ''}`}
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{t(errors.email)}</p>}
+              {errors.email && <p className="text-destructive text-xs mt-1">{t(errors.email)}</p>}
             </div>
 
             {/* Phone */}
             <div>
-              <label className="text-sm  text-gray-500 flex items-center gap-3">
-                <Phone className="w-4 h-4 text-base text-gray-400" />
-                {t("phoneNumber")} <span className="text-red-500">*</span>
+              <label className="text-sm  text-muted-foreground flex items-center gap-3">
+                <Phone className="w-4 h-4 text-base text-muted-foreground" />
+                {t("phoneNumber")} <span className="text-destructive">*</span>
               </label>
               <PhoneInput
                 country={'sg'}
@@ -741,33 +741,33 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   required: true,
                 }}
               />
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{t(errors.phone)}</p>}
+              {errors.phone && <p className="text-destructive text-xs mt-1">{t(errors.phone)}</p>}
             </div>
              {/* Preferred Communication */}
               {!user?.communication_mode && (
             <div>
-              <label className="text-sm text-gray-500 flex items-center gap-3">
-                <MessageSquare className="w-4 h-4 text-gray-400" />
+              <label className="text-sm text-muted-foreground flex items-center gap-3">
+                <MessageSquare className="w-4 h-4 text-muted-foreground" />
                 Preferred Communication Mode
               </label>
               <div className="relative" ref={commModeRef}>
                 <button
                   type="button"
                   onClick={() => setIsCommModeOpen(!isCommModeOpen)}
-                  className="w-full border border-gray-300 text-base rounded px-4 py-2.5  focus:outline-none bg-white flex justify-between items-center text-left"
+                  className="w-full border border-border text-base rounded px-4 py-2.5  focus:outline-none bg-surface flex justify-between items-center text-left"
                 >
-                  <span className={communicationMode ? 'text-gray-800' : 'text-gray-500'}>
+                  <span className={communicationMode ? 'text-foreground' : 'text-muted-foreground'}>
                     {communicationOptions.find(opt => opt.value === communicationMode)?.label || "Select option"}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-400 transition-transform ${
+                    className={`w-5 h-5 text-muted-foreground transition-transform ${
                       isCommModeOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isCommModeOpen && (
-                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                  <div className="absolute z-10 mt-1 w-full bg-surface border border-border rounded-md shadow-lg">
                     <ul>
                       {communicationOptions.map((option) => (
                         <li
@@ -776,7 +776,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                             setCommunicationMode(option.value);
                             setIsCommModeOpen(false);
                           }}
-                          className="px-4 py-2 text-base text-gray-800 cursor-pointer hover:bg-gray-100"
+                          className="px-4 py-2 text-base text-foreground cursor-pointer hover:bg-muted"
                         >
                           {option.label}
                         </li>
@@ -792,8 +792,8 @@ console.log("cart_items:PAYNOW #####################", cart_items);
             <div className="md:col-span-2 mt-0">
               {(user?.roaming_enabled === undefined || user?.roaming_enabled === null) && (
               <>
-              <label className="text-sm text-gray-500 flex items-center gap-3">
-                <Wifi className="w-4 h-4 text-gray-400" />
+              <label className="text-sm text-muted-foreground flex items-center gap-3">
+                <Wifi className="w-4 h-4 text-muted-foreground" />
                 Will you have roaming enabled during your trip?
               </label>
               <div className="flex gap-6 mt-3">
@@ -804,12 +804,12 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                     value="yes"
                     checked={hasRoaming === 'yes'}
                     onChange={e => setHasRoaming(e.target.value)}
-                    className="form-radio h-4 w-4 text-[#CC9A55] focus:ring-[#CC9A55] border-gray-300"
+                    className="form-radio h-4 w-4 text-primary focus:ring-primary border-border"
                   />
                   <span>Yes</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="roaming" value="no" checked={hasRoaming === 'no'} onChange={e => setHasRoaming(e.target.value)} className="form-radio h-4 w-4 text-[#CC9A55] focus:ring-[#CC9A55] border-gray-300" />
+                  <input type="radio" name="roaming" value="no" checked={hasRoaming === 'no'} onChange={e => setHasRoaming(e.target.value)} className="form-radio h-4 w-4 text-primary focus:ring-primary border-border" />
                   <span>No</span>
                 </label>
               </div>
@@ -820,9 +820,9 @@ console.log("cart_items:PAYNOW #####################", cart_items);
             {/* User Comment */}
             {hasLinkType10 && (
               <div className="md:col-span-2">
-                <label className="text-sm text-gray-500 flex items-center gap-3">
-                  <MessageSquare className="w-4 h-4 text-gray-400" />
-                  Comment <span className="text-red-500">*</span>
+                <label className="text-sm text-muted-foreground flex items-center gap-3">
+                  <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                  Comment <span className="text-destructive">*</span>
                 </label>
                 <textarea
                   placeholder="Enter your comment..."
@@ -832,19 +832,19 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                     setErrors(prev => ({ ...prev, userComment: undefined }));
                   }}
                   rows={3}
-                  className="w-full border border-gray-300 text-base rounded px-4 py-3 mt-1 focus:outline-none resize-none"
+                  className="w-full border border-border text-base rounded px-4 py-3 mt-1 focus:outline-none resize-none"
                 />
-                {errors.userComment && <p className="text-red-500 text-xs mt-1">{errors.userComment}</p>}
+                {errors.userComment && <p className="text-destructive text-xs mt-1">{errors.userComment}</p>}
               </div>
             )}
 
             {/* {!showPromoField && (
              <div>
-                <label className="text-sm text-gray-500 flex justify-between items-center gap-3">
+                <label className="text-sm text-muted-foreground flex justify-between items-center gap-3">
                   <span className="flex items-center gap-1">
-                    <Tag className="w-4 h-4 text-gray-400" /> {t("promoCode")}
+                    <Tag className="w-4 h-4 text-muted-foreground" /> {t("promoCode")}
                   </span>
-                  {/* <a href="#" className="text-sm text-[#D3202D] underline">{t("findPromo")}</a> 
+                  {/* <a href="#" className="text-sm text-primary underline">{t("findPromo")}</a>
                 </label>
                 <div className="flex items-center gap-2 mt-1">
                   <input
@@ -853,11 +853,11 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                     placeholder={t("placeholders.promo")}
                     value={promo}
                     onChange={(e) => setPromo(e.target.value)}
-                    className="w-full border border-gray-300 text-base rounded px-4 py-3 focus:outline-none"
+                    className="w-full border border-border text-base rounded px-4 py-3 focus:outline-none"
                   />
                  <button
   type="button"
-  className="bg-[#D3202D] text-white px-4 py-3 rounded-md"
+  className="bg-primary text-primary-foreground px-4 py-3 rounded-md hover:bg-primary-hover"
   onClick={async () => {
     if (!promo) return; 
     try {
@@ -888,17 +888,17 @@ console.log("cart_items:PAYNOW #####################", cart_items);
 
           {/* Payment Options */}
           {/* <div className="mt-6">
-            <label className="text-sm font-medium text-gray-500 flex items-center gap-3">
-              <CreditCard className="w-4 h-4 text-gray-400" />
-              {t("paymentOptions")} <span className="text-red-500">*</span>
+            <label className="text-sm font-medium text-muted-foreground flex items-center gap-3">
+              <CreditCard className="w-4 h-4 text-muted-foreground" />
+              {t("paymentOptions")} <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
               readOnly
               value={paymentOptions.find(opt => (opt.value || opt.id) === paymentOption)?.name || ''}
-              className="w-full border border-gray-300 text-sm rounded px-4 py-3 mt-2 focus:outline-none bg-gray-100"
+              className="w-full border border-border text-sm rounded px-4 py-3 mt-2 focus:outline-none bg-muted"
             />
-            {errors.paymentOption && <p className="text-red-500 text-xs mt-1">{t(errors.paymentOption)}</p>}
+            {errors.paymentOption && <p className="text-destructive text-xs mt-1">{t(errors.paymentOption)}</p>}
           </div> */}
 
          
@@ -913,14 +913,14 @@ console.log("cart_items:PAYNOW #####################", cart_items);
 <div className="hidden lg:flex mt-8 py-2 p-2 justify-end">
   <button
     type="button"
-    className="bg-[#D3202D] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
+    className="bg-primary text-primary-foreground text-sm font-semibold rounded-md px-10 py-3 transition hover:bg-primary-hover flex items-center justify-center min-w-[150px]"
     disabled={isSubmitting}
     onClick={handlePayNow}
   >
     {isSubmitting ? (
       <>
         <svg
-          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+          className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-foreground"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -959,14 +959,14 @@ console.log("cart_items:PAYNOW #####################", cart_items);
 <div className="lg:hidden mt-0 md:mt-4  py-2 p-2 flex justify-end">
   <button
     type="button"
-    className="bg-[#D3202D] text-white text-sm font-semibold rounded-md px-10 py-3 transition flex items-center justify-center min-w-[150px]"
+    className="bg-primary text-primary-foreground text-sm font-semibold rounded-md px-10 py-3 transition hover:bg-primary-hover flex items-center justify-center min-w-[150px]"
     disabled={isSubmitting}
     onClick={handlePayNow}
   >
     {isSubmitting ? (
       <>
         <svg
-          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+          className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-foreground"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

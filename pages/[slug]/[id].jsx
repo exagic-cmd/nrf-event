@@ -86,14 +86,14 @@ export default function ProductDetail() {
       {/* Popup Message */}
     {showPopup && (
   <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-    <div className="bg-white text-black px-6 py-6 rounded-lg shadow-xl text-center w-80">
+    <div className="bg-surface text-surface-foreground px-6 py-6 rounded-lg shadow-xl text-center w-80">
       <p className="mb-4 font-semibold">{popupMessage}</p>
       
       {popupMessage.includes("Added") && (
         <div className="flex flex-col gap-3">
           <button
             onClick={() => router.push("/checkout")}
-            className="bg-[#CC9A55] text-white py-2 rounded-lg font-medium"
+            className="bg-brand-secondary text-white py-2 rounded-lg font-medium"
           >
             Go to Checkout
           </button>
@@ -102,7 +102,7 @@ export default function ProductDetail() {
               setShowPopup(false);
               router.push("/");
             }}
-            className="border border-gray-400 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-100"
+            className="border border-border text-muted-foreground py-2 rounded-lg font-medium hover:bg-muted"
           >
             Continue Shopping
           </button>
@@ -113,7 +113,7 @@ export default function ProductDetail() {
 )}
 
 
-      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 bg-white p-4 md:p-12 rounded-xl">
+      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 bg-surface p-4 md:p-12 rounded-xl">
         {/* Image Section */}
         <div className="flex flex-col">
           <Image
@@ -132,12 +132,12 @@ export default function ProductDetail() {
           <div className="hidden md:block mt-6">
             <button
               onClick={handleAddToCart}
-              className="bg-[#CC9A55] px-6 py-3 rounded-xl font-medium shadow-md w-full"
+              className="bg-brand-secondary px-6 py-3 rounded-xl font-medium shadow-md w-full"
             >
               Add to Cart
             </button>
             <div className="flex justify-center mt-4">
-              <Link href="/" className="text-gray-400 hover:text-black">
+              <Link href="/" className="text-muted-foreground hover:text-surface-foreground">
                 ← Back to Home
               </Link>
             </div>
@@ -146,8 +146,8 @@ export default function ProductDetail() {
 
         {/* Details Section */}
         <div className="flex flex-col justify-start space-y-4">
-          <h1 className="text-md md:text-2xl font-bold text-black">{title}</h1>
-          <p className="text-sm md:text-base text-gray-800">{description}</p>
+          <h1 className="text-md md:text-2xl font-bold text-surface-foreground">{title}</h1>
+          <p className="text-sm md:text-base text-foreground">{description}</p>
 
           {features.length > 0 && (
             <ul className="list-disc list-inside text-[#CC9A55]">
@@ -158,12 +158,12 @@ export default function ProductDetail() {
           )}
 
           {price && (
-            <p className="text-xl font-semibold mt-4 text-black">
+            <p className="text-xl font-semibold mt-4 text-surface-foreground">
               Price:  {price} SGD
             </p>
           )}
-          {city && <p className="text-gray-700">City: {city}</p>}
-          {tourtype && <p className="text-gray-700">Tour Type: {tourtype}</p>}
+          {city && <p className="text-muted-foreground">City: {city}</p>}
+          {tourtype && <p className="text-muted-foreground">Tour Type: {tourtype}</p>}
         </div>
       </div>
 
@@ -171,12 +171,12 @@ export default function ProductDetail() {
       <div className="md:hidden mt-6 max-w-4xl mx-auto px-6">
         <button
           onClick={handleAddToCart}
-          className="bg-[#CC9A55] px-6 py-3 rounded-xl font-medium shadow-md w-full"
+          className="bg-brand-secondary px-6 py-3 rounded-xl font-medium shadow-md w-full"
         >
           Add to Cart
         </button>
         <div className="flex justify-center mt-4">
-          <Link href="/" className="text-gray-400 hover:text-black">
+          <Link href="/" className="text-muted-foreground hover:text-surface-foreground">
             ← Back to Home
           </Link>
         </div>

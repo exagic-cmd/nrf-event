@@ -69,16 +69,16 @@ useEffect(() => {
       {/* Mobile Pricing Card */}
       {!fromOrderScreen && (
   <div className="hidden md:block
-   bg-white p-4 rounded-xl borderborder-[#D3202D] mb-6">
+   bg-surface p-4 rounded-xl border border-primary mb-6">
     <div className="text-center">
-      <div className="text-sm text-gray-600">{t("starting_from")}</div>
+      <div className="text-sm text-muted-foreground">{t("starting_from")}</div>
       <div className="my-2">
-        <span className="text-2xl font-bold text-gray-900">{apiData?.currency} {startingPrice}</span>
+        <span className="text-2xl font-bold text-foreground">{apiData?.currency} {startingPrice}</span>
       </div>
       {apiData?.is_group ? (
         <button
           onClick={onScrollToOptions}
-          className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+          className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
         >
           {t("choose_tour_type")}
           <ChevronDown size={20} />
@@ -86,7 +86,7 @@ useEffect(() => {
       ) : (
         <button
           onClick={onProceedBooking}
-          className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+          className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
         >
           {t("proceed_booking")}
           <ChevronRight size={20} />
@@ -104,15 +104,15 @@ useEffect(() => {
           return (
             <div
               key={i}
-              className="flex items-center justify-between gap-2 p-3 bg-white text-black rounded-lg shadow-sm border  flex-shrink-0 "
+              className="flex items-center justify-between gap-2 p-3 bg-surface text-surface-foreground rounded-lg shadow-sm border  flex-shrink-0 "
             >       
               <div className="flex items-center gap-2">
-                <div className="bg-gradient-to-br from-red-100 to-red-200 p-2 rounded-lg">
-                  <IconComponent size={14} className="text-black" />
+                <div className="bg-primary/10 p-2 rounded-lg">
+                  <IconComponent size={14} className="text-surface-foreground" />
                 </div>
-                {/* <div className="font-medium text-sm text-black">{feature.title} 
+                {/* <div className="font-medium text-sm text-surface-foreground">{feature.title} 
               </div>*/}
-              <div className="text-xs text-black">{feature.desc}</div>
+              <div className="text-xs text-surface-foreground">{feature.desc}</div>
               </div>
             </div>
           )

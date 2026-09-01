@@ -18,7 +18,7 @@ export default function AffiliateBottomBanner() {
       
       {/* Content */}
       <div className="flex flex-col items-center justify-center text-center relative z-10">
-        <h2 className="text-sm md:text-2xl font-bold text-gray-900 md:mb-4">Ready to Start the<br />Affiliate Program Today?</h2>
+        <h2 className="text-sm md:text-2xl font-bold text-foreground md:mb-4">Ready to Start the<br />Affiliate Program Today?</h2>
         <button onClick={() => window.open("https://partner.airporttransfers.ai", "_blank")}
   className="bg-[#FE6F4F] text-sm md:text-lg text-white cursor-pointer px-2 md:px-6 py-1 md:py-2 rounded-full transition"
 >

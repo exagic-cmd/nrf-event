@@ -67,8 +67,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f4f4] w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
-      <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg w-full max-w-5xl h-[559px] overflow-hidden">
+    <div className="min-h-screen bg-surface-muted w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
+      <div className="flex flex-col md:flex-row bg-surface rounded-lg shadow-lg w-full max-w-5xl h-[559px] overflow-hidden">
         {/* Left: Banner */}
         <div className="hidden md:block md:w-1/2 justify-items-center">
           <img
@@ -98,7 +98,7 @@ export default function RegisterPage() {
               <input
                 type="text"
                 name="name"
-                className="w-full p-2 border border-gray-200 rounded"
+                className="w-full p-2 border border-border rounded"
                 value={formData.name}
                 onChange={handleChange}
               />
@@ -112,7 +112,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 name="email"
-                className="w-full p-2 border border-gray-200 rounded"
+                className="w-full p-2 border border-border rounded"
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -152,7 +152,7 @@ export default function RegisterPage() {
                 <input
                   type="password"
                   name="password"
-                  className="w-full p-2 border border-gray-200 rounded"
+                  className="w-full p-2 border border-border rounded"
                   value={formData.password}
                   onChange={handleChange}
                 />
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                 <input
                   type="password"
                   name="password_confirmation"
-                  className="w-full p-2 border border-gray-200 rounded"
+                  className="w-full p-2 border border-border rounded"
                   value={formData.password_confirmation}
                   onChange={handleChange}
                 />
@@ -179,10 +179,10 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#D3202D] text-white  p-3 rounded-md transition-colors ${
+              className={`w-full bg-primary text-white  p-3 rounded-md transition-colors ${
                 loading
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[#D3202D]"
+                  : "hover:bg-primary"
               }`}
             >
               {loading ? t("registering") : t("register")}
@@ -191,10 +191,10 @@ export default function RegisterPage() {
 
           {/* Already have an account */}
           <div className="text-center text-sm mt-4">
-            <span className="text-black">{t("alreadyHaveAccount")} </span>
+            <span className="text-surface-foreground">{t("alreadyHaveAccount")} </span>
             <a
               href="/login"
-              className="text-[#D3202D] hover:underline"
+              className="text-primary hover:underline"
             >
               {t("signIn")}
             </a>

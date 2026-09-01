@@ -118,10 +118,10 @@ const DayTourBookingPage = () => {
   if (!allowed) {
     return (
       <Layout>
-        <div className="flex items-center bg-[#f4f4f4] justify-center pb-12 min-h-screen text-center px-4">
+        <div className="flex items-center bg-surface-muted justify-center pb-12 min-h-screen text-center px-4">
           <div>
-             <h2 className="text-xl font-semibold text-black mb-2">{t("redirecting")}</h2>
-            <p className="text-black">{t("redirectingMessage")}</p>
+             <h2 className="text-xl font-semibold text-surface-foreground mb-2">{t("redirecting")}</h2>
+            <p className="text-surface-foreground">{t("redirectingMessage")}</p>
           </div>
         </div>
       </Layout>
@@ -139,7 +139,7 @@ const DayTourBookingPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#f4f4f4] pb-12 pt-12 md:pt-20">
+      <div className="min-h-screen bg-surface-muted pb-12 pt-12 md:pt-20">
         <div className="full-width mx-auto px-1 md:px-4 py-8 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
@@ -167,7 +167,7 @@ const DayTourBookingPage = () => {
                     {/* Content Section */}
                     <div className="p-6 space-y-4">
                       <div>
-                        <h3 className="font-bold text-lg text-gray-900 leading-tight">{productTitle}</h3>
+                        <h3 className="font-bold text-lg text-foreground leading-tight">{productTitle}</h3>
         
                       </div>
 
@@ -176,13 +176,13 @@ const DayTourBookingPage = () => {
                       {/* Details Section */}
                       <div className="space-y-3">
                        
-                        <div className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
-                          <div className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center">
+                        <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                          <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                             <Tag className="w-4 h-4 text-[#595c61]" />
                           </div>
                           <div>
-     <p className="text-xs text-gray-500 uppercase tracking-wide">{t("price")}</p>
-                            <p className="font-medium text-gray-900">
+     <p className="text-xs text-muted-foreground uppercase tracking-wide">{t("price")}</p>
+                            <p className="font-medium text-foreground">
   {t("startingFrom")}  {apiData?.currency} { displayPrice }
 </p>
                           </div>
@@ -190,14 +190,14 @@ const DayTourBookingPage = () => {
                       </div>
 
                       {/* Trust Indicators */}
-        <div className="pt-4 border-t border-gray-100">
-          <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="pt-4 border-t border-border">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-yellow-500 fill-current" />
               <span>{t("trustedExperience")}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4 text-gray-400" />
+              <Clock className="w-4 h-4 text-muted-foreground" />
               <span>{t("quickConfirmation")}</span>
             </div>
           </div>

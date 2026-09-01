@@ -42,8 +42,8 @@ function Faqs() {
   };
 
   return (
-    <div className="w-full md:w-[auto]  sticky top-0 rounded-xl overflow-hidden p-4 bg-white text-black shadow-md  border">
-      <h1 className="text-lg font-semibold text-[#D3202D] mb-6">
+    <div className="w-full md:w-[auto] sticky top-0 rounded-xl overflow-hidden p-4 bg-card text-card-foreground shadow-md border">
+      <h1 className="text-lg font-semibold text-primary mb-6">
         {t("faqs.title")}
       </h1>
 
@@ -51,24 +51,24 @@ function Faqs() {
         {faqs.map((faq, index) => (
           <div
             key={index}
-            className={`border-b pb-4 ${index !== faqs.length - 1 ? 'border-gray-200' : ''}`}
+            className={`border-b pb-4 ${index !== faqs.length - 1 ? 'border-border' : ''}`}
           >
             <button
               onClick={() => toggleFAQ(index)}
               className="w-full flex items-start justify-between text-left"
             >
-              <h2 className="text-sm font-medium text-[black] leading-5">
+              <h2 className="text-sm font-medium text-foreground leading-5">
                 {faq.question}
               </h2>
               <ChevronDown
-                className={`w-4 h-4 text-[black] mt-1 transition-transform duration-200 ${
+                className={`w-4 h-4 text-foreground mt-1 transition-transform duration-200 ${
                   activeIndex === index ? 'rotate-180' : ''
                 }`}
               />
             </button>
 
             <div
-              className={`overflow-hidden transition-all duration-300 text-sm text-[black] ${
+              className={`overflow-hidden transition-all duration-300 text-sm text-muted-foreground ${
                 activeIndex === index ? 'mt-2 max-h-[200px]' : 'max-h-0'
               }`}
             >

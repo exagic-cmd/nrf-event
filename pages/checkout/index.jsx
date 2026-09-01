@@ -43,12 +43,12 @@ const PayNowPage = () => {
   if (!allowed) {
     return (
       <Layout>
-        <div className=" bg-[#f4f4f4]flex items-center justify-center min-h-screen text-center px-4">
+        <div className=" bg-surface-mutedflex items-center justify-center min-h-screen text-center px-4">
           <div>
-            <h2 className="text-xl font-semibold text-black mb-2">
+            <h2 className="text-xl font-semibold text-surface-foreground mb-2">
               {t('unauthorized')}
             </h2>
-            <p className="text-black">{t('redirecting')}</p>
+            <p className="text-surface-foreground">{t('redirecting')}</p>
           </div>
         </div>
       </Layout>
@@ -65,7 +65,7 @@ const PayNowPage = () => {
   //           </h2>
   //           <button
   //             onClick={() => localizedPush("/")}
-  //             className="bg-[#D3202D] text-white px-4 py-2 rounded-lg"
+  //             className="bg-primary text-white px-4 py-2 rounded-lg"
   //           >
   //             {t("goBack")}
   //           </button>
@@ -77,8 +77,8 @@ const PayNowPage = () => {
 
   return (
     <Layout>
-      <div className= "bg-[#f4f4f4] mt-12 min-h-screen">
-        <div className="full-width bg-[#f4f4f4] mx-auto px-4 py-8 pb-14 lg:px-8">
+      <div className= "bg-surface-muted mt-12 min-h-screen">
+        <div className="full-width bg-surface-muted mx-auto px-4 py-8 pb-14 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">           
               <PayNow />          
           </div>

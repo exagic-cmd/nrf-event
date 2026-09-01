@@ -112,10 +112,10 @@ console.log(order.email)
   };
 
   return (
-    <div className="p-6 mt-8 text-center min-h-screen bg-[#f4f4f4] relative">
+    <div className="p-6 mt-8 text-center min-h-screen bg-surface-muted relative">
       <button
         onClick={() => localizedPush('/')}
-        className="fixed top-24 z-50 left-2 md:left-12  flex items-center gap-2 bg-white border border-[#D3202D] text-[#D3202D]  px-4 py-2 rounded-full transition-colors duration-300 shadow-md"
+        className="fixed top-24 z-50 left-2 md:left-12  flex items-center gap-2 bg-surface border border-primary text-primary  px-4 py-2 rounded-full transition-colors duration-300 shadow-md"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -129,12 +129,12 @@ console.log(order.email)
         </div>
       ) : paymentSuccess ? (
         <div className="p-4">
-          <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl mx-[250px] text-center border border-orange-100 mt-20 relative overflow-hidden">
+          <div className="bg-surface p-8 md:p-12 rounded-3xl shadow-2xl mx-[250px] text-center border border-orange-100 mt-20 relative overflow-hidden">
             {/* Top accent bar */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-[#D3202D]"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
             
             <div className="relative mb-6">
-              <div className="w-20 h-20 mx-auto bg-[#D3202D] rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <div className="w-20 h-20 mx-auto bg-primary rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
                 <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
@@ -142,8 +142,8 @@ console.log(order.email)
             </div>
             
             {/* Header */}
-            <h2 className="text-[#D3202D] text-3xl font-bold mb-3 tracking-tight">{t('bookingConfirmed')}</h2>
-            <p className="text-gray-600 mb-8 text-lg leading-relaxed">{t('thankYou')}</p>
+            <h2 className="text-primary text-3xl font-bold mb-3 tracking-tight">{t('bookingConfirmed')}</h2>
+            <p className="text-muted-foreground mb-8 text-lg leading-relaxed">{t('thankYou')}</p>
             
           <div className="space-y-6">
                   {/* Phone contact */}
@@ -154,8 +154,8 @@ console.log(order.email)
                       </svg>
                     </div>
                     <div className="text-left">
-                      <p className="text-sm text-gray-600">{t('callUs')}</p>
-                      <a href={`tel:${event?.event?.phone}`} className="font-semibold text-[#D3202D]">
+                      <p className="text-sm text-muted-foreground">{t('callUs')}</p>
+                      <a href={`tel:${event?.event?.phone}`} className="font-semibold text-primary">
                   {event?.event?.phone}
                 </a>
                     </div>
@@ -169,8 +169,8 @@ console.log(order.email)
                       </svg>
                     </div>
                     <div className="text-left">
-                      <p className="te1xt-sm text-gray-600">{t('emailUs')}</p>
-                      <a href={`mailto:${event?.event?.email}`} className="font-semibold text-[#D3202D]">
+                      <p className="te1xt-sm text-muted-foreground">{t('emailUs')}</p>
+                      <a href={`mailto:${event?.event?.email}`} className="font-semibold text-primary">
                   {event?.event?.email}
                 </a>
                     </div>
@@ -183,7 +183,7 @@ console.log(order.email)
         </div>
       ) : (
         <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden">
-          <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl mx-[250px] text-center relative z-10 border  backdrop-blur-sm">
+          <div className="bg-surface p-8 md:p-12 rounded-3xl shadow-2xl mx-[250px] text-center relative z-10 border  backdrop-blur-sm">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D3202D] to-transparent rounded-t-3xl"></div>
             
             <div className="relative mb-6">
@@ -191,19 +191,19 @@ console.log(order.email)
             </div>
 
             {/* Header */}
-            <h2 className="text-2xl md:text-3xl font-bold text-[#D3202D] mb-4 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4 tracking-tight">
               {paymentError ? 'Booking Unavailable' : t('paymentIncomplete')}
             </h2>
 
-            <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+            <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
               {paymentError || t('bookingAlmostComplete')}
             </p>
 
             {/* Help section with enhanced styling */}
-            <div className="bg-bg-[#f4f4f4] p-6 rounded-2xl mb-8 relative overflow-hidden">
+            <div className="bg-bg-surface-muted p-6 rounded-2xl mb-8 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white via-transparent opacity-50 -skew-x-12 animate-pulse"></div>
               <div className="relative z-10">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
                   <div className=" rounded-lg flex items-center justify-center">
                   </div>
                   {t('needHelp')}
@@ -218,8 +218,8 @@ console.log(order.email)
                       </svg>
                     </div>
                     <div className="text-left">
-                      <p className="text-sm text-gray-600">{t('callUs')}</p>
-                      <a href={`tel:${event?.event?.phone}`} className="font-semibold text-[#D3202D]">
+                      <p className="text-sm text-muted-foreground">{t('callUs')}</p>
+                      <a href={`tel:${event?.event?.phone}`} className="font-semibold text-primary">
                   {event?.event?.phone}
                 </a>
                     </div>
@@ -233,8 +233,8 @@ console.log(order.email)
                       </svg>
                     </div>
                     <div className="text-left">
-                      <p className="text-sm text-gray-600">{t('emailUs')}</p>
-                      <a href={`mailto:${event?.event?.email}`} className="font-semibold text-[#D3202D]">
+                      <p className="text-sm text-muted-foreground">{t('emailUs')}</p>
+                      <a href={`mailto:${event?.event?.email}`} className="font-semibold text-primary">
                   {event?.event?.email}
                 </a>
                     </div>
@@ -246,11 +246,11 @@ console.log(order.email)
             {/* Resume Payment Button (hidden if unrecoverable payment error) */}
             {!paymentError && (
               <button
-                className="group relative w-full bg-[#D3202D] hover:to-[#D3202D] transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
+                className="group relative w-full bg-primary hover:to-[#D3202D] transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
                 onClick={handleResumePayment}
               >
                 {/* Button background effect */}
-                <div className="absolute inset-0 bg-gray-100 opacity-20 -skew-x-12 group-hover:animate-pulse"></div>
+                <div className="absolute inset-0 bg-muted opacity-20 -skew-x-12 group-hover:animate-pulse"></div>
                 
                 {/* Button content */}
                 <div className="relative z-10 flex items-center gap-3">
@@ -263,7 +263,7 @@ console.log(order.email)
             )}
 
             {/* Security badge */}
-            <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
+            <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
@@ -277,17 +277,17 @@ console.log(order.email)
       {/* Demo alert for Flywire state */}
       {showFlywire && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm mx-auto text-center">
+          <div className="bg-surface p-6 rounded-2xl shadow-2xl max-w-sm mx-auto text-center">
             <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Payment Resumed!</h3>
-            <p className="text-gray-600 mb-4">Redirecting to secure payment...</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">Payment Resumed!</h3>
+            <p className="text-muted-foreground mb-4">Redirecting to secure payment...</p>
             <button
               onClick={() => setShowFlywire(false)}
-              className="bg-[#D3202D] text-white px-6 py-2 rounded-full font-medium hover:bg-orange-500 transition-colors"
+              className="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-orange-500 transition-colors"
             >
               Close Demo
             </button>

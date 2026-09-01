@@ -86,12 +86,12 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
       <div className="text-end">
         <button
           onClick={() => setShowPastBookings(!showPastBookings)}
-          className="inline-flex items-center space-x-3 bg-[#D3202D] text-white px-4 py-2 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          className="inline-flex items-center space-x-3 bg-primary text-white px-4 py-2 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <History className="w-6 h-6" />
           <span>{showPastBookings ? t("hidePastTrips") : t("viewPastTrips")}</span>
           {allItineraryItems.length > 0 && (
-            <span className="bg-white text-gray-700 px-2 py-1 rounded-full text-sm font-bold">
+            <span className="bg-surface text-muted-foreground px-2 py-1 rounded-full text-sm font-bold">
               {allItineraryItems.length}
             </span>
           )}
@@ -100,7 +100,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
 
       {showPastBookings && (
         <div className="mt-8">
-          <h2 className="text-xl font-semibold text-[#D3202D] mb-6 text-start">
+          <h2 className="text-xl font-semibold text-primary mb-6 text-start">
             {t("pastTrips")}
           </h2>
 
@@ -108,13 +108,13 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
           <div className="mb-6 space-y-4">
             <div className="flex flex-col lg:flex-row gap-4 max-w-4xl mx-auto">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <input
                   type="text"
                   placeholder={t("searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -122,7 +122,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 <select
                   value={filterBy}
                   onChange={(e) => setFilterBy(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
+                  className="w-full sm:w-auto px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
                 >
                   <option value="all">{t("allStatus")}</option>
                   <option value="confirmed">{t("confirmed")}</option>
@@ -132,7 +132,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
+                  className="w-full sm:w-auto px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
                 >
                   <option value="date">{t("sortByDate")}</option>
                   <option value="name">{t("sortByName")}</option>
@@ -141,7 +141,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
             </div>
 
             {(searchTerm || filterBy !== "all") && (
-              <div className="text-center text-sm text-gray-600">
+              <div className="text-center text-sm text-muted-foreground">
                 {t("showingResults", {
                   count: filteredAndSortedTrips.length,
                   total: allItineraryItems.length,
@@ -157,10 +157,10 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 return (
                   <div
                     key={`${item.order_id}-${item.id}`}
-                    className="relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col"
+                    className="relative bg-surface rounded-xl shadow-lg overflow-hidden border border-border hover:shadow-xl transition-all duration-300 flex flex-col"
                   >
                     {loadingItemId === item.id && (
-                      <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-surface/80 z-10 flex items-center justify-center">
                         <Loader2Svg />
                       </div>
                     )}
@@ -173,7 +173,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                         />
                         <span
                           className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold shadow-md ${
-                            isConfirmed ? "bg-gray-800 text-white" : "bg-[#D3202D] text-white"
+                            isConfirmed ? "bg-secondary text-white" : "bg-primary text-white"
                           }`}
                         >
                           {isConfirmed ? t("confirmed") : t("unconfirmed")}
@@ -181,7 +181,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                       </div>
 
                       <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between">
-                        <h3 className="text-base sm:text-lg font-bold line-clamp-1 text-gray-800 mb-2">
+                        <h3 className="text-base sm:text-lg font-bold line-clamp-1 text-foreground mb-2">
                           {item.title || item.hotel_name}
                         </h3>
 
@@ -200,7 +200,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                                 onReviewClick(item);
                               }}
                               disabled={loadingItemId === item.id}
-                              className="flex-1 bg-[#D3202D]  text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 transition-colors text-sm disabled:opacity-50"
+                              className="flex-1 bg-primary  text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 transition-colors text-sm disabled:opacity-50"
                             >
                               <Star className="w-4 h-4" />
                               <span>{t("review")}</span>
@@ -212,14 +212,14 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                                 onDetailsClick({ order_id: item.order_id, itinerary_id: item.id });
                               }}
                               disabled={loadingItemId === item.id}
-                              className="flex-1 bg-gray-400 text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
+                              className="flex-1 bg-secondary text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
                             >
                               <Eye className="w-3 h-3" />
                               <span>{t("details")}</span>
                             </button>
                           </div>
                         ) : (
-                          <div className="flex items-center mt-3 justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
+                          <div className="flex items-center mt-3 justify-center text-muted-foreground bg-muted px-3 py-2 rounded-lg text-sm font-medium w-full">
                             <AlertCircle className="w-4 h-4 mr-2" />
                             {t("unconfirmedOrder")}
                           </div>
@@ -231,12 +231,12 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
               })}
             </div>
           ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-xl max-w-4xl mx-auto">
+            <div className="text-center py-12 bg-muted rounded-xl max-w-4xl mx-auto">
               <History className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-600 text-lg font-medium">
+              <p className="text-muted-foreground text-lg font-medium">
                 {searchTerm || filterBy !== "all" ? t("noSearchResults") : t("noPastTrips")}
               </p>
-              <p className="text-gray-500 text-sm mt-2">
+              <p className="text-muted-foreground text-sm mt-2">
                 {searchTerm || filterBy !== "all" ? t("tryAdjustingSearch") : t("travelMemoriesAppear")}
               </p>
             </div>

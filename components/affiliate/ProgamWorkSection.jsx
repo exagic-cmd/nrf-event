@@ -35,10 +35,10 @@ function ProgramWorkSection() {
 
   return (
     <div className='my-12 md:mx-24 mx-2'>
-      <div className="bg-white">
+      <div className="bg-surface">
         <div className="text-center mb-12">
           <p className="text-[#CC9A55] text-lg">{t('programWork.subtitle')}</p>
-          <h2 className="text:lg md:text-4xl font-bold text-gray-900 mt-1">
+          <h2 className="text:lg md:text-4xl font-bold text-foreground mt-1">
             {t('programWork.title')}
           </h2>
         </div>
@@ -47,15 +47,15 @@ function ProgramWorkSection() {
           {steps.map((step, index) => (
             <div key={step.id} className="flex flex-col items-center relative">
               <div className="relative mb-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-white rounded-full border-2 border-gray-200">
+                <div className="flex items-center justify-center w-12 h-12 bg-surface rounded-full border-2 border-border">
                   {step.icon}
                 </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#CC9A55] rounded-full flex items-center justify-center text-white text-xs font-medium">
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-brand-secondary rounded-full flex items-center justify-center text-white text-xs font-medium">
                   {step.id}
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
-              <p className="text-sm text-gray-600 text-center leading-relaxed px-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">{step.title}</h3>
+              <p className="text-sm text-muted-foreground text-center leading-relaxed px-2">
                 {step.description}
               </p>
 

@@ -10,8 +10,8 @@ const FAQItem = ({ question, isOpen, toggle , answer }) => {
         className="flex justify-between items-center w-full text-left" 
         onClick={toggle}
       >
-        <h3 className="text-sm font-medium text-gray-900">{question}</h3>
-        <span className="text-gray-500 ml-2">
+        <h3 className="text-sm font-medium text-foreground">{question}</h3>
+        <span className="text-muted-foreground ml-2">
           {isOpen ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -25,7 +25,7 @@ const FAQItem = ({ question, isOpen, toggle , answer }) => {
       </button>
       
       {isOpen && (
-        <div className="mt-2 text-sm text-gray-600">
+        <div className="mt-2 text-sm text-muted-foreground">
           <p>{answer}</p>
         </div>
       )}
@@ -72,7 +72,7 @@ export default function FAQPage() {
       {/* Header */}
       <div className="text-center mb-8">
         <p className="text-[#FE6F4F]  text-md md:text-lg">FAQs</p>
-        <h1 className="text-lg  md:text-4xl font-bold text-gray-900 mt-2">Frequently Asked Questions</h1>
+        <h1 className="text-lg  md:text-4xl font-bold text-foreground mt-2">Frequently Asked Questions</h1>
       </div>
       
       {/* FAQ Grid */}

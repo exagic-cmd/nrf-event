@@ -160,23 +160,23 @@ export default function SuggestionsSection({
   const ProductDetails = ({ product, productId, isLoading }) => {
     if (isLoading) {
       return (
-        <div className="flex-1 p-4 bg-white rounded-lg animate-pulse">
-          <div className="w-full h-48 bg-gray-100 rounded mb-4"></div>
-          <div className="h-6 bg-gray-100 rounded w-3/4 mb-2"></div>
-          <div className="h-4 bg-gray-100 rounded w-1/2 mb-4"></div>
+        <div className="flex-1 p-4 bg-surface rounded-lg animate-pulse">
+          <div className="w-full h-48 bg-muted rounded mb-4"></div>
+          <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-muted rounded w-1/2 mb-4"></div>
           <div className="space-y-2">
-            <div className="h-4 bg-gray-100 rounded w-full"></div>
-            <div className="h-4 bg-gray-100 rounded w-full"></div>
-            <div className="h-4 bg-gray-100 rounded w-5/6"></div>
+            <div className="h-4 bg-muted rounded w-full"></div>
+            <div className="h-4 bg-muted rounded w-full"></div>
+            <div className="h-4 bg-muted rounded w-5/6"></div>
           </div>
-          <div className="h-10 bg-gray-100 rounded w-full mt-6"></div>
+          <div className="h-10 bg-muted rounded w-full mt-6"></div>
         </div>
       );
     }
 
     if (!product) {
       return (
-        <div className="flex-1 flex items-center justify-center text-gray-800 p-4 bg-[#f4f4f4] rounded-lg">
+        <div className="flex-1 flex items-center justify-center text-foreground p-4 bg-surface-muted rounded-lg">
           {t("details_not_available", "Product details not available.")}
         </div>
       );
@@ -192,22 +192,22 @@ export default function SuggestionsSection({
     const exclusion = product.product_description?.exclusion || "";
 
     return (
-      <div className="flex-1 border border-gray-700 bg-white p-2 md:p-4 text-left rounded-lg flex flex-col">
+      <div className="flex-1 border border-border bg-surface p-2 md:p-4 text-left rounded-lg flex flex-col">
         <div className="relative w-full h-48 rounded overflow-hidden mb-4">
           <Image src={imageUrl} alt={title} fill className="object-cover" />
         </div>
-        <h3 className="font-semibold text-sm lg:text-xl mb-2 text-black">{title}</h3>
-        <p className="text-gray-800 mb-2  text-xs md:text-lg">
+        <h3 className="font-semibold text-sm lg:text-xl mb-2 text-surface-foreground">{title}</h3>
+        <p className="text-foreground mb-2  text-xs md:text-lg">
           {t("starts_from", "Starts from")}{" "}
-          <span className="font-bold  text-xs md:text-lg text-black">
+          <span className="font-bold  text-xs md:text-lg text-surface-foreground">
             {product.starting_price || "N/A"} {product.currency}
           </span>
         </p>
-        <p className="text-gray-800  text-xs md:text-lg mb-4">
+        <p className="text-foreground  text-xs md:text-lg mb-4">
           {t("type", "Type")}: {product.tourtype || "N/A"}
         </p>
-        <div className="text-left mt-2 text-[12px] md:text-lg text-gray-800 flex-grow overflow-y-auto pr-2">
-          <h4 className="font-bold mb-2  text-md md:text-xl text-[#D3202D]">{t("highlights", "Highlights")}:</h4>
+        <div className="text-left mt-2 text-[12px] md:text-lg text-foreground flex-grow overflow-y-auto pr-2">
+          <h4 className="font-bold mb-2  text-md md:text-xl text-primary">{t("highlights", "Highlights")}:</h4>
           <ul className="list-disc list-inside mb-4 space-y-1">
             {highlights.length > 0 ? (
               highlights.map((highlight, index) => <li key={index}>{highlight}</li>)
@@ -215,19 +215,19 @@ export default function SuggestionsSection({
               <li>{t("no_highlights", "No highlights available.")}</li>
             )}
           </ul>
-          <h4 className="font-bold mb-2  text-md md:text-xl text-[#D3202D]">{t("inclusions", "Inclusions")}:</h4>
+          <h4 className="font-bold mb-2  text-md md:text-xl text-primary">{t("inclusions", "Inclusions")}:</h4>
           {inclusion ? (
             <div
-              className=" text-[12px] text-gray-800 md:text-lg prose prose-sm prose-invert mb-4"
+              className=" text-[12px] text-foreground md:text-lg prose prose-sm prose-invert mb-4"
               dangerouslySetInnerHTML={{ __html: inclusion }}
             />
           ) : (
             <p className="mb-4">{t("no_inclusions", "No inclusion information available.")}</p>
           )}
-          <h4 className="font-bold mb-2  text-md md:text-xl text-[#D3202D]">{t("exclusions", "Exclusions")}:</h4>
+          <h4 className="font-bold mb-2  text-md md:text-xl text-primary">{t("exclusions", "Exclusions")}:</h4>
           {exclusion ? (
             <div
-              className=" text-[12px] text-gray-800  md:text-lg prose prose-sm prose-invert"
+              className=" text-[12px] text-foreground  md:text-lg prose prose-sm prose-invert"
               dangerouslySetInnerHTML={{ __html: exclusion }}
             />
           ) : (
@@ -235,7 +235,7 @@ export default function SuggestionsSection({
           )}
         </div>
         <button
-          className="bg-[#D3202D] text-white px-4 py-2 rounded w-full transition-colors mt-6 text-md md:text-xl flex items-center justify-center disabled:opacity-70"
+          className="bg-primary text-white px-4 py-2 rounded w-full transition-colors mt-6 text-md md:text-xl flex items-center justify-center disabled:opacity-70"
           onClick={() => handleBookNow(product, productId)}
           disabled={navigatingTo === productId}
         >
@@ -253,7 +253,7 @@ export default function SuggestionsSection({
   };
 
   return (
-    <div style={{ backgroundColor: customColor }} className="relative w-full bg-[#F4F4F4]">
+    <div style={{ backgroundColor: customColor }} className="relative w-full bg-surface-muted">
       <div className="container px-12 relative z-10">
         <div className="flex items-center justify-between mb-3 md:mb-6">
           <h2 className=" text-md md:text-xl  font-semibold text-text">
@@ -263,14 +263,14 @@ export default function SuggestionsSection({
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
-              className={`p-2 rounded-full border border-gray-600 transition ${canScrollLeft ? "hover:bg-gray-800 text-white" : "opacity-40 cursor-not-allowed text-gray-500"}`}
+              className={`p-2 rounded-full border border-border transition ${canScrollLeft ? "hover:bg-secondary text-white" : "opacity-40 cursor-not-allowed text-muted-foreground"}`}
             >
               <ChevronLeft size={20} />
             </button>
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
-              className={`p-2 rounded-full border border-gray-600 transition ${canScrollRight ? "hover:bg-gray-800 text-white" : "opacity-40 cursor-not-allowed text-gray-500"}`}
+              className={`p-2 rounded-full border border-border transition ${canScrollRight ? "hover:bg-secondary text-white" : "opacity-40 cursor-not-allowed text-muted-foreground"}`}
             >
               <ChevronRight size={20} />
             </button>
@@ -285,7 +285,7 @@ export default function SuggestionsSection({
             <div
               key={product.productId}
               data-card
-              className="flex flex-col flex-shrink-0 w-[200px]  md:w-[240px] bg-white/5 rounded-xl shadow-lg hover:shadow-2xl transition-all border border-white/10 overflow-hidden group backdrop-blur-sm"
+              className="flex flex-col flex-shrink-0 w-[200px]  md:w-[240px] bg-surface/5 rounded-xl shadow-lg hover:shadow-2xl transition-all border border-white/10 overflow-hidden group backdrop-blur-sm"
             >
               <div className="relative w-full h-40 sm:h-44 rounded-t-xl overflow-hidden">
                 <Image
@@ -296,19 +296,19 @@ export default function SuggestionsSection({
                 />
               </div>
               <div className="p-3 flex flex-col flex-grow">
-                <h3 className="text-black font-medium text-sm line-clamp-2 mb-2 h-10">
+                <h3 className="text-surface-foreground font-medium text-sm line-clamp-2 mb-2 h-10">
                   {product.name}
                 </h3>
-                <p className="text-xs text-gray-800 line-clamp-2 mb-3 flex-grow">
+                <p className="text-xs text-foreground line-clamp-2 mb-3 flex-grow">
                   {product.description}
                 </p>
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="font-bold text-base text-[#D3202D]">
+                  <span className="font-bold text-base text-primary">
                     {product.price} {product.currency_name}
                   </span>
                   <button
                     onClick={() => handleCompare(product)}
-                    className="bg-[#D3202D] text-white px-3 py-1.5 rounded-md text-xs font-medium transition"
+                    className="bg-primary text-white px-3 py-1.5 rounded-md text-xs font-medium transition"
                   >
                     {t("compare", "Compare")}
                   </button>
@@ -321,27 +321,27 @@ export default function SuggestionsSection({
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 backdrop-blur-md">
-          <div className="bg-[#F4F4F4] border border-gray-100 text-black md:p-6 p-2 rounded-2xl max-w-6xl w-full relative overflow-y-auto max-h-[95vh] shadow-2xl">
+          <div className="bg-surface-muted border border-border text-surface-foreground md:p-6 p-2 rounded-2xl max-w-6xl w-full relative overflow-y-auto max-h-[95vh] shadow-2xl">
             <button
               className="absolute top-4 right-4 text-gray-black hover:text-red-500 transition-colors z-10"
               onClick={closeModal}
             >
               <X size={24} />
             </button>
-            <h2 className="text-xl md:text-3xl font-semibold mb-4 text-center text-black">
+            <h2 className="text-xl md:text-3xl font-semibold mb-4 text-center text-surface-foreground">
               {t("compare_products", "Compare Products")}
             </h2>
             <div className="flex justify-end mb-4 relative">
               <button
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm md:text-base transition"
+                className="flex items-center gap-2 bg-secondary hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm md:text-base transition"
               >
                 {t("compare_to", "Compare to")}:{" "}
                 {selectedRelatedProduct?.name || "Select"} <ChevronDown size={18} />
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 bg-white border border-gray-700 rounded-md shadow-lg z-20 w-48 max-h-60 overflow-y-auto">
+                <div className="absolute right-0 mt-2 bg-surface border border-border rounded-md shadow-lg z-20 w-48 max-h-60 overflow-y-auto">
                   {products
                     .filter((p) => p.productId !== currentProductId)
                     .map((p) => (
@@ -351,10 +351,10 @@ export default function SuggestionsSection({
                           setIsDropdownOpen(false);
                           handleCompare(p);
                         }}
-                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 ${
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-secondary ${
                           selectedRelatedProduct?.productId === p.productId
-                            ? "bg-gray-100 text-[#D3202D]"
-                            : "text-black"
+                            ? "bg-muted text-primary"
+                            : "text-surface-foreground"
                         }`}
                       >
                         {p.name}

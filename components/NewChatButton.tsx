@@ -13,10 +13,10 @@ const NewChatButton: React.FC = () => {
 
   const handleConfirmNewChat = () => {
     setIsProcessing(true);
-    
+
     // Remove userId from localStorage
     localStorage.removeItem('userId');
-    
+
     // Refresh the page
     window.location.reload();
   };
@@ -25,10 +25,10 @@ const NewChatButton: React.FC = () => {
     <div className="max-w-5xl mx-auto mb-3">
       <Popover open={showConfirm} onOpenChange={setShowConfirm}>
         <PopoverTrigger asChild>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-sm border-[#CC9A55] text-white bg-gray-800 hover:bg-[#CC9A55] hover:text-white"
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-sm border-[#CC9A55] text-white bg-secondary hover:bg-brand-secondary hover:text-white"
           >
             <MessageSquarePlus className="w-4 h-4 mr-2" />
             Start a new chat
@@ -45,22 +45,22 @@ const NewChatButton: React.FC = () => {
                 This will clear your current session and start fresh. Your conversation history will be lost.
               </p>
             </div>
-            
+
             <div className="flex gap-2 justify-end">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setShowConfirm(false)}
                 disabled={isProcessing}
-                className="border-[#CC9A55] text-white bg-transparent hover:bg-[#CC9A55]/10 focus-visible:ring-[#CC9A55]"
+                className="border-[#CC9A55] text-white bg-transparent hover:bg-brand-secondary/10 focus-visible:ring-[#CC9A55]"
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 size="sm"
                 onClick={handleConfirmNewChat}
                 disabled={isProcessing}
-                className="bg-[#CC9A55] hover:bg-[#B8894A] text-white"
+                className="bg-brand-secondary hover:bg-[#B8894A] text-white"
               >
                 {isProcessing ? (
                   <>

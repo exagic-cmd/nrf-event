@@ -104,9 +104,9 @@ export default function FlightTracker({
   const toggleDetails = () => setIsDetailsVisible(!isDetailsVisible);
   if (loading)
     return (
-      <div className="flex items-center gap-2 text-sm text-gray-600 mt-3">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3">
         <svg
-          className="animate-spin h-4 w-4 text-[#D3202D]"
+          className="animate-spin h-4 w-4 text-primary"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -130,11 +130,11 @@ export default function FlightTracker({
     );
 
 
-  if (error) return <p className="text-[#D3202D] text-sm mt-3">{error}</p>;
+  if (error) return <p className="text-primary text-sm mt-3">{error}</p>;
 
   if (infoMessage)
     return (
-      <div className="mt-3 text-gray-700 text-sm bg-orange-50 border border-orange-100 rounded-lg p-3">
+      <div className="mt-3 text-muted-foreground text-sm bg-primary/10 border border-primary/20 rounded-lg p-3">
         {infoMessage}
       </div>
     );
@@ -167,10 +167,10 @@ export default function FlightTracker({
   )}`;
 
   return (
-    <div className="mt-1 border border-gray-200 rounded-xl shadow-sm bg-white overflow-hidden">
+    <div className="mt-1 border border-border rounded-xl shadow-sm bg-surface overflow-hidden">
       <button
         onClick={toggleDetails}
-        className="w-full flex justify-between items-center bg-red-50 px-4 py-2 font-semibold text-[#D3202D] border-b border-orange-100"
+        className="w-full flex justify-between items-center bg-primary/10 px-4 py-2 font-semibold text-primary border-b border-primary/20"
       >
         <span>Flight Details</span>
         {isDetailsVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -181,7 +181,7 @@ export default function FlightTracker({
           isDetailsVisible ? "max-h-screen" : "max-h-0"
         }`}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted">
           <div className="flex items-center gap-3">
             {airlineLogo && (
               <img
@@ -192,26 +192,26 @@ export default function FlightTracker({
               />
             )}
             <div>
-              <div className="font-semibold text-gray-800">
+              <div className="font-semibold text-foreground">
                 {flightData.airline || "Unknown Airline"}
               </div>
-              <div className="text-sm text-gray-600">{flightData.flight_number}</div>
+              <div className="text-sm text-muted-foreground">{flightData.flight_number}</div>
             </div>
           </div>
         </div>
 
-        <table className="w-full text-xs md:text-sm text-gray-700">
+        <table className="w-full text-xs md:text-sm text-muted-foreground">
           <tbody>
             {details.map(([key, val]) => (
               <tr key={key} className="border-b last:border-none">
-                <td className="px-4 py-2 font-medium bg-gray-50 w-1/3">{key}</td>
-                <td className="px-4 py-2 text-end text-gray-700">{val || "-"}</td>
+                <td className="px-4 py-2 font-medium bg-muted w-1/3">{key}</td>
+                <td className="px-4 py-2 text-end text-muted-foreground">{val || "-"}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <p className="text-[10px] text-gray-500 px-4 py-2 border-t bg-gray-50">
+        <p className="text-[10px] text-muted-foreground px-4 py-2 border-t bg-muted">
           Disclaimer: <span>Flight number, time, or terminal mismatches are common and not a concern. our drivers monitor flights in real time and adjust pickup timing and terminal accordingly.</span>
         </p>
       </div>

@@ -109,7 +109,7 @@ export default function AccommodationBookingPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#f4f4f4] text-black pt-20 mt-2 lg: mt-6 pb-12">
+      <div className="min-h-screen bg-surface-muted text-surface-foreground pt-20 mt-2 lg: mt-6 pb-12">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-2">
           {/* <h1 className="text-lg font-semibold mb-8">
             Book {hotel?.title || "Hotel"}
@@ -128,7 +128,7 @@ export default function AccommodationBookingPage() {
               lg:order-last            /* On large screens, move this to the end */
             "
             >
-              <h3 className="text-xl text-[#D3202D] font-bold mb-4 sm:mb-5 tracking-tight">
+              <h3 className="text-xl text-primary font-bold mb-4 sm:mb-5 tracking-tight">
                 Booking Summary
               </h3>
 
@@ -137,22 +137,22 @@ export default function AccommodationBookingPage() {
     {/* HOTEL */}
     <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
       <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
-        <Building className="w-3 h-3 text-black" />
+        <Building className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight text-black">Hotel</p>
-        <p className="text-sm font-semibold leading-tight text-black">{hotel?.title}</p>
+        <p className="text-[9px] opacity-70 leading-tight text-surface-foreground">Hotel</p>
+        <p className="text-sm font-semibold leading-tight text-surface-foreground">{hotel?.title}</p>
       </div>
     </div>
 
     {/* ROOM DETAILS (Type, Count, Nights) */}
     <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
       <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
-        <BedDouble className="w-3 h-3 text-black" />
+        <BedDouble className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight text-black">Room Details</p>
-        <p className="text-sm font-semibold leading-tight text-black">
+        <p className="text-[9px] opacity-70 leading-tight text-surface-foreground">Room Details</p>
+        <p className="text-sm font-semibold leading-tight text-surface-foreground">
           {selectedRoom.roomType || selectedRoom.roomCat || selectedRoom.name}
            {/* ({totalRoomsRequested} Room{totalRoomsRequested > 1 ? 's' : ''}, {nights} Night{nights > 1 ? 's' : ''}) */}
         </p>
@@ -162,11 +162,11 @@ export default function AccommodationBookingPage() {
     {/* MEAL PLAN */}
     <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
       <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
-        <Utensils className="w-3 h-3 text-black" />
+        <Utensils className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight text-black">Meal Plan</p>
-        <p className="text-sm font-semibold leading-tight text-black">
+        <p className="text-[9px] opacity-70 leading-tight text-surface-foreground">Meal Plan</p>
+        <p className="text-sm font-semibold leading-tight text-surface-foreground">
           {selectedRoom.mealType || "Room Only"}
         </p>
       </div>
@@ -175,11 +175,11 @@ export default function AccommodationBookingPage() {
     {/* DATES */}
     <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
       <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
-        <Calendar className="w-3 h-3 text-black" />
+        <Calendar className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
-        <p className="text-[9px] opacity-70 leading-tight text-black">Dates</p>
-        <p className="text-sm font-semibold leading-tight text-black">
+        <p className="text-[9px] opacity-70 leading-tight text-surface-foreground">Dates</p>
+        <p className="text-sm font-semibold leading-tight text-surface-foreground">
           {bookingData.checkIn} → {bookingData.checkOut}
         </p>
       </div>
@@ -193,7 +193,7 @@ export default function AccommodationBookingPage() {
            {selectedRoom?.pricing?.currency} {formatPrice(totalPrice)}
         </span>
       </div>
-      <p className="text-xs text-gray-600 mt-1 text-right">
+      <p className="text-xs text-muted-foreground mt-1 text-right">
         {totalRoomsRequested} room{totalRoomsRequested > 1 ? 's' : ''} × {nights} night{nights > 1 ? 's' : ''}
       </p>
     </div>

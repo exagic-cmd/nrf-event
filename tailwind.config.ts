@@ -18,6 +18,19 @@ const config: Config = {
 			'2xl': "1536px"
 		},			
   		colors: {
+			brand: {
+				primary: 'hsl(var(--primary))',
+				'primary-hover': 'hsl(var(--primary-hover))',
+				secondary: 'hsl(var(--secondary-brand))',
+				'secondary-foreground': 'hsl(var(--secondary-brand-foreground))'
+			},
+			surface: {
+				DEFAULT: 'hsl(var(--surface))',
+				muted: 'hsl(var(--surface-muted))',
+				strong: 'hsl(var(--surface-strong))',
+				foreground: 'hsl(var(--surface-foreground))',
+				'muted-foreground': 'hsl(var(--surface-muted-foreground))'
+			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -30,7 +43,8 @@ const config: Config = {
   			},
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+				foreground: 'hsl(var(--primary-foreground))',
+				hover: 'hsl(var(--primary-hover))'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',

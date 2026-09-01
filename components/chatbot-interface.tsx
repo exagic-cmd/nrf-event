@@ -387,7 +387,7 @@ export function ChatbotInterface({ pickup: pickupProp, dropoff: dropoffProp, onE
         if (response === "Confirm Booking") {
           setCurrentStep(16)
           addBotMessage("Perfect! Processing your booking...")
- const bookingInfo = {
+          const bookingInfo = {
             pickup: currentPickup.name,
             dropoff: currentDropoff.name,
             ...bookingData,
@@ -419,9 +419,9 @@ export function ChatbotInterface({ pickup: pickupProp, dropoff: dropoffProp, onE
           setTimeout(() => {
             router.push("/checkout")
           }, 200)
-          
+
           //  addBotMessage("Redirecting you to complete payment and provide contact details...", ["Continue to Payment"])
-         
+
         } else if (response === "Cancel or Start Again") {
           setForceLocationEdit(true);
           handleLocationEdit();
@@ -628,11 +628,10 @@ Ready to confirm your booking?`
                     )}
                     <div className={`max-w-[85%] ${message.type === "user" ? "order-first" : ""}`}>
                       <div
-                        className={`rounded-2xl px-4 py-2 text-sm transition-all duration-200 hover:scale-[1.02] ${
-                          message.type === "bot"
-                            ? "bg-gradient-to-br from-white to-gray-50 text-gray-800 shadow-md border border-gray-100/50 hover:shadow-lg"
-                            : "bg-gradient-to-br from-orange-100 to-orange-50 text-black ml-auto shadow-sm border border-orange-200/50 hover:shadow-md"
-                        }`}
+                        className={`rounded-2xl px-4 py-2 text-sm transition-all duration-200 hover:scale-[1.02] ${message.type === "bot"
+                          ? "bg-gradient-to-br from-white to-gray-50 text-foreground shadow-md border border-border/50 hover:shadow-lg"
+                          : "bg-gradient-to-br from-orange-100 to-orange-50 text-surface-foreground ml-auto shadow-sm border border-orange-200/50 hover:shadow-md"
+                          }`}
                       >
                         {message.content}
                       </div>
@@ -649,11 +648,10 @@ Ready to confirm your booking?`
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleOptionClick(displayOption, message.id)}
-                                className={`text-xs rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md ${
-                                  isSelected
-                                    ? "bg-gradient-to-r from-[#ec5c0d] to-orange-600 text-white border-[#ec5c0d] cursor-default"
-                                    : "bg-gradient-to-r from-white to-gray-50 hover:from-[#ec5c0d] hover:to-orange-600 hover:text-white border-orange-200 text-gray-700 hover:border-[#ec5c0d]"
-                                } ${isDisabled ? "opacity-70" : ""}`}
+                                className={`text-xs rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md ${isSelected
+                                  ? "bg-gradient-to-r from-[#ec5c0d] to-orange-600 text-white border-[#ec5c0d] cursor-default"
+                                  : "bg-gradient-to-r from-white to-gray-50 hover:from-[#ec5c0d] hover:to-orange-600 hover:text-white border-orange-200 text-muted-foreground hover:border-[#ec5c0d]"
+                                  } ${isDisabled ? "opacity-70" : ""}`}
                                 disabled={isDisabled || isProcessing}
                               >
                                 {displayOption}
@@ -671,7 +669,7 @@ Ready to confirm your booking?`
           </div>
 
           {waitingForInput && (
-            <div className="p-4 bg-gradient-to-r from-white to-gray-50/80 border-t border-gray-200/50 flex-shrink-0 backdrop-blur-sm">
+            <div className="p-4 bg-gradient-to-r from-white to-gray-50/80 border-t border-border/50 flex-shrink-0 backdrop-blur-sm">
               <form onSubmit={handleInputSubmit} className="flex gap-2">
                 <Input
                   type={inputType}
@@ -686,7 +684,7 @@ Ready to confirm your booking?`
                           ? "Enter number of bags"
                           : "Enter flight number (optional)..."
                   }
-                  className="flex-1 rounded-full border-gray-200 bg-white/80 backdrop-blur-sm transition-all duration-200 focus:bg-white focus:shadow-md"
+                  className="flex-1 rounded-full border-border bg-surface/80 backdrop-blur-sm transition-all duration-200 focus:bg-surface focus:shadow-md"
                   disabled={isProcessing}
                   required={inputType !== "text"}
                 />
@@ -704,8 +702,8 @@ Ready to confirm your booking?`
         </div>
 
         {/* Route Info */}
-        <div className="p-4 text-center flex-shrink-0 bg-white">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-50 to-white backdrop-blur-md rounded-full px-4 py-2 text-sm text-gray-600 shadow-lg border border-gray-200 transition-all duration-200 hover:shadow-xl hover:scale-105">
+        <div className="p-4 text-center flex-shrink-0 bg-surface">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-50 to-white backdrop-blur-md rounded-full px-4 py-2 text-sm text-muted-foreground shadow-lg border border-border transition-all duration-200 hover:shadow-xl hover:scale-105">
             <span className="font-medium">{currentPickup.name}</span>
             <span className="text-[#ec5c0d]">→</span>
             <span className="font-medium">{currentDropoff.name}</span>
@@ -726,11 +724,11 @@ Ready to confirm your booking?`
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
           <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl border border-white/20 animate-in slide-in-from-bottom-4 duration-300">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800">Edit Locations</h2>
+              <h2 className="text-lg font-semibold text-foreground">Edit Locations</h2>
               {!forceLocationEdit && (
-              <Button variant="ghost" size="sm" onClick={handleLocationModalClose} className="p-1 h-auto">
-                <X className="h-4 w-4" />
-              </Button>
+                <Button variant="ghost" size="sm" onClick={handleLocationModalClose} className="p-1 h-auto">
+                  <X className="h-4 w-4" />
+                </Button>
               )}
             </div>
 
@@ -754,7 +752,7 @@ Ready to confirm your booking?`
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
           <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl border border-white/20 animate-in slide-in-from-bottom-4 duration-300">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-800">{selectedVehicleDetails.name}</h2>
+              <h2 className="text-xl font-semibold text-foreground">{selectedVehicleDetails.name}</h2>
               <Button variant="ghost" size="sm" onClick={() => setShowVehicleDetails(false)} className="p-1 h-auto">
                 <X className="h-4 w-4" />
               </Button>
@@ -796,8 +794,8 @@ Ready to confirm your booking?`
 
               {/* {selectedVehicleDetails.detailedFeatures && (
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-2">Features & Services</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
+                  <h3 className="font-semibold text-foreground mb-2">Features & Services</h3>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
                     {selectedVehicleDetails.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-[#ec5c0d] mt-1">•</span>
@@ -810,15 +808,15 @@ Ready to confirm your booking?`
 
               {selectedVehicleDetails.driverInfo && (
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-2">Driver Information</h3>
-                  <p className="text-sm text-gray-600">{selectedVehicleDetails.driverInfo}</p>
+                  <h3 className="font-semibold text-foreground mb-2">Driver Information</h3>
+                  <p className="text-sm text-muted-foreground">{selectedVehicleDetails.driverInfo}</p>
                 </div>
               )}
 
               {selectedVehicleDetails.cancellationPolicy && (
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-2">Cancellation Policy</h3>
-                  <p className="text-sm text-gray-600">{selectedVehicleDetails.cancellationPolicy}</p>
+                  <h3 className="font-semibold text-foreground mb-2">Cancellation Policy</h3>
+                  <p className="text-sm text-muted-foreground">{selectedVehicleDetails.cancellationPolicy}</p>
                 </div>
               )}
             </div>
@@ -827,7 +825,7 @@ Ready to confirm your booking?`
               <Button
                 variant="outline"
                 onClick={() => setShowVehicleDetails(false)}
-                className="flex-1 hover:bg-gray-50 transition-all duration-200"
+                className="flex-1 hover:bg-muted transition-all duration-200"
               >
                 Close
               </Button>
@@ -944,7 +942,7 @@ function VehicleSlider({
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-6 w-6 animate-spin text-[#ec5c0d]" />
-        <span className="ml-2 text-sm text-gray-600">Loading vehicles...</span>
+        <span className="ml-2 text-sm text-muted-foreground">Loading vehicles...</span>
       </div>
     )
   }
@@ -952,7 +950,7 @@ function VehicleSlider({
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 text-sm">{error}</p>
+        <p className="text-primary text-sm">{error}</p>
         <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="mt-2">
           Retry
         </Button>
@@ -962,12 +960,12 @@ function VehicleSlider({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-gray-600 text-center">Swipe to see all options</p>
+      <p className="text-sm text-muted-foreground text-center">Swipe to see all options</p>
       <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
         {vehicles.map((vehicle) => (
           <div
             key={vehicle.id}
-            className="flex-shrink-0 w-48 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200/50 p-3 snap-start shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+            className="flex-shrink-0 w-48 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-border/50 p-3 snap-start shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
           >
             <img
               src={vehicle.image || "/placeholder.svg"}
@@ -975,9 +973,9 @@ function VehicleSlider({
               className="w-full h-24 object-cover rounded-lg mb-2 transition-transform duration-200 hover:scale-105"
             />
             <h3 className="font-semibold text-sm line-clamp-1">{vehicle.name}</h3>
-            <p className="text-xs text-gray-500 mb-2 line-clamp-2">{vehicle.description}</p>
+            <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{vehicle.description}</p>
             <div className="flex justify-between items-center text-xs mb-2">
-              <span className="text-gray-600">{vehicle.passengers} seats</span>
+              <span className="text-muted-foreground">{vehicle.passengers} seats</span>
               <span className="font-bold text-[#ec5c0d]">SGD {vehicle.price}</span>
             </div>
             <div className="flex gap-1">

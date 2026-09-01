@@ -17,7 +17,7 @@ export default function TourLocationDetails({ translation, details, travel = fal
   return (
     <div className="space-y-6">
       {!travel && translation?.description && (
-        <p className="text-gray-800 text-base md:text-lg whitespace-pre-line">
+        <p className="text-foreground text-base md:text-lg whitespace-pre-line">
           {translation.description}
         </p>
       )}
@@ -33,12 +33,12 @@ export default function TourLocationDetails({ translation, details, travel = fal
               return (
                 <div
                   key={key}
-                  className="flex-col justify-between items-start bg-white rounded-xl p-3 min-h-[56px] sm:col-span-2 md:col-span-3"
+                  className="flex-col justify-between items-start bg-surface rounded-xl p-3 min-h-[56px] sm:col-span-2 md:col-span-3"
                 >
-                  <div className="text-[#D3202D] text-sm font-semibold capitalize">
+                  <div className="text-primary text-sm font-semibold capitalize">
                     Pass By
                   </div>
-                  <div className="text-black text-base font-bold min-w-0 flex flex-wrap gap-2 mt-2">
+                  <div className="text-surface-foreground text-base font-bold min-w-0 flex flex-wrap gap-2 mt-2">
                     {locations.map((loc, index) => (
                       <span
                         key={index}
@@ -55,12 +55,12 @@ export default function TourLocationDetails({ translation, details, travel = fal
             return (
               <div
                 key={key}
-                className="flex-col justify-between items-center bg-[#f4f4f4]/20 rounded-xl p-3 min-h-[56px]"
+                className="flex-col justify-between items-center bg-surface-muted/20 rounded-xl p-3 min-h-[56px]"
               >
-                <div className="text-[#D3202D] text-sm font-semibold mr-3 capitalize">
+                <div className="text-primary text-sm font-semibold mr-3 capitalize">
                   {key.replace(/_/g, " ")}
                 </div>
-                <div className="text-black text-base font-bold ml-auto min-w-0 truncate">
+                <div className="text-surface-foreground text-base font-bold ml-auto min-w-0 truncate">
                   {value}
                 </div>
               </div>

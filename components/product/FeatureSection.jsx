@@ -94,29 +94,29 @@ const FeatureSection = ({ feature, products }) => {
   return (
     <section className="mb-12  relative">
       <h2 className="text-2xl font-bold mb-1 text-center">{feature.name}</h2>
-      <p className="text-gray-600 mb-4 text-center">{feature.description}</p>
+      <p className="text-muted-foreground mb-4 text-center">{feature.description}</p>
 
      {/* Left Scroll Button */}
 
 <button
   onClick={scrollLeft}
   disabled={!canScrollLeft}
-  className={`absolute top-1/2 -translate-y-1/2 left-2 z-10 rounded-full p-2 shadow-md bg-white hover:bg-gray-100 transition-opacity lg:hidden ${
+  className={`absolute top-1/2 -translate-y-1/2 left-2 z-10 rounded-full p-2 shadow-md bg-surface hover:bg-muted transition-opacity lg:hidden ${
     !canScrollLeft ? "opacity-50 cursor-not-allowed" : ""
   }`}
 >
-  <ChevronLeft className="w-5 h-5 text-gray-700" />
+  <ChevronLeft className="w-5 h-5 text-muted-foreground" />
 </button>
 
 {/* Right Scroll Button (visible only below lg) */}
 <button
   onClick={scrollRight}
   disabled={!canScrollRight}
-  className={`absolute top-1/2 -translate-y-1/2 right-2 z-10 rounded-full p-2 shadow-md bg-white hover:bg-gray-100 transition-opacity lg:hidden ${
+  className={`absolute top-1/2 -translate-y-1/2 right-2 z-10 rounded-full p-2 shadow-md bg-surface hover:bg-muted transition-opacity lg:hidden ${
     !canScrollRight ? "opacity-50 cursor-not-allowed" : ""
   }`}
 >
-  <ChevronRight className="w-5 h-5 text-gray-700" />
+  <ChevronRight className="w-5 h-5 text-muted-foreground" />
 </button>
 
 

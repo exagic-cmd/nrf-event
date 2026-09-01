@@ -42,7 +42,7 @@ const AmenitiesCarousel = ({ items = [] }) => {
         <button
           onClick={moveLeft}
           aria-label="Scroll amenities left"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-200 shadow-md rounded-full p-1.5 hover:bg-gray-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-surface border border-border shadow-md rounded-full p-1.5 hover:bg-muted"
         >
           <ChevronLeft size={16} />
         </button>
@@ -60,7 +60,7 @@ const AmenitiesCarousel = ({ items = [] }) => {
             <div
               key={amenity.id || amenity.name}
               title={amenity.name}
-              className="min-w-[110px] bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap"
+              className="min-w-[110px] bg-muted text-foreground text-xs font-medium px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap"
             >
               {amenity.icon ? (
                 <img
@@ -71,7 +71,7 @@ const AmenitiesCarousel = ({ items = [] }) => {
                   className="w-4 h-4 object-contain"
                 />
               ) : (
-                <span className="w-4 h-4 rounded bg-gray-300/40" />
+                <span className="w-4 h-4 rounded bg-secondary/40" />
               )}
               <span className="truncate">{amenity.name}</span>
             </div>
@@ -84,7 +84,7 @@ const AmenitiesCarousel = ({ items = [] }) => {
         <button
           onClick={moveRight}
           aria-label="Scroll amenities right"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-200 shadow-md rounded-full p-1.5 hover:bg-gray-100"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-surface border border-border shadow-md rounded-full p-1.5 hover:bg-muted"
         >
           <ChevronRight size={16} />
         </button>

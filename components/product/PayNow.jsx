@@ -167,11 +167,11 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
    };
   return (
     <div className="flex flex-col lg:flex-row gap-8 max-w-full md:mx-24 mx-2 mt-6 p-2 md:p-12">
-      <div className="w-full lg:w-2/3 bg-white rounded-xl p-2 shadow-md">
+      <div className="w-full lg:w-2/3 bg-surface rounded-xl p-2 shadow-md">
         <div>
           <button
             onClick={onBack}
-            className="mb-4 flex items-center px-5 py-2 border border-gray-400 rounded-full text-gray-600 hover:bg-gray-100"
+            className="mb-4 flex items-center px-5 py-2 border border-border rounded-full text-muted-foreground hover:bg-muted"
           >
             <ChevronLeft />
             Back
@@ -191,7 +191,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
     setName(e.target.value);
     setErrors(prev => ({ ...prev, name: undefined })); 
   }}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                  className="w-full border border-border rounded-lg px-3 py-2 mt-1"
                   required
                 />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -206,7 +206,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
     setEmail(e.target.value);
     setErrors(prev => ({ ...prev, email: undefined }));
   }}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                  className="w-full border border-border rounded-lg px-3 py-2 mt-1"
                   required
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -246,7 +246,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
                     placeholder="Promo Code"
                     value={promo}
                     onChange={(e) => setPromo(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                    className="w-full border border-border rounded-lg px-3 py-2 mt-1"
                   />
                 </div>
               )}
@@ -261,7 +261,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
     setPaymentOption(e.target.value);
     setErrors(prev => ({ ...prev, paymentOption: undefined }));
   }}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-4"
+                className="w-full border border-border rounded-lg px-3 py-2 mt-4"
                 
               >
                 <option value="">Select Payment Option</option>
@@ -276,7 +276,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
 
             <div className="mt-6">
               <button
-                className="w-full bg-[#CC9A55] text-white font-medium py-2 rounded-full"
+                className="w-full bg-brand-secondary text-white font-medium py-2 rounded-full"
                 type="submit"
               >
                 Pay Now
@@ -287,15 +287,15 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
       </div>
 
       {/* Right Side */}
-      <div className="w-full lg:w-1/3 bg-white rounded-xl p-6 shadow-md">
+      <div className="w-full lg:w-1/3 bg-surface rounded-xl p-6 shadow-md">
         <img
           src={getFullImageUrl(img)}
           alt="Product"
           className="rounded-lg mb-4 h-40 object-cover w-full"
         />
         <h3 className="text-lg font-semibold line-clamp-2 truncate mb-1">{product?.title}</h3>
-        <p className="text-sm text-gray-500 mb-3">{bookingDetails?.date}</p>
-        <div className="text-sm text-gray-800">
+        <p className="text-sm text-muted-foreground mb-3">{bookingDetails?.date}</p>
+        <div className="text-sm text-foreground">
           <div className="flex justify-between mb-1">
             <span>{adultCount} Adults</span>
             <span>SGD {totalAdult}</span>

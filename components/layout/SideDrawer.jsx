@@ -21,14 +21,14 @@ const SideDrawer = ({ isOpen, onClose, title = "Side Drawer", children }) => {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[480px] bg-white z-50 shadow-lg transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[480px] bg-background text-foreground z-50 shadow-lg transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold">{t('cart')}</h2>
-          <button onClick={onClose} className="text-gray-600 hover:text-black">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             ✕
           </button>
         </div>

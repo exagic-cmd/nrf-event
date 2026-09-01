@@ -31,7 +31,7 @@ function PromoButton({ label = "Apply Promo", prominent = false, onClick }) {
   if (applied) {
     if (!isVisible) return null;
     return (
-      <div className={`flex items-center gap-1 text-gray-700 font-medium ${prominent ? "text-sm" : "text-xs"}`}>
+      <div className={`flex items-center gap-1 text-text font-medium ${prominent ? "text-sm" : "text-xs"}`}>
         <Check size={prominent ? 16 : 14} />
         <span>Promo Applied</span>
       </div>
@@ -42,7 +42,7 @@ function PromoButton({ label = "Apply Promo", prominent = false, onClick }) {
     return (
       <button
         onClick={handleClick}
-        className="bg-[#D3202D] text-white px-4 py-2 rounded-md font-medium shadow-sm hover:brightness-95"
+        className="bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium shadow-sm hover:bg-primary-hover"
       >
         {label}
       </button>
@@ -52,7 +52,7 @@ function PromoButton({ label = "Apply Promo", prominent = false, onClick }) {
   return (
     <button
       onClick={handleClick}
-      className="px-2 py-0.5 text-xs font-bold text-white bg-[#D3202D] rounded-md shadow-sm"
+      className="px-2 py-0.5 text-xs font-bold text-primary-foreground bg-primary rounded-md shadow-sm"
     >
       {label}
     </button>

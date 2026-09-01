@@ -8,10 +8,10 @@ function DiscoverSection() {
           {/* Left Column: Text Content */}
           <div className="md:w-2/3 space-y-6">
             <h2 className=" text-lg md:text-3xl font-bold text-[#FE6F4F]">Discover Our</h2>
-            <h1 className="text-lg md:text-3xl font-bold text-gray-800">
+            <h1 className="text-lg md:text-3xl font-bold text-foreground">
               Exciting Singapore Tours
             </h1>
-            <p className="text-gray-600 text-md md:text-lg">
+            <p className="text-muted-foreground text-md md:text-lg">
               Join us on an unforgettable journey through Singapore&apos;s vibrant streets and hidden
               gems. Our tours offer a unique blend of culture, history, and adventure, tailored to
               suit every traveler&apos;s needs and preferences.
@@ -23,8 +23,8 @@ function DiscoverSection() {
               <div className="p-1 flex items-start gap-4">
                 <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/ghucj0rj36ocynxgn371.svg`} alt="Tour Types" />
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-800">Tours Types</h2>
-                  <p className="md:text-normal text-sm text-gray-600">Explore diverse tours: city, cultural, adventure, and more.</p>
+                  <h2 className="text-lg font-semibold text-foreground">Tours Types</h2>
+                  <p className="md:text-normal text-sm text-muted-foreground">Explore diverse tours: city, cultural, adventure, and more.</p>
                 </div>
               </div>
 
@@ -32,8 +32,8 @@ function DiscoverSection() {
               <div className="p-1 flex items-start gap-4">
                 <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/jhrknqowjuddg7cflspy.svg`} alt="Accommodation" />
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-800">Accommodation</h2>
-                  <p className="text-gray-600 md:text-normal text-sm">Comfortable stays tailored to enhance your travel experience.</p>
+                  <h2 className="text-lg font-semibold text-foreground">Accommodation</h2>
+                  <p className="text-muted-foreground md:text-normal text-sm">Comfortable stays tailored to enhance your travel experience.</p>
                 </div>
               </div>
 
@@ -41,8 +41,8 @@ function DiscoverSection() {
               <div className="p-1 flex items-start gap-4">
                 <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/ddu7rwsxejrxy3xl5pb6.svg`} alt="Affiliate Program" />
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-800">Affiliate Program</h2>
-                  <p className="text-gray-600 md:text-normal text-sm">Earn by promoting our city tours and cultural experiences.</p>
+                  <h2 className="text-lg font-semibold text-foreground">Affiliate Program</h2>
+                  <p className="text-muted-foreground md:text-normal text-sm">Earn by promoting our city tours and cultural experiences.</p>
                 </div>
               </div>
 
@@ -50,8 +50,8 @@ function DiscoverSection() {
               <div className="p-1 flex items-start gap-4">
                 <img src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/gf99gdggyxyrsgyx3h3b.svg`} alt="Transfers" />
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-800">Transfers</h2>
-                  <p className="text-gray-600 md:text-normal text-sm">Seamless transfers with guided tours and cultural adventures.</p>
+                  <h2 className="text-lg font-semibold text-foreground">Transfers</h2>
+                  <p className="text-muted-foreground md:text-normal text-sm">Seamless transfers with guided tours and cultural adventures.</p>
                 </div>
               </div>
             </div>

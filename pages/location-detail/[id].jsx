@@ -231,21 +231,21 @@ export default function TourDetailPage() {
   
           return (
             <div className="flex flex-col gap-3 lg:gap-6 ">
-              <h2 className="text-lg md:text-2xl font-bold text-black">{step.title}</h2>
-              <div className="relative w-full h-44 lg:h-96 bg-gray-800 rounded-xl overflow-hidden">
+              <h2 className="text-lg md:text-2xl font-bold text-surface-foreground">{step.title}</h2>
+              <div className="relative w-full h-44 lg:h-96 bg-secondary rounded-xl overflow-hidden">
                 <img src={displayImage} alt={translation.title || "Location"} className="w-full h-full object-cover" />
                 {images.length > 1 && (
                   <>
                     <button
                       onClick={() => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-[#f4f4f4]/50 hover:bg-[#f4f4f4]/70 text-white p-2 rounded-full z-10"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-surface-muted/50 hover:bg-surface-muted/70 text-white p-2 rounded-full z-10"
                       aria-label="Previous image"
                     >
                       <ChevronLeft size={20} />
                     </button>
                     <button
                       onClick={() => setCurrentImageIndex((prev) => (prev + 1) % images.length)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#f4f4f4]/50 hover:bg-[#f4f4f4]/70 text-white p-2 rounded-full z-10"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-surface-muted/50 hover:bg-surface-muted/70 text-white p-2 rounded-full z-10"
                       aria-label="Next image"
                     >
                       <ChevronRight size={20} />
@@ -254,7 +254,7 @@ export default function TourDetailPage() {
                       {images.map((_, idx) => (
                         <button
                           key={idx}
-                          className={`w-2 h-2 rounded-full ${idx === currentImageIndex ? 'bg-white' : 'bg-gray-400'}`}
+                          className={`w-2 h-2 rounded-full ${idx === currentImageIndex ? 'bg-surface' : 'bg-secondary'}`}
                           onClick={() => setCurrentImageIndex(idx)}
                           aria-label={`View image ${idx + 1}`}
                         />
@@ -266,10 +266,10 @@ export default function TourDetailPage() {
               {selectedAudio && (
                 <div className=" px-2 rounded-xl py-4">
                   {selectedAudio.isFallback && (
-                  <p className="text-sm text-gray-900 mb-2">Audio not available in the selected language. Playing in English.</p>
+                  <p className="text-sm text-foreground mb-2">Audio not available in the selected language. Playing in English.</p>
                   )}
                   {selectedAudio.guideFallback && (
-                    <p className="text-sm text-gray-800 mb-2">
+                    <p className="text-sm text-foreground mb-2">
                       Audio for the selected guide is not available. Playing another guide.
                     </p>
                   )}
@@ -303,16 +303,16 @@ export default function TourDetailPage() {
           );
         case 'review':
           return (
-            <div className="flex flex-col items-center justify-center h-full px-6 py-12 rounded-2xl bg-white border border-gray-800 text-white">
-              <h2 className="text-lg lg:text-3xl font-bold text-[#D3202D] mb-4"> Heading back to your hotel </h2>
-               <h2 className="text-xl font-bold text-[#D3202D] mb-4"> We would love your feedback. </h2>
-              <p className="text-gray-800 max-w-xl text-center mb-6">
+            <div className="flex flex-col items-center justify-center h-full px-6 py-12 rounded-2xl bg-surface border border-border text-white">
+              <h2 className="text-lg lg:text-3xl font-bold text-primary mb-4"> Heading back to your hotel </h2>
+               <h2 className="text-xl font-bold text-primary mb-4"> We would love your feedback. </h2>
+              <p className="text-foreground max-w-xl text-center mb-6">
                 Please share your feedback. It helps us improve and guide future travelers.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={handleGoToReviewRoute}
-                  className="px-6 py-3 rounded-xl bg-[#D3202D] font-semibold text-white "
+                  className="px-6 py-3 rounded-xl bg-primary font-semibold text-white "
                 >
                   Submit Review
                 </button>
@@ -325,12 +325,12 @@ export default function TourDetailPage() {
     };
 
   return (
-    <main className="flex-1 w-full pb-10 md:pb-16 bg-[#f4f4f4] min-h-screen pt-2 mt-12 md:mt-16">
+    <main className="flex-1 w-full pb-10 md:pb-16 bg-surface-muted min-h-screen pt-2 mt-12 md:mt-16">
       <div className="flex items-start justify-between md:items-center px-4 md:px-12 pt-4 pb-2">
         <div className="flex items-center gap-3 mb-1 mt-1 lg:mb-4">
           <button
             onClick={router.back}
-            className="flex items-center gap-2 text-gray-800 hover:text-[#D3202D]"
+            className="flex items-center gap-2 text-foreground hover:text-primary"
             aria-label="Go back"
           >
             <ArrowLeft size={20} /> Go Back
@@ -338,13 +338,13 @@ export default function TourDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-12 bg-[#f4f4f4] ">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 bg-surface-muted ">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-[#D3202D] md:text-2xl text-xl font-semibold">
+            <h1 className="text-primary md:text-2xl text-xl font-semibold">
               {product?.translations?.[selectedLanguage]?.title || product?.translations?.EN?.title}
             </h1>
-            <p className="text-black py-2 md:py-3 text-sm md:text-base max-w-3xl">
+            <p className="text-surface-foreground py-2 md:py-3 text-sm md:text-base max-w-3xl">
                 Explore each stop of your journey in detail.
             </p>
           </div>
@@ -377,7 +377,7 @@ export default function TourDetailPage() {
             scrollTabsBy(-240);
             setCurrentIndex(prev => Math.max(0, prev - 1));
         }}
-        className="absolute left-0 bottom-16 -translate-y-1/2 z-20 bg-[#D3202D] text-white rounded-full p-2 shadow-lg transition-all"
+        className="absolute left-0 bottom-16 -translate-y-1/2 z-20 bg-primary text-white rounded-full p-2 shadow-lg transition-all"
         >
         <ChevronLeft className="w-5 h-5" />
         </button>
@@ -415,17 +415,17 @@ export default function TourDetailPage() {
                 >
                     <div className={`relative rounded-xl overflow-hidden ${
                         step.type === 'travel'
-                            ? 'bg-[#ffffff] border text-black border-[#D3202D]'
+                            ? 'bg-[#ffffff] border text-surface-foreground border-primary'
                             : isActive
                             ? 'bg-gradient-to-br from-[#D3202D] via-[#e05b5b] to-[#ff105c] shadow-lg shadow-[#D3202D]/50'
-                            : 'bg-gray-200 border text-black border-gray-700'
+                            : 'bg-secondary border text-surface-foreground border-border'
                     } transition-all duration-300`}>
                         
                         {step.type !== 'travel' && ( 
                             <div className={`absolute top-2 left-2 w-8 h-8 rounded-full flex items-center justify-center text-base font-bold shadow-lg ${
                             isActive 
-                                ? 'bg-white text-[#D3202D] border-2 border-[#D3202D]' 
-                                : 'bg-gray-200 text-black border border-gray-700'
+                                ? 'bg-surface text-primary border-2 border-primary' 
+                                : 'bg-secondary text-surface-foreground border border-border'
                             }`}>
                                 {step.type === 'review' ? 'R' : stopCounter}
                             </div>
@@ -433,12 +433,12 @@ export default function TourDetailPage() {
                         
                         {isActive && (
                         <div className="absolute top-3 right-3">
-                            <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                            <div className="w-3 h-3 bg-surface rounded-full animate-pulse" />
                         </div>
                         )}
 
                         {step.type === 'travel' && (
-                          <div className="absolute top-3 left-3 text-[#D3202D]">
+                          <div className="absolute top-3 left-3 text-primary">
                             {step.to.details.travel_mode?.toLowerCase().includes('driv') ? (
                               <Car size={18} />
                             ) : step.to.details.travel_mode?.toLowerCase().includes('walk') ? (
@@ -451,17 +451,17 @@ export default function TourDetailPage() {
                         
                         <div className="p-3 pt-12">
                             <p className={`text-[10px] uppercase tracking-wide mb-1 ${
-                                isActive && step.type !== 'travel' ? 'text-black/70' : 'text-gray-800'
+                                isActive && step.type !== 'travel' ? 'text-surface-foreground/70' : 'text-foreground'
                             } min-h-[16px]`}>
                                 {step.type === 'travel' ? 'Travel' : (step.type === 'review' ? 'Final Step' : `Stop ${stopCounter}`)}
                             </p>
                             <p className={`text-xs font-bold leading-tight truncate ${
-                                isActive && step.type !== 'travel' ? 'text-black' : 'text-black'
+                                isActive && step.type !== 'travel' ? 'text-surface-foreground' : 'text-surface-foreground'
                             }`}>
                                 {step.title}
                             </p>
                             {step.type === 'travel' && (
-                                <p className={`text-[11px] mt-1 ${isActive && step.type !== 'travel' ? 'text-black/70' : 'text-gray-800'}`}>
+                                <p className={`text-[11px] mt-1 ${isActive && step.type !== 'travel' ? 'text-surface-foreground/70' : 'text-foreground'}`}>
                                     {step.to.details.travel_time && (
                                         <span>{step.to.details.travel_time}</span>
                                     )}
@@ -486,7 +486,7 @@ export default function TourDetailPage() {
             scrollTabsBy(240);
             setCurrentIndex(prev => Math.min(journey.length - 1, prev + 1));
         }}
-        className="absolute right-0  bottom-16 -translate-y-1/2 z-20 bg-[#D3202D]  text-black rounded-full p-2 shadow-lg transition-all"
+        className="absolute right-0  bottom-16 -translate-y-1/2 z-20 bg-primary  text-surface-foreground rounded-full p-2 shadow-lg transition-all"
         >
         <ChevronRight className="w-5 h-5" />
         </button>
@@ -502,8 +502,8 @@ export default function TourDetailPage() {
                     onClick={() => setCurrentIndex(journeyIndex)}
                     className={`transition-all duration-300 rounded-full ${
                         isActive
-                        ? 'bg-[#D3202D] w-8 h-2' 
-                        : 'bg-gray-700 w-2 h-2 hover:bg-gray-600'
+                        ? 'bg-primary w-8 h-2' 
+                        : 'bg-gray-700 w-2 h-2 hover:text-muted-foreground'
                     }`}
                     aria-label={`Go to stop ${step.title}`}
                 />

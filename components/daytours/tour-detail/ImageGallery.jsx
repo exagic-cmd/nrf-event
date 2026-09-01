@@ -79,7 +79,7 @@ const ImageGallery = ({ apiData }) => {
                 <button
                   key={index}
                   onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
-                  className={`w-2 h-2 rounded-full ${currentImageIndex === index ? "bg-white" : "bg-white/50"}`}
+                  className={`w-2 h-2 rounded-full ${currentImageIndex === index ? "bg-surface" : "bg-surface/50"}`}
                 />
               ))}
             </div>

@@ -41,7 +41,7 @@ export default function ProductFiltersView({ onBackClick }) {
       <div className="flex justify-center items-center mt-24 gap-2">
          <button
           onClick={handleBackClick}
-          className="flex items-center px-5 py-2 border border-gray-400 rounded-full text-gray-600 hover:bg-gray-100"
+          className="flex items-center px-5 py-2 border border-border rounded-full text-muted-foreground hover:bg-muted"
         >
          <ChevronLeft/>
           Back
@@ -52,7 +52,7 @@ export default function ProductFiltersView({ onBackClick }) {
 
         {/* <button
           onClick={handleFilterClick}
-          className="flex items-center px-5 py-2 border border-gray-400 rounded-full text-gray-600 hover:bg-gray-100"
+          className="flex items-center px-5 py-2 border border-border rounded-full text-muted-foreground hover:bg-muted"
         >
           <img
             src="NEXT_PUBLIC_IMAGE_BASE_URLimage/upload/v1744783776/External+Links/lvpxygbjx15x2czmgqfu.svg"
@@ -68,7 +68,7 @@ export default function ProductFiltersView({ onBackClick }) {
         {paginatedProducts && paginatedProducts.length > 0 ? (
           paginatedProducts.map((item) =><div className="flex justify-center"> <Card {...item} key={item.id} category_id={item.category_id} /><div/></div>)
         ) : (
-          <p className="text-center text-gray-500">No products available</p>
+          <p className="text-center text-muted-foreground">No products available</p>
         )}
       </div>
 

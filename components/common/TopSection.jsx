@@ -71,7 +71,7 @@ const TopSection = () => {
                 key={label}
                 onClick={() => localizedPush(path)}
                 className={`flex-shrink-0 px-4 py-1 rounded-full border text-sm font-medium transition 
-                  ${isActive ? "bg-black text-white" : "bg-white text-black hover:bg-black hover:text-white"}`}
+                  ${isActive ? "bg-black text-white" : "bg-surface text-surface-foreground hover:bg-black hover:text-white"}`}
               >
                 {label}
               </button>

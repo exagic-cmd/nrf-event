@@ -2,7 +2,7 @@ import { Bot, User } from "lucide-react"
 
 export function AIChatPreview() {
   return (
-    <div className="w-full max-w-md mx-auto md:mx-0 mt-8 p-4 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+    <div className="w-full max-w-md mx-auto md:mx-0 mt-8 p-4 bg-surface/80 backdrop-blur-sm rounded-xl shadow-lg border border-border overflow-hidden">
       <div className="flex flex-col gap-3">
         {/* User Message */}
         <div className="flex items-start gap-2">
@@ -16,10 +16,10 @@ export function AIChatPreview() {
 
         {/* AI Response */}
         <div className="flex items-start gap-2 justify-end">
-          <div className="bg-gray-100 text-gray-800 p-3 rounded-lg max-w-[75%] self-end text-sm shadow-sm">
+          <div className="bg-muted text-foreground p-3 rounded-lg max-w-[75%] self-end text-sm shadow-sm">
             {"Hello! Singapore is fantastic! What are your interests? Food, nature, culture?"}
           </div>
-          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground">
             <Bot className="w-4 h-4" />
           </div>
         </div>

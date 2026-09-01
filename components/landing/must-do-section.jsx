@@ -93,14 +93,14 @@ export function MustDoSection() {
     activeCategory === "All" ? allMustDos : allMustDos.filter((item) => item.category === activeCategory)
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 relative z-10">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted relative z-10">
       <div className="container px-4 md:px-6 mx-auto max-w-7xl">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-900">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
               Things You Must Do in Singapore
             </h2>
-            <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               Don't miss these iconic experiences that define a trip to the Lion City.
             </p>
           </div>
@@ -128,7 +128,7 @@ export function MustDoSection() {
                         className="w-full h-full object-cover"
                       />
                       {/* Number overlay */}
-                      <div className="absolute top-0 left-0 bg-white text-orange-500 text-3xl font-bold p-4 rounded-br-xl">
+                      <div className="absolute top-0 left-0 bg-surface text-orange-500 text-3xl font-bold p-4 rounded-br-xl">
                         {item.id}
                       </div>
                       
@@ -136,20 +136,20 @@ export function MustDoSection() {
 
                     {/* Text content section */}
                     <CardContent className="p-4 flex flex-col flex-grow">
-                      <CardTitle className="text-xl font-bold text-gray-900 mb-1">{item.name}</CardTitle>
-                      <div className="flex items-center text-sm text-gray-600 mb-2">
+                      <CardTitle className="text-xl font-bold text-foreground mb-1">{item.name}</CardTitle>
+                      <div className="flex items-center text-sm text-muted-foreground mb-2">
                         <div className="flex text-orange-500">
                           {[...Array(Math.floor(item.rating))].map((_, i) => (
                             <Star key={i} className="w-4 h-4 fill-current" />
                           ))}
                           {item.rating % 1 !== 0 && <Star className="w-4 h-4 fill-current text-orange-300" />}{" "}
                         </div>
-                        <span className="ml-2 text-gray-500">{item.reviews} reviews</span>
+                        <span className="ml-2 text-muted-foreground">{item.reviews} reviews</span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-sm text-muted-foreground mb-2">
                         {item.duration} | {item.type} | {item.location}
                       </p>
-                      <CardDescription className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-4">
+                      <CardDescription className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-4">
                         {item.description}
                       </CardDescription>
                       
@@ -158,7 +158,7 @@ export function MustDoSection() {
                 </div>
               ))
             ) : (
-              <p className="col-span-full text-center text-gray-600">No activities found for this category.</p>
+              <p className="col-span-full text-center text-muted-foreground">No activities found for this category.</p>
             )}
           </div>
         </div>

@@ -114,7 +114,7 @@ const TravelInfoPage = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-[#f4f4f4] mt-12">
+      <div className="min-h-screen bg-surface-muted mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
@@ -186,19 +186,19 @@ const TravelInfoPage = () => {
 {accommodations?.length > 0 && (
   <div className="relative text-white">
     <div className="flex justify-between items-center px-4 mb-4">
-      <h2 className="text-xl font-semibold text-[#D3202D]">Accommodations</h2>
+      <h2 className="text-xl font-semibold text-primary">Accommodations</h2>
       <div className="flex space-x-2">
         <button 
           onClick={() => scroll('left')}
           type="button" 
-          className="p-2 rounded-full bg-gray-800/50 hover:bg-[#D3202D] hover:text-black text-white shadow transition-colors duration-200"
+          className="p-2 rounded-full bg-secondary/50 hover:bg-primary hover:text-surface-foreground text-white shadow transition-colors duration-200"
         >
           <ChevronLeft size={20} />
         </button>
         <button 
           onClick={() => scroll('right')}
           type="button" 
-          className="p-2 rounded-full bg-gray-50 hover:bg-[#D3202D] text-black shadow transition-colors duration-200"
+          className="p-2 rounded-full bg-muted hover:bg-primary text-surface-foreground shadow transition-colors duration-200"
         >
           <ChevronRight size={20} />
         </button>

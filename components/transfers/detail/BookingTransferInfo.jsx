@@ -18,7 +18,7 @@ import FlightTracker from "@/components/transfers/detail/FlightTracker";
 
 const FormField = ({ label, children, required = false, icon: Icon, orangeColor }) => (
   <div className="space-y-2">
-    <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+    <label className="block text-sm font-medium text-muted-foreground flex items-center gap-2">
       {Icon && <Icon size={18} color={orangeColor} />}
       {label}
       {required && <span className="text-red-500 ml-1">*</span>}
@@ -32,12 +32,12 @@ const CustomInput = React.forwardRef(
     <div
       onClick={!disabled ? onClick : undefined}
       className={`${className} ${
-        disabled ? "bg-gray-100 cursor-not-allowed" : ""
+        disabled ? "bg-muted cursor-not-allowed" : ""
       }`}
       style={{ cursor: disabled ? "not-allowed" : "pointer" }}
       ref={ref}
     >
-      {value ? value : <span className="text-gray-500">{placeholder}</span>}
+      {value ? value : <span className="text-muted-foreground">{placeholder}</span>}
     </div>
   )
 );
@@ -83,11 +83,11 @@ const DatePickerField = ({
         availableDates.some(
           (d) => d.date.toDateString() === date.toDateString()
         )
-          ? "bg-orange-100 text-gray-700 hover:bg-orange-200"
+          ? "bg-primary/10 text-muted-foreground hover:bg-primary/20"
           : ""
       }
-      className={`text-base w-full px-4 md:py-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-200 ${
-        disabled ? "bg-gray-100 cursor-not-allowed" : ""
+      className={`text-base w-full px-4 md:py-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/30 ${
+        disabled ? "bg-muted cursor-not-allowed" : ""
       }`}
       wrapperClassName="w-full"
       customInput={<CustomInput disabled={disabled} />}
@@ -133,8 +133,8 @@ const TimePickerField = ({
         popperPlacement="bottom-start"
         includeTimes={includeTimes}
         wrapperClassName="w-full"
-        className={`text-base w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-200 ${
-          disabled ? "bg-gray-100 cursor-not-allowed" : ""
+        className={`text-base w-full px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/30 ${
+          disabled ? "bg-muted cursor-not-allowed" : ""
         }`}
         customInput={
           <ProtectedTimeInput
@@ -152,7 +152,7 @@ const TimePickerField = ({
         </p>
       )}
       {surchargeDetails?.amount && (
-        <div className="text-sm text-red-600 font-semibold col-span-2">
+        <div className="text-sm text-primary font-semibold col-span-2">
           {t("form.surchargeApplied")}: {surchargeDetails.amount} {surchargeDetails.currency}
         </div>
       )}
@@ -266,8 +266,8 @@ const FlightNumberField = ({
           }}
           onKeyDown={handleKeyDown}
           placeholder={t("booking.flightPlaceholder")}
-          className={`w-full text-base px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-200 pr-24 ${
-            disabled ? "bg-gray-100 cursor-not-allowed" : ""
+          className={`w-full text-base px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/30 pr-24 ${
+            disabled ? "bg-muted cursor-not-allowed" : ""
           }`}
           maxLength={8}
           minLength={3}
@@ -281,8 +281,8 @@ const FlightNumberField = ({
           disabled={disabled || !value || tracking || isAutoTracking}
           className={`absolute right-2 top-1/2 -translate-y-1/2 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors flex items-center justify-center gap-1 ${
             disabled || !value
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-[#D3202D] hover:bg-red-700"
+              ? "bg-secondary cursor-not-allowed"
+              : "bg-primary hover:bg-primary-hover"
           }`}
         >
           {tracking || isAutoTracking ? "Checking..." : t("booking.check") || "Check"}
@@ -290,15 +290,15 @@ const FlightNumberField = ({
 
         {/* Dropdown for similar flights */}
         {showSuggestions && suggestions.length > 0 && (
-          <ul className="absolute z-30 mt-2 w-full bg-white border border-[#D3202D] rounded-md shadow-lg max-h-48 overflow-auto">
+          <ul className="absolute z-30 mt-2 w-full bg-surface border border-primary rounded-md shadow-lg max-h-48 overflow-auto">
             {suggestions.map((flight, idx) => (
               <li
                 key={idx}
                 onClick={() => handleSelectSuggestion(flight)}
-                className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-sm text-gray-800 border-b last:border-none flex items-center gap-2"
+                className="px-4 py-2 cursor-pointer hover:bg-primary/10 text-sm text-foreground border-b last:border-none flex items-center gap-2"
               >
                 <span>✈️ {flight}</span>
-                {isAutoTracking && <span className="text-xs text-gray-400">Auto-tracking...</span>}
+                {isAutoTracking && <span className="text-xs text-muted-foreground">Auto-tracking...</span>}
               </li>
             ))}
           </ul>
@@ -307,7 +307,7 @@ const FlightNumberField = ({
 
       {/* Display API error message */}
       {displayError && (
-        <p className="text-[#D3202D] text-xs mt-2 bg-red-50 px-3 py-2 rounded border border-red-200">
+        <p className="text-primary text-xs mt-2 bg-muted px-3 py-2 rounded border border-red-200">
           {displayError}
         </p>
       )}
@@ -349,19 +349,19 @@ const CustomOptionSelector = ({
             <div
               className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                 isActive
-                  ? "border-orange-500 bg-orange-500"
-                  : "border-gray-400 bg-white hover:border-orange-400"
+                  ? "border-primary bg-primary"
+                  : "border-border bg-surface hover:border-primary"
               }`}
               style={{
                 borderColor: isActive ? orangeColor : "#ccc",
                 backgroundColor: isActive ? orangeColor : "#fff",
               }}
             >
-              {isActive && <div className="w-2 h-2 rounded-full bg-white"></div>}
+              {isActive && <div className="w-2 h-2 rounded-full bg-surface"></div>}
             </div>
             <span
               className={`text-sm font-medium ${
-                isActive ? "text-gray-900" : "text-gray-600"
+                isActive ? "text-foreground" : "text-muted-foreground"
               }`}
             >
               {option.label}
@@ -423,7 +423,7 @@ export default function BookingTransferInfo({
   const isAttractionTrip = [selectedPickup?.type, selectedDropoff?.type].some((t) =>
     ["attraction", "landmark"].includes(t?.toLowerCase())
   );
-  const orangeColor = "#D3202D";
+  const orangeColor = "hsl(var(--primary))";
   const { fetchAvailableDatesTR } = useBookingStore();
   const [availableDates, setAvailableDates] = useState([]);
 const [pickupTrigger, setPickupTrigger] = useState(0);
@@ -643,7 +643,7 @@ const handleReturnTrack = async (flightNumber = null) => {
   if (!selectedTransfer) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">{t("booking.noTransferSelected")}</p>
+        <p className="text-muted-foreground">{t("booking.noTransferSelected")}</p>
       </div>
     );
   }
@@ -651,9 +651,9 @@ const handleReturnTrack = async (flightNumber = null) => {
   return (
     <div className="space-y-8">
 
-      <div className="bg-white rounded-lg p-6 shadow-sm space-y-6">
+      <div className="bg-surface rounded-lg p-6 shadow-sm space-y-6">
         {/* --- Pickup Section --- */}
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
          {getIconForType(selectedPickup?.type)}
           {t("booking.pickupDetails")}
         </h3>
@@ -714,7 +714,7 @@ const handleReturnTrack = async (flightNumber = null) => {
                 </div>
               )}
 
-              {/* <p className="text-xs text-gray-500 mt-2">
+              {/* <p className="text-xs text-muted-foreground mt-2">
                 {t(
                   "booking.flightDisclaimer",
                   "If flight time or terminal mismatch or you cannot find the flight number, its OK, we will work it out. AND the pickup time is indicative and driver will monitor and be there."
@@ -778,7 +778,7 @@ const handleReturnTrack = async (flightNumber = null) => {
         {tripType === "round-trip" && (
           <>
           <div id="return-section"></div>
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 pt-6 border-t border-gray-200">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 pt-6 border-t border-border">
              {React.cloneElement(getIconForType(selectedDropoff?.type), {
                 className: "rotate-180",
               })}
@@ -845,7 +845,7 @@ const handleReturnTrack = async (flightNumber = null) => {
       </div>
     )}
 {/* 
-    <p className="text-xs text-gray-500 mt-2">
+    <p className="text-xs text-muted-foreground mt-2">
       {t(
         "booking.flightDisclaimer",
         "If flight time or terminal mismatch or you cannot find the flight number, its OK, we will work it out. AND the pickup time is indicative and driver will monitor and be there."
