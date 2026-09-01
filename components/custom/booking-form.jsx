@@ -119,7 +119,7 @@ export default function BookingForm({ onSearchVehicles }) {
         <Card className="w-full max-w-xl mx-auto border-0 shadow-lg rounded-2xl">
           <CardContent className="p-8">
             <div className="space-y-4">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                 Go Anywhere With <span className="text-[#FE6F4F]">Us</span>
               </h1>
             </div>
@@ -127,7 +127,7 @@ export default function BookingForm({ onSearchVehicles }) {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Pickup Location */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-gray-500">
+                <Label className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4 text-[#FE6F4F]" /> Pickup Location
                 </Label>
                 <GooglePlacesInput
@@ -141,7 +141,7 @@ export default function BookingForm({ onSearchVehicles }) {
 
               {/* Dropoff Location */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-gray-500">
+                <Label className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4 text-[#FE6F4F]" /> Dropoff Location
                 </Label>
                 <GooglePlacesInput
@@ -155,7 +155,7 @@ export default function BookingForm({ onSearchVehicles }) {
 
               {/* Pickup Time */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-gray-500">
+                <Label className="flex items-center gap-2 text-muted-foreground">
                   <Clock className="w-4 h-4 text-[#FE6F4F]" /> Pickup Time
                 </Label>
                 {!showCustomTime ? (
@@ -186,7 +186,7 @@ export default function BookingForm({ onSearchVehicles }) {
 
               {/* Pickup Date */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-gray-500">
+                <Label className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4 text-[#FE6F4F]" /> Pickup Date
                 </Label>
                 {!showCustomDate ? (

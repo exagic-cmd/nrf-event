@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-white relative overflow-hidden">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-surface relative overflow-hidden">
       {/* Background Images - Increased visibility and adjusted for smaller screens */}
       <img
         src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/premium_photo-1698500034175-3520e1021c2f.avif`}
@@ -45,10 +45,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
       <div className="container px-4 md:px-6 mx-auto max-w-7xl relative z-10">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-900">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
              {t('festivalSection.title')}
             </h2>
-            <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 {t('festivalSection.subtitle')}
             </p>
           </div>
@@ -67,11 +67,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow pt-2">
-                  <p className="text-sm font-medium text-gray-800 mb-2">
-                    <CalendarDays className="inline-block w-4 h-4 mr-1 text-gray-500" />
+                  <p className="text-sm font-medium text-foreground mb-2">
+                    <CalendarDays className="inline-block w-4 h-4 mr-1 text-muted-foreground" />
                     {festival.period}
                   </p>
-                  <CardDescription className="text-gray-700 text-base leading-relaxed">
+                  <CardDescription className="text-muted-foreground text-base leading-relaxed">
                     {festival.description}
                   </CardDescription>
                 </CardContent>

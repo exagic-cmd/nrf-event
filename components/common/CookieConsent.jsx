@@ -35,7 +35,7 @@ export default function CookieConsent({ onAccept }) {
   if (!isVisible) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#D3202D] bg-white/95 backdrop-blur-sm p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.5)] md:p-6">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-primary bg-surface/95 backdrop-blur-sm p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.5)] md:p-6">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 md:flex-row">
         <div className="text-sm text-gray-00">
           <p>
@@ -46,14 +46,14 @@ export default function CookieConsent({ onAccept }) {
         <div className="flex gap-3">
           <button
             onClick={handleDecline}
-            className="rounded-md border border-gray-600 bg-transparent px-4 py-2 text-gray-800 text-sm "
+            className="rounded-md border border-border bg-transparent px-4 py-2 text-foreground text-sm "
           >
             {t("cookieConsent.decline", fallbackText.decline)}
           </button>
 
           <button
             onClick={handleAccept}
-            className="rounded-md bg-[#D3202D] px-4 py-2 text-sm font-medium text-white shadow-lg shadow-orange-900/20"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-lg shadow-orange-900/20"
           >
             {t("cookieConsent.accept", fallbackText.accept)}
           </button>

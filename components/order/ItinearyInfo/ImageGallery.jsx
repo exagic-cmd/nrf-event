@@ -6,8 +6,8 @@ import { Expand, ChevronLeft, ChevronRight } from 'lucide-react';
 const ImageGallery = ({ images, onImageClick, autoPlay = false, interval = 3000, compact = false }) => {
   if (!images || images.length === 0) {
     return (
-      <div className="relative w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
-        <p className="text-gray-500">No images available</p>
+      <div className="relative w-full h-64 bg-secondary rounded-xl flex items-center justify-center">
+        <p className="text-muted-foreground">No images available</p>
       </div>
     );
   }
@@ -74,7 +74,7 @@ const ImageGallery = ({ images, onImageClick, autoPlay = false, interval = 3000,
             <div
               key={img.id}
               className={`relative ${compact ? 'w-1/4 h-12' : 'w-1/5 h-16'} rounded-md overflow-hidden cursor-pointer border-2 ${
-                currentIndex === index ? 'border-[#D3202D]' : 'border-transparent'
+                currentIndex === index ? 'border-primary' : 'border-transparent'
               }`}
               onClick={() => setCurrentIndex(index)}
             >

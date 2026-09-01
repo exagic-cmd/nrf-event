@@ -1,57 +1,61 @@
-"use client"
+import React from "react";
+import { useTranslation } from "next-i18next";
+import { ShoppingCart, ArrowRight } from "lucide-react";
+import Loader2Svg from "@/components/common/Loader2Svg";
 
-import { X, RefreshCw, ShoppingCart } from "lucide-react"
-import { useTranslation } from "next-i18next"
-
-const alreadyModal = ({ isOpen, onClose, onUpdate, onGoToCart }) => {
-  const { t } = useTranslation("transfer") 
-
-  if (!isOpen) return null
-
+const AddedToCartDialog = ({
+  onContinueShopping,
+  onProceedToCheckout,
+  isLoading,
+}) => {
+  const { t } = useTranslation("transfer");
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-      <div className="bg-white max-w-md w-full mx-4 rounded-xl p-4 sm:p-6 shadow-lg text-center space-y-4">
-        {/* <div className="flex justify-between items-center">
-          <div></div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition p-1"
-            aria-label={t("close")}
-          >
-            <X size={20} />
-          </button>
-        </div> */}
-<div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-            <RefreshCw className="w-8 h-8 text-red-500" />
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
+      <div className="bg-surface rounded shadow-lg p-6 sm:p-8 max-w-sm w-full text-center transition-all">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center">
+            <Loader2Svg />
+            <p className="mt-4 text-muted-foreground text-sm font-medium">
+              {t("pleaseWait")}
+            </p>
           </div>
-        </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
-          {t("booking.transferInCart")}
-        </h3>
-        <p className="text-gray-700 text-sm">
-          {t("booking.updateBookingText")}
-        </p>
+        ) : (
+          <>
+            <div className="flex justify-center mb-4">
+              <img
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1757933800/External+Links/check.png`}
+                alt={t("addedToCartAlt")}
+                className="w-16 h-16 rounded-full bg-primary/10 p-2 shadow-sm"
+              />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
+              {t("addedToCart")}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              {t("whatNext")}
+            </p>
 
-        <div className="flex gap-4">
-          
-          <button
-            className="w-full py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-200 font-medium flex items-center justify-center gap-2 transition"
-            onClick={onGoToCart}
-          >
-            No, Keep Existing
-          </button>
-          <button
-            className="w-full py-3 bg-[#D3202D] text-white rounded-md font-semibold flex items-center justify-center gap-2 transition"
-            onClick={onUpdate}
-          >
-            Yes, Replace
-          </button>
-
-        </div>
+            <div className="space-y-3">
+              <button
+                onClick={onProceedToCheckout}
+                className="w-full bg-secondary hover:text-muted-foreground text-white text-sm font-semibold py-3 px-4 rounded flex items-center justify-center gap-2 transition-all"
+              >
+                {t("proceedToCheckout")}
+                <ArrowRight size={18} />
+              </button>
+              <button
+                onClick={onContinueShopping}
+                className="w-full bg-muted hover:bg-secondary text-muted-foreground text-sm font-semibold py-3 px-4 rounded flex items-center justify-center gap-2 transition-all"
+              >
+                <ShoppingCart size={18} />
+                {t("continueShopping")}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default alreadyModal
+export default AddedToCartDialog;

@@ -107,13 +107,13 @@ export default function SearchFilterCard({
   const getIconForCategory = (type) => {
     switch ((type || "").toLowerCase()) {
       case "airport":
-        return <Plane size={16} className="text-red-600" />;
+        return <Plane size={16} className="text-primary" />;
       case "cruise":
         return <Ship size={16} className="text-cyan-600" />;
       case "hotel":
       case "villa":
       case "apartment":
-        return <Building2 size={16} className="text-gray-700" />;
+        return <Building2 size={16} className="text-muted-foreground" />;
       case "train":
       case "metro":
         return <Train size={16} className="text-purple-600" />;
@@ -121,7 +121,7 @@ export default function SearchFilterCard({
       case "attractions":
         return <Landmark size={16} className="text-orange-600" />;
       default:
-        return <MapPin size={16} className="text-gray-400" />;
+        return <MapPin size={16} className="text-muted-foreground" />;
     }
   };
   useEffect(() => {
@@ -549,8 +549,8 @@ export default function SearchFilterCard({
       onClick={() => onSetTab?.(tab.id)}
       className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
         filterActiveTab === tab.id
-          ? "bg-[#D3202D] text-white sm:py-2.5"
-          : "bg-[#E6E6E6] text-black "
+          ? "bg-primary text-foreground sm:py-2.5"
+          : "bg-muted text-foreground "
       }`}
     >
       {tab.name}
@@ -569,35 +569,35 @@ export default function SearchFilterCard({
 <div className="transition-all duration-500 ease-in-out">
            {/* ====== TRANSFERS ====== */}
            {filterActiveTab === 2 && (
-             <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+             <form onSubmit={handleSubmit} className="relative rounded-2xl bg-surface shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
                <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                  {/* Trip Type */}
                  <div className="md:col-span-2 relative" ref={tripTypeDropdownRef}>
                    <button
                      type="button"
                      onClick={() => setShowTripTypeDropdown(!showTripTypeDropdown)}
-                     className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center justify-between gap-2 h-full cursor-pointer"
+                     className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 flex items-center justify-between gap-2 h-full cursor-pointer"
                    >
-                     <ArrowLeftRight className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+                     <ArrowLeftRight className="h-5 w-5 text-primary flex-shrink-0" />
                      <span className="flex-grow text-left text-base sm:text-lg font-medium">
                        {tripType === 'one-way' ? 'One Way' : 'Round Trip'}
                      </span>
-                     <ChevronDown className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${showTripTypeDropdown ? 'rotate-180' : ''}`} />
+                     <ChevronDown className={`h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform ${showTripTypeDropdown ? 'rotate-180' : ''}`} />
                    </button>
 
                    {showTripTypeDropdown && (
-                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-border bg-surface shadow-lg overflow-hidden">
                        <button
                          type="button"
                          onClick={() => { setTripType('one-way'); setShowTripTypeDropdown(false); }}
-                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
+                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
                        >
                          One Way
                        </button>
                        <button
                          type="button"
                          onClick={() => { setTripType('round-trip'); setShowTripTypeDropdown(false); }}
-                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
+                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
                        >
                          Round Trip
                        </button>
@@ -607,8 +607,8 @@ export default function SearchFilterCard({
 
                  {/* Pick-up */}
                  <div className="md:col-span-4 relative">
-                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2 h-full">
-                     <MapPin className="h-5 w-5 text-[#D3202D]" />
+                   <div className="rounded-lg border border-border bg-surface px-3 py-2.5 flex items-center gap-2 h-full">
+                     <MapPin className="h-5 w-5 text-primary" />
                      <input
                        type="text"
                        readOnly={!selectedPickupCategory && !selectedPickup}
@@ -625,7 +625,7 @@ export default function SearchFilterCard({
                            setPickupFocused(false);
                          }, 200);
                        }}
-                       className={`w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none ${(!selectedPickupCategory && !selectedPickup) ? 'cursor-pointer' : ''}`}
+                       className={`w-full bg-transparent placeholder:text-muted-foreground text-base sm:text-lg outline-none ${(!selectedPickupCategory && !selectedPickup) ? 'cursor-pointer' : ''}`}
                      />
                      {(selectedPickup || pickupQuery || selectedPickupCategory) && (
                        <button
@@ -637,7 +637,7 @@ export default function SearchFilterCard({
                            setDropoffQuery("");
                            setSelectedPickupCategory(null);
                          }}
-                         className="text-gray-400 hover:text-gray-600"
+                         className="text-muted-foreground hover:text-muted-foreground"
                          aria-label="Clear pick-up"
                        >
                          <X className="h-4 w-4" />
@@ -646,19 +646,19 @@ export default function SearchFilterCard({
                    </div>
 
                    {pickupFocused && !pickupQuery && !selectedPickup && !selectedPickupCategory && availablePickupCategories.length > 0 && (
-                     <div className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg z-50 max-h-[50vh] overflow-y-auto">
+                     <div className="absolute top-full left-0 w-full mt-1 bg-surface shadow-lg border border-border rounded-lg z-50 max-h-[50vh] overflow-y-auto">
                        <ul className="py-2">
-                         <li className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                         <li className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-muted sticky top-0">
                            Select Category
                          </li>
                          {availablePickupCategories.map((category) => (
                            <li
                              key={category.id}
                              onMouseDown={(e) => { e.preventDefault(); handlePickupCategorySelect(category); }}
-                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-muted cursor-pointer border-b border-border last:border-0"
                            >
-                             <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
-                             <span className="text-gray-900 font-medium">{category.name}</span>
+                             <div className="p-2 bg-muted rounded-full">{getIconForCategory(category.nameKey)}</div>
+                             <span className="text-foreground font-medium">{category.name}</span>
                            </li>
                          ))}
                        </ul>
@@ -666,36 +666,36 @@ export default function SearchFilterCard({
                    )}
 
                    {showPickupDropdown && (pickupQuery || selectedPickupCategory) && pickupQuery !== selectedPickup?.name && (
-                     <ul className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg max-h-[50vh] overflow-auto z-50">
+                     <ul className="absolute top-full left-0 w-full mt-1 bg-surface shadow-lg border border-border rounded-lg max-h-[50vh] overflow-auto z-50">
                        {!selectedPickupCategory && availablePickupCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(pickupQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== pickupQuery.toLowerCase()).map((category) => (
                          <li
                            key={`cat-${category.id}`}
                            onMouseDown={(e) => { e.preventDefault(); handlePickupCategorySelect(category); }}
-                           className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                           className="flex items-center gap-3 px-3 py-2.5 hover:bg-muted cursor-pointer border-b border-border last:border-0"
                          >
-                           <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
-                           <span className="text-gray-900 font-medium">{category.name} <span className="text-xs text-gray-500 font-normal">(Category)</span></span>
+                           <div className="p-2 bg-muted rounded-full">{getIconForCategory(category.nameKey)}</div>
+                           <span className="text-foreground font-medium">{category.name} <span className="text-xs text-muted-foreground font-normal">(Category)</span></span>
                          </li>
                        ))}
                        {transferLoading ? (
-                         <li className="px-3 py-2.5 text-center text-gray-800">Loading...</li>
+                         <li className="px-3 py-2.5 text-center text-foreground">Loading...</li>
                        ) : filteredPickupOptions.length > 0 ? (
                          filteredPickupOptions.map((option) => (
                            <li
                              key={option.id}
                              onClick={() => onPickupSelect(option)}
-                             className="flex justify-between items-center px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-300 last:border-b-0 text-gray-900"
+                             className="flex justify-between items-center px-3 py-2.5 hover:bg-muted cursor-pointer border-b border-border last:border-b-0 text-foreground"
                            >
                              <div className="flex text-sm items-center gap-2">
                                {getIconForCategory(option.type)}
                                <span>{option.name}</span>
                              </div>
-                             <span className="text-xs text-gray-500 capitalize">{option.type}</span>
+                             <span className="text-xs text-muted-foreground capitalize">{option.type}</span>
                            </li>
                          ))
                        ) : (
                          (selectedPickupCategory || availablePickupCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(pickupQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== pickupQuery.toLowerCase()).length === 0) && (
-                           <li className="px-3 py-2.5 text-center text-gray-500">No results found</li>
+                           <li className="px-3 py-2.5 text-center text-muted-foreground">No results found</li>
                          )
                        )}
                      </ul>
@@ -704,8 +704,8 @@ export default function SearchFilterCard({
 
                  {/* Drop-off */}
                  <div className="md:col-span-4 relative">
-                   <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2 h-full">
-                     <Building className="h-5 w-5 text-[#D3202D]" />
+                   <div className="rounded-lg border border-border bg-surface px-3 py-2.5 flex items-center gap-2 h-full">
+                     <Building className="h-5 w-5 text-primary" />
                      <input
                        type="text"
                        readOnly={!selectedDropoffCategory && !selectedDropoff}
@@ -725,7 +725,7 @@ export default function SearchFilterCard({
                        }}
                        disabled={!selectedPickup}
                        placeholder={selectedDropoffCategory ? `Search ${selectedDropoffCategory}...` : "Drop-off point (e.g. Hotel)"}
-                       className={`w-full bg-transparent placeholder:text-gray-400 text-base sm:text-lg outline-none disabled:text-gray-400 ${(!selectedDropoffCategory && !selectedDropoff) ? 'cursor-pointer' : ''}`}
+                       className={`w-full bg-transparent placeholder:text-muted-foreground text-base sm:text-lg outline-none disabled:text-muted-foreground ${(!selectedDropoffCategory && !selectedDropoff) ? 'cursor-pointer' : ''}`}
                      />
                      {(dropoffQuery || selectedDropoff || selectedDropoffCategory) && (
                        <button
@@ -735,7 +735,7 @@ export default function SearchFilterCard({
                            setSelectedDropoff(null);
                            setSelectedDropoffCategory(null);
                          }}
-                         className="text-gray-400 hover:text-gray-600"
+                         className="text-muted-foreground hover:text-muted-foreground"
                          aria-label="Clear drop-off"
                        >
                          <X className="h-4 w-4" />
@@ -744,19 +744,19 @@ export default function SearchFilterCard({
                    </div>
 
                    {dropoffFocused && !dropoffQuery && !selectedDropoff && !selectedDropoffCategory && selectedPickup && availableDropoffCategories.length > 0 && (
-                     <div className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg z-50 max-h-[50vh] overflow-y-auto">
+                     <div className="absolute top-full left-0 w-full mt-1 bg-surface shadow-lg border border-border rounded-lg z-50 max-h-[50vh] overflow-y-auto">
                        <ul className="py-2">
-                         <li className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                         <li className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-muted sticky top-0">
                            Select Category
                          </li>
                          {availableDropoffCategories.map((category) => (
                            <li
                              key={category.id}
                              onMouseDown={(e) => { e.preventDefault(); handleDropoffCategorySelect(category); }}
-                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-muted cursor-pointer border-b border-border last:border-0"
                            >
-                             <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
-                             <span className="text-gray-900 font-medium">{category.name}</span>
+                             <div className="p-2 bg-muted rounded-full">{getIconForCategory(category.nameKey)}</div>
+                             <span className="text-foreground font-medium">{category.name}</span>
                            </li>
                          ))}
                        </ul>
@@ -764,15 +764,15 @@ export default function SearchFilterCard({
                    )}
 
                    {showDropoffDropdown && (dropoffQuery || selectedDropoffCategory) && dropoffQuery !== selectedDropoff?.name && selectedPickup && (
-                     <ul className="absolute top-full left-0 w-full mt-1 bg-white shadow-lg border border-gray-200 rounded-lg max-h-[50vh] overflow-auto z-50">
+                     <ul className="absolute top-full left-0 w-full mt-1 bg-surface shadow-lg border border-border rounded-lg max-h-[50vh] overflow-auto z-50">
                        {!selectedDropoffCategory && availableDropoffCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(dropoffQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== dropoffQuery.toLowerCase()).map((category) => (
                          <li
                            key={`cat-${category.id}`}
                            onMouseDown={(e) => { e.preventDefault(); handleDropoffCategorySelect(category); }}
-                           className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+                           className="flex items-center gap-3 px-3 py-2.5 hover:bg-muted cursor-pointer border-b border-border last:border-0"
                          >
-                           <div className="p-2 bg-gray-100 rounded-full">{getIconForCategory(category.nameKey)}</div>
-                           <span className="text-gray-900 font-medium">{category.name} <span className="text-xs text-gray-500 font-normal">(Category)</span></span>
+                           <div className="p-2 bg-muted rounded-full">{getIconForCategory(category.nameKey)}</div>
+                           <span className="text-foreground font-medium">{category.name} <span className="text-xs text-muted-foreground font-normal">(Category)</span></span>
                          </li>
                        ))}
                        {filteredDropoffOptions.length > 0 ? (
@@ -784,18 +784,18 @@ export default function SearchFilterCard({
                                setDropoffQuery(option.name || option.title);
                                setShowDropoffDropdown(false);
                              }}
-                             className="flex justify-between items-center px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-300 last:border-b-0 text-gray-900"
+                             className="flex justify-between items-center px-3 py-2.5 hover:bg-muted cursor-pointer border-b border-border last:border-b-0 text-foreground"
                            >
                              <div className="flex text-sm items-center gap-2">
                                {getIconForCategory(option.type)}
                                <span>{option.name}</span>
                              </div>
-                             <span className="text-xs text-gray-500 capitalize">{option.type}</span>
+                             <span className="text-xs text-muted-foreground capitalize">{option.type}</span>
                            </li>
                          ))
                        ) : (
                          (selectedDropoffCategory || availableDropoffCategories?.filter(c => (c.name || c.nameKey) && (c.name || c.nameKey).toLowerCase().includes(dropoffQuery.toLowerCase()) && (c.name || c.nameKey).toLowerCase() !== dropoffQuery.toLowerCase()).length === 0) && (
-                           <li className="px-3 py-2.5 text-center text-gray-500">No results found</li>
+                           <li className="px-3 py-2.5 text-center text-muted-foreground">No results found</li>
                          )
                        )}
                      </ul>
@@ -806,7 +806,7 @@ export default function SearchFilterCard({
                  <div className="md:col-span-2 flex items-stretch">
                    <button
                      type="submit"
-                     className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
+                     className="min-w-full rounded-lg bg-primary text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-primary transition touch-manipulation flex justify-center items-center"
                      disabled={isLoading}
                    >
                      {isLoading ? (
@@ -815,7 +815,7 @@ export default function SearchFilterCard({
                    </button>
                  </div>
                  <div className="md:col-span-12 right-0 flex justify-end gap-1">
-                   <span className="text-xs text-gray-400">Powered by </span>
+                   <span className="text-xs text-muted-foreground">Powered by </span>
                    <img className="h-5 w-auto" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
                  </div>
                </div>
@@ -823,14 +823,14 @@ export default function SearchFilterCard({
            )}
       {/* ====== DAY TOURS ====== */}
       {filterActiveTab === 3 && (
-        <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
+        <form onSubmit={handleSubmit} className="relative rounded-2xl bg-surface text-surface-foreground shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
 
             {/* COUNTRY */}
             {/* <div className="md:col-span-3 relative">
-              <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">Country</label>
-              <div className="rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-gray-500" />
+              <label className="absolute -top-2 left-3 bg-surface text-[11px] text-muted-foreground px-1">Country</label>
+              <div className="rounded-2xl border border-border bg-surface px-3 md:px-4 py-2 md:py-3 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   value={countryQuery}
@@ -852,7 +852,7 @@ export default function SearchFilterCard({
                       setCountryQuery("");
                       setSelectedCountry(null);
                     }}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-muted-foreground hover:text-muted-foreground"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -860,9 +860,9 @@ export default function SearchFilterCard({
               </div>
 
               {showCountryDropdown && (
-                <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-20 mt-2 w-full rounded-xl border border-border bg-surface shadow-lg max-h-60 overflow-auto">
                   {filteredCountries.length === 0 ? (
-                    <div className="px-3 py-2 text-center text-gray-400">
+                    <div className="px-3 py-2 text-center text-muted-foreground">
                       {countryQuery ? "No matches" : "Start typing…"}
                     </div>
                   ) : (
@@ -876,23 +876,23 @@ export default function SearchFilterCard({
                           setShowCountryDropdown(false);
                           setSelectedCity(null);
                         }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted"
                       >
-                        <MapPin className="h-4 w-4 text-[#D3202D]" />
+                        <MapPin className="h-4 w-4 text-primary" />
                         <span className="text-sm text-white">{c.name}</span>
                       </button>
                     ))
                   )}
-                  {daytoursLoading && <div className="px-3 py-2 text-center text-gray-400">Loading…</div>}
+                  {daytoursLoading && <div className="px-3 py-2 text-center text-muted-foreground">Loading…</div>}
                 </div>
               )}
             </div> */}
 
             {/* CITY */}
             {/* <div className="md:col-span-3 relative">
-              <label className="absolute -top-2 left-3 bg-white text-[11px] text-gray-500 px-1">City</label>
-              <div className="rounded-2xl border border-gray-200 bg-white px-3 md:px-4 py-2 md:py-3 flex items-center gap-2">
-                <Building className="h-5 w-5 text-gray-500" />
+              <label className="absolute -top-2 left-3 bg-surface text-[11px] text-muted-foreground px-1">City</label>
+              <div className="rounded-2xl border border-border bg-surface px-3 md:px-4 py-2 md:py-3 flex items-center gap-2">
+                <Building className="h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   value={cityQuery}
@@ -906,7 +906,7 @@ export default function SearchFilterCard({
                     setShowCityDropdown(true);
                     if (selectedCity) setSelectedCity(null);
                   }}
-                  className="w-full bg-transparent text-sm md:text-base outline-none disabled:text-gray-400"
+                  className="w-full bg-transparent text-sm md:text-base outline-none disabled:text-muted-foreground"
                 />
                 {cityQuery && (
                   <button
@@ -915,7 +915,7 @@ export default function SearchFilterCard({
                       setCityQuery("");
                       setSelectedCity(null);
                     }}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-muted-foreground hover:text-muted-foreground"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -923,9 +923,9 @@ export default function SearchFilterCard({
               </div>
 
               {showCityDropdown && selectedCountry && (
-                <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-20 mt-2 w-full rounded-xl border border-border bg-surface shadow-lg max-h-60 overflow-auto">
                   {filteredCities.length === 0 ? (
-                    <div className="px-3 py-2 text-center text-gray-400">
+                    <div className="px-3 py-2 text-center text-muted-foreground">
                       {cityQuery ? "No matches" : "Start typing…"}
                     </div>
                   ) : (
@@ -938,30 +938,30 @@ export default function SearchFilterCard({
                           setCityQuery(ct.title || ct.city_name || ct.name || "");
                           setShowCityDropdown(false);
                         }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted"
                       >
-                        <Building className="h-4 w-4 text-[#D3202D]" />
+                        <Building className="h-4 w-4 text-primary" />
                         <span className="text-sm text-white">
                           {ct.title || ct.city_name || ct.name}
                         </span>
                       </button>
                     ))
                   )}
-                  {daytoursLoading && <div className="px-3 py-2 text-center text-gray-400">Loading…</div>}
+                  {daytoursLoading && <div className="px-3 py-2 text-center text-muted-foreground">Loading…</div>}
                 </div>
               )}
             </div> */}
 
             {/* SEARCH INPUT */}
             <div className="md:col-span-10 relative">
-              <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2">
-                <Search className="h-5 w-5 text-[#D3202D] flex-shrink-0" />
+              <div className="rounded-lg border border-border bg-surface px-3 py-2.5 flex items-center gap-2">
+                <Search className="h-5 w-5 text-primary flex-shrink-0" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   placeholder={filterActiveTab === 3 ? dayTourPlaceholders[placeholderIndex] : "Search for tours..."}
-                  className="w-full bg-transparent text-base outline-none py-0.5 placeholder:text-gray-400"
+                  className="w-full bg-transparent text-base outline-none py-0.5 placeholder:text-muted-foreground"
                 />
                 {searchQuery && (
                   <button
@@ -972,7 +972,7 @@ export default function SearchFilterCard({
                       setDaytourParams({ searchQuery: "" }); // Clear store
                       setSuggestedResults([]);
                     }}
-                    className="ml-auto text-gray-400 hover:text-gray-600"
+                    className="ml-auto text-muted-foreground hover:text-muted-foreground"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -980,7 +980,7 @@ export default function SearchFilterCard({
               </div>
 
               {searchQuery && suggestedResults.length > 0 && (
-                <div className="absolute z-20 top-full mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-20 top-full mt-2 w-full rounded-xl border border-border bg-surface shadow-lg max-h-60 overflow-auto">
                   {suggestedResults.map((sug) => (
                     <button
                       key={sug.id}
@@ -989,10 +989,10 @@ export default function SearchFilterCard({
                         setSearchQuery(sug.product_title || sug.name);
                         setSuggestedResults([]);
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted"
                     >
-                      <Search className="h-4 w-4 text-[#D3202D]" />
-                      <span className="text-sm text-black">
+                      <Search className="h-4 w-4 text-primary" />
+                      <span className="text-sm text-surface-foreground">
                         {sug.product_title || sug.name}
                       </span>
                     </button>
@@ -1005,7 +1005,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="min-w-full rounded-lg bg-[#D3202D] text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-[#D3202D] transition touch-manipulation flex justify-center items-center"
+                className="min-w-full rounded-lg bg-primary text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-primary transition touch-manipulation flex justify-center items-center"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -1014,7 +1014,7 @@ export default function SearchFilterCard({
               </button>
             </div>
             <div className=" flex justify-end md:col-span-12 gap-1">
-              <span className="text-xs text-gray-400">Powered by </span>
+              <span className="text-xs text-muted-foreground">Powered by </span>
               <img className="h-5 w-auto" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
             </div>
           </div>
@@ -1036,7 +1036,7 @@ export default function SearchFilterCard({
 </div>
       {/* ====== COMING SOON ====== */}
       {![4, 2, 3].includes(filterActiveTab) && (
-        <div className="rounded-2xl bg-white shadow p-8 text-center text-gray-500">
+        <div className="rounded-2xl bg-surface shadow p-8 text-center text-muted-foreground">
           Coming Soon...
         </div>
       )}

@@ -53,8 +53,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           disabled={currentPage === 1}
           className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
             currentPage === 1
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-              : "bg-white text-gray-700 hover:bg-[#D3202D] hover:text-white border-gray-300"
+              ? "bg-muted text-muted-foreground cursor-not-allowed border-border"
+              : "bg-surface text-muted-foreground hover:bg-primary hover:text-white border-border"
           }`}
         >
           Previous
@@ -62,15 +62,15 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
         {pagesToDisplay.map((page, index) => (
           page === '...' ? (
-            <span key={`dots-${index}`} className="px-3 py-2 text-gray-700">...</span>
+            <span key={`dots-${index}`} className="px-3 py-2 text-muted-foreground">...</span>
           ) : (
             <button
               key={page}
               onClick={() => onPageChange(page)}
               className={`px-3 py-2 border rounded-md text-sm font-medium transition-colors ${
                 page === currentPage
-                  ? "bg-[#D3202D] text-white "
-                  : "bg-white text-gray-700 hover:bg-[#D3202D] hover:text-white border-gray-300 "
+                  ? "bg-primary text-white "
+                  : "bg-surface text-muted-foreground hover:bg-primary hover:text-white border-border "
               }`}
             >
               {page}
@@ -83,8 +83,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           disabled={currentPage === totalPages}
           className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
             currentPage === totalPages
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-              : "bg-white text-gray-700 hover:bg-[#D3202D] hover:text-white border-gray-300 hover:bg-[#D3202D]"
+              ? "bg-muted text-muted-foreground cursor-not-allowed border-border"
+              : "bg-surface text-muted-foreground hover:bg-primary hover:text-white border-border hover:bg-primary"
           }`}
         >
           Next

@@ -44,10 +44,10 @@ export default function AccommodationCard({ data }) {
   };
 
   return (
-    <div className="bg-white w-[280px] rounded-xl shadow-lg overflow-hidden border border-gray-100 h-full flex flex-col">
+    <div className="bg-surface w-[280px] rounded-xl shadow-lg overflow-hidden border border-border h-full flex flex-col">
       
       {/* Image Section */}
-      <div className="relative h-40 w-full bg-gray-200">
+      <div className="relative h-40 w-full bg-secondary">
         <Image
           src={finalImageUrl || "/placeholder.svg"}
           alt={accommodation?.hotel_name || 'Hotel'}
@@ -57,7 +57,7 @@ export default function AccommodationCard({ data }) {
         {/* Payment Status Badge */}
         <div className={`absolute top-2 right-2 text-xs font-semibold px-3 py-1 rounded-full ${
           accommodation?.payment_status === 'Paid' 
-            ? 'bg-[#D3202D] text-white' 
+            ? 'bg-primary text-white' 
             : 'bg-gray-700 text-white'
         }`}>
           {accommodation?.payment_status || 'Unpaid'}
@@ -69,13 +69,13 @@ export default function AccommodationCard({ data }) {
 
         {/* Title + Nights on Right */}
         <div className="flex justify-between items-start gap-2">
-          <h2 className="text-sm md:text-md font-bold text-gray-900 line-clamp-2 h-10 flex-1">
+          <h2 className="text-sm md:text-md font-bold text-foreground line-clamp-2 h-10 flex-1">
             {accommodation?.hotel_name || 'Hotel Name'}
           </h2>
 
           {/* Nights Badge on Right */}
           {nights && (
-            <span className="text-xs font-semibold bg-gray-100 text-[#D3202D] px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+            <span className="text-xs font-semibold bg-muted text-primary px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
               {nights} Nights
             </span>
           )}
@@ -83,8 +83,8 @@ export default function AccommodationCard({ data }) {
 
         {/* Address */}
         <div className="flex items-start gap-2">
-          <MapPin className="w-4 h-4 text-[#D3202D] mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-gray-800 line-clamp-2">
+          <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-foreground line-clamp-2">
             {accommodation?.hotel_address || 'Address not available'}
           </p>
         </div>
@@ -92,42 +92,42 @@ export default function AccommodationCard({ data }) {
         {/* Meal Plan — Badge line */}
         {accommodation?.meal_plan && accommodation?.meal_plan !== 'Not Included' && (
           <div className="flex items-center gap-2">
-            <UtensilsCrossed className="w-4 h-4 text-[#D3202D] flex-shrink-0" />
-            <span className="text-xs bg-gray-100 text-[#D3202D]  px-2 py-0.5 rounded-full">
+            <UtensilsCrossed className="w-4 h-4 text-primary flex-shrink-0" />
+            <span className="text-xs bg-muted text-primary  px-2 py-0.5 rounded-full">
               {accommodation?.meal_plan}
             </span>
           </div>
         )}
 
         {/* Check-in / Check-out */}
-        <div className="space-y-2  border-t border-gray-200">
-          <div className='flex items-center justify-between bg-[#f4f4f4] p-1 rounded gap-2'>
+        <div className="space-y-2  border-t border-border">
+          <div className='flex items-center justify-between bg-surface-muted p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-[#D3202D]" />
-              <p className="text-xs font-semibold text-gray-900  tracking-wide">
+              <Calendar className="w-4 h-4 text-primary" />
+              <p className="text-xs font-semibold text-foreground  tracking-wide">
                 Check-in
               </p>
             </div>
             <div className="text-right p-1">
-              <p className="text-xs font-medium text-gray-900">
+              <p className="text-xs font-medium text-foreground">
                 {formatDate(accommodation?.checkin_date)}
               </p>
-              {/* <p className="text-xs text-gray-900">{accommodation?.checkin_time?.substring(0, 5)}</p> */}
+              {/* <p className="text-xs text-foreground">{accommodation?.checkin_time?.substring(0, 5)}</p> */}
             </div>
           </div>
 
-          <div className='flex items-center justify-between bg-[#f4f4f4] p-1 rounded gap-2'>
+          <div className='flex items-center justify-between bg-surface-muted p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-[#D3202D]" />
-              <p className="text-xs font-semibold text-gray-900  tracking-wide">
+              <Calendar className="w-4 h-4 text-primary" />
+              <p className="text-xs font-semibold text-foreground  tracking-wide">
                 Check-out
               </p>
             </div>
             <div className="text-right p-1">
-              <p className="text-xs font-medium text-gray-900">
+              <p className="text-xs font-medium text-foreground">
                 {formatDate(accommodation?.checkout_date)}
               </p>
-              {/* <p className="text-xs text-gray-900">{accommodation?.checkout_time?.substring(0, 5)}</p> */}
+              {/* <p className="text-xs text-foreground">{accommodation?.checkout_time?.substring(0, 5)}</p> */}
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function AccommodationCard({ data }) {
         {/* Action Button */}
       {accommodation?.payment_status !== 'Paid' ? (
         // Display "Awaiting Confirmation" message
-        <div className="flex items-center justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
+        <div className="flex items-center justify-center text-muted-foreground bg-muted px-3 py-2 rounded-lg text-sm font-medium w-full">
           <AlertCircle className="w-4 h-4 mr-2" />
             Awaiting Confirmation
         </div>
@@ -143,7 +143,7 @@ export default function AccommodationCard({ data }) {
         // Display "View Details" button
         <button
             onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
-            className="w-full bg-[#D3202D] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
+            className="w-full bg-primary text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
             disabled={isLoading}
           >
             {isLoading ? (

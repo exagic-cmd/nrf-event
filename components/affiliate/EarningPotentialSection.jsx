@@ -6,13 +6,13 @@ function EarningPotentialSection() {
 
   return (
     <div>
-      <div className="bg-white mb-6 px-6 md:px-12 relative">
+      <div className="bg-surface mb-6 px-6 md:px-12 relative">
         <div className="z-10">
 
           {/* Heading */}
           <h2 className="text-center text-lg font-bold text-[#CC9A55]">
             {t('heading1')} <br />
-            <span className="text-xl md:text-4xl text-black">{t('heading2')}</span>
+            <span className="text-xl md:text-4xl text-surface-foreground">{t('heading2')}</span>
           </h2>
 
           {/* Decorative Background */}
@@ -38,7 +38,7 @@ function EarningPotentialSection() {
                 </div>
                 <div className="py-1 md:py-5 md:mt-0 mt-4">
                   <h3 className="font-semibold text-md md:text-lg">{t('card1.title')}</h3>
-                  <p className="text-gray-600 text-sm">{t('card1.desc')}</p>
+                  <p className="text-muted-foreground text-sm">{t('card1.desc')}</p>
                 </div>
               </div>
 
@@ -49,7 +49,7 @@ function EarningPotentialSection() {
                 </div>
                 <div className="py-1 md:py-5 md:mt-0 mt-4">
                   <h3 className="font-semibold text-md md:text-lg">{t('card2.title')}</h3>
-                  <p className="text-gray-600 text-sm">{t('card2.desc')}</p>
+                  <p className="text-muted-foreground text-sm">{t('card2.desc')}</p>
                 </div>
               </div>
             </div>
@@ -72,7 +72,7 @@ function EarningPotentialSection() {
                 </div>
                 <div className="py-1 md:py-5 md:mt-0 mt-4">
                   <h3 className="font-semibold text-md md:text-lg">{t('card3.title')}</h3>
-                  <p className="text-gray-600 text-sm">{t('card3.desc')}</p>
+                  <p className="text-muted-foreground text-sm">{t('card3.desc')}</p>
                 </div>
               </div>
 
@@ -83,7 +83,7 @@ function EarningPotentialSection() {
                 </div>
                 <div className="py-1 md:py-5 md:mt-0 mt-4">
                   <h3 className="font-semibold text-md md:text-lg">{t('card4.title')}</h3>
-                  <p className="text-gray-600 text-sm">{t('card4.desc')}</p>
+                  <p className="text-muted-foreground text-sm">{t('card4.desc')}</p>
                 </div>
               </div>
             </div>

@@ -6,11 +6,11 @@ import { MapPin, Calendar, Flag, Clock,User,Building2, Globe, Mail, Phone,Globe2
 const { getEventData, formatDate } = helpers;
 function TimeBox({ label, value }) {
   return (
-    <div className="flex flex-col items-center bg-gray-900 px-3 py-3 sm:px-4 sm:py-4 rounded-xl min-w-[60px] sm:min-w-[90px]">
+    <div className="flex flex-col items-center text-foreground px-3 py-3 sm:px-4 sm:py-4 rounded-xl min-w-[60px] sm:min-w-[90px]">
       <span className="text-2xl sm:text-4xl font-bold tracking-wide text-white">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-xs sm:text-sm uppercase text-gray-400 mt-1">{label}</span>
+      <span className="text-xs sm:text-sm uppercase text-muted-foreground mt-1">{label}</span>
     </div>
   );
 }
@@ -62,8 +62,8 @@ export default function CountdownTimer({ className = "" }) {
   }, [endTime]);
   if (!timeLeft || !eventDetails) {
     return (
-      <section className="w-full py-8 sm:py-12 md:py-24 bg-white relative overflow-hidden">
-        <div className="text-black text-center animate-pulse text-base sm:text-lg">
+      <section className="w-full py-8 sm:py-12 md:py-24 bg-surface relative overflow-hidden">
+        <div className="text-surface-foreground text-center animate-pulse text-base sm:text-lg">
           Loading countdown...
         </div>
       </section>
@@ -73,7 +73,7 @@ export default function CountdownTimer({ className = "" }) {
   const { title, location, start_date, end_date } = eventDetails;
   return (
     <section
-      className={`w-full pt-2 pb-3 md:pb-6 bg-white relative overflow-hidden ${className}`}
+      className={`w-full pt-2 pb-3 md:pb-6 bg-surface relative overflow-hidden ${className}`}
     >
       <div className="container px-4 sm:px-6 mx-auto max-w-7xl flex flex-col items-center">
       
@@ -97,19 +97,19 @@ export default function CountdownTimer({ className = "" }) {
         </div>
 
 {/* --- Event Details Card --- */}
-<div className="w-full p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-[#12366A]">
-  {/* <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
+<div className="w-full p-6 sm:p-8 bg-surface rounded-2xl shadow-xl border border-[#12366A]">
+  {/* <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">
     Event Details
   </h2> */}
 
-  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 text-gray-800">
+  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 text-foreground">
 
     {/* Location */}
     <div className="flex items-start gap-4">
       <MapPin className="w-6 h-6 text-[#2176FF] mt-1" />
       <div>
-        <p className="font-semibold text-gray-900">Location</p>
-        <p className="text-gray-600">{location}</p>
+        <p className="font-semibold text-foreground">Location</p>
+        <p className="text-muted-foreground">{location}</p>
       </div>
     </div>
 
@@ -117,8 +117,8 @@ export default function CountdownTimer({ className = "" }) {
     <div className="flex items-start gap-4">
       <Calendar className="w-6 h-6 text-[#2176FF] mt-1" />
       <div>
-        <p className="font-semibold text-gray-900">Start Date</p>
-        <p className="text-gray-600">{formatDate(start_date)}</p>
+        <p className="font-semibold text-foreground">Start Date</p>
+        <p className="text-muted-foreground">{formatDate(start_date)}</p>
       </div>
     </div>
 
@@ -126,8 +126,8 @@ export default function CountdownTimer({ className = "" }) {
     <div className="flex items-start gap-4">
       <Flag className="w-6 h-6 text-[#2176FF] mt-1" />
       <div>
-        <p className="font-semibold text-gray-900">End Date</p>
-        <p className="text-gray-600">{formatDate(end_date)}</p>
+        <p className="font-semibold text-foreground">End Date</p>
+        <p className="text-muted-foreground">{formatDate(end_date)}</p>
       </div>
     </div>
 
@@ -135,8 +135,8 @@ export default function CountdownTimer({ className = "" }) {
     <div className="flex items-start gap-4">
       <Clock className="w-6 h-6 text-[#2176FF] mt-1" />
       <div>
-        <p className="font-semibold text-gray-900">Registration Deadline</p>
-        <p className="text-red-600 font-semibold">
+        <p className="font-semibold text-foreground">Registration Deadline</p>
+        <p className="text-primary font-semibold">
           {formatDate(eventDetails.reg_end)}
         </p>
       </div>
@@ -147,8 +147,8 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <Globe className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Time Zone</p>
-          <p className="text-gray-600">{eventDetails.time_zone.name}</p>
+          <p className="font-semibold text-foreground">Time Zone</p>
+          <p className="text-muted-foreground">{eventDetails.time_zone.name}</p>
         </div>
       </div>
     )}
@@ -158,8 +158,8 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <User className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Organizer</p>
-          <p className="text-gray-600">{eventDetails.organizer}</p>
+          <p className="font-semibold text-foreground">Organizer</p>
+          <p className="text-muted-foreground">{eventDetails.organizer}</p>
         </div>
       </div>
     )}
@@ -169,8 +169,8 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <Building2 className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Company</p>
-          <p className="text-gray-600">{eventDetails.company_name}</p>
+          <p className="font-semibold text-foreground">Company</p>
+          <p className="text-muted-foreground">{eventDetails.company_name}</p>
         </div>
       </div>
     )} */}
@@ -180,8 +180,8 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <Phone className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Phone</p>
-          <p className="text-gray-600">{eventDetails.phone}</p>
+          <p className="font-semibold text-foreground">Phone</p>
+          <p className="text-muted-foreground">{eventDetails.phone}</p>
         </div>
       </div>
     )} */}
@@ -191,8 +191,8 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <Mail className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Email</p>
-          <p className="text-gray-600">{eventDetails.email}</p>
+          <p className="font-semibold text-foreground">Email</p>
+          <p className="text-muted-foreground">{eventDetails.email}</p>
         </div>
       </div>
     )} */}
@@ -202,7 +202,7 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <Globe2 className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Website</p>
+          <p className="font-semibold text-foreground">Website</p>
           <a
             href={eventDetails.web_link}
             target="_blank"
@@ -219,7 +219,7 @@ export default function CountdownTimer({ className = "" }) {
       <div className="flex items-start gap-4">
         <Share2 className="w-6 h-6 text-[#2176FF] mt-1" />
         <div>
-          <p className="font-semibold text-gray-900">Social</p>
+          <p className="font-semibold text-foreground">Social</p>
           <div className="flex gap-3 mt-1">
             {eventDetails.fb_link && (
               <a href={eventDetails.fb_link} target="_blank" className="text-blue-600 underline">
@@ -245,8 +245,8 @@ export default function CountdownTimer({ className = "" }) {
 
   {/* Description */}
   {eventDetails.short_desc && (
-    <p className="mt-10 text-black border-t border-gray-200 pt-6 leading-relaxed">
-      <span className="font-semibold text-gray-900">About the Event: </span>
+    <p className="mt-10 text-surface-foreground border-t border-border pt-6 leading-relaxed">
+      <span className="font-semibold text-foreground">About the Event: </span>
       {eventDetails.short_desc}
     </p>
   )}

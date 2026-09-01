@@ -76,7 +76,7 @@ const [showDetailModal , setshowDetailModal] = useState(false)
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       {/* Modal Content */}
-      <div className="bg-white rounded-lg shadow-xl w-full max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl">
+      <div className="bg-surface rounded-lg shadow-xl w-full max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl">
         {/* Header with selected filters */}
         <div className="p-4 border-b ">
           <div className="flex justify-between items-center mb-6">
@@ -89,13 +89,13 @@ const [showDetailModal , setshowDetailModal] = useState(false)
                   <Star className="w-4 h-4 fill-current" />
                   4.0
                 </span>
-                <span className="text-gray-500 mr-2">(1124 reviews)</span>
-                <span className="text-gray-500">• 1 Nanson Rd, Singapore</span>
+                <span className="text-muted-foreground mr-2">(1124 reviews)</span>
+                <span className="text-muted-foreground">• 1 Nanson Rd, Singapore</span>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-[#FE6F4F]"
+              className="text-muted-foreground hover:text-[#FE6F4F]"
             >
               <X className="h-5 w-5" />
             </button>
@@ -118,14 +118,14 @@ const [showDetailModal , setshowDetailModal] = useState(false)
                 {/* Overview Section */}
                 <section id="overview" ref={refs.overviewI} className="py-6">
                   <h2 className="text-lg font-medium mb-4">Overview</h2>
-                  <p className="text-gray-700">
+                  <p className="text-muted-foreground">
                     Enjoy sophistica­ted riverfront living at Intercont­inental
                     Robe­rtson Quay Singapore­. Chic and ove­rlooking the
                     Singapore­ River, our hote­l boasts 225 studios and suites,
                     a Me­diterranean-inspire­d restaurant, e­legant bars and a
                     rooftop swimming pool.
                   </p>
-                  <button  onClick={()=> setshowDetailModal(true)} className="text-black mt-2 underline">See More</button>
+                  <button  onClick={()=> setshowDetailModal(true)} className="text-surface-foreground mt-2 underline">See More</button>
                 </section>
 
                 {/* Amenities Section */}
@@ -136,27 +136,27 @@ const [showDetailModal , setshowDetailModal] = useState(false)
                 >
                   <h2 className="text-lg font-medium mb-4">Amenities</h2>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-muted-foreground">
                       <Wifi className="w-5 h-5 mr-2" />
                       <span>Free WiFi</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-muted-foreground">
                       <Utensils className="w-5 h-5 mr-2" />
                       <span>Restaurant</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-muted-foreground">
                       <Car className="w-5 h-5 mr-2" />
                       <span>Parking</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-muted-foreground">
                       <Coffee className="w-5 h-5 mr-2" />
                       <span>Bar</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-muted-foreground">
                       <Phone className="w-5 h-5 mr-2" />
                       <span>Room Service</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-muted-foreground">
                       <Heart className="w-5 h-5 mr-2" />
                       <span>Fitness Center</span>
                     </div>
@@ -176,17 +176,17 @@ const [showDetailModal , setshowDetailModal] = useState(false)
                   <div className="space-y-4">
                     <div className="flex">
                       <div className="w-1/2">
-                        <h3 className="font-medium text-gray-700">Check-in</h3>
+                        <h3 className="font-medium text-muted-foreground">Check-in</h3>
                         <div className="flex items-center mt-1">
-                          <Clock className="w-4 h-4 text-gray-500 mr-1" />
-                          <p className="text-gray-600">From 3:00 PM</p>
+                          <Clock className="w-4 h-4 text-muted-foreground mr-1" />
+                          <p className="text-muted-foreground">From 3:00 PM</p>
                         </div>
                       </div>
                       <div className="w-1/2">
-                        <h3 className="font-medium text-gray-700">Check-out</h3>
+                        <h3 className="font-medium text-muted-foreground">Check-out</h3>
                         <div className="flex items-center mt-1">
-                          <Clock className="w-4 h-4 text-gray-500 mr-1" />
-                          <p className="text-gray-600">Until 12:00 PM</p>
+                          <Clock className="w-4 h-4 text-muted-foreground mr-1" />
+                          <p className="text-muted-foreground">Until 12:00 PM</p>
                         </div>
                       </div>
                     </div>
@@ -201,8 +201,8 @@ const [showDetailModal , setshowDetailModal] = useState(false)
                 >
                   <h2 className="text-lg font-medium mb-4">Location</h2>
                   <div className="flex items-center mb-2">
-                    <MapPin className="w-5 h-5 text-gray-500 mr-2" />
-                    <p className="text-gray-700">
+                    <MapPin className="w-5 h-5 text-muted-foreground mr-2" />
+                    <p className="text-muted-foreground">
                       1 Nanson Rd, Singapore 238909
                     </p>
                   </div>
@@ -230,21 +230,21 @@ const [showDetailModal , setshowDetailModal] = useState(false)
                   <div className=" flex justify-between">
                     <div className=" flex-col border rounded p-3">
                       <div className="flex justify-between space-x-3">
-                        <p className="text-sm text-gray-500">Check in</p>
+                        <p className="text-sm text-muted-foreground">Check in</p>
                         <Calendar size={18} />
                       </div>
                       <p className="font-medium">May 9, 2025</p>
                     </div>
                     <div className=" flex-col border rounded p-3">
                       <div className="flex justify-between space-x-3">
-                        <p className="text-sm text-gray-500">Check out</p>
+                        <p className="text-sm text-muted-foreground">Check out</p>
                         <Calendar size={18} />
                       </div>
                       <p className="font-sm">May 10, 2025</p>
                     </div>
                   </div>
                   <div className="border rounded p-3">
-                    <p className="text-sm text-gray-500">Guests</p>
+                    <p className="text-sm text-muted-foreground">Guests</p>
                     <div className="flex justify-between">
                       <p className="font-medium">2 Adults, 0 Child</p>
                      

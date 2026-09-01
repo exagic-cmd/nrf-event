@@ -459,11 +459,11 @@ export default function RatehawkAccommodationDetailPage() {
         </title>
       </Head>
 
-      <div className="min-h-screen bg-[#f4f4f4] text-black pt-[80px] md:pt-16 pb-12">
+      <div className="min-h-screen bg-surface-muted text-surface-foreground pt-[80px] md:pt-16 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 w-full gap-6 lg:gap-8">
             <div className="lg:col-span-9">
-              <div className="flex flex-col bg-white p-2 rounded-2xl lg:flex-row justify-between gap-1">
+              <div className="flex flex-col bg-surface p-2 rounded-2xl lg:flex-row justify-between gap-1">
                 <AccommodationHeader hotelData={hotelData} />
                 <AccommodationInfoCard
                   hotelData={hotelData}

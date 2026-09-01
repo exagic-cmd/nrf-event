@@ -23,7 +23,7 @@ const RoutingMachine = ({ start, end }) => {
         styles: [
           { color: 'black', opacity: 0.25, weight: 9 },
           { color: 'white', opacity: 0.8, weight: 6 },
-          { color: '#D3202D', opacity: 1, weight: 4 }
+          { color: 'hsl(var(--primary))', opacity: 1, weight: 4 }
         ],
       },
     }).addTo(map);

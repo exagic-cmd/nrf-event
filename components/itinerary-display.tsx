@@ -53,13 +53,13 @@ export default function ItineraryDisplay({ itinerary }: ItineraryDisplayProps) {
       {itinerary.category_id === 3 && (
         <button
           onClick={handleVirtualTourClick}
-          className="fixed bottom-5 right-5 bg-[#CC9A55] text-black font-semibold px-5 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 hover:bg-[#e1b97b] transition-all"
+          className="fixed bottom-5 right-5 bg-brand-secondary text-surface-foreground font-semibold px-5 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 hover:bg-[#e1b97b] transition-all"
         >
           <Waves size={20} />
           <span>Virtual Tour</span>
         </button>
       )}
-      <Card className="w-full border-0 shadow-md bg-white dark:bg-slate-800 overflow-hidden">
+      <Card className="w-full border-0 shadow-md bg-surface dark:text-foreground overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-indigo-500 to-violet-500 text-white">
           <CardTitle className="text-lg font-bold flex items-center gap-2">
             <Plane className="h-5 w-5" />
@@ -73,7 +73,7 @@ export default function ItineraryDisplay({ itinerary }: ItineraryDisplayProps) {
                 <TabsTrigger
                   key={day.day}
                   value={`day-${day.day}`}
-                  className="flex-shrink-0 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm"
+                  className="flex-shrink-0 data-[state=active]:bg-surface dark:data-[state=active]:text-foreground data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm"
                 >
                   Day {day.day}
                 </TabsTrigger>

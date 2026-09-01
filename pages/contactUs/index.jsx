@@ -70,11 +70,11 @@ const ContactUsPage = () => {
   return (
     <Layout>
       <div className="min-h-screen py-12 mt-4 px-0 md:px-6 lg:px-8 mx-0 md:mx-8 lg:mx-8 xl:mx-12 flex justify-center items-center">
-        <div className="bg-white overflow-hidden mx-0 w-full grid grid-cols-1 lg:grid-cols-2">
+        <div className="bg-card text-card-foreground overflow-hidden mx-0 w-full grid grid-cols-1 lg:grid-cols-2">
           {/* Form Section */}
           <div className="p-8 md:p-16 sm:p-8">
-            <h2 className="text-3xl font-semibold text-[#CC9A55]  mb-4">{t("contact.title")}</h2>
-            <p className="text-gray-600 mb-6">{t("contact.subtitle")}</p>
+            <h2 className="text-3xl font-semibold text-primary mb-4">{t("contact.title")}</h2>
+            <p className="text-muted-foreground mb-6">{t("contact.subtitle")}</p>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               {responseMessage && (
@@ -88,7 +88,7 @@ const ContactUsPage = () => {
               )}
 
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="name" className="block text-sm font-medium text-foreground">
                   {t("contact.name")}
                 </label>
                 <input
@@ -96,13 +96,13 @@ const ContactUsPage = () => {
                   id="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full rounded border border-input bg-background p-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder={t("contact.namePlaceholder")}
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="block text-sm font-medium text-foreground">
                   {t("contact.email")}
                 </label>
                 <input
@@ -110,13 +110,13 @@ const ContactUsPage = () => {
                   id="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full rounded border border-input bg-background p-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder={t("contact.emailPlaceholder")}
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="message" className="block text-sm font-medium text-foreground">
                   {t("contact.message")}
                 </label>
                 <textarea
@@ -124,7 +124,7 @@ const ContactUsPage = () => {
                   rows="4"
                   value={formData.message}
                   onChange={handleChange}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full rounded border border-input bg-background p-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder={t("contact.messagePlaceholder")}
                 ></textarea>
               </div>
@@ -135,9 +135,9 @@ const ContactUsPage = () => {
                   type="checkbox"
                   checked={formData.accepted_terms}
                   onChange={handleChange}
-                  className="h-4 w-4 text-primary border-gray-300 rounded"
+                  className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
                 />
-                <label htmlFor="accepted_terms" className="ml-2 text-sm text-gray-700">
+                <label htmlFor="accepted_terms" className="ml-2 text-sm text-muted-foreground">
                   {t("contact.terms")}
                 </label>
               </div>
@@ -147,7 +147,7 @@ const ContactUsPage = () => {
                   type="submit"
                   disabled={loading}
                   className={`inline-flex justify-center py-3 px-16 rounded-full text-white ${
-                    loading ? "bg-orange-300 cursor-not-allowed" : "bg-[#CC9A55] "
+                    loading ? "bg-primary/50 cursor-not-allowed" : "bg-primary hover:bg-primary-hover"
                   }`}
                 >
                   {loading ? t("contact.submitting") : t("contact.submit")}

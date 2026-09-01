@@ -37,12 +37,12 @@ const TourHighlights = ({ apiData, fromOrderScreen }) => {
           <div
             key={i}
             className="
-              flex items-center gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-200
+              flex items-center gap-2 bg-surface p-1 rounded-xl shadow-sm border border-border
               flex-shrink-0 min-w-[250px]
             "
           >
-            <Award className="text-[#D3202D] flex-shrink-0" size={18} />
-            <span className="text-gray-700 text-sm font-medium whitespace-nowrap">
+            <Award className="text-primary flex-shrink-0" size={18} />
+            <span className="text-muted-foreground text-sm font-medium whitespace-nowrap">
               {highlight}
             </span>
           </div>

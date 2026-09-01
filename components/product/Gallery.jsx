@@ -14,7 +14,7 @@ const Gallery = ({ images = [] }) => {
   const prevImage = () => setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   const nextImage = () => setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
 
-  if (!images.length) return <div className="text-gray-500">No images available</div>;
+  if (!images.length) return <div className="text-muted-foreground">No images available</div>;
 
   return (
     <div className="relative grid grid-cols-2 md:grid-cols-4 gap-1">
@@ -49,7 +49,7 @@ const Gallery = ({ images = [] }) => {
           ))}
         </div>
 
-        <div className="absolute bottom-0 bg-white m-2 p-1 cursor-pointer rounded right-0">
+        <div className="absolute bottom-0 bg-surface m-2 p-1 cursor-pointer rounded right-0">
           
           <img
             src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/icons/svvajkpaqnzkppzwhwuj.svg"`}

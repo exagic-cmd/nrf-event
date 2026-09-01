@@ -28,7 +28,7 @@ const BookingPolicy = ({ onTermsChange, termsAccepted , error,id}) => {
   const closeModal = () => setShowModal(false);
 
   return (
-    <div className="text-sm text-gray-600 mt-6 mx-2 md:mx-8 ">
+    <div className="text-sm text-muted-foreground mt-6 mx-2 md:mx-8 ">
       <p>100% Cancellation Charges Apply</p>
       <label className="inline-flex items-center mt-2">
         <input
@@ -45,7 +45,7 @@ const BookingPolicy = ({ onTermsChange, termsAccepted , error,id}) => {
         </span>
 </label>
       {error && (
-        <div className="text-sm text-red-500 mt-1">{error}</div>
+        <div className="text-sm text-destructive mt-1">{error}</div>
       )}
       {/* ✅ Show Modal when clicked */}
       {showModal && <PolicyModal onClose={closeModal} content={policyContent} />}

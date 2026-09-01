@@ -63,17 +63,17 @@ export default function PassengerModal({ isOpen, onClose, passengerInfo, onUpdat
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Select Passengers</h2>
-<p className="text-sm text-gray-600 mb-4">Max pax allowed are ({maxCapacity} adult & child)</p>
+      <div className="bg-surface rounded-lg shadow-lg w-full max-w-md p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Select Passengers</h2>
+<p className="text-sm text-muted-foreground mb-4">Max pax allowed are ({maxCapacity} adult & child)</p>
         {/* Adults */}
         <div className="flex items-center justify-between py-3 border-b">
-          <span className="text-gray-700 font-medium">Adults</span>
+          <span className="text-muted-foreground font-medium">Adults</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => handleAdultsChange(adults - 1)}
-              className="px-3 py-1 bg-gray-200 rounded-md"
+              className="px-3 py-1 bg-secondary rounded-md"
             >
               -
             </button>
@@ -81,7 +81,7 @@ export default function PassengerModal({ isOpen, onClose, passengerInfo, onUpdat
             <button
               type="button"
               onClick={() => handleAdultsChange(adults + 1)}
-              className="px-3 py-1 bg-gray-200 rounded-md"
+              className="px-3 py-1 bg-secondary rounded-md"
               disabled={total >= maxCapacity}
             >
               +
@@ -91,12 +91,12 @@ export default function PassengerModal({ isOpen, onClose, passengerInfo, onUpdat
 
         {/* Children */}
         <div className="flex items-center justify-between py-3">
-          <span className="text-gray-700 font-medium">Children</span>
+          <span className="text-muted-foreground font-medium">Children</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => handleChildrenChange(children - 1)}
-              className="px-3 py-1 bg-gray-200 rounded-md"
+              className="px-3 py-1 bg-secondary rounded-md"
             >
               -
             </button>
@@ -104,7 +104,7 @@ export default function PassengerModal({ isOpen, onClose, passengerInfo, onUpdat
             <button
               type="button"
               onClick={() => handleChildrenChange(children + 1)}
-              className="px-3 py-1 bg-gray-200 rounded-md"
+              className="px-3 py-1 bg-secondary rounded-md"
               disabled={total >= maxCapacity}
             >
               +
@@ -114,7 +114,7 @@ export default function PassengerModal({ isOpen, onClose, passengerInfo, onUpdat
 
         {/* Error */}
         {error && (
-          <p className="text-sm text-red-600 mt-2">{error}</p>
+          <p className="text-sm text-primary mt-2">{error}</p>
         )}
 
         {/* Actions */}
@@ -122,14 +122,14 @@ export default function PassengerModal({ isOpen, onClose, passengerInfo, onUpdat
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className="px-4 py-2 rounded-lg bg-secondary text-muted-foreground hover:bg-secondary"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-4 py-2 rounded-lg bg-[#CC9A55] text-white hover:bg-[#cb913f]"
+            className="px-4 py-2 rounded-lg bg-brand-secondary text-white hover:bg-[#cb913f]"
             disabled={!!error}
           >
             Save

@@ -46,13 +46,13 @@ useEffect(() => {
   return (
     <Layout>
       {!showRegister ? (
-        <div className="min-h-screen bg-[#f4f4f4] w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
-          <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg w-full max-w-5xl h-[559px] overflow-hidden">
+        <div className="min-h-screen bg-surface-muted w-full py-14 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
+          <div className="flex flex-col md:flex-row bg-surface rounded-lg shadow-lg w-full max-w-5xl h-[559px] overflow-hidden">
             {/* Left: Sign-in Form */}
             <div className="w-full h-full md:w-1/2 m-2">
               <div className="py-8 px-4">
                 <h1 className="text-2xl font-bold mb-1">{t("title")}</h1>
-                <p className="text-gray-500 text-sm mb-6">{t("subtitle")}</p>
+                <p className="text-muted-foreground text-sm mb-6">{t("subtitle")}</p>
 
                 {/* Errors */}
                 {(localError || storeError) && (
@@ -73,7 +73,7 @@ useEffect(() => {
                     <input
                       type="email"
                       id="email"
-                      className="w-full p-2 border border-gray-300 rounded"
+                      className="w-full p-2 border border-border rounded"
                       placeholder="example@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -92,14 +92,14 @@ useEffect(() => {
                       <input
                         type={showPassword ? "text" : "password"}
                         id="password"
-                        className="w-full p-2 border border-gray-300 rounded pr-10"
+                        className="w-full p-2 border border-border rounded pr-10"
                         placeholder="•••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <button
                         type="button"
-                        className="absolute right-2 top-2.5 text-gray-500"
+                        className="absolute right-2 top-2.5 text-muted-foreground"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -119,7 +119,7 @@ useEffect(() => {
                       />
                       <label
                         htmlFor="remember"
-                        className="text-sm text-gray-600"
+                        className="text-sm text-muted-foreground"
                       >
                         {t("remember")}
                       </label>
@@ -127,7 +127,7 @@ useEffect(() => {
                     <button
                       type="button"
                       onClick={() => setShowForgotPasswordModal(true)}
-                      className="text-sm text-[#D3202D] hover:underline"
+                      className="text-sm text-primary hover:underline"
                     >
                       {t("forgotPassword")}
                     </button>
@@ -136,10 +136,10 @@ useEffect(() => {
                   {/* Submit button */}
                   <button
                     type="submit"
-                    className={`w-full bg-[#D3202D] text-white p-3 rounded-md transition-colors ${
+                    className={`w-full bg-primary text-white p-3 rounded-md transition-colors ${
                       loading
                         ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#D3202D]"
+                        : "hover:bg-primary"
                     }`}
                     disabled={loading}
                   >
@@ -149,10 +149,10 @@ useEffect(() => {
 
                 {/* Switch to Register */}
                 <div className="text-center text-sm mt-4">
-                  <span className="text-gray-600">{t("noAccount")} </span>
+                  <span className="text-muted-foreground">{t("noAccount")} </span>
                   <button
                     type="button"
-                    className="text-[#D3202D] hover:underline"
+                    className="text-primary hover:underline"
                     onClick={() => setShowRegister(true)}
                   >
                     {t("signUp")}

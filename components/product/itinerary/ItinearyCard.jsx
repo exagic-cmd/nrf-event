@@ -7,7 +7,7 @@ const ItineraryCard = () => {
   return (
     <div>
       {/* Hotel Card */}
-      <div className="flex flex-col md:flex-row gap-4 bg-white p-1 mb-5">
+      <div className="flex flex-col md:flex-row gap-4 bg-surface p-1 mb-5">
         <img
           src="https://cdn.pixabay.com/photo/2018/01/12/14/24/night-3078326_640.jpg"
           alt="Hotel"
@@ -20,7 +20,7 @@ const ItineraryCard = () => {
             <h3 className="font-semibold text-[15px]">Intercontinental Robertson Quay</h3>
           </div>
 
-          <div className="flex items-center text-sm text-gray-600 mb-2">
+          <div className="flex items-center text-sm text-muted-foreground mb-2">
             <img
               src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/icons/hvkgizeaibo75aogptaa.svg`}
               alt="hotel icon"
@@ -30,13 +30,13 @@ const ItineraryCard = () => {
             <span>6:00 PM</span>
           </div>
 
-          <p className="text-sm text-gray-700 mb-2  break-words whitespace-normal truncate line-clamp-3">
+          <p className="text-sm text-muted-foreground mb-2  break-words whitespace-normal truncate line-clamp-3">
             Enjoy sophisticated riverfront living at InterContinental Singapore Robertson Quay the way you can with the travel guide 
           </p>
 
           <button
             onClick={() => setIsModalOpen(true)}
-         className="text-black mt-2 text-start underline"
+         className="text-surface-foreground mt-2 text-start underline"
           >
             View Details
           </button>
@@ -44,7 +44,7 @@ const ItineraryCard = () => {
       </div>
 
       {/* Activity Card */}
-      <div className="flex flex-col md:flex-row gap-4 bg-white rounded-lg p-1">
+      <div className="flex flex-col md:flex-row gap-4 bg-surface rounded-lg p-1">
         <img
           src="https://cdn.pixabay.com/photo/2022/02/05/12/42/sea-of-clouds-6994730_640.jpg"
           alt="Tour"
@@ -57,7 +57,7 @@ const ItineraryCard = () => {
             <h3 className="font-semibold text-[15px]">Visit Night Safari</h3>
           </div>
 
-          <div className="flex items-center text-sm text-gray-600 mb-2">
+          <div className="flex items-center text-sm text-muted-foreground mb-2">
             <img
               src="NEXT_PUBLIC_IMAGE_BASE_URLimage/upload/v1744017946/External+Links/icons/svvajkpaqnzkppzwhwuj.svg"
               alt="hotel icon"
@@ -67,13 +67,13 @@ const ItineraryCard = () => {
             <span>12:45 PM</span>
           </div>
 
-          <p className="text-sm text-gray-700 mb-2">
+          <p className="text-sm text-muted-foreground mb-2">
             Night Safari is the world's first nocturnal zoo
           </p>
 
           <button
             onClick={() => setIsModalOpen(true)}
-          className="text-black mt-2  text-start underline"
+          className="text-surface-foreground mt-2  text-start underline"
           >
             View Details
           </button>

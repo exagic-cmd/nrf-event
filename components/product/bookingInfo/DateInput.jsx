@@ -34,7 +34,7 @@ const DateInputs = ({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-min">
       {/* Arrival Date */}
       <div className="">
-        <label htmlFor="arrivalDate" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="arrivalDate" className="block text-sm font-medium text-muted-foreground mb-1">
           Arrival Date
         </label>
         <DatePicker
@@ -51,7 +51,7 @@ const DateInputs = ({
       </div>
       {showDesiredPickup && (
         <div className="w-full">
-          <label htmlFor="desiredPickupDate" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="desiredPickupDate" className="block text-sm font-medium text-muted-foreground mb-1">
             Desired Pickup Date
           </label>
           <DatePicker

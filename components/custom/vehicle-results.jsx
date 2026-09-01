@@ -48,13 +48,13 @@ export function VehicleResults({
       <div className="max-w-6xl mx-auto">
      {/* Header Section */}
 <div className="text-center mb-8">
-  <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+  <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
     Choose Your <span className="text-[#FE6F4F]">Ride</span>
   </h1>
-  <div className="bg-white rounded-2xl shadow-lg p-4 max-w-7xl mx-auto">
+  <div className="bg-surface rounded-2xl shadow-lg p-4 max-w-7xl mx-auto">
     {/* Pickup → Dropoff */}
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm md:text-base gap-2">
-      <div className="flex items-center gap-2 text-gray-600">
+      <div className="flex items-center gap-2 text-muted-foreground">
         <MapPin className="w-4 h-4 text-[#FE6F4F]" />
         <span className="truncate">{pickupLocation}</span>
       </div>
@@ -62,14 +62,14 @@ export function VehicleResults({
         <span className="hidden sm:inline">→</span>
         <span className="sm:hidden">to</span>
       </div>
-      <div className="flex items-center gap-2 text-gray-600">
+      <div className="flex items-center gap-2 text-muted-foreground">
         <MapPin className="w-4 h-4 text-green-500" />
         <span className="truncate">{dropoffLocation}</span>
       </div>
     </div>
 
     {/* Date + Time */}
-    <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-sm text-gray-500">
+    <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
       <span>{date}</span>
       <Clock className="w-4 h-4" />
       <span>{time}</span>
@@ -101,15 +101,15 @@ export function VehicleResults({
               >
                 {/* Main Card */}
                 <div
-                  className={`relative bg-white rounded-3xl shadow-xl overflow-hidden border-2 transition-colors ${
+                  className={`relative bg-surface rounded-3xl shadow-xl overflow-hidden border-2 transition-colors ${
                     isSelected
                       ? "border-[#FE6F4F]"
-                      : "border-transparent hover:border-gray-200"
+                      : "border-transparent hover:border-border"
                   }`}
                 >
                   {/* Title + Image Row */}
                   <div className="flex-col items-top justify-between p-6">
-                    <h3 className="text-xl font-bold text-gray-800 line-clamp-1 mb-2 ">
+                    <h3 className="text-xl font-bold text-foreground line-clamp-1 mb-2 ">
                       {vehicle.vehicle}
                     </h3>
                     <img
@@ -122,7 +122,7 @@ export function VehicleResults({
                   {/* Content */}
                   <div className="px-6 pb-4">
                     {/* Description */}
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                       {vehicle.vehicle_description}
                     </p>
 
@@ -130,7 +130,7 @@ export function VehicleResults({
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-[#FE6F4F]" />
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-muted-foreground">
                           {vehicle.vehicle_min_capacity}-
                           {vehicle.vehicle_max_capacity} passengers
                         </span>
@@ -145,15 +145,15 @@ export function VehicleResults({
 
                     {/* Trip Details */}
                     <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                      <div className="bg-gray-50 rounded-xl text-xs p-2 flex">
-                        <div className="text-gray-500 text-xs mr-2">Distance: </div>
-                        <div className=" text-gray-800">
+                      <div className="bg-muted rounded-xl text-xs p-2 flex">
+                        <div className="text-muted-foreground text-xs mr-2">Distance: </div>
+                        <div className=" text-foreground">
                           {vehicle.distance_km} km
                         </div>
                       </div>
-                      <div className="bg-gray-50 rounded-xl p-2 flex">
-                        <div className="text-gray-500 text-xs mr-2">Duration: </div>
-                        <div className=" text-gray-800 text-xs">
+                      <div className="bg-muted rounded-xl p-2 flex">
+                        <div className="text-muted-foreground text-xs mr-2">Duration: </div>
+                        <div className=" text-foreground text-xs">
                           {Math.round(vehicle.duration_minutes)} min
                         </div>
                       </div>
@@ -161,20 +161,20 @@ export function VehicleResults({
 
                     {/* Fare Breakdown */}
                      {/*   <div className="border-t pt-4 mb-6">
-                   <div className="text-xs text-gray-500 mb-2">
+                   <div className="text-xs text-muted-foreground mb-2">
                         Fare Breakdown
                       </div>
                       <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Base Fare</span>
+                          <span className="text-muted-foreground">Base Fare</span>
                           <span>{formatPrice(vehicle.base_fare)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Distance Fare</span>
+                          <span className="text-muted-foreground">Distance Fare</span>
                           <span>{formatPrice(vehicle.fare_by_distance)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Time Fare</span>
+                          <span className="text-muted-foreground">Time Fare</span>
                           <span>{formatPrice(vehicle.fare_by_duration)}</span>
                         </div> */}
                         <div className="border-t pt-1 flex justify-between font-semibold">
@@ -191,7 +191,7 @@ export function VehicleResults({
                       className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
                         isSelected
                           ? "bg-[#FE6F4F] text-white shadow-lg"
-                          : "bg-gray-100 text-gray-700 hover:bg-[#FE6F4F] hover:text-white"
+                          : "bg-muted text-muted-foreground hover:bg-[#FE6F4F] hover:text-white"
                       } transform hover:scale-105 active:scale-95`}
                     >
                       {isSelected ? "Selected!" : "Select This Vehicle"}

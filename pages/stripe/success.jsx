@@ -63,27 +63,27 @@ export default function SuccessPage() {
   const renderContent = () => {
     if (status === "loading") {
       return (
-        <div className="bg-white border rounded-md px-4 py-4 shadow text-center">
-          <p className="text-sm text-gray-600">{t("checkingStatus")}</p>
+        <div className="bg-surface border rounded-md px-4 py-4 shadow text-center">
+          <p className="text-sm text-muted-foreground">{t("checkingStatus")}</p>
         </div>
       );
     }
 
     if (status === "error") {
       return (
-        <div className="bg-white border rounded-md px-4 py-4 shadow text-center">
-          <h2 className="text-lg font-bold text-red-600">{t("failedTitle")}</h2>
-          <p className="text-sm text-gray-600">{t("failedMessage")}</p>
+        <div className="bg-surface border rounded-md px-4 py-4 shadow text-center">
+          <h2 className="text-lg font-bold text-primary">{t("failedTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("failedMessage")}</p>
         </div>
       );
     }
 
     if (status === "success") {
       return (
-        <div className="bg-white border rounded-md px-4 py-4 shadow space-y-3">
+        <div className="bg-surface border rounded-md px-4 py-4 shadow space-y-3">
           <h2
             className={`text-lg font-bold ${
-              paymentStatus === "paid" ? "text-green-600" : "text-red-600"
+              paymentStatus === "paid" ? "text-green-600" : "text-primary"
             }`}
           >
             {paymentStatus === "paid"
@@ -91,7 +91,7 @@ export default function SuccessPage() {
               : t("notCompletedTitle")}
           </h2>
 
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {paymentStatus === "paid" ? t("successMessage") : t("notCompletedMessage")}
           </p>
 
@@ -99,16 +99,16 @@ export default function SuccessPage() {
             <>
               {orderId && (
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">{t("orderId")}</span>
+                  <span className="text-muted-foreground text-sm">{t("orderId")}</span>
                   <span className="font-mono font-bold">{orderId}</span>
                 </div>
               )}
 
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 text-sm">{t("paymentStatus")}</span>
+                <span className="text-muted-foreground text-sm">{t("paymentStatus")}</span>
                 <span
                   className={`font-mono text-sm font-bold ${
-                    paymentStatus === "paid" ? "text-green-600" : "text-red-600"
+                    paymentStatus === "paid" ? "text-green-600" : "text-primary"
                   }`}
                 >
                   {paymentStatus}
@@ -116,26 +116,26 @@ export default function SuccessPage() {
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 text-sm">{t("paidVia")}</span>
+                <span className="text-muted-foreground text-sm">{t("paidVia")}</span>
                 <span className="font-mono text-sm text-blue-600">{gateway}</span>
               </div>
 
-              <div className="flex items-center space-x-2 text-[#D3202D] mt-2">
+              <div className="flex items-center space-x-2 text-primary mt-2">
                 <MailCheck size={14} />
                 <span className="text-xs font-semibold">{t("emailSent")}</span>
               </div>
-              <p className="text-gray-700 text-xs">{t("emailDetails")}</p>
+              <p className="text-muted-foreground text-xs">{t("emailDetails")}</p>
             </>
           )}
 
           <div className="border-t pt-2 mt-2 space-y-1 text-xs">
-            <p className="text-gray-600 font-semibold">{t("needHelp")}</p>
-            <p className="text-gray-700">📞 +65 8804 1972</p>
-            <p className="text-gray-700">📧 marketing@airporttransfers.ai</p>
+            <p className="text-muted-foreground font-semibold">{t("needHelp")}</p>
+            <p className="text-muted-foreground">📞 +65 8804 1972</p>
+            <p className="text-muted-foreground">📧 marketing@airporttransfers.ai</p>
           </div>
 
           <Link href="/" className="block pt-2">
-            <button className="w-full bg-[#D3202D] text-white font-semibold py-2 px-4 rounded-md hover:opacity-90">
+            <button className="w-full bg-primary text-white font-semibold py-2 px-4 rounded-md hover:opacity-90">
               {t("backHome")}
             </button>
           </Link>

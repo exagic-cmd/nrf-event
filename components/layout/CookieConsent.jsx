@@ -24,16 +24,16 @@ export default function CookieConsent() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-0 w-full bg-white border-t p-4 shadow-lg z-50">
+    <div className="fixed bottom-0 w-full bg-card text-card-foreground border-t p-4 shadow-lg z-50">
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-muted-foreground">
           🍪 We use cookies to improve your experience. By continuing, you agree to our use of cookies.
         </p>
         <div className="flex gap-2">
-          <button onClick={handleAccept} className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">
+          <button onClick={handleAccept} className="bg-primary text-primary-foreground px-4 py-1 rounded hover:bg-primary-hover">
             Accept
           </button>
-          <button onClick={handleDecline} className="bg-gray-300 px-4 py-1 rounded hover:bg-gray-400">
+          <button onClick={handleDecline} className="bg-secondary text-secondary-foreground px-4 py-1 rounded hover:bg-muted">
             Decline
           </button>
         </div>

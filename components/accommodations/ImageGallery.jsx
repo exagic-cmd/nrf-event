@@ -95,7 +95,7 @@ const ImageGallery = ({ hotelData }) => {
                     setCurrentImageIndex(index);
                   }}
                   className={`w-2 h-2 rounded-full ${
-                    currentImageIndex === index ? "bg-white" : "bg-white/50"
+                    currentImageIndex === index ? "bg-surface" : "bg-surface/50"
                   }`}
                 />
               ))}

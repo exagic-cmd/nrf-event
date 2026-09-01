@@ -75,7 +75,7 @@
 //   return (
 //     <div className="flex-1 flex flex-col">
 //       {/* Image */}
-//       <div className="w-full h-64 md:h-96 bg-gray-800 overflow-hidden">
+//       <div className="w-full h-64 md:h-96 bg-secondary overflow-hidden">
 //         <img
 //           src={mainImage || "/placeholder.svg"}
 //           alt={currentTranslation.title || "Location"}
@@ -89,10 +89,10 @@
 
 //         {/* Audio Player */}
 //         {/* {audioUrl && (
-//           <div className="bg-[#CC9A55] rounded-2xl p-4 flex items-center gap-4">
+//           <div className="bg-brand-secondary rounded-2xl p-4 flex items-center gap-4">
 //             <button
 //               onClick={handlePlayAudio}
-//               className="flex-shrink-0 w-12 h-12 bg-white/20 hover:bg-white/10 rounded-full flex items-center justify-center text-white transition-colors"
+//               className="flex-shrink-0 w-12 h-12 bg-surface/20 hover:bg-surface/10 rounded-full flex items-center justify-center text-white transition-colors"
 //             >
 //               {isPlaying ? "⏸" : "▶"}
 //             </button>
@@ -118,7 +118,7 @@
 //         {Object.keys(details).length > 0 && (
 //           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 //             {Object.entries(details).map(([key, value]) => (
-//               <div key={key} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+//               <div key={key} className="bg-secondary border border-border rounded-lg p-4">
 //                 <div className="text-gray-100 text-sm font-medium mb-1">{formatKey(key)}</div>
 //                 <div className="text-white font-semibold">{formatValue(value)}</div>
 //               </div>
@@ -132,7 +132,7 @@
 //             onClick={onPrev}
 //             disabled={!canPrev}
 //             className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-//               canPrev ? "bg-gray-100 hover:bg-gray-200 text-white" : "bg-gray-800 text-gray-500 cursor-not-allowed"
+//               canPrev ? "bg-muted hover:bg-secondary text-white" : "bg-secondary text-muted-foreground cursor-not-allowed"
 //             }`}
 //           >
 //             ← Previous
@@ -141,7 +141,7 @@
 //             onClick={onNext}
 //             disabled={!canNext}
 //             className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-//               canNext ? "bg-[#CC9A55] text-white" : "bg-gray-800 text-gray-500 cursor-not-allowed"
+//               canNext ? "bg-brand-secondary text-white" : "bg-secondary text-muted-foreground cursor-not-allowed"
 //             }`}
 //           >
 //             Next →

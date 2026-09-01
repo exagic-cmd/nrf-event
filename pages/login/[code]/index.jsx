@@ -38,7 +38,7 @@ export default function LoginWithCodePage() {
         {loading ? (
           <Loading2Svg />
         ) : (
-          <p className={error ? "text-red-500" : "text-gray-800"}>{status}</p>
+          <p className={error ? "text-red-500" : "text-foreground"}>{status}</p>
         )}
       </div>
     </div>

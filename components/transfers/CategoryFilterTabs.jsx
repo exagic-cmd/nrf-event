@@ -20,8 +20,8 @@ export default function CategoryFilterTabs({
         onClick={() => onSelectCategory(null)}
         className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
           selectedCategory === null
-            ? "bg-[#D3202D] text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-muted-foreground hover:bg-secondary"
         }`}
         disabled={isLoading}
       >
@@ -36,8 +36,8 @@ export default function CategoryFilterTabs({
           onClick={() => onSelectCategory(cat.type)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
             selectedCategory?.toLowerCase() === cat.type.toLowerCase()
-              ? "bg-[#D3202D] text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-secondary"
           }`}
           disabled={isLoading}
           title={`${cat.count} ${cat.type} options`}

@@ -9,7 +9,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import dynamic from "next/dynamic"
 const TransferMap = dynamic(() => import("@/components/transfers/detail/TransferMap"), {
   ssr: false,
-  loading: () => <div className="h-64 w-full bg-gray-800 flex items-center justify-center text-gray-400"><p>Loading map...</p></div>,
+  loading: () => <div className="h-64 w-full bg-secondary flex items-center justify-center text-muted-foreground"><p>Loading map...</p></div>,
 })
 const ITEMS_PER_PAGE = 10;
 
@@ -159,7 +159,7 @@ const passengerCapacity =
       {isLoading ? (
         <div className="flex justify-start md:justify-center items-start md:items-center py-20">
           <svg
-            className="animate-spin h-8 w-8 text-[#D3202D]"
+            className="animate-spin h-8 w-8 text-primary"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -184,14 +184,14 @@ const passengerCapacity =
           <div className="h-64 mb-6 rounded-lg overflow-hidden relative z-0 shadow-lg">
             <TransferMap mapDetails={mapDetails} />
           </div>
-          <div className="rounded-xl py-3 px-2 bg-gray-50">
+          <div className="rounded-xl py-3 px-2 bg-muted">
             <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:gap-4">
               <div className="w-full md:w-auto flex flex-row items-center gap-3">
                 <p className="lg:text-lg text-md font-medium">
                   {t('results.availableOptions', 'Available Options')}
                 </p>
-                <div className="flex items-center bg-gray-200 p-1 rounded-lg">
-                  <button className="px-3 py-1 text-xs font-medium rounded-md text-gray-500 cursor-default">
+                <div className="flex items-center bg-secondary p-1 rounded-lg">
+                  <button className="px-3 py-1 text-xs font-medium rounded-md text-muted-foreground cursor-default">
                     {tripType === 'round-trip' ? t('round_trip', 'Round Trip') : t('one_way', 'One Way')}
                   </button>
                   <button
@@ -200,7 +200,7 @@ const passengerCapacity =
                       e.preventDefault();
                       handleTripTypeChange(tripType === 'round-trip' ? 'one-way' : 'round-trip');
                     }}
-                    className="px-3 py-1 text-xs font-medium rounded-md bg-white text-black shadow-sm hover:bg-gray-50 transition-all duration-200"
+                    className="px-3 py-1 text-xs font-medium rounded-md bg-surface text-surface-foreground shadow-sm hover:bg-muted transition-all duration-200"
                   >
                     {tripType === 'round-trip'
                       ? t('see_one_way_price', 'See One Way Price')
@@ -209,7 +209,7 @@ const passengerCapacity =
                 </div>
               </div>
             </div>
-            <p className="text-xs md:text-sm text-gray-500 text-left mt-0">
+            <p className="text-xs md:text-sm text-muted-foreground text-left mt-0">
               {t('tax_fees_included', 'Tax and fees included /Vehicle pictures are inddicative only')}
             </p>
           </div>
@@ -218,7 +218,7 @@ const passengerCapacity =
           ))}
         </>
       ) : (
-        <div className="text-center py-10 text-gray-500">
+        <div className="text-center py-10 text-muted-foreground">
           {/* {t('results.noTransfersFound')} */}
           </div>
       )}

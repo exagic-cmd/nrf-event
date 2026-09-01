@@ -337,7 +337,7 @@ const startingPrice = apiData.starting_price || ""
   if (isNavigating) {
     return (
       <Layout>
-        <div className="flex bg-[#f4f4f4] items-center justify-center min-h-screen">
+        <div className="flex bg-surface-muted items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -347,7 +347,7 @@ const startingPrice = apiData.starting_price || ""
   if (!showContent || isLanguageLoading) {
     return (
       <Layout>
-        <div className="flex bg-[#f4f4f4] items-center justify-center min-h-screen">
+        <div className="flex bg-surface-muted items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -429,7 +429,7 @@ const handleVariantSelect = async (variant) => {
     <Layout>
     <TourDetailHead basicInfo={apiData} productname={productname} productid={productid} />
 
-      <div className="min-h-screen bg-[#f4f4f4] text-black w-full pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-surface-muted text-surface-foreground w-full pt-[80px] md:pt-10 pb-12">
         <div className="relative overflow-hidden">
           <div className="px-4 sm:px-6 lg:px-12 pt-12">
             <TourHeader apiData={apiData} />
@@ -470,16 +470,16 @@ const handleVariantSelect = async (variant) => {
           <TourVariants ref={tourOptionsRef} groupProducts={groupProducts} onVariantSelect={handleVariantSelect} />
         )}
  {!fromOrderScreen && (
-       <div className=" md:hidden block mx-8 my-12 bg-white p-4 rounded-xl border border-red-200 ">
+       <div className=" md:hidden block mx-8 my-12 bg-surface p-4 rounded-xl border border-red-200 ">
         <div className="text-center">
-          <div className="text-sm text-gray-600">{t("starting_from","Starting From")}</div>
+          <div className="text-sm text-muted-foreground">{t("starting_from","Starting From")}</div>
           <div className="my-2">
-            <span className="text-2xl font-bold text-gray-900">{apiData?.currency} {startingPrice}</span>
+            <span className="text-2xl font-bold text-foreground">{apiData?.currency} {startingPrice}</span>
           </div>
           {apiData?.is_group ? (
             <button
               onClick={scrollToTourOptions}
-              className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("choose_tour_type","Choose your Type")}
               <ChevronDown size={20} />
@@ -487,7 +487,7 @@ const handleVariantSelect = async (variant) => {
           ) : (
             <button
               onClick={handleProceedBooking}
-              className="w-full bg-[#D3202D] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               {t("proceed_booking","Proceed Booking")}
               <ChevronRight size={20} />

@@ -50,7 +50,7 @@ const ItineraryTimeline = ({
 
               {/* Travel Mode Icon */}
               {stop.travel_mode === "DRIVING" ? (
-                <div className="mt-12 absolute left-0 bottom-1 z-10 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center border border-gray-300 shadow-md">
+                <div className="mt-12 absolute left-0 bottom-1 z-10 w-12 h-12 rounded-full bg-surface text-surface-foreground flex items-center justify-center border border-border shadow-md">
                   <img
                     className="h-6 w-6"
                     src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/lf2qbooh2bgk15b01xdq.svg`}
@@ -58,7 +58,7 @@ const ItineraryTimeline = ({
                   />
                 </div>
               ) : stop.travel_mode === "WALKING" ? (
-                <div className="mt-12 absolute left-0 bottom-1 z-10 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center border border-gray-300 shadow-md">
+                <div className="mt-12 absolute left-0 bottom-1 z-10 w-12 h-12 rounded-full bg-surface text-surface-foreground flex items-center justify-center border border-border shadow-md">
                   <img
                     className="h-6 w-6"
                     src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/wxi5gj9uzfrsydu3kdfj.svg`}
@@ -142,7 +142,7 @@ export default function TourRoute({ stops }) {
 
   if (!stops || stops.length === 0) {
     return (
-      <p className="p-6 text-start text-gray-600">
+      <p className="p-6 text-start text-muted-foreground">
         {t("noTourRoute")}
       </p>
     );

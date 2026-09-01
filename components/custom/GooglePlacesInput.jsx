@@ -79,18 +79,18 @@ export default function GooglePlacesInput({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
         >
           <X className="h-5 w-5" />
         </button>
       )}
       {showSuggestions && status === "OK" && (
-        <ul className="absolute z-10 bg-white border rounded-md mt-1 w-full shadow-md max-h-60 overflow-y-auto">
+        <ul className="absolute z-10 bg-surface border rounded-md mt-1 w-full shadow-md max-h-60 overflow-y-auto">
           {data.map(({ place_id, description }) => (
             <li
               key={place_id}
               onClick={handleSelect({ description })}
-              className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+              className="px-3 py-2 hover:bg-muted cursor-pointer"
             >
               {description}
             </li>

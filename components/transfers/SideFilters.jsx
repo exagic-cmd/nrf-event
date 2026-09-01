@@ -21,7 +21,7 @@ function SideFilters() {
       )}
 
       {/* Filters Section */}
-      {/* <div className="bg-white border p-4 rounded-xl space-y-5 shadow-sm">
+      {/* <div className="bg-surface border p-4 rounded-xl space-y-5 shadow-sm">
         <FilterSection
           title={t("filters.pricePerNight")}
           options={[

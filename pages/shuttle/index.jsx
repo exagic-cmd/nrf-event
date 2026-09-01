@@ -50,14 +50,14 @@ export default function ProductsPage() {
         <h1 className="text-xl lg:text-3xl font-bold">
           Shuttle & Transfer Services
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-muted-foreground mt-1">
           Reliable airport & city shuttle services across Singapore
         </p>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div className="text-center text-gray-500">Loading transfers...</div>
+        <div className="text-center text-muted-foreground">Loading transfers...</div>
       )}
 
       {/* Horizontal Scroll Container */}
@@ -76,24 +76,24 @@ export default function ProductsPage() {
           {/* Scroll Buttons */}
           <button
             onClick={() => scroll("left")}
-            className="absolute top-1/2 -translate-y-1/2 -left-5 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition opacity-0 group-hover:opacity-100 hidden lg:block"
+            className="absolute top-1/2 -translate-y-1/2 -left-5 z-10 bg-surface/90 hover:bg-surface rounded-full p-2 shadow-lg transition opacity-0 group-hover:opacity-100 hidden lg:block"
             aria-label="Scroll left"
           >
-            <ChevronLeft className="h-6 w-6 text-gray-800" />
+            <ChevronLeft className="h-6 w-6 text-foreground" />
           </button>
           <button
             onClick={() => scroll("right")}
-            className="absolute top-1/2 -translate-y-1/2 -right-5 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition opacity-0 group-hover:opacity-100 hidden lg:block"
+            className="absolute top-1/2 -translate-y-1/2 -right-5 z-10 bg-surface/90 hover:bg-surface rounded-full p-2 shadow-lg transition opacity-0 group-hover:opacity-100 hidden lg:block"
             aria-label="Scroll right"
           >
-            <ChevronRight className="h-6 w-6 text-gray-800" />
+            <ChevronRight className="h-6 w-6 text-foreground" />
           </button>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && products.length === 0 && (
-        <p className="text-center text-gray-500 mt-10">
+        <p className="text-center text-muted-foreground mt-10">
           No shuttle services available.
         </p>
       )}

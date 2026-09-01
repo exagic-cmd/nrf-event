@@ -55,7 +55,7 @@ const Footer = () => {
   const hasSocialLinks = socialLinks.some((social) => social.href);
 
   return (
-    <footer className=" text-black">
+    <footer className="text-foreground bg-background">
       <hr />
       <div className="max-w-full mx-4 px-4 sm:px-6 lg:px-8 py-2">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -68,7 +68,7 @@ const Footer = () => {
                 className="h-12 w-auto"
               />
             </LocalizedLink>
-            <p className="text-sm text-black max-w-xs">
+            <p className="text-sm text-foreground max-w-xs">
               {event?.event?.short_desc}
             </p>
           </div>
@@ -133,7 +133,7 @@ const Footer = () => {
                       aria-label={social.ariaLabel}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className=" text-[#D3202D]  hover:text-black transition-colors"
+                      className="text-primary hover:text-primary-foreground transition-colors"
                     >
                       {social.icon}
                     </a>
@@ -144,7 +144,7 @@ const Footer = () => {
           )}
         </div>
 
-        <div className="mt-2 border-t border-white pt-2 text-center text-sm text-white">
+        <div className="mt-2 border-t border-border pt-2 text-center text-sm text-muted-foreground">
           <p>
             {event?.event?.organizer} © {currentYear} | All Rights Reserved
           </p>

@@ -36,19 +36,19 @@ const NearbyLandmarks = ({ landmarks, hotelLatitude, hotelLongitude }) => {
 
   return (
     <div className="mt-8">
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-xl font-bold mb-6 text-gray-900">What's Nearby?</h2>
+      <div className="bg-surface p-6 rounded-xl shadow-sm border border-border">
+        <h2 className="text-xl font-bold mb-6 text-foreground">What's Nearby?</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
           {validLandmarks.map((landmark) => (
             <div key={landmark.id} className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-[#D3202D] mt-0.5 flex-shrink-0" />
+                <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-800 text-[15px]">{landmark.title}</p>
-                  {landmark.description && <p className="text-xs text-gray-500 mt-1">{landmark.description}</p>}
+                  <p className="font-medium text-foreground text-[15px]">{landmark.title}</p>
+                  {landmark.description && <p className="text-xs text-muted-foreground mt-1">{landmark.description}</p>}
                 </div>
               </div>
-              {landmark.distance !== null && <span className="text-sm text-gray-500 font-medium whitespace-nowrap">{landmark.distance} km</span>}
+              {landmark.distance !== null && <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">{landmark.distance} km</span>}
             </div>
           ))}
         </div>

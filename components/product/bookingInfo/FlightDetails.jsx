@@ -38,13 +38,13 @@ const FlightDetails = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label htmlFor="flightArrivalNumber" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="flightArrivalNumber" className="block text-sm font-medium text-muted-foreground">
           Flight Arrival Number
         </label>
         <input
           type="text"
           id="flightArrivalNumber"
-          className="shadow appearance-none text-sm border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="shadow appearance-none text-sm border rounded w-full py-2 px-3 text-muted-foreground leading-tight focus:outline-none focus:shadow-outline"
           value={flightArrivalNumber}
           onChange={onArrivalNumChange}
           placeholder="e.g., XY123"
@@ -52,7 +52,7 @@ const FlightDetails = ({
       </div>
 
       <div>
-        <label htmlFor="flightArrivalTime" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="flightArrivalTime" className="block text-sm font-medium text-muted-foreground">
           Flight Arrival Time
         </label>
         <DatePicker
@@ -76,13 +76,13 @@ const FlightDetails = ({
       {showDeparture && (
         <>
           <div>
-            <label htmlFor="flightDepartureNumber" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="flightDepartureNumber" className="block text-sm font-medium text-muted-foreground">
               Flight Departure Number
             </label>
             <input
               type="text"
               id="flightDepartureNumber"
-              className="shadow appearance-none text-sm border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none text-sm border rounded w-full py-2 px-3 text-muted-foreground leading-tight focus:outline-none focus:shadow-outline"
               value={flightDepartureNumber}
               onChange={onDepartureNumChange}
               placeholder="e.g., AB456"
@@ -90,7 +90,7 @@ const FlightDetails = ({
           </div>
 
           <div>
-            <label htmlFor="flightDepartureTime" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="flightDepartureTime" className="block text-sm font-medium text-muted-foreground">
               Flight Departure Time
             </label>
             <DatePicker

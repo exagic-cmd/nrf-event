@@ -5,7 +5,7 @@ export default function TourAudioSection({ image, title, audioUrl }) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="w-full h-64 md:h-96 bg-gray-800 overflow-hidden rounded-xl">
+      <div className="w-full h-64 md:h-96 bg-secondary overflow-hidden rounded-xl">
         <img
           src={image}
           alt={title || "Location"}

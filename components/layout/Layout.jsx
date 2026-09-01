@@ -148,7 +148,7 @@ export default function Layout({ children }) {
       <main className="min-h-screen">{children}</main>
 
       {/* {pendingOrderId && !loading && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-[#D3202D] text-white text-sm px-4 py-3 rounded-xl shadow-lg flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 z-50 max-w-[90%] sm:max-w-2xl w-full sm:w-auto">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-primary text-white text-sm px-4 py-3 rounded-xl shadow-lg flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 z-50 max-w-[90%] sm:max-w-2xl w-full sm:w-auto">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>You have a pending payment (Order ID: {pendingOrderId})</span>
@@ -156,7 +156,7 @@ export default function Layout({ children }) {
           <div className="flex gap-2">
             <button
               onClick={() => handleStripeResume(pendingOrderId)}
-              className="bg-white text-[#D3202D] px-3 py-1 rounded-lg text-xs font-semibold hover:bg-gray-100 transition"
+              className="bg-surface text-primary px-3 py-1 rounded-lg text-xs font-semibold hover:bg-muted transition"
             >
               Resume Payment
             </button>
@@ -165,7 +165,7 @@ export default function Layout({ children }) {
                 localStorage.removeItem("pendingPaymentOrderId");
                 setPendingOrderId(null);
               }}
-              className="bg-white/20 text-white px-3 py-1 rounded-lg text-xs font-semibold hover:bg-white/30 transition"
+              className="bg-surface/20 text-white px-3 py-1 rounded-lg text-xs font-semibold hover:bg-surface/30 transition"
             >
               Dismiss
             </button>

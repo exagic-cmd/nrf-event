@@ -68,13 +68,13 @@ function DaytoursPage() {
         <div className="px-6">
           {hasSearched ? (
             isLoading ? (
-              <div className="flex justify-center items-center py-20 text-gray-400">
+              <div className="flex justify-center items-center py-20 text-muted-foreground">
                 {t("daytour.loading", "Loading day tours...")}
               </div>
             ) : searchResults?.length > 0 ? (
               <DaytoursList tours={searchResults} />
             ) : (
-              <div className="text-center text-gray-500 py-20">
+              <div className="text-center text-muted-foreground py-20">
                 <p className="text-lg font-semibold">
                   {t("daytour.noResultsTitle", "No tours found")}
                 </p>

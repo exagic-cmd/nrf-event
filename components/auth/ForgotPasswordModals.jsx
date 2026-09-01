@@ -54,19 +54,19 @@ export default function ForgotPasswordModals({ onClose }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+      <div className="bg-surface rounded-lg p-6 w-full max-w-md relative">
         {step === 1 && (
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+            className="absolute top-3 right-3 text-muted-foreground hover:text-muted-foreground"
             aria-label="Close"
           >
             <X size={22} />
           </button>
         )}
 
-        <h2 className="text-xl font-semibold mb-4 text-[#D3202D]">
+        <h2 className="text-xl font-semibold mb-4 text-primary">
           {step === 1 ? t('forgotPassword') : step === 3 ? t('resetNewPassword') : ''}
         </h2>
 
@@ -74,7 +74,7 @@ export default function ForgotPasswordModals({ onClose }) {
           <>
             <input
               type="email"
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
+              className="w-full p-2 mb-4 border border-border rounded"
               placeholder={t('enterEmail')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -82,7 +82,7 @@ export default function ForgotPasswordModals({ onClose }) {
             />
             <button
               onClick={handleStep1}
-              className="w-full bg-[#D3202D] text-white p-2 rounded  disabled:opacity-50"
+              className="w-full bg-primary text-white p-2 rounded  disabled:opacity-50"
               disabled={loading}
             >
               {loading ? t('sending') : t('sendEmail')}
@@ -95,13 +95,13 @@ export default function ForgotPasswordModals({ onClose }) {
             {resetToken ? (
               <>
                 <p className="text-green-600 font-bold">{t('emailSentSuccess')}</p>
-                <p className="text-md text-gray-600 my-2">{t('sentTo')}</p>
-                <p className="text-md font-medium text-black">{email}</p>
+                <p className="text-md text-muted-foreground my-2">{t('sentTo')}</p>
+                <p className="text-md font-medium text-surface-foreground">{email}</p>
               </>
             ) : (
               <>
-                <p className="text-red-600 font-bold">{t('emailSentFailed')}</p>
-                <button onClick={onClose} className="text-gray-500 hover:text-black mt-2">
+                <p className="text-primary font-bold">{t('emailSentFailed')}</p>
+                <button onClick={onClose} className="text-muted-foreground hover:text-surface-foreground mt-2">
                   {t('close')}
                 </button>
               </>
@@ -114,7 +114,7 @@ export default function ForgotPasswordModals({ onClose }) {
             <div className="relative mb-4">
               <input
                 type={showPassword ? 'text' : 'password'}
-                className="w-full p-2 border border-gray-300 rounded pr-10"
+                className="w-full p-2 border border-border rounded pr-10"
                 placeholder={t('newPassword')}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -123,7 +123,7 @@ export default function ForgotPasswordModals({ onClose }) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-2.5 text-gray-500"
+                className="absolute right-2 top-2.5 text-muted-foreground"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -133,7 +133,7 @@ export default function ForgotPasswordModals({ onClose }) {
             <div className="relative mb-4">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
-                className="w-full p-2 border border-gray-300 rounded pr-10"
+                className="w-full p-2 border border-border rounded pr-10"
                 placeholder={t('confirmPassword')}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -142,7 +142,7 @@ export default function ForgotPasswordModals({ onClose }) {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-2 top-2.5 text-gray-500"
+                className="absolute right-2 top-2.5 text-muted-foreground"
                 tabIndex={-1}
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -151,7 +151,7 @@ export default function ForgotPasswordModals({ onClose }) {
 
             <button
               onClick={handleStep3}
-              className="w-full bg-[#D3202D] text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
+              className="w-full bg-primary text-white p-2 rounded hover:bg-[#cb913f] disabled:opacity-50"
               disabled={loading}
             >
               {loading ? t('submitting') : t('resetPassword')}

@@ -2,7 +2,7 @@ export default function NoProductsFound({ height="100vh" , message = "No product
   return (
       <div className="flex items-center justify-center"
        style={{ minHeight: height }}>
-      <p className="text-2xl text-gray-500">{message}</p>
+      <p className="text-2xl text-muted-foreground">{message}</p>
     </div>
   );
 }

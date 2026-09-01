@@ -23,7 +23,7 @@ interface HotelCardProps {
 
 export default function HotelCard({ hotel, onSelect }: HotelCardProps) {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-white dark:bg-slate-800">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-surface dark:text-foreground">
       <div className="flex flex-col h-full">
         {/* Hotel Image */}
         <div className="h-40 w-full relative overflow-hidden">
@@ -33,7 +33,7 @@ export default function HotelCard({ hotel, onSelect }: HotelCardProps) {
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <div className="absolute top-2 right-2">
-            <Badge className="bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white border-0 shadow-md backdrop-blur-sm">
+            <Badge className="bg-surface/90 dark:bg-slate-900/90 text-slate-900 dark:text-white border-0 shadow-md backdrop-blur-sm">
               <DollarSign className="h-3.5 w-3.5 mr-0.5 text-emerald-600 dark:text-emerald-400" />
               {hotel.price}
             </Badge>

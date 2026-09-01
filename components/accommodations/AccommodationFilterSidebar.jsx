@@ -15,24 +15,24 @@ const FilterSection = ({ title, children, defaultOpen = true, scrollable = false
   const itemsToShow = canLoadMore && !showAll ? childArray.slice(0, initialItemCount) : childArray;
   const containerClasses = scrollable ? "max-h-48 overflow-y-auto pr-2 scrollbar-thin" : "space-y-3";
   return (
-    <div className="border-b border-gray-200 py-4">
+    <div className="border-b border-border py-4">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between text-left"
       >
-        <h3 className="text-md font-semibold text-gray-800">{title}</h3>
+        <h3 className="text-md font-semibold text-foreground">{title}</h3>
         {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </button>
       {isOpen && (
         <div className={`mt-4 ${containerClasses}`}>
           {itemsToShow}
           {canLoadMore && !showAll && !scrollable && (
-            <button onClick={() => setShowAll(true)} className="text-sm font-medium text-[#D3202D] hover:underline pt-2">
+            <button onClick={() => setShowAll(true)} className="text-sm font-medium text-primary hover:underline pt-2">
               Load More
             </button>
           )}
           {canLoadMore && showAll && !scrollable && (
-            <button onClick={() => setShowAll(false)} className="text-sm font-medium text-[#D3202D] hover:underline pt-2">
+            <button onClick={() => setShowAll(false)} className="text-sm font-medium text-primary hover:underline pt-2">
               Show Less
             </button>
           )}
@@ -48,11 +48,11 @@ const Checkbox = ({ label, count, checked, onChange }) => (
       type="checkbox"
       checked={checked}
       onChange={onChange}
-      className="h-4 w-4 rounded border-gray-300 text-[#D3202D] focus:ring-[#D3202D]"
+      className="h-4 w-4 rounded border-border text-primary focus:ring-[#D3202D]"
     />
-    <span className="text-sm text-gray-700 flex-grow">{label}</span>
-    {count > 0 && <span className="text-xs text-gray-500">{count}</span>}
-    {/* {count > 0 && <span className="text-xs text-gray-500">{count}</span>} */}
+    <span className="text-sm text-muted-foreground flex-grow">{label}</span>
+    {count > 0 && <span className="text-xs text-muted-foreground">{count}</span>}
+    {/* {count > 0 && <span className="text-xs text-muted-foreground">{count}</span>} */}
   </label>
 );
 
@@ -70,7 +70,7 @@ const StarRatingFilter = ({ ratings, activeRatings, onRatingChange }) => (
               type="checkbox"
               checked={activeRatings.includes(value)}
               onChange={() => onRatingChange(value)}
-              className="h-4 w-4 rounded border-gray-300 text-[#D3202D] focus:ring-[#D3202D] mr-3"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-[#D3202D] mr-3"
             />
             <div className="flex items-center">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -84,7 +84,7 @@ const StarRatingFilter = ({ ratings, activeRatings, onRatingChange }) => (
               ))}
             </div>
           </div>
-          <span className="text-xs text-gray-500">{count}</span>
+          <span className="text-xs text-muted-foreground">{count}</span>
         </label>
       ))}
   </div>
@@ -350,11 +350,11 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
   }, [activeFilters, sortBy]);
 
   return (
-    <div className="w-full rounded-xl bg-white p-4 shadow">
-      <div className="sticky top-0 bg-white z-10 flex items-center justify-between pb-4 border-b">
-        <h2 className="text-lg font-bold text-gray-900">Filter By</h2>
+    <div className="w-full rounded-xl bg-surface p-4 shadow">
+      <div className="sticky top-0 bg-surface z-10 flex items-center justify-between pb-4 border-b">
+        <h2 className="text-lg font-bold text-foreground">Filter By</h2>
         {hasActiveFilters && (
-          <button onClick={clearAllFilters} className="text-sm font-medium text-[#D3202D] hover:underline">
+          <button onClick={clearAllFilters} className="text-sm font-medium text-primary hover:underline">
             Clear All
           </button>
         )}
@@ -372,7 +372,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
               const { value } = e.target;
               setActiveFilters(prev => ({ ...prev, searchText: value }));
             }}
-            className="w-full border border-gray-300 rounded-lg py-2 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+            className="w-full border border-border rounded-lg py-2 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
           />
         </div>
 
@@ -381,14 +381,14 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
-            className="w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
+            className="w-full appearance-none bg-surface border border-border rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
           >
             <option value="default">Recommended</option>
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
             <option value="rating_desc">Rating: High to Low</option>
           </select>
-          <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+          <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         </div>
       </FilterSection>
 
@@ -397,21 +397,21 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
         <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between gap-3">
             <div className="relative w-1/2">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Min</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">Min</span>
               <input
                 type="text"
                 value={Math.round(selectedMin)}
                 readOnly
-                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center pointer-events-none"
+                className="w-full rounded-lg border border-border bg-muted py-2 pl-10 pr-2 text-xs text-center pointer-events-none"
               />
             </div>
             <div className="relative w-1/2">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Max</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">Max</span>
               <input
                 type="text"
                 value={Math.round(selectedMax)}
                 readOnly
-                className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-2 text-xs text-center pointer-events-none"
+                className="w-full rounded-lg border border-border bg-muted py-2 pl-10 pr-2 text-xs text-center pointer-events-none"
               />
             </div>
           </div>
@@ -424,7 +424,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
               onChange={(e) => setSelectedMax(Number(e.target.value))}
               onMouseUp={applyPriceRange} // Apply when user releases the slider
               onTouchEnd={applyPriceRange} // Apply for touch devices
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
             />
           </div>
         </div>

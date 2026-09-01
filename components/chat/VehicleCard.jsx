@@ -38,7 +38,7 @@ export default function VehicleCard({ vehicle, onSelect }) {
         />
 
         {/* Price Tag */}
-        <div className="absolute top-2 right-2 bg-[#CC9A55]/90 text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md">
+        <div className="absolute top-2 right-2 bg-brand-secondary/90 text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md">
           {promoPrice
             ? `$${promoPrice}`
             : basePrice
@@ -59,7 +59,7 @@ export default function VehicleCard({ vehicle, onSelect }) {
           </p>
 
           {/* Capacity Info */}
-          <div className="flex flex-wrap gap-x-4 text-xs text-gray-400 mt-2">
+          <div className="flex flex-wrap gap-x-4 text-xs text-muted-foreground mt-2">
             <span>
                {vehicle.min_capacity}–{vehicle.max_capacity} pax
             </span>
@@ -76,13 +76,13 @@ export default function VehicleCard({ vehicle, onSelect }) {
           className="
             mt-3
             w-full
-            bg-[#CC9A55]
+            bg-brand-secondary
             text-white
             font-medium
             py-2
             rounded-md
             hover:bg-[#e3b871]
-            hover:text-black
+            hover:text-surface-foreground
             transition-colors
             shadow-md
           "

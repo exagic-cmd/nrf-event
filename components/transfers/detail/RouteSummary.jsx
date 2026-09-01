@@ -48,12 +48,12 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked, mapD
   };
 
   return (
-    <div className="bg-white border p-4 rounded-xl space-y-3 text-sm shadow-sm">
+    <div className="bg-surface border p-4 rounded-xl space-y-3 text-sm shadow-sm">
       {/* {promoAvailable && !promoAppliedInSearch && (
-        <div className="space-y-2 mb-3 pb-3 border-b border-amber-100">
+        <div className="space-y-2 mb-3 pb-3 border-b border-primary/20">
           <button
             onClick={handlePromoClick}
-            className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 bg-amber-50 border-2 border-[#D3202D] text-[#D3202D] rounded-lg text-xs font-semibold hover:bg-amber-100 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 bg-primary/10 border-2 border-primary text-primary rounded-lg text-xs font-semibold hover:bg-primary/20 transition-colors"
           >
             <Gift size={14} />
             {promoId ? t('promo.applied') || 'Promo Applied' : t('promo.available',"Promo Available") || 'Promo Available'}
@@ -61,7 +61,7 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked, mapD
           {promoId && (
             <div className="text-center">
               <p className="text-xs text-green-600 font-medium">✓ {t('promo.discountApplied') || 'Discount will be applied'}</p>
-              <p className="text-xs text-gray-500 mt-1">Promo ID: {promoId}</p>
+              <p className="text-xs text-muted-foreground mt-1">Promo ID: {promoId}</p>
             </div>
           )}
         </div>
@@ -85,46 +85,46 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked, mapD
               onClick={() => {
                 setTripType(currentTripType === 'round-trip' ? 'one-way' : 'round-trip')
               }} 
-              className="text-[#D3202D] text-xs font-semibold bg-gray-100 rounded-md p-1 cursor-pointer hover:bg-gray-200 transition-colors"
+              className="text-primary text-xs font-semibold bg-muted rounded-md p-1 cursor-pointer hover:bg-primary/10 transition-colors"
             >
               {currentTripType === 'round-trip' ? t("one_way", "One Way") : t("round_trip", "Round Trip")}
             </button> */}
             {/* <div onClick={SearchClicked} className="justify-items-end cursor-pointer">
-              <p className="text-[#D3202D] text-xs font-semibold bg-gray-100 rounded-md p-1 ">{t('change3','Change Search')}</p>
+              <p className="text-primary text-xs font-semibold bg-muted rounded-md p-1 ">{t('change3','Change Search')}</p>
             </div> */}
           </div>
         </div>
       )}
-       {title && <p className="text-xs font-semibold text-gray-700 mb-1">{title}</p>}
+       {title && <p className="text-xs font-semibold text-muted-foreground mb-1">{title}</p>}
       <div className="flex items-start">
         {/* Timeline dots/line */}
         <div className="flex flex-col items-center mr-2 mt-1">
           <div className="w-2 h-2 bg-black rounded-full"></div>
-          <div className="w-[1px] h-14 bg-gray-400 my-[2px]"></div>
-          <div className="w-2 h-2 bg-[#D3202D] rounded-full"></div>
+          <div className="w-[1px] h-14 bg-secondary my-[2px]"></div>
+          <div className="w-2 h-2 bg-primary rounded-full"></div>
         </div>
 
         {/* Pickup & Dropoff info */}
         <div>
-          <p className="text-xs text-gray-500 font-medium">{t("booking.pickup")}</p>
+          <p className="text-xs text-muted-foreground font-medium">{t("booking.pickup")}</p>
           <p className="text-[13px] font-semibold">{pickup?.name}</p>
 
-          <p className="mt-2 text-xs text-gray-500 font-medium">{t("booking.dropoff")}</p>
-          <p className="text-[13px] text-[#D3202D] font-semibold">{dropoff?.name}</p>
+          <p className="mt-2 text-xs text-muted-foreground font-medium">{t("booking.dropoff")}</p>
+          <p className="text-[13px] text-primary font-semibold">{dropoff?.name}</p>
         </div>
       </div>
       {(mapDetails || userBookingDetails) && (
-        <div className="pt-3 border-t border-gray-200 space-y-2">
+        <div className="pt-3 border-t border-border space-y-2">
           {userBookingDetails?.pickupDate && userBookingDetails?.pickupTime && (
             <>
-              {/* <div className="flex items-center gap-2 text-gray-700">
-                <Calendar size={16} className="text-gray-400" />
+              {/* <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar size={16} className="text-muted-foreground" />
                 <span className="font-medium">
                   {format(new Date(userBookingDetails.pickupDate), 'dd MMM yyyy')}
                 </span>
               </div> 
-              <div className="flex items-center gap-2 text-gray-700">
-                <Clock size={16} className="text-gray-400" />
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock size={16} className="text-muted-foreground" />
                 <span className="font-medium">
                   {userBookingDetails.pickupTime}
                 </span>
@@ -132,8 +132,8 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked, mapD
             </>
           )}
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <Clock size={15} className="text-gray-800" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Clock size={15} className="text-foreground" />
               <span className="font-medium">
                 Estimated time:{' '}
                 {mapDetails?.estimated_travel_time_text}
@@ -142,18 +142,18 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked, mapD
         
 
           {mapDetails?.distance_text && mapDetails?.distance_km && (
-            <div className="flex items-center gap-2 text-gray-700">
-              <Milestone size={16} className="text-gray-800" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Milestone size={16} className="text-foreground" />
               <span className="font-medium">
-                <span className="text-gray-500">{t('distance')||"Distance"}:</span>{' '}
+                <span className="text-muted-foreground">{t('distance')||"Distance"}:</span>{' '}
                 {mapDetails?.distance_text} / {(mapDetails?.distance_km * 0.621371).toFixed(1)} Miles
               </span>
             </div>
           )}
 
           {/* {userBookingDetails?.passengers && (
-            <div className="flex items-center gap-2 text-gray-700">
-              <Users size={16} className="text-gray-400" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Users size={16} className="text-muted-foreground" />
               <span className="font-medium">
                 {userBookingDetails.passengers} {t(userBookingDetails.passengers > 1 ? 'passengers' : 'passenger')}
               </span>
@@ -161,8 +161,8 @@ const RouteSummary = ({ pickup, dropoff, t, title, tripType, SearchClicked, mapD
           )} */}
 
           {/* {!mapDetails && !userBookingDetails?.passengers && (
-            <div className="flex items-center gap-2 text-gray-500 text-xs">
-              <Clock size={16} className="text-gray-400" />
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Clock size={16} className="text-muted-foreground" />
               <span>{t('completeSearchForDetails')}</span>
             </div>
           )} */}

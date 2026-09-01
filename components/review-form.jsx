@@ -52,8 +52,8 @@ const [cancelLoading, setCancelLoading] = useState(false)
   }
 
   return (
-    <div className="bg-[#CC9A55] border border-white rounded-2xl shadow-lg p-6 md:p-8 max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold text-black mb-2 border-b border-white pb-2">
+    <div className="bg-brand-secondary border border-white rounded-2xl shadow-lg p-6 md:p-8 max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold text-surface-foreground mb-2 border-b border-white pb-2">
         Share Your Experience
       </h2>
       <p className="text-gray-100 mb-6 py-2">
@@ -64,7 +64,7 @@ const [cancelLoading, setCancelLoading] = useState(false)
         <div
           className={`mb-4 p-3 rounded-lg text-sm ${
             message.type === "error"
-              ? "bg-red-100 text-red-600 border border-red-300"
+              ? "bg-red-100 text-primary border border-red-300"
               : "bg-green-100 text-green-600 border border-green-300"
           }`}
         >
@@ -75,33 +75,33 @@ const [cancelLoading, setCancelLoading] = useState(false)
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-semibold text-black mb-2">
+            <label className="block text-sm font-semibold text-surface-foreground mb-2">
               Your Name *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-white border border-white/50 rounded-lg px-4 py-2 text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
+              className="w-full bg-surface border border-white/50 rounded-lg px-4 py-2 text-surface-foreground placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
               placeholder="Enter your name"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-black mb-2">
+            <label className="block text-sm font-semibold text-surface-foreground mb-2">
               Email Address *
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full bg-white border border-white/50 rounded-lg px-4 py-2 text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
+              className="w-full bg-surface border border-white/50 rounded-lg px-4 py-2 text-surface-foreground placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
               placeholder="Enter your email"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-black mb-2">
+          <label className="block text-sm font-semibold text-surface-foreground mb-2">
             Rating *
           </label>
           <div className="flex gap-2">
@@ -111,7 +111,7 @@ const [cancelLoading, setCancelLoading] = useState(false)
                 type="button"
                 onClick={() => setFormData({ ...formData, rating: star })}
                 className={`text-3xl transition-colors ${
-                  formData.rating >= star ? "text-white" : "text-black"
+                  formData.rating >= star ? "text-white" : "text-surface-foreground"
                 }`}
               >
                 ★
@@ -121,14 +121,14 @@ const [cancelLoading, setCancelLoading] = useState(false)
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-black mb-2">
+          <label className="block text-sm font-semibold text-surface-foreground mb-2">
             Your Review *
           </label>
           <textarea
             value={formData.review}
             onChange={(e) => setFormData({ ...formData, review: e.target.value })}
             rows="4"
-            className="w-full bg-white border border-white/50 rounded-lg px-4 py-2 text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
+            className="w-full bg-surface border border-white/50 rounded-lg px-4 py-2 text-surface-foreground placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
             placeholder="Write your review..."
           />
         </div>
@@ -138,7 +138,7 @@ const [cancelLoading, setCancelLoading] = useState(false)
   <button
     type="submit"
     disabled={loading}
-    className="w-full sm:w-auto bg-black disabled:bg-gray-400 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:bg-[#b4843f] flex items-center justify-center gap-2"
+    className="w-full sm:w-auto bg-black disabled:bg-secondary text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:bg-[#b4843f] flex items-center justify-center gap-2"
   >
     {loading ? (
       <>
@@ -179,12 +179,12 @@ const [cancelLoading, setCancelLoading] = useState(false)
       setTimeout(() => setCancelLoading(false), 1000) // optional delay to show spinner
     }}
     disabled={cancelLoading}
-    className="w-full sm:w-auto bg-transparent border border-black text-black font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:bg-black hover:text-white flex items-center justify-center gap-2"
+    className="w-full sm:w-auto bg-transparent border border-black text-surface-foreground font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:bg-black hover:text-white flex items-center justify-center gap-2"
   >
     {cancelLoading ? (
       <>
         <svg
-          className="animate-spin h-5 w-5 text-black"
+          className="animate-spin h-5 w-5 text-surface-foreground"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

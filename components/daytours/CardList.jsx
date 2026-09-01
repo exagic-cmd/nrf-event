@@ -31,7 +31,7 @@ const { productfeature, fetchProductFeature } = useProductFeature();
     return (
       <div className="text-center p-10">
         <p className="text-lg font-semibold">{t("search.searchTours")}</p>
-        <p className="text-gray-500">{t("search.refineSearch")}</p>
+        <p className="text-muted-foreground">{t("search.refineSearch")}</p>
       </div>
     );
   }
@@ -56,16 +56,16 @@ const { productfeature, fetchProductFeature } = useProductFeature();
   return (
     <div className="space-y-4 md:12 sm:4 lg:mx-44">
       {/* View Switcher */}
-      <div className="rounded-xl py-3 px-4 bg-white">
+      <div className="rounded-xl py-3 px-4 bg-surface">
         <div className="flex justify-between items-center">
           <p className="text-md md:text-lg font-normal md:font-semibold">
             {t("search.searchTours")}: {tours.length}
           </p>
-          <div className="flex bg-gray-100 rounded-full gap-1 p-1">
+          <div className="flex bg-muted rounded-full gap-1 p-1">
             <button
               onClick={() => setView("list")}
               className={`flex items-center gap-1 px-4 py-1 rounded-full transition ${
-                view === "list" ? "bg-white shadow text-black" : "text-gray-500 hover:text-black"
+                view === "list" ? "bg-surface shadow text-surface-foreground" : "text-muted-foreground hover:text-surface-foreground"
               }`}
             >
               <List size={16} />
@@ -74,7 +74,7 @@ const { productfeature, fetchProductFeature } = useProductFeature();
             <button
               onClick={() => setView("map")}
               className={`flex items-center gap-1 px-4 py-1 rounded-full transition ${
-                view === "map" ? "bg-white shadow text-black" : "text-gray-500 hover:text-black"
+                view === "map" ? "bg-surface shadow text-surface-foreground" : "text-muted-foreground hover:text-surface-foreground"
               }`}
             >
               <Map size={16} />

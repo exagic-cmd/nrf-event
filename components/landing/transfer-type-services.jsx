@@ -47,14 +47,14 @@ export function TransferTypeServices() {
   }
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-orange-50 to-red-50 text-gray-900">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-orange-50 to-red-50 text-foreground">
       <div className="container px-4 md:px-6 mx-auto max-w-7xl p-12">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-900">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
               {t("transferType.title")}
             </h2>
-            <p className="max-w-[900px] text-gray-700 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               {t("transferType.description")}
             </p>
           </div>
@@ -70,7 +70,7 @@ export function TransferTypeServices() {
                   className="cursor-pointer relative flex-shrink-0 w-[240px] h-[320px] rounded-xl overflow-hidden shadow-lg group transition hover:scale-[1.02]"
                 >
                   {loadingCardId === type.id && (
-                    <div className="absolute inset-0 z-20 bg-white/80 flex justify-center items-center">
+                    <div className="absolute inset-0 z-20 bg-surface/80 flex justify-center items-center">
                       <SvgLoader2 />
                     </div>
                   )}
@@ -81,7 +81,7 @@ export function TransferTypeServices() {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent via-black/20 flex flex-col justify-between p-4 z-10">
-                    <div className="self-start bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    <div className="self-start bg-surface/20 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
                       {type.label}
                     </div>
                     <div className="text-white">
@@ -99,7 +99,7 @@ export function TransferTypeServices() {
               variant="ghost"
               size="icon"
               onClick={() => scroll("left")}
-              className="bg-white/70 hover:bg-white text-gray-800 rounded-full shadow-md pointer-events-auto"
+              className="bg-surface/70 hover:bg-surface text-foreground rounded-full shadow-md pointer-events-auto"
             >
               <ChevronLeft className="w-6 h-6" />
             </Button>
@@ -107,7 +107,7 @@ export function TransferTypeServices() {
               variant="ghost"
               size="icon"
               onClick={() => scroll("right")}
-              className="bg-white/70 hover:bg-white text-gray-800 rounded-full shadow-md pointer-events-auto"
+              className="bg-surface/70 hover:bg-surface text-foreground rounded-full shadow-md pointer-events-auto"
             >
               <ChevronRight className="w-6 h-6" />
             </Button>

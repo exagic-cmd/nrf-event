@@ -81,15 +81,15 @@ export default function LocationSearchForm({ onConfirm, initialPickup, initialDr
         {pickupQuery && (
           <button
             onClick={() => setPickupQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
           >
             <X size={18} />
           </button>
         )}
         {showPickupList && pickupOptions.length > 0 && (
-          <ul className="absolute z-50 bg-white border w-full mt-1 max-h-60 overflow-auto">
+          <ul className="absolute z-50 bg-surface border w-full mt-1 max-h-60 overflow-auto">
             {pickupOptions.map((opt) => (
-              <li key={opt.id} onClick={() => handlePickupSelect(opt)} className="p-2 hover:bg-gray-100 cursor-pointer">
+              <li key={opt.id} onClick={() => handlePickupSelect(opt)} className="p-2 hover:bg-muted cursor-pointer">
                 {opt.name}
               </li>
             ))}
@@ -108,23 +108,23 @@ export default function LocationSearchForm({ onConfirm, initialPickup, initialDr
           onFocus={() => setShowDropoffList(true)}
           placeholder="Search dropoff location..."
           disabled={!selectedPickup}
-          className="w-full pl-10 pr-4 py-3 border rounded-lg disabled:bg-gray-100"
+          className="w-full pl-10 pr-4 py-3 border rounded-lg disabled:bg-muted"
         />
         {dropoffQuery && (
           <button
             onClick={() => setDropoffQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
           >
             <X size={18} />
           </button>
         )}
         {showDropoffList && dropoffOptions.length > 0 && (
-          <ul className="absolute z-50 bg-white border w-full mt-1 max-h-60 overflow-auto">
+          <ul className="absolute z-50 bg-surface border w-full mt-1 max-h-60 overflow-auto">
             {dropoffOptions.map((opt) => (
               <li
                 key={opt.id}
                 onClick={() => handleDropoffSelect(opt)}
-                className="p-2 hover:bg-gray-100 cursor-pointer"
+                className="p-2 hover:bg-muted cursor-pointer"
               >
                 {opt.name}
               </li>

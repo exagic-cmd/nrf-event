@@ -33,7 +33,7 @@ export default function ProductCard({ product, onSelect }) {
           alt={product.title}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
-        <div className="absolute top-2 right-2 bg-[#CC9A55]/90 text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md">
+        <div className="absolute top-2 right-2 bg-brand-secondary/90 text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md">
           {roundedPrice ? `$${roundedPrice}` : "N/A"}
         </div>
       </div>
@@ -59,13 +59,13 @@ export default function ProductCard({ product, onSelect }) {
           className="
             mt-2
             w-full
-            bg-[#CC9A55]
+            bg-brand-secondary
             text-white
             font-medium
             py-2
             rounded-md
             hover:bg-[#e3b871]
-            hover:text-black
+            hover:text-surface-foreground
             transition-colors
             shadow-md
           "

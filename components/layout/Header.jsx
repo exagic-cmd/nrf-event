@@ -19,23 +19,6 @@ export default function Header() {
   const dropdownRef = useRef(null);
   const hasFetchedEventRef = useRef(false);
   const hasRunUserCheckRef = useRef(false);
-  const availableLocales = [
-    {
-      code: "en",
-      name: "English",
-      flag: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/flag.png`,
-    },
-    {
-      code: "ja",
-      name: "Japanese",
-      flag: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/flag_1.png`,
-    },
-    {
-      code: "es",
-      name: "Spanish",
-      flag: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/spain.png`,
-    },
-  ];
 
   useEffect(() => {
     setHydrated(true);
@@ -98,27 +81,27 @@ export default function Header() {
     <div className="relative">
       <button
         onClick={() => setUserMenuOpen(!userMenuOpen)}
-        className={`p-2 rounded-full hover:bg-white/20`}
+      className={`p-2 rounded-full hover:bg-secondary`}
       >
-        <User className={`${isMobile ? "w-5 h-5 sm:w-6 sm:h-6" : "w-6 h-6"} text-black`} />
+      <User className={`${isMobile ? "w-5 h-5 sm:w-6 sm:h-6" : "w-6 h-6"} text-foreground`} />
       </button>
       {userMenuOpen && (
         <div
-          className={`absolute right-0 top-12 bg-[#D3202D] text-white shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
+        className={`absolute right-0 top-12 bg-destructive text-destructive-foreground shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
             isMobile ? "w-44" : "w-48"
           }`}
         >
-          <Link href="/profile" className="flex items-center space-x-2 hover:text-gray-800">
+          <Link href="/profile" className="flex items-center space-x-2 hover:text-foreground">
             <User className="w-4 h-4" />
             <span>Profile</span>
           </Link>
-          <Link href="/order" className="flex items-center space-x-2 hover:text-gray-800">
+          <Link href="/order" className="flex items-center space-x-2 hover:text-foreground">
             <ShoppingBag className="w-4 h-4" />
             <span>Booking</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text[#D3202D] text-left"
+            className="flex items-center space-x-2 text-secondary-foreground hover:text-secondary-foreground text-left"
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
@@ -129,7 +112,7 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-2 bg-white shadow-md z-40">
+    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-2 bg-card shadow-md z-40">
       {/* Logo */}
     <div className="flex items-center">
   <LocalizedLink href="/">

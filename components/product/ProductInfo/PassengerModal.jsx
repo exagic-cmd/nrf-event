@@ -71,26 +71,26 @@ const handleApply = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-        <h2 className="text-lg font-semibold text-[#D3202D] mb-4">{t('selectParticipants')}</h2>
+      <div className="bg-surface rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <h2 className="text-lg font-semibold text-primary mb-4">{t('selectParticipants')}</h2>
         
-        <div className="text-xs flex items-center gap-1 text-gray-700 mb-4">
+        <div className="text-xs flex items-center gap-1 text-muted-foreground mb-4">
           {t('pax')} ({t('min')} {minPax} <MinusIcon size={12} /> {t('max')} {maxPax})
         </div>
 
         {/* Adults */}
         <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="text-base font-medium text-gray-800">{t('adultsModal')}</div>
+          <div className="text-base font-medium text-foreground">{t('adultsModal')}</div>
           <div className="flex items-center gap-2">
             <button
-              className="w-9 h-9 rounded-full bg-gray-200 text-xl font-bold flex items-center justify-center hover:bg-gray-300 transition"
+              className="w-9 h-9 rounded-full bg-secondary text-xl font-bold flex items-center justify-center hover:bg-secondary transition"
               onClick={() => handleDec("adults")}
 disabled={localAdults <= 1}
               type="button"
             >-</button>
             <span className="w-6 text-center font-medium">{localAdults}</span>
             <button
-              className="w-9 h-9 rounded-full bg-[#D3202D] text-white text-xl font-bold flex items-center justify-center transition"
+              className="w-9 h-9 rounded-full bg-primary text-white text-xl font-bold flex items-center justify-center transition"
               onClick={() => handleInc("adults")}
               disabled={localAdults + localChild >= maxPax}
               type="button"
@@ -100,17 +100,17 @@ disabled={localAdults <= 1}
 
         {/* Child */}
         <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="text-base font-medium text-gray-800">{t('childrenModal')}</div>
+          <div className="text-base font-medium text-foreground">{t('childrenModal')}</div>
           <div className="flex items-center gap-2">
             <button
-              className="w-9 h-9 rounded-full bg-gray-200 text-xl font-bold flex items-center justify-center hover:bg-gray-300 transition"
+              className="w-9 h-9 rounded-full bg-secondary text-xl font-bold flex items-center justify-center hover:bg-secondary transition"
               onClick={() => handleDec("child")}
               disabled={localChild <= 0}
               type="button"
             >-</button>
             <span className="w-6 text-center font-medium">{localChild}</span>
             <button
-              className="w-9 h-9 rounded-full bg-[#D3202D] text-white text-xl font-bold flex items-center justify-center  transition"
+              className="w-9 h-9 rounded-full bg-primary text-white text-xl font-bold flex items-center justify-center  transition"
               onClick={() => handleInc("child")}
               disabled={localAdults + localChild >= maxPax}
               type="button"
@@ -128,14 +128,14 @@ disabled={localAdults <= 1}
         {/* Action Buttons */}
         <div className="flex justify-end gap-2 mt-4">
           <button
-            className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+            className="px-4 py-2 rounded-lg bg-secondary text-muted-foreground hover:bg-secondary transition"
             onClick={handleCancel}
             type="button"
           >
            {t('cancel')}
           </button>
           <button
-            className="px-4 py-2 rounded-lg bg-[#D3202D] text-white font-medium transition"
+            className="px-4 py-2 rounded-lg bg-primary text-white font-medium transition"
            disabled={!!adultsError || !!childError || (localAdults + localChild < minPax)}
             onClick={handleApply}
             type="button"

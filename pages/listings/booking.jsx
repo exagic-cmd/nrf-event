@@ -460,7 +460,7 @@ const baggageSelectorProps = {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen flex justify-center items-center bg-[#f4f4f4]">
+        <div className="min-h-screen flex justify-center items-center bg-surface-muted">
          <Loading2Svg/>
         </div>
       </Layout>
@@ -470,9 +470,9 @@ const baggageSelectorProps = {
   if (!selectedTransfer) {
     return (
       <Layout>
-         <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
+         <div className="min-h-screen bg-surface-muted flex items-center justify-center">
         <div className="text-center">
-          <div className="text-[#D3202D] text-xl mb-4">⚠️</div>
+          <div className="text-primary text-xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-white mb-2">
             {t("booking.noTransferSelected")}
           </h2>
@@ -481,7 +481,7 @@ const baggageSelectorProps = {
               resetTransferStore();
               back();
             }}
-            className="bg-[#D3202D] text-white px-4 py-2 rounded-lg"
+            className="bg-primary text-white px-4 py-2 rounded-lg"
           >
             {t("goBack")}
           </button>
@@ -494,8 +494,8 @@ const baggageSelectorProps = {
 
   return (
     <Layout>
-     <div className="bg-[#f4f4f4] pb-6 md:pb-14">
-       <div className="min-h-screen bg-[#f4f4f4] mt-16 p-4 full-width mx-auto lg:px-12">
+     <div className="bg-surface-muted pb-6 md:pb-14">
+       <div className="min-h-screen bg-surface-muted mt-16 p-4 full-width mx-auto lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
           <div className="lg:hidden space-y-4">
             <div className="order-1">
@@ -533,26 +533,26 @@ const baggageSelectorProps = {
             <div className="order-3">
               <BaggagePassengerSelector {...baggageSelectorProps} />
               {showMeetAndGreet && (
-                <div id="meetAndGreetName" className="mb-6 mt-6 bg-white rounded-md p-2 pl-6">
-                  <label className="block text-lg font-medium text-[#D3202D] mb-2">
+                <div id="meetAndGreetName" className="mb-6 mt-6 bg-surface rounded-md p-2 pl-6">
+                  <label className="block text-lg font-medium text-primary mb-2">
                     {t("booking.meetAndGreetName","Name for meet and greet sign")}
                   </label>
                   <input
                     type="text"
                     value={userBookingDetails.meetAndGreetName || ""}
                     onChange={(e) => handleInputChange("meetAndGreetName", e.target.value)}
-                    className={`w-full text-base mb-2 px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                    className={`w-full text-base mb-2 px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-muted cursor-not-allowed" : ""}`}
                     disabled={isLocked}
                     placeholder={t("booking.meetAndGreetPlaceholder","Enter name") || "Enter name"}
                   />
                   
                 </div>
               )}
-   <div className="mb-6 mt-6 bg-white rounded-md p-2 pl-6 ">
-  <label className="block text-lg font-medium text-[#D3202D] mb-2">
+   <div className="mb-6 mt-6 bg-surface rounded-md p-2 pl-6 ">
+  <label className="block text-lg font-medium text-primary mb-2">
     {t("specialRequests.title")}
   </label>
-  <p className="text-sm text-gray-700 my-4 pl-2">
+  <p className="text-sm text-muted-foreground my-4 pl-2">
     {t("specialRequests.description")}
   </p>
 
@@ -561,7 +561,7 @@ const baggageSelectorProps = {
     {[t("specialRequests.wheelchair"), t("specialRequests.childSeat")].map((option) => (
       <label
         key={option}
-        className="flex items-center gap-2 border border-gray-300 px-3 py-1 rounded-lg cursor-pointer"
+        className="flex items-center gap-2 border border-border px-3 py-1 rounded-lg cursor-pointer"
       >
         <input
           type="checkbox"
@@ -616,10 +616,10 @@ const baggageSelectorProps = {
                            />
                          </div>
 
-            <div className="bg-white rounded-lg p-2 md:p-6 shadow-sm order-5">
+            <div className="bg-surface rounded-lg p-2 md:p-6 shadow-sm order-5">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 md:mb-4 gap-4">
   {/* Left Side */}
-  <div className="flex-col items-center text-black-500">
+  <div className="flex-col items-center text-surface-foreground-500">
   
     {isLoading ? (
       <Loading2Svg className="w-6 h-6 mr-2" />
@@ -642,7 +642,7 @@ const baggageSelectorProps = {
   // Spinner replaces button
   <div className="flex justify-center items-center w-full sm:w-auto min-h-[48px]">
     <svg
-      className="animate-spin h-8 w-8 text-[#D3202D]"
+      className="animate-spin h-8 w-8 text-primary"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -666,20 +666,20 @@ const baggageSelectorProps = {
   <>
      <div className="flex">
       <Check className="w-6 h-6 mr-2" />
-      <span className="font-medium text-[#D3202D]">{t("booking.cartUpdated") || "Added to cart"}</span>
+      <span className="font-medium text-primary">{t("booking.cartUpdated") || "Added to cart"}</span>
      
      </div>
 
     <div className="flex-col gap-3 w-full  mt-0">
       <button
         onClick={handleContinueShopping}
-        className="bg-gray-200 mb-2 text-gray-800 font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+        className="bg-secondary mb-2 text-foreground font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
         {t("continueShopping")}
       </button>
       <button
         onClick={handleProceedToCheckout}
-        className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+        className="bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
         {t("proceedToCheckout")}
       </button>
@@ -689,7 +689,7 @@ const baggageSelectorProps = {
 
   <button
     onClick={handleBookTransfer}
-    className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+    className="bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
   >
     {t("booking.addToCart")}
   </button>
@@ -719,26 +719,26 @@ const baggageSelectorProps = {
 
 <BaggagePassengerSelector {...baggageSelectorProps} />
  {showMeetAndGreet && (
-    <div id="meetAndGreetName" className="mb-6 mt-6 bg-white rounded-md p-2 pl-6">
-      <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
+    <div id="meetAndGreetName" className="mb-6 mt-6 bg-surface rounded-md p-2 pl-6">
+      <label className="block text-lg font-medium font-semibold text-primary mb-2">
         {t("booking.meetAndGreetName","Name for meet and greet sign") || "Name for meet and greet sign"}
       </label>
       <input
         type="text"
         value={userBookingDetails.meetAndGreetName || ""}
         onChange={(e) => handleInputChange("meetAndGreetName", e.target.value)}
-        className={` w-full lg:w-1/2 text-base mb-2 px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
+        className={` w-full lg:w-1/2 text-base mb-2 px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-muted cursor-not-allowed" : ""}`}
         disabled={isLocked}
         placeholder={t("booking.meetAndGreetPlaceholder","Enter name") || "Enter name"}
       />
       
     </div>
   )}
- <div className="mb-6 mt-6 bg-white rounded-md p-2 pl-6 ">
-  <label className="block text-lg font-medium font-semibold text-[#D3202D] mb-2">
+ <div className="mb-6 mt-6 bg-surface rounded-md p-2 pl-6 ">
+  <label className="block text-lg font-medium font-semibold text-primary mb-2">
     {t("specialRequests.title")}
   </label>
-  <p className="text-sm text-gray-700 my-4 pl-2">
+  <p className="text-sm text-muted-foreground my-4 pl-2">
     {t("specialRequests.description")}
   </p>
 
@@ -747,7 +747,7 @@ const baggageSelectorProps = {
     {[t("specialRequests.wheelchair"), t("specialRequests.childSeat")].map((option) => (
       <label
         key={option}
-        className="flex items-center gap-2 border text-sm md:text-base font-medium border-gray-300 px-3 py-1 rounded-lg cursor-pointer"
+        className="flex items-center gap-2 border text-sm md:text-base font-medium border-border px-3 py-1 rounded-lg cursor-pointer"
       >
         <input
           type="checkbox"
@@ -791,10 +791,10 @@ const baggageSelectorProps = {
   />
   </div>
 )}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-surface rounded-lg p-6 shadow-sm">
               {/* <h2 className="text-xl font-bold mb-4">{t("booking.bookTransferTitle")}</h2> */}
-              <div className="flex-col items-center justify-between mb-0 bg-white  rounded-md">
-  <div className="flex items-center text-black-500">
+              <div className="flex-col items-center justify-between mb-0 bg-surface  rounded-md">
+  <div className="flex items-center text-surface-foreground-500">
     {isLoading ? (
       <Loading2Svg className="w-6 h-6 mr-2" />
     ) : (
@@ -806,7 +806,7 @@ const baggageSelectorProps = {
   // Spinner replaces button
   <div className="flex justify-center items-center w-full sm:w-auto min-h-[48px]">
     <svg
-      className="animate-spin h-8 w-8 text-[#D3202D]"
+      className="animate-spin h-8 w-8 text-primary"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -832,19 +832,19 @@ const baggageSelectorProps = {
 
     <div className="flex justify-between gap-3 w-full mt-2">
        <div className="flex items-center mt-0">
-          <Check className="w-6 h-6 mr-2 text-[#D3202D]" />
-          <span className="font-medium text-[#D3202D]">{t("booking.cartUpdated") || "Added to cart"}</span>
+          <Check className="w-6 h-6 mr-2 text-primary" />
+          <span className="font-medium text-primary">{t("booking.cartUpdated") || "Added to cart"}</span>
         </div>
     <div>
         <button
         onClick={handleContinueShopping}
-        className="bg-gray-200 mb-2 mr-2 text-gray-800 font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+        className="bg-secondary mb-2 mr-2 text-foreground font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
        Continue Shopping
       </button>
       <button
         onClick={handleProceedToCheckout}
-        className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+        className="bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
       >
         Checkout
       </button>
@@ -852,7 +852,7 @@ const baggageSelectorProps = {
     </div>
   </>
 ) : (
- <div className="flex justify-between bg-white">
+ <div className="flex justify-between bg-surface">
   <div className="py-2 mb-2 ">
  <BookingPolicySection
   selectedOptions={selectedPolicies}
@@ -866,7 +866,7 @@ const baggageSelectorProps = {
  <div>
    <button
     onClick={handleBookTransfer}
-    className="bg-[#D3202D] text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+    className="bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
   >
     {t("booking.addToCart")}
   </button>

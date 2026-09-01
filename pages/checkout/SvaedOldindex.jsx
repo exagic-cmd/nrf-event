@@ -170,7 +170,7 @@ setFlywireTotal(totalPrice);
       </Head>
    <Layout>
      <div className="flex flex-col lg:flex-row gap-8 max-w-full md:mx-24 mx-2 mt-24 p-2 md:p-12">
-      <div className="w-full lg-w-2/3 bg-white rounded-xl p-2 shadow-md">
+      <div className="w-full lg-w-2/3 bg-surface rounded-xl p-2 shadow-md">
         <div className='p-5'>
           <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
           <form onSubmit={handlePayNow}>
@@ -185,7 +185,7 @@ setFlywireTotal(totalPrice);
     setName(e.target.value);
     setErrors(prev => ({ ...prev, name: undefined })); 
   }}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                  className="w-full border border-border rounded-lg px-3 py-2 mt-1"
                   required
                 />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -200,7 +200,7 @@ setFlywireTotal(totalPrice);
     setEmail(e.target.value);
     setErrors(prev => ({ ...prev, email: undefined }));
   }}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                  className="w-full border border-border rounded-lg px-3 py-2 mt-1"
                   required
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -240,7 +240,7 @@ setFlywireTotal(totalPrice);
                     placeholder="Promo Code"
                     value={promo}
                     onChange={(e) => setPromo(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                    className="w-full border border-border rounded-lg px-3 py-2 mt-1"
                   />
                 </div>
               )}
@@ -254,7 +254,7 @@ setFlywireTotal(totalPrice);
     setPaymentOption(e.target.value);
     setErrors(prev => ({ ...prev, paymentOption: undefined }));
   }}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-4"
+                className="w-full border border-border rounded-lg px-3 py-2 mt-4"
                 
               >
                 <option value="">Select Payment Option</option>
@@ -279,7 +279,7 @@ setFlywireTotal(totalPrice);
       </div>
 
       {/* Right Side */}
-    {/* <div className="relative lg:w-1/3 min-h-[500px] flex-shrink-0 bg-white rounded-xl p-6 shadow-md transition-all duration-300 ease-in-out">
+    {/* <div className="relative lg:w-1/3 min-h-[500px] flex-shrink-0 bg-surface rounded-xl p-6 shadow-md transition-all duration-300 ease-in-out">
 
       <BookingPreviewSlider
   items={items}

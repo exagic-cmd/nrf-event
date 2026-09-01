@@ -35,22 +35,22 @@ function BaggagePassengerSelector({
   const cabinLimit = cabinBaggageInfo?.quantity ?? maxBaggage;
   const largeLimit = largeBaggageInfo?.quantity ?? maxBaggage;
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm">
+    <div className="bg-surface rounded-lg p-6 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Passenger Section */}
         <div>
-          <div className="text-sm text-gray-600 mb-2">
+          <div className="text-sm text-muted-foreground mb-2">
             {t("maxPassengersAre")}: {maxPassengers}
           </div>
           <div
-            className={`border border-orange-200 rounded-md p-4 ${
-              disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-[e7c5c5#]"
+            className={`border border-primary/20 rounded-md p-4 ${
+              disabled ? "bg-muted cursor-not-allowed opacity-70" : "bg-primary/10"
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <User className="w-4 h-4 text-gray-800 mr-2" />
+                <User className="w-4 h-4 text-foreground mr-2" />
                 <span className="text-sm md:text-base font-medium">{t("totalPassengers")}</span>
               </div>
               <div className="flex items-center">
@@ -82,7 +82,7 @@ function BaggagePassengerSelector({
           
         <div className="relative">
              <div className="flex justify-between mb-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {/* <Luggage className="w-4 h-4" /> */}
               {largeBaggageInfo && cabinBaggageInfo && largeBaggageInfo !== cabinBaggageInfo ? (
                 <span>{t("maxLuggageCapacityrrr","Max Baggage")}: {largeLimit} {largeBaggageInfo.name || "Large"} + {cabinLimit} {cabinBaggageInfo.name || "Cabin"}</span>
@@ -94,7 +94,7 @@ function BaggagePassengerSelector({
               <div className="flex items-center justify-end">
                
                 <span 
-                  className="text-sm text-[#D3202D] cursor-pointer underline"
+                  className="text-sm text-primary cursor-pointer underline"
                   onClick={() => setModalBaggageInfo(baggageInfoForModal)}
                 >
                   {t("seeBaggageDetails", "See baggage details")}
@@ -106,8 +106,8 @@ function BaggagePassengerSelector({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             {/* Large Baggage */}
             <div
-              className={`border border-red-200 rounded-md p-4 flex flex-col justify-between ${
-                disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-[#e7c5c5]"
+              className={`border border-primary/20 rounded-md p-4 flex flex-col justify-between ${
+                disabled ? "bg-muted cursor-not-allowed opacity-70" : "bg-primary/10"
               }`}
             >
               <div>
@@ -140,8 +140,8 @@ function BaggagePassengerSelector({
 
             {/* Cabin Baggage */}
             <div
-              className={`border border-orange-200 rounded-md p-4 flex flex-col justify-between ${
-                disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : "bg-[#e7c5c5]"
+              className={`border border-primary/20 rounded-md p-4 flex flex-col justify-between ${
+                disabled ? "bg-muted cursor-not-allowed opacity-70" : "bg-primary/10"
               }`}
             >
               <div>
@@ -179,7 +179,7 @@ function BaggagePassengerSelector({
           )}
       </div>
       {hideBaggage && (
-        <p className="text-sm text-gray-600 pt-2">
+        <p className="text-sm text-muted-foreground pt-2">
             {t("attractionLuggageDisclaimer", "We do not expect customers to be carrying any Large or Cabin size luggage to the attraction.")}
           </p>
       
@@ -189,10 +189,10 @@ function BaggagePassengerSelector({
           className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
           onClick={() => setModalBaggageInfo(null)}
         >
-          <div className="relative bg-white p-6 rounded-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="relative bg-surface p-6 rounded-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
             <button 
               onClick={() => setModalBaggageInfo(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-2 text-muted-foreground hover:text-muted-foreground"
             >
               <X className="w-6 h-6" />
             </button>
@@ -209,7 +209,7 @@ function BaggagePassengerSelector({
                 className="w-full h-48 object-contain mb-4"
               />
             )}
-            <p className="text-sm text-gray-600 whitespace-pre-line">{modalBaggageInfo.description}</p>
+            <p className="text-sm text-muted-foreground whitespace-pre-line">{modalBaggageInfo.description}</p>
           </div>
         </div>
       )}

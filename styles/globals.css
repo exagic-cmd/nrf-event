@@ -2,19 +2,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @keyframes pop-bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1) translateY(0);
   }
+
   50% {
     transform: scale(1.5) translateY(-4px);
   }
 }
+
 @keyframes waveAnim {
   from {
     transform: scaleY(0.4);
     opacity: 0.6;
   }
+
   to {
     transform: scaleY(1);
     opacity: 1;
@@ -22,24 +28,28 @@
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none;  
-  scrollbar-width: none;     
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;           
+  display: none;
 }
 
 .animate-pop-bounce {
   animation: pop-bounce 1.5s infinite ease-in-out;
 }
+
 body {
   font-family: "Poppins", Arial, Helvetica, sans-serif;
 }
-.gm-style-iw-chr{
-      position: absolute;
-    right: -12px;
-    top: -9px;
+
+.gm-style-iw-chr {
+  position: absolute;
+  right: -12px;
+  top: -9px;
 }
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -56,8 +66,11 @@ body {
     --popover-foreground: 0 0% 3.9%;
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
+    --primary-hover: 0 0% 15%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
+    --secondary-brand: 38 50% 57%;
+    --secondary-brand-foreground: 0 0% 98%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
     --accent: 0 0% 96.1%;
@@ -67,6 +80,11 @@ body {
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
+    --surface: 0 0% 100%;
+    --surface-muted: 0 0% 96%;
+    --surface-strong: 0 0% 90%;
+    --surface-foreground: 0 0% 3.9%;
+    --surface-muted-foreground: 0 0% 45%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -82,6 +100,7 @@ body {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -91,8 +110,11 @@ body {
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
+    --primary-hover: 0 0% 85%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
+    --secondary-brand: 38 50% 57%;
+    --secondary-brand-foreground: 0 0% 9%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
     --accent: 0 0% 14.9%;
@@ -102,6 +124,11 @@ body {
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
+    --surface: 0 0% 7%;
+    --surface-muted: 0 0% 11%;
+    --surface-strong: 0 0% 18%;
+    --surface-foreground: 0 0% 98%;
+    --surface-muted-foreground: 0 0% 64%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -118,22 +145,29 @@ body {
   }
 }
 
+
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
-.react-datepicker__month-container{
+
+.react-datepicker__month-container {
   width: 100%;
 }
-.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
-    color: #000;
-    display: inline-block;
-    width: 3rem !important;
-    line-height: 1.7rem;
-    text-align: center;
-    margin: 0.166rem;
+
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+  color: #000;
+  display: inline-block;
+  width: 3rem !important;
+  line-height: 1.7rem;
+  text-align: center;
+  margin: 0.166rem;
 }

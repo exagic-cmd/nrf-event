@@ -69,18 +69,18 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
 
   const renderStepOne = () => (
     <>
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("cancel.are_you_sure")}</h2>
-      <p className="text-sm text-gray-600 mb-6">{t("cancel.warning_text")}</p>
+      <h2 className="text-xl font-semibold text-foreground mb-4">{t("cancel.are_you_sure")}</h2>
+      <p className="text-sm text-muted-foreground mb-6">{t("cancel.warning_text")}</p>
       <div className="flex justify-end gap-3">
         <button
           onClick={onClose}
-          className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+          className="px-4 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted"
         >
           {t("common.no")}
         </button>
         <button
           onClick={() => setStep(2)}
-          className="px-4 py-2 rounded-md bg-gray-600 text-white "
+          className="px-4 py-2 rounded-md text-muted-foreground text-white "
         >
           {t("common.yes")}
         </button>
@@ -90,15 +90,15 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
 
   const renderStepTwo = () => (
     <>
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("cancel.title")}</h2>
-      <p className="text-sm text-gray-600 mb-4">{t("cancel.reason_label")}</p>
+      <h2 className="text-xl font-semibold text-foreground mb-4">{t("cancel.title")}</h2>
+      <p className="text-sm text-muted-foreground mb-4">{t("cancel.reason_label")}</p>
 
       {message && (
         <div
           className={`mb-4 text-sm p-2 rounded-md ${
             message.type === "success"
-              ? "bg-[#cfc1ae] text-[#D3202D]"
-              : "bg-gray-100 text-gray-600"
+              ? "bg-[#cfc1ae] text-primary"
+              : "bg-muted text-muted-foreground"
           }`}
         >
           {message.text}
@@ -110,19 +110,19 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full border border-gray-300 rounded-md p-2 text-sm mb-4"
+            className="w-full border border-border rounded-md p-2 text-sm mb-4"
             placeholder={t("cancel.reason_placeholder")}
           />
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setStep(1)}
-              className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+              className="px-4 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted"
             >
               {t("common.back")}
             </button>
             <button
               onClick={handleConfirm}
-              className="px-4 py-2 rounded-md bg-gray-600 text-white"
+              className="px-4 py-2 rounded-md text-muted-foreground text-white"
               disabled={loading}
             >
               {loading ? t("cancel.processing") : t("cancel.confirm")}
@@ -135,7 +135,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
         <div className="flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+            className="px-4 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted"
           >
             {t("common.close")}
           </button>
@@ -146,9 +146,9 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+      <div className="bg-surface rounded-xl shadow-lg w-full max-w-md p-6 relative">
         <button
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-3 right-3 text-muted-foreground hover:text-muted-foreground"
           onClick={onClose}
         >
           <X className="w-5 h-5" />

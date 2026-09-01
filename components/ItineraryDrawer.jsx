@@ -131,7 +131,7 @@ const ItineraryDrawer = ({
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0 text-gray-400 hover:text-[#cc9a55]"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-[#cc9a55]"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -146,7 +146,7 @@ const ItineraryDrawer = ({
                   href="https://app.toureast.net/admin/3d_map_play.php?serial=userId"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative overflow-hidden px-3 py-1 text-sm font-medium text-black rounded-md flex items-center shadow-md hover:shadow-lg"
+                  className="group relative overflow-hidden px-3 py-1 text-sm font-medium text-surface-foreground rounded-md flex items-center shadow-md hover:shadow-lg"
                   style={{
                     background:
                       "linear-gradient(90deg, #cc9a55, #d4a565, #cc9a55, #d4a565, #cc9a55)",
@@ -196,7 +196,7 @@ const ItineraryDrawer = ({
                 </div>
                 <div>
                   <span className="block font-medium text-white">Activities</span>
-                  <span className="text-gray-400">{activities.length} items</span>
+                  <span className="text-muted-foreground">{activities.length} items</span>
                 </div>
               </div>
 
@@ -206,7 +206,7 @@ const ItineraryDrawer = ({
                 </div>
                 <div>
                   <span className="block font-medium text-white">Transfers</span>
-                  <span className="text-gray-400">{transfers.length} items</span>
+                  <span className="text-muted-foreground">{transfers.length} items</span>
                 </div>
               </div>
 
@@ -216,7 +216,7 @@ const ItineraryDrawer = ({
                 </div>
                 <div>
                   <span className="block font-medium text-white">Accommodation</span>
-                  <span className="text-gray-400">{accommodations.length > 0 ? "1" : "0"} items</span>
+                  <span className="text-muted-foreground">{accommodations.length > 0 ? "1" : "0"} items</span>
                 </div>
               </div>
 
@@ -226,7 +226,7 @@ const ItineraryDrawer = ({
                 </div>
                 <div>
                   <span className="block font-medium text-white">Meals</span>
-                  <span className="text-gray-400">{meals.length} items</span>
+                  <span className="text-muted-foreground">{meals.length} items</span>
                 </div>
               </div>
             </div>
@@ -236,7 +236,7 @@ const ItineraryDrawer = ({
           <ScrollArea className="flex-1 p-4 bg-black">
             <div className="space-y-6 pb-4">
               {sortedItineraryDays.length === 0 ? (
-                <p className="text-gray-500">No itinerary available</p>
+                <p className="text-muted-foreground">No itinerary available</p>
               ) : (
                 sortedItineraryDays.map((day) => (
                   <div key={day} className="mb-6">
@@ -273,7 +273,7 @@ const ItineraryDrawer = ({
                                 {item.tag && (
                                   <p className="text-sm text-[#cc9a55]">{item.tag}</p>
                                 )}
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-muted-foreground">
                                   {item.remarks
                                     ? item.remarks.length > 50
                                       ? item.remarks.substring(0, 50) + "..."

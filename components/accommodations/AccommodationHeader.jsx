@@ -68,7 +68,7 @@ const AccommodationHeader = ({ hotelData }) => {
         
         {/* Hotel Type Badge */}
         {hotelData?.category_name && (
-          <span className="bg-[#dadada] text-black px-2 py-1 rounded-md text-sm">
+          <span className="bg-[#dadada] text-surface-foreground px-2 py-1 rounded-md text-sm">
             {hotelData.category_name}
           </span>
         )}
@@ -82,7 +82,7 @@ const AccommodationHeader = ({ hotelData }) => {
       </div>
       
       {/* Hotel Title */}
-      <h1 className="text-lg font-semibold text-black mb-2">
+      <h1 className="text-lg font-semibold text-surface-foreground mb-2">
         {hotelData?.title || hotelData?.name || "Accommodation"}
       </h1>
       
@@ -116,7 +116,7 @@ const AccommodationHeader = ({ hotelData }) => {
       
       {/* Additional Info Row */}
       {(hotelData?.max_pax || hotelData?.valid_from) && (
-        <div className="flex flex-wrap items-center gap-4 text-gray-400 text-sm mt-2">
+        <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm mt-2">
           {/* Maximum Occupancy */}
           {hotelData?.max_pax && (
             <span>Max Occupancy: {hotelData.max_pax} guests</span>

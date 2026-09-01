@@ -303,15 +303,15 @@ function processChatLogs(chatLogs: any[]): {
 
   // Normalize chatLogs to an array
   const logs =
-  Array.isArray(chatLogs)
-    ? chatLogs
-    : (Array.isArray((chatLogs as any).logs) ? (chatLogs as any).logs : []);
+    Array.isArray(chatLogs)
+      ? chatLogs
+      : (Array.isArray((chatLogs as any).logs) ? (chatLogs as any).logs : []);
 
   console.log("logs..", logs)
 
   logs.forEach((log: any) => {
     // User message
-    if(log.user_message) {
+    if (log.user_message) {
       messages.push({
         id: `${log.id}-user`,
         content: log.user_message,
@@ -333,7 +333,7 @@ function processChatLogs(chatLogs: any[]): {
       return;
     }
 
-    if(response && response.message && response.message != "") {
+    if (response && response.message && response.message != "") {
       messages.push({
         id: `${log.id}-ai`,
         content: response.message ?? "",
@@ -458,7 +458,7 @@ export default function TravelPlannerChat() {
 
   useEffect(() => {
     console.log("Drawer received selectedServices:", selectedServices);
-  }, [selectedServices]);  
+  }, [selectedServices]);
 
   // Get the latest requirements from the last message
   const getLatestRequirements = () => {
@@ -666,18 +666,18 @@ export default function TravelPlannerChat() {
         console.log("Vehicles received:", response.vehicles);
       }
       setMessages((prev) => [...prev, aiMessage]);
-      console.log("Before Transform", )
+      console.log("Before Transform",)
       // Transform the data to match your component structure
       const transformedServices = {
         accommodation: response.selectedServices?.Accommodations || [],
         transfers: response.selectedServices?.Transfers || [],
         meals: response.selectedServices?.Meal || [], // Add if you have meals data
         activities: response.selectedServices?.["Day Tours"] || []
-      };      
-      
+      };
+
       // Log for debugging
       //console.log("Transformed services:", transformedServices);
-      
+
       // Update the state
       setSelectedServices(transformedServices);
 
@@ -923,23 +923,23 @@ export default function TravelPlannerChat() {
   };
 
   const TypingText = () => {
-  const messages = [
-    "AI is analyzing your request...",
-    "Processing with best solution...",
-    "Formulating response...",
-    "Thinking..."
-  ];
-  const [index, setIndex] = useState(0);
+    const messages = [
+      "AI is analyzing your request...",
+      "Processing with best solution...",
+      "Formulating response...",
+      "Thinking..."
+    ];
+    const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % messages.length);
-    }, 6000); // change every 6s
-    return () => clearInterval(interval);
-  }, []);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setIndex((prev) => (prev + 1) % messages.length);
+      }, 6000); // change every 6s
+      return () => clearInterval(interval);
+    }, []);
 
-  return messages[index];
-};
+    return messages[index];
+  };
 
 
   // Function to handle switching to human support
@@ -1046,7 +1046,7 @@ export default function TravelPlannerChat() {
             <div className="flex items-center gap-3">
               {/* Make sure the sidebar trigger is visible on mobile */}
               {/* <SidebarTrigger className="md:hidden" /> */}
-  
+
               <div className="flex items-center">
                 <Avatar className="h-10 w-10 text-white">
                   <AvatarImage
@@ -1065,7 +1065,7 @@ export default function TravelPlannerChat() {
                 )}
               </div>
             </div>
-  
+
             {/* Current Responder Badge */}
             <TooltipProvider>
               <Tooltip>
@@ -1077,8 +1077,8 @@ export default function TravelPlannerChat() {
                     className={cn(
                       "flex items-center gap-1 transition-all",
                       currentResponder === "ai"
-                        ? "bg-[#CC9A55] text-white hover:bg-[#B8894A]"
-                        : "bg-white text-black hover:bg-gray-100"
+                        ? "bg-brand-secondary text-white hover:bg-[#B8894A]"
+                        : "bg-surface text-surface-foreground hover:bg-muted"
                     )}
                   >
                     {currentResponder === "ai" ? (
@@ -1102,7 +1102,7 @@ export default function TravelPlannerChat() {
               </Tooltip>
             </TooltipProvider>
           </div>
-  
+
           {/* Chat Area */}
           <ScrollArea className="flex-1 p-4 w-full">
             <div className="space-y-6 w-full max-w-5xl mx-auto" ref={scrollAreaRef}>
@@ -1132,7 +1132,7 @@ export default function TravelPlannerChat() {
                         )}
                       >
                         {message.sender === "ai" ? (
-                          <> 
+                          <>
                             <AvatarImage
                               src="/ai.png"
                               alt="AI Assistant"
@@ -1141,7 +1141,7 @@ export default function TravelPlannerChat() {
                           </>
                         ) : (
                           <>
-                            <AvatarImage 
+                            <AvatarImage
                               src="/ai.png"
                               alt="Human Agent"
                             />
@@ -1154,10 +1154,10 @@ export default function TravelPlannerChat() {
                       className={cn(
                         "px-4 py-3 shadow-sm border-0",
                         message.sender === "user"
-                          ? "bg-[#CC9A55] text-white"
+                          ? "bg-brand-secondary text-white"
                           : message.sender === "ai"
-                          ? "bg-gray-800 text-white border-[#CC9A55]"
-                          : "bg-[#CC9A55] text-white border-[#B8894A]",
+                            ? "bg-secondary text-white border-[#CC9A55]"
+                            : "bg-brand-secondary text-white border-[#B8894A]",
                         message.suggestedAccommodation || message.itinerary
                           ? "w-full"
                           : "",
@@ -1177,7 +1177,7 @@ export default function TravelPlannerChat() {
                           </Badge>
                         </div>
                       )}
-  
+
                       <div className={cn(
                         "prose leading-relaxed",
                         message.sender === "ai" ? "prose-invert text-white" : ""
@@ -1191,7 +1191,7 @@ export default function TravelPlannerChat() {
                           <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
                             <ProductList
                               products={message.products}
-                              onSelect={(id: number|string) => {
+                              onSelect={(id: number | string) => {
                                 const url = `/day-tours/details/${id}`;
                                 window.open(url, "_blank");
                               }}
@@ -1204,12 +1204,12 @@ export default function TravelPlannerChat() {
                         <div className="mt-6 w-full">
                           <VehicleList
                             vehicles={message.vehicles}
-                            transferInfo={message.transferInfo}  
+                            transferInfo={message.transferInfo}
                           />
                         </div>
                       )}
 
-  
+
                       {/* Hotel Recommendation */}
                       {message.suggestedAccommodation && (
                         <div className="mt-6 w-full">
@@ -1225,7 +1225,7 @@ export default function TravelPlannerChat() {
                           </div>
                         </div>
                       )}
-  
+
                       {/* Transfer Recommendation */}
                       {message.suggestedTransfer && (
                         <div className="mt-6 w-full">
@@ -1241,7 +1241,7 @@ export default function TravelPlannerChat() {
                           </div>
                         </div>
                       )}
-  
+
                       {/* Meal Recommendations */}
                       {message.suggestedMeal && message.suggestedMeal.length > 0 && (
                         <div className="mt-6 w-full">
@@ -1256,7 +1256,7 @@ export default function TravelPlannerChat() {
                           </div>
                         </div>
                       )}
-  
+
                       {/* Activity Recommendations */}
                       {message.suggestedActivity && message.suggestedActivity.length > 0 && (
                         <div className="mt-6 w-full">
@@ -1271,14 +1271,14 @@ export default function TravelPlannerChat() {
                           </div>
                         </div>
                       )}
-  
+
                       {/* Itinerary Display */}
                       {message.itinerary && (
                         <div className="mt-6 w-full">
                           <ItineraryDisplay itinerary={message.itinerary} />
                         </div>
                       )}
-  
+
                       {/* Options */}
                       {message.options &&
                         !message.selectedOption &&
@@ -1289,8 +1289,8 @@ export default function TravelPlannerChat() {
                                 key={index}
                                 variant="outline"
                                 className={cn(
-                                  "w-full justify-start text-left transition-all border-[#CC9A55] text-white bg-gray-800",
-                                  "hover:bg-[#CC9A55] hover:text-white hover:border-[#B8894A]"
+                                  "w-full justify-start text-left transition-all border-[#CC9A55] text-white bg-secondary",
+                                  "hover:bg-brand-secondary hover:text-white hover:border-[#B8894A]"
                                 )}
                                 onClick={() =>
                                   handleOptionSelect(message.id, option)
@@ -1301,15 +1301,15 @@ export default function TravelPlannerChat() {
                             ))}
                           </div>
                         )}
-  
+
                       <p
                         className={cn(
                           "text-xs mt-2",
                           message.sender === "user"
                             ? "text-white/70"
                             : message.sender === "human-agent"
-                            ? "text-white/70"
-                            : "text-white/70"
+                              ? "text-white/70"
+                              : "text-white/70"
                         )}
                       >
                         {message.timestamp}
@@ -1318,7 +1318,7 @@ export default function TravelPlannerChat() {
                   </div>
                 </div>
               ))}
-  
+
               {isTyping && (
                 <div className="flex justify-start animate-in fade-in-0 slide-in-from-bottom-3">
                   <div className="flex flex-col items-start gap-1">
@@ -1328,11 +1328,11 @@ export default function TravelPlannerChat() {
                           "h-8 w-8 rounded-full",
                           currentResponder === "ai"
                             ? ""
-                            : "bg-[#CC9A55]"
+                            : "bg-brand-secondary"
                         )}
                       >
                         {currentResponder === "ai" ? (
-                          <> 
+                          <>
                             <AvatarImage src="/ai.png" alt="AI Assistant" />
                             <AvatarFallback>AI</AvatarFallback>
                           </>
@@ -1340,35 +1340,35 @@ export default function TravelPlannerChat() {
                           <>
                             <AvatarImage src="/ai.png" alt="Human Agent" />
                             <AvatarFallback>HA</AvatarFallback>
-                          </> 
+                          </>
                         )}
                       </Avatar>
                       <Card
                         className={cn(
                           "px-3 py-2 shadow-md border-0 rounded-tl-lg rounded-tr-lg",
                           currentResponder === "ai"
-                            ? "bg-gray-800 border-[#CC9A55]"
-                            : "bg-[#CC9A55] border-[#B8894A]"
+                            ? "bg-secondary border-[#CC9A55]"
+                            : "bg-brand-secondary border-[#B8894A]"
                         )}
                       >
                         <div className="flex items-center space-x-2">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="h-2 w-2 rounded-full animate-bounce"
-                    style={{
-                      animationDelay: `${-0.15 * i}s`,
-                      background: "linear-gradient(135deg, #3b82f6, #06b6d4, #8b5cf6)",
-                    }}
-                  ></div>
-                ))}
-              </div>
+                          {[0, 1, 2].map((i) => (
+                            <div
+                              key={i}
+                              className="h-2 w-2 rounded-full animate-bounce"
+                              style={{
+                                animationDelay: `${-0.15 * i}s`,
+                                background: "linear-gradient(135deg, #3b82f6, #06b6d4, #8b5cf6)",
+                              }}
+                            ></div>
+                          ))}
+                        </div>
 
                       </Card>
                     </div>
 
                     {/* Cycling text */}
-                    <span className="mt-1 text-sm text-white font-medium bg-[#CC9A55] px-2 py-1 rounded-md shadow-sm animate-fade-in">
+                    <span className="mt-1 text-sm text-white font-medium bg-brand-secondary px-2 py-1 rounded-md shadow-sm animate-fade-in">
                       <TypingText />
                     </span>
                   </div>
@@ -1379,9 +1379,9 @@ export default function TravelPlannerChat() {
               <div ref={messagesEndRef} style={{ height: '1px', opacity: 0 }} />
             </div>
           </ScrollArea>
-  
+
           <NewChatButton />
-  
+
           {/* Input Area */}
           <div className="p-4 border-t border-[#CC9A55] bg-black">
             <div className="flex items-center gap-2 max-w-5xl mx-auto">
@@ -1392,7 +1392,7 @@ export default function TravelPlannerChat() {
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Type your message here. Press Enter or click Send"
-                  className="w-full resize-none rounded-md border border-[#CC9A55] bg-gray-800 text-white placeholder-gray-400 px-4 py-2 pr-12 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CC9A55] transition-all"
+                  className="w-full resize-none rounded-md border border-[#CC9A55] bg-secondary text-white placeholder-gray-400 px-4 py-2 pr-12 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CC9A55] transition-all"
                 />
                 <div className="absolute right-2 inset-y-0 flex items-center pointer-events-none">
                   <Button
@@ -1409,43 +1409,43 @@ export default function TravelPlannerChat() {
           </div>
         </div>
       </SidebarProvider>
-  
+
       {/* Floating Itinerary Button - Made more prominent */}
       <div className="fixed right-6 z-50 bottom-24"> {/* Changed to bottom-24 (6rem) */}
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-      <Button
-  onClick={() => setIsDrawerOpen((prev) => !prev)}
-  className={cn(
-    "rounded-full shadow-xl bg-[#CC9A55] hover:bg-[#B8894A] transition-all",
-    "flex items-center justify-center h-12 w-12 sm:w-auto sm:px-4",
-    "border-2 border-white/80",
-    "hover:scale-105 active:scale-95"
-  )}
-  size="icon"
->
-  <Calendar className="h-5 w-5 text-white" />
-  <span className="hidden sm:inline ml-2 text-white font-medium text-sm">
-    Itinerary
-  </span>
-</Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setIsDrawerOpen((prev) => !prev)}
+                className={cn(
+                  "rounded-full shadow-xl bg-brand-secondary hover:bg-[#B8894A] transition-all",
+                  "flex items-center justify-center h-12 w-12 sm:w-auto sm:px-4",
+                  "border-2 border-white/80",
+                  "hover:scale-105 active:scale-95"
+                )}
+                size="icon"
+              >
+                <Calendar className="h-5 w-5 text-white" />
+                <span className="hidden sm:inline ml-2 text-white font-medium text-sm">
+                  Itinerary
+                </span>
+              </Button>
 
-      </TooltipTrigger>
-      <TooltipContent side="left" className="flex items-center gap-2">
-        <Calendar className="h-4 w-4" />
-        <span>View your itinerary</span>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-</div>
-  
+            </TooltipTrigger>
+            <TooltipContent side="left" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span>View your itinerary</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
       {/* Drawer Component */}
-      <ItineraryDrawer 
-        isOpen={isDrawerOpen} 
+      <ItineraryDrawer
+        isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         onOpen={() => setIsDrawerOpen(true)}
-        isDesktop={true} 
+        isDesktop={true}
         selectedServices={selectedServices}
         itinerary={itinerary}
       />
@@ -1462,7 +1462,7 @@ const TransferCard = ({
   onSelect: () => void;
 }) => {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-gray-800">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-secondary">
       <div className="flex flex-col h-full">
         {/* Transfer Image */}
         <div className="h-40 w-full relative overflow-hidden">
@@ -1472,7 +1472,7 @@ const TransferCard = ({
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <div className="absolute top-2 right-2">
-            <Badge className="bg-[#CC9A55] text-white border-0 shadow-md backdrop-blur-sm">
+            <Badge className="bg-brand-secondary text-white border-0 shadow-md backdrop-blur-sm">
               <DollarSign className="h-3.5 w-3.5 mr-0.5 text-white" />
               {transfer.price}
             </Badge>
@@ -1504,7 +1504,7 @@ const TransferCard = ({
               <Badge
                 key={index}
                 variant="outline"
-                className="text-xs px-1.5 py-0 bg-[#CC9A55] text-white border-[#CC9A55]"
+                className="text-xs px-1.5 py-0 bg-brand-secondary text-white border-[#CC9A55]"
               >
                 {feature}
               </Badge>
@@ -1512,7 +1512,7 @@ const TransferCard = ({
             {transfer.features.length > 3 && (
               <Badge
                 variant="outline"
-                className="text-xs px-1.5 py-0 bg-[#CC9A55] text-white border-[#CC9A55]"
+                className="text-xs px-1.5 py-0 bg-brand-secondary text-white border-[#CC9A55]"
               >
                 +{transfer.features.length - 3} more
               </Badge>
@@ -1542,7 +1542,7 @@ const MealCard = ({
   onSelect: () => void;
 }) => {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-gray-800">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-secondary">
       <div className="flex flex-col h-full">
         {/* Meal Image */}
         <div className="h-40 w-full relative overflow-hidden">
@@ -1552,7 +1552,7 @@ const MealCard = ({
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <div className="absolute top-2 right-2">
-            <Badge className="bg-[#CC9A55] text-white border-0 shadow-md backdrop-blur-sm">
+            <Badge className="bg-brand-secondary text-white border-0 shadow-md backdrop-blur-sm">
               <DollarSign className="h-3.5 w-3.5 mr-0.5 text-white" />
               {meal.price}
             </Badge>
@@ -1622,7 +1622,7 @@ const ActivityCard = ({
   onSelect: () => void;
 }) => {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-gray-800">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border-0 shadow-md group bg-secondary">
       <div className="flex flex-col h-full">
         {/* Activity Image */}
         <div className="h-40 w-full relative overflow-hidden">
@@ -1632,7 +1632,7 @@ const ActivityCard = ({
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           {/* <div className="absolute top-2 right-2">
-            <Badge className="bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white border-0 shadow-md backdrop-blur-sm">
+            <Badge className="bg-surface/90 dark:bg-slate-900/90 text-slate-900 dark:text-white border-0 shadow-md backdrop-blur-sm">
               <DollarSign className="h-3.5 w-3.5 mr-0.5 text-emerald-600 dark:text-emerald-400" />
               {activity.price}
             </Badge>
@@ -1689,17 +1689,17 @@ const ActivityCard = ({
 
           <div className="mt-auto pt-3">
             <Button
-            onClick={() =>
-              window.open(
-                `https://www.airporttransfers.ai/product/${encodeURIComponent(activity.id)}`,
-                '_blank'
-              )
-            }
-            size="sm"
-            className="w-full bg-[#CC9A55] hover:bg-[#B8894A] text-white shadow-md transition-all"
-          >
-            View Details
-          </Button>
+              onClick={() =>
+                window.open(
+                  `https://www.airporttransfers.ai/product/${encodeURIComponent(activity.id)}`,
+                  '_blank'
+                )
+              }
+              size="sm"
+              className="w-full bg-brand-secondary hover:bg-[#B8894A] text-white shadow-md transition-all"
+            >
+              View Details
+            </Button>
 
           </div>
         </div>

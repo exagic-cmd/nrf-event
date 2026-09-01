@@ -49,18 +49,18 @@ const slug = params?.slug
 
   if (!slug) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-muted flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-4">Loading...</h1>
       </div>
     </div>
   )
 }
   if (!course) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Course Not Found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Course Not Found</h1>
           <Button onClick={() => router.push("/")}>Back to Courses</Button>
         </div>
       </div>
@@ -79,16 +79,16 @@ const slug = params?.slug
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
 
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-surface shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
                 onClick={() => router.push("/")}
-                className="flex items-center space-x-2 text-gray-600 hover:text-[#FE6F4F]"
+                className="flex items-center space-x-2 text-muted-foreground hover:text-[#FE6F4F]"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Back to Courses</span>
@@ -112,7 +112,7 @@ const slug = params?.slug
               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <Button size="lg" className="bg-white/20 hover:bg-white/30 text-white">
+              <Button size="lg" className="bg-surface/20 hover:bg-surface/30 text-white">
                 <Play className="w-6 h-6 mr-2" />
                 Play Course Video
               </Button>
@@ -147,17 +147,17 @@ const slug = params?.slug
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {currentSections.map((section, index) => (
-            <div key={section.heading || index} className="bg-white rounded-lg shadow-sm p-8 mb-8">
+            <div key={section.heading || index} className="bg-surface rounded-lg shadow-sm p-8 mb-8">
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <Badge className="bg-[#FE6F4F]/10 text-[#FE6F4F] hover:bg-[#FE6F4F]/20">
                     Section {startIndex + index + 1}
                   </Badge>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-muted-foreground">
                     {Math.round(((startIndex + index + 1) / allSections.length) * 100)}% Complete
                   </div>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{section.heading}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">{section.heading}</h2>
               </div>
 
               {/* Video or Image Section */}
@@ -174,7 +174,7 @@ const slug = params?.slug
                 </div>
               ) : section.img && section.img !== "/png" && section.img !== "" ? (
                 <div className="mb-8">
-                  <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
                     <Image
                       src={section.img || "/placeholder.svg"}
                       alt={section.heading}
@@ -215,14 +215,14 @@ const slug = params?.slug
                       return (
                         <div key={pIndex} className="flex items-start">
                           <div className="flex-shrink-0 w-2 h-2 bg-[#ffae9c] rounded-full mt-2 mr-4"></div>
-                          <p className="text-gray-500 text-sm mt-1">{paragraph.replace("*", "").trim()}</p>
+                          <p className="text-muted-foreground text-sm mt-1">{paragraph.replace("*", "").trim()}</p>
                         </div>
                       )
                     }
 
                     // Regular paragraphs
                     return (
-                      <p key={pIndex} className="text-gray-700 leading-relaxed mb-4">
+                      <p key={pIndex} className="text-muted-foreground leading-relaxed mb-4">
                         {paragraph}
                       </p>
                     )
@@ -231,14 +231,14 @@ const slug = params?.slug
               </div>
 
               {/* Progress Indicator */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-between text-sm text-gray-500">
+              <div className="mt-8 pt-6 border-t border-border">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>Section Progress</span>
                   <span>
                     {startIndex + index + 1} of {allSections.length}
                   </span>
                 </div>
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div className="mt-2 w-full bg-secondary rounded-full h-2">
                   <div
                     className="bg-[#FE6F4F] h-2 rounded-full transition-all duration-300"
                     style={{ width: `${((startIndex + index + 1) / allSections.length) * 100}%` }}
@@ -261,12 +261,12 @@ const slug = params?.slug
               <div className="flex justify-center space-x-4">
                 <Button
                   variant="outline"
-                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  className="bg-surface/20 border-white/30 text-white hover:bg-surface/30"
                   onClick={() => setCurrentPage(1)}
                 >
                   Restart Course
                 </Button>
-                <Button className="bg-white text-[#FE6F4F] hover:bg-gray-100" onClick={() => router.push("/")}>
+                <Button className="bg-surface text-[#FE6F4F] hover:bg-muted" onClick={() => router.push("/")}>
                   Back to Courses
                 </Button>
               </div>

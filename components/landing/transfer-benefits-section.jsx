@@ -89,10 +89,10 @@ export function TransferBenefitsSection() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Top Day Tours
             </h2>
-            <p className="text-[#D3202D] font-semibold text-sm md:text-base tracking-wide">
+            <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
               EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
             </p>
           </div>
@@ -101,13 +101,13 @@ export function TransferBenefitsSection() {
           <div className="hidden md:flex gap-2 mt-4 md:mt-0">
             <button
               onClick={() => scroll("left")}
-              className="p-2 bg-gray-300 rounded-full text-gray-700 hover:bg-gray-400 transition-all"
+              className="p-2 bg-secondary rounded-full text-muted-foreground hover:bg-secondary transition-all"
             >
               <ChevronLeft size={20} />
             </button>
             <button
               onClick={() => scroll("right")}
-              className="p-2 bg-[#D3202D] rounded-full text-white hover:bg-red-700 transition-all"
+              className="p-2 bg-primary rounded-full text-primary-foreground hover:bg-primary-hover transition-all"
             >
               <ChevronRight size={20} />
             </button>
@@ -116,7 +116,7 @@ export function TransferBenefitsSection() {
 
         {/* Loading State */}
         {isLoadingDay ? (
-          <p className="text-center text-gray-600">Loading top day tours...</p>
+          <p className="text-center text-muted-foreground">Loading top day tours...</p>
         ) : (
           <div className="relative">
             {/* Scrollable Container */}
@@ -153,28 +153,28 @@ export function TransferBenefitsSection() {
                     {/* Content */}
                     <div className="py-4">
                       {/* Title */}
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1">
+                        <h3 className="text-lg md:text-xl font-bold text-foreground mb-1 line-clamp-1">
                         {tour.product_title}
                       </h3>
                       
                       {/* Subtitle */}
-                      <p className="text-gray-600 text-sm mb-3">
+                      <p className="text-muted-foreground text-sm mb-3">
                         ({tour.category_name})
                       </p>
 
                       {/* Description */}
-                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                         {tour.short_desc || "Explore amazing experiences!"}
                       </p>
 
                       {/* Footer */}
                       <div className="flex items-center bg-[#F7F7F780] rounded-xl py-3 px-1 justify-between">
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-2xl font-bold text-foreground">
                          <span className="">{tour?.currency}</span> {tour?.starting_price} 
                         </p>
                         <button
                           onClick={() => handleCardClick(tour)}
-                          className="bg-[#D3202D] hover:bg-red-700 text-white font-semibold py-2 px-2 rounded-lg transition-colors text-sm w-[120px] flex justify-center items-center"
+                          className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold py-2 px-2 rounded-lg transition-colors text-sm w-[120px] flex justify-center items-center"
                           disabled={loadingTourId === tour.id}
                         >
                           {loadingTourId === tour.id ? (
@@ -196,13 +196,13 @@ export function TransferBenefitsSection() {
         <div className="flex justify-center gap-2 mt-0 md:hidden">
           <button
             onClick={() => scroll("left")}
-            className="p-2 bg-gray-300 rounded-full text-gray-700 hover:bg-gray-400 transition-all"
+            className="p-2 bg-secondary rounded-full text-muted-foreground hover:bg-secondary transition-all"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => scroll("right")}
-            className="p-2 bg-[#D3202D] rounded-full text-white hover:bg-red-700 transition-all"
+            className="p-2 bg-primary rounded-full text-primary-foreground hover:bg-primary-hover transition-all"
           >
             <ChevronRight size={20} />
           </button>

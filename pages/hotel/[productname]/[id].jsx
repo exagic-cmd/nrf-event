@@ -579,12 +579,12 @@ export default function AccommodationDetailPage() {
         </title>
       </Head>
 
-      <div className="min-h-screen bg-[#f4f4f4] text-black pt-[80px] md:pt-16 pb-12">
+      <div className="min-h-screen bg-surface-muted text-surface-foreground pt-[80px] md:pt-16 pb-12">
         <div className="px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 w-full gap-6 lg:gap-8"> {/* New grid container for main content and sidebar */}
             <div className="lg:col-span-9"> {/* Main content area */}
               {/* Accommodation Header and Info Card */}
-              <div className="flex flex-col bg-white p-2 rounded-2xl lg:flex-row justify-between gap-1"> {/* Removed max-w-6xl */}
+              <div className="flex flex-col bg-surface p-2 rounded-2xl lg:flex-row justify-between gap-1"> {/* Removed max-w-6xl */}
                 <AccommodationHeader hotelData={hotelData} />
 
                 <AccommodationInfoCard

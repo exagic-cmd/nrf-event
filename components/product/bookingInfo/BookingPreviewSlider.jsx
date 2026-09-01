@@ -58,11 +58,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
   }, 0);
 
   return (
-    <div className='bg-white p-6 rounded-lg shadow-md '>
+    <div className='bg-surface p-6 rounded-lg shadow-md '>
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrev}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary transition"
           title={t('previous')}
         >
           <ChevronLeft size={20} className="text-slate-500" />
@@ -74,7 +74,7 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
 
         <button
           onClick={handleNext}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary transition"
           title={t('next')}
         >
           <ChevronRight size={20} className="text-slate-500" />
@@ -88,15 +88,15 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
       />
 
       <h3 className="text-lg font-semibold line-clamp-2 truncate mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 mb-3">{date}</p>
+      <p className="text-sm text-muted-foreground mb-3">{date}</p>
 
       {isTransfer ? (
         <>
          <div className='flex justify-between'>
-           <p className="text-sm text-gray-500 mb-1">
+           <p className="text-sm text-muted-foreground mb-1">
             {t('passengers')}: {item.vehicle?.passengers}
           </p>
-          <p className="text-sm text-gray-500 mb-1">
+          <p className="text-sm text-muted-foreground mb-1">
             {t('baggage')}: {item.baggage}
           </p>
          </div>
@@ -109,17 +109,17 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           <div className="pt-2 flex flex-col justify-between text-md font-normal">
             <div className='flex justify-between'>
               <span>{t('subtotal')}</span>
-              <span className="text-[#D3202D]">{apiData?.currency} {total}</span>
+              <span className="text-primary">{apiData?.currency} {total}</span>
             </div>
             <div className='flex border-t mt-4 pt-2 justify-between text-lg font-semibold'>
               <span>{t('total_all_items')}</span>
-              <span className="text-[#D3202D]">{apiData?.currency} {overallTotal}</span>
+              <span className="text-primary">{apiData?.currency} {overallTotal}</span>
             </div>
           </div>
         </>
       ) : (
         <>
-          <div className="text-sm text-gray-800">
+          <div className="text-sm text-foreground">
             <div className="flex justify-between mb-1">
               <span>{adultCount} {t('adultsPreview')}</span>
               <span>{apiData?.currency} {totalAdult}</span>
@@ -133,11 +133,11 @@ const BookingPreviewSlider = ({ items = [], bookingDetailsMap = {} }) => {
           <div className="pt-2 flex flex-col justify-between text-md font-normal">
             <div className='flex justify-between'>
               <span>{t('subtotal')}</span>
-              <span className="text-[#D3202D]">{apiData?.currency} {total}</span>
+              <span className="text-primary">{apiData?.currency} {total}</span>
             </div>
             <div className='flex border-t mt-4 pt-2 justify-between text-lg font-semibold'>
               <span>{t('total_all_items')}</span>
-              <span className="text-[#D3202D]">{apiData?.currency} {overallTotal}</span>
+              <span className="text-primary">{apiData?.currency} {overallTotal}</span>
             </div>
           </div>
         </>

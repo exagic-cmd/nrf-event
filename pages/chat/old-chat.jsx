@@ -203,19 +203,19 @@ How can I assist you today?`,
   return (
     <div className="flex flex-col h-screen bg-black text-white overflow-hidden">
       {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between p-3 border-b border-gray-800 bg-gradient-to-r from-black to-gray-900">
+      <div className="flex-shrink-0 flex items-center justify-between p-3 border-b border-border bg-gradient-to-r from-black to-gray-900">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-            <span className="text-black font-bold text-sm">T</span>
+            <span className="text-surface-foreground font-bold text-sm">T</span>
           </div>
           <div>
             <h1 className="text-md font-semibold text-white">Teressa</h1>
-            <p className="text-xs text-gray-400">Airport Transfer Assistant</p>
+            <p className="text-xs text-muted-foreground">Airport Transfer Assistant</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">User: {userId.substring(0, 8)}...</span>
+          <span className="text-xs text-muted-foreground">User: {userId.substring(0, 8)}...</span>
         </div>
       </div>
 
@@ -226,7 +226,7 @@ How can I assist you today?`,
             <div className={`flex gap-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
               {msg.sender === "ai" && (
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-surface-foreground" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
                   </svg>
                 </div>
@@ -236,8 +236,8 @@ How can I assist you today?`,
                 <div
                   className={`px-3 py-2 rounded-xl ${
                     msg.sender === "user"
-                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black"
-                      : "bg-gray-800 text-white border border-gray-700"
+                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-surface-foreground"
+                      : "bg-secondary text-white border border-border"
                   }`}
                 >
                   <ReactMarkdown 
@@ -276,17 +276,17 @@ How can I assist you today?`,
             {/* Vehicle Listings */}
             {msg.vehicles && msg.vehicles.length > 0 && (
               <div className="ml-8 space-y-2">
-                <p className="text-xs text-gray-400 font-medium">Available Vehicles:</p>
+                <p className="text-xs text-muted-foreground font-medium">Available Vehicles:</p>
                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                   {msg.vehicles.map((v) => {
                     const isSelected = selectedVehicleId === v.vehicle_id;
                     return (
                       <div
                         key={v.vehicle_id}
-                        className={`flex-shrink-0 w-64 bg-gray-800 rounded-lg border transition-all ${
+                        className={`flex-shrink-0 w-64 bg-secondary rounded-lg border transition-all ${
                           isSelected 
                             ? "border-yellow-500 shadow-lg shadow-yellow-500/20" 
-                            : "border-gray-700"
+                            : "border-border"
                         }`}
                       >
                         <div className="p-3">
@@ -302,7 +302,7 @@ How can I assist you today?`,
                             />
                             {isSelected && (
                               <div className="absolute top-2 right-2 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                                <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-3 h-3 text-surface-foreground" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                               </div>
@@ -332,8 +332,8 @@ How can I assist you today?`,
                                 onClick={() => setConfirmVehicle(v)}
                                 className={`px-3 py-1.5 rounded text-xs transition-all ${
                                   isSelected
-                                    ? "bg-yellow-500 text-black"
-                                    : "bg-gray-700 text-white border border-gray-600"
+                                    ? "bg-yellow-500 text-surface-foreground"
+                                    : "bg-gray-700 text-white border border-border"
                                 }`}
                               >
                                 {isSelected ? "Selected" : "Select"}
@@ -353,11 +353,11 @@ How can I assist you today?`,
         {isLoading && (
           <div className="flex justify-start">
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-              <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-surface-foreground" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
               </svg>
             </div>
-            <div className="ml-2 bg-gray-800 text-white border border-gray-700 px-3 py-2 rounded-xl">
+            <div className="ml-2 bg-secondary text-white border border-border px-3 py-2 rounded-xl">
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
@@ -375,7 +375,7 @@ How can I assist you today?`,
             <div className="ml-8 max-w-[85%] bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
               <div className="flex items-start gap-2">
                 <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-3 h-3 text-surface-foreground" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                 </div>
@@ -455,7 +455,7 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
                           { sender: "ai", text: "What can we help with your selection?" },
                         ]);
                       }}
-                      className="bg-gray-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 border border-gray-600"
+                      className="bg-gray-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 border border-border"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -474,11 +474,11 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
 
       {/* Refresh Confirmation Dialog */}
       {showRefreshConfirm && (
-        <div className="flex-shrink-0 p-4 border-t border-gray-800 bg-gradient-to-r from-black to-gray-900">
+        <div className="flex-shrink-0 p-4 border-t border-border bg-gradient-to-r from-black to-gray-900">
           <div className="max-w-4xl mx-auto bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-surface-foreground" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -499,7 +499,7 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
                   </button>
                   <button
                     onClick={cancelRefresh}
-                    className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm flex items-center gap-1 transition-colors border border-gray-600"
+                    className="bg-gray-700 hover:text-muted-foreground text-white px-3 py-2 rounded text-sm flex items-center gap-1 transition-colors border border-border"
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -514,14 +514,14 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
       )}
 
       {/* Input Area with Refresh Button */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-800 bg-gradient-to-r from-black to-gray-900">
+      <div className="flex-shrink-0 p-4 border-t border-border bg-gradient-to-r from-black to-gray-900">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-muted-foreground">
             Session ID: <span className="font-mono">{userId}</span>
           </div>
           <button
             onClick={refreshChat}
-            className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs transition-colors border border-gray-700 text-yellow-300"
+            className="flex items-center gap-1 px-3 py-1.5 bg-secondary hover:bg-gray-700 rounded-lg text-xs transition-colors border border-border text-yellow-300"
             title="Start a new chat session"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +535,7 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
           <div className="flex-1 relative">
             <input
               type="text"
-              className={`w-full bg-gray-800 border-2 border-gray-700 rounded-xl p-4 pr-12 text-white text-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+              className={`w-full bg-secondary border-2 border-border rounded-xl p-4 pr-12 text-white text-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               placeholder={isLoading ? "Please wait..." : "Type your message..."}
@@ -551,7 +551,7 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
                   <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : (
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-1l-4 4z" />
                 </svg>
               )}
@@ -562,9 +562,9 @@ className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center
             disabled={!input.trim() || isLoading}
             className={`px-5 py-4 rounded-xl transition-all flex items-center gap-2 text-md font-semibold ${
               isLoading 
-                ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black hover:shadow-yellow-500/25'
-            } ${!input.trim() && !isLoading ? 'from-gray-700 to-gray-700 cursor-not-allowed text-gray-400' : ''}`}
+                ? 'bg-gray-700 text-muted-foreground cursor-not-allowed' 
+                : 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-surface-foreground hover:shadow-yellow-500/25'
+            } ${!input.trim() && !isLoading ? 'from-gray-700 to-gray-700 cursor-not-allowed text-muted-foreground' : ''}`}
           >
             {isLoading ? (
               <>

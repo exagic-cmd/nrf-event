@@ -30,7 +30,7 @@ const DownloadItineraryButton = ({ itineraryData }) => {
       variant="ghost"
       size="sm"
       onClick={handleDownload}
-      className="h-8 w-8 p-0 text-gray-600 hover:text-blue-600"
+      className="h-8 w-8 p-0 text-muted-foreground hover:text-blue-600"
       title="Download itinerary"
       disabled={isGenerating}
     >

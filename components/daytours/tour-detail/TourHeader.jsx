@@ -10,11 +10,11 @@ const TourHeader = ({ apiData }) => {
     <>
       {/* Mobile Header */}
       <div className="block lg:hidden mb-6">
-        <h1 className="text-xl sm:text-2xl font-semibold text-black mb-2 leading-tight">
+        <h1 className="text-xl sm:text-2xl font-semibold text-surface-foreground mb-2 leading-tight">
           {tourName}
         </h1>
         <div className="flex items-center text-gay-50 mb-4">
-          <MapPin size={16} className="mr-2 text-[#D3202D]" />
+          <MapPin size={16} className="mr-2 text-primary" />
           <span className="font-small text-sm">
             {location && t("singapore")}
           </span>
@@ -27,8 +27,8 @@ const TourHeader = ({ apiData }) => {
           <h1 className="text-lg font-semibold mb-2 leading-tight">
             {tourName}
           </h1>
-          <div className="flex items-center text-[#D3202D] mb-4">
-            <MapPin size={16} className="mr-2 text-[#D3202D]" />
+          <div className="flex items-center text-primary mb-4">
+            <MapPin size={16} className="mr-2 text-primary" />
             <span className="font-small text-sm">
               {location && t("singapore")}
             </span>

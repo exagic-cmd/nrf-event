@@ -21,8 +21,8 @@ const Field = ({ label, value }) => {
   if (value === null || value === undefined || value === "" || value === "-") return null
   return (
     <div className="w-full">
-      <h4 className="text-sm font-semibold text-black">{label}</h4>
-      <p className="text-base text-gray-900 mt-1 p-2 rounded bg-gray-50">{value}</p>
+      <h4 className="text-sm font-semibold text-surface-foreground">{label}</h4>
+      <p className="text-base text-foreground mt-1 p-2 rounded bg-muted">{value}</p>
 
     </div>
   )
@@ -39,20 +39,20 @@ const Field = ({ label, value }) => {
 
 
 const SectionCard = ({ title, children, className = "" }) => (
-  <div className={`bg-white rounded-2xl shadow-sm p-6 ${className}`}>
-    <h3 className="text-lg font-semibold text-black mb-4">{title}</h3>
+  <div className={`bg-surface rounded-2xl shadow-sm p-6 ${className}`}>
+    <h3 className="text-lg font-semibold text-surface-foreground mb-4">{title}</h3>
     {children}
   </div>
 )
 
 const LocationCard = ({ title, point_title, address, image }) => (
-  <div className="bg-white rounded-2xl shadow-sm md:p-4 p-2">
-    <h4 className="font-semibold text-black mb-2">{title}</h4>
+  <div className="bg-surface rounded-2xl shadow-sm md:p-4 p-2">
+    <h4 className="font-semibold text-surface-foreground mb-2">{title}</h4>
     <div className="relative w-full md:w-2/3 h-36 rounded-xl overflow-hidden mb-3">
       <Image src={getFullImageUrl(image) || "/placeholder.svg"} alt={title} fill className="object-cover " />
     </div>
-    <p className="text-md text-black">{point_title}</p>
-    <p className="text-sm text-black mt-2">{address}</p>
+    <p className="text-md text-surface-foreground">{point_title}</p>
+    <p className="text-sm text-surface-foreground mt-2">{address}</p>
 
   </div>
 )
@@ -61,9 +61,9 @@ const LocationCard = ({ title, point_title, address, image }) => (
 const DriverCard = ({ driver, status }) => {
   if (!driver) return null;
   return (
-    <div className="relative bg-white rounded-2xl shadow-sm md:p-4 p-4 flex flex-col gap-4">
+    <div className="relative bg-surface rounded-2xl shadow-sm md:p-4 p-4 flex flex-col gap-4">
       {status && (
-        <span className="absolute top-0 right-3 bg-gray-100 text-black-700 text-xs font-medium px-3 py-1 rounded-full shadow-sm">
+        <span className="absolute top-0 right-3 bg-muted text-surface-foreground-700 text-xs font-medium px-3 py-1 rounded-full shadow-sm">
           {status}
         </span>
       )}
@@ -77,21 +77,21 @@ const DriverCard = ({ driver, status }) => {
             className="rounded-full object-cover"
           />
         ) : (
-          <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-black">
+          <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-surface-foreground">
             👤
           </div>
         )}
         <div>
           <p className="font-medium">{driver.name}</p>
-          <div className="flex items-center gap-5 text-sm my-2 text-gray-900">
+          <div className="flex items-center gap-5 text-sm my-2 text-foreground">
             {/* {driver.email && (
               <span className="flex items-center gap-1">
-                <Mail className="w-4 h-4 text-[#D3202D]" /> {driver.email}
+                <Mail className="w-4 h-4 text-primary" /> {driver.email}
               </span>
             )} */}
             {driver.contact_number && (
               <span className="flex items-center gap-1">
-                <WhatsappIcon className="w-4 h-4 text-[#D3202D]" /> {driver.contact_number}
+                <WhatsappIcon className="w-4 h-4 text-primary" /> {driver.contact_number}
               </span>
             )}
           </div>
@@ -193,7 +193,7 @@ const confirmCancel = (id, reason) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <LoadingSvg2 />
       </div>
     )
@@ -203,12 +203,12 @@ const confirmCancel = (id, reason) => {
     return (
       <ProtectedRoute>
         
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="min-h-screen bg-surface flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-black mb-2">
+            <h2 className="text-xl font-semibold text-surface-foreground mb-2">
               {t("orderNotFound")}
             </h2>
-            <p className="text-gray-900 mb-4">
+            <p className="text-foreground mb-4">
               {t("noOrderFoundForId")} <b>{id}</b>.
             </p>
             <button onClick={() => router.back()} className="bg-black text-white px-4 py-2 rounded-lg">
@@ -223,12 +223,12 @@ const confirmCancel = (id, reason) => {
   if (error) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="min-h-screen bg-surface flex items-center justify-center">
           <div className="text-center">
             <div className="text-red-500 text-xl mb-4">⚠️</div>
-            <h2 className="text-xl text-black mb-2">{t("errorLoadingOrder")}</h2>
-            <p className="text-gray-900 mb-4">{error}</p>
-            <button onClick={() => router.back()} className="bg-[#D3202D] text-black px-4 py-2 rounded-lg">
+            <h2 className="text-xl text-surface-foreground mb-2">{t("errorLoadingOrder")}</h2>
+            <p className="text-foreground mb-4">{error}</p>
+            <button onClick={() => router.back()} className="bg-primary text-surface-foreground px-4 py-2 rounded-lg">
               {t("goBack")}
             </button>
           </div>
@@ -240,7 +240,7 @@ const confirmCancel = (id, reason) => {
   return (
     <ProtectedRoute>
       
-      <div className="min-h-screen text-black  font-normal bg-[#F4F4F4] ">
+      <div className="min-h-screen text-surface-foreground  font-normal bg-surface-muted ">
         {displayItineraries.map((it) => (
   <div key={it.id} className="relative">
 
@@ -253,7 +253,7 @@ const confirmCancel = (id, reason) => {
             query: { post: "true" },
           });
         }}
-        className="fixed bottom-6 right-6 bg-[#D3202D] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#b3843f] transition-colors z-50"
+        className="fixed bottom-6 right-6 bg-primary text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#b3843f] transition-colors z-50"
       >
      
          <span className="inline-flex items-center gap-1">
@@ -268,7 +268,7 @@ const confirmCancel = (id, reason) => {
        <div className="md:pt-24 pt-20">
          <button
  onClick={() => router.push("/order")}
-                  className="flex items-center gap-2 text-[#D3202D] hover:text-[#D3202D]  ml-3 md:ml-6 mb-6 transition-colors"
+                  className="flex items-center gap-2 text-primary hover:text-primary  ml-3 md:ml-6 mb-6 transition-colors"
                 >
                   <ArrowLeft size={20} /> {t("button.back")}
                 </button>
@@ -309,11 +309,11 @@ const confirmCancel = (id, reason) => {
     {it.hotel_info.rooms.map((room, roomIdx) => (
       <div
         key={roomIdx}
-        className="bg-white relative rounded-xl shadow-sm p-1 border border-gray-200"
+        className="bg-surface relative rounded-xl shadow-sm p-1 border border-border"
       >
         <div className="flex absolute right-2 top-1 items-center gap-3">
-          <Hotel className="w-4 h-4 text-[#D3202D]" />
-          <h4 className="text-xs md:text-sm font-semibold text-black">
+          <Hotel className="w-4 h-4 text-primary" />
+          <h4 className="text-xs md:text-sm font-semibold text-surface-foreground">
             {t("room", "Room")} {roomIdx + 1}
           </h4>
         </div>
@@ -325,18 +325,18 @@ const confirmCancel = (id, reason) => {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             <div>
-              <p className="text-sm md:text-md font-semibold text-black">
+              <p className="text-sm md:text-md font-semibold text-surface-foreground">
                 {t("roomType", "Room Type")}
               </p>
-              <p className="text-sm text-black font-medium">
+              <p className="text-sm text-surface-foreground font-medium">
                 {room.room_type}
               </p>
             </div>
             <div>
-              <p className="text-sm md:text-md font-semibold text-black">
+              <p className="text-sm md:text-md font-semibold text-surface-foreground">
                 {t("mealPlan", "Meal Plan")}
               </p>
-              <p className="text-sm text-black">
+              <p className="text-sm text-surface-foreground">
                 {room.meal_plan} 
               </p>
             </div>
@@ -344,7 +344,7 @@ const confirmCancel = (id, reason) => {
             {/* Guests */}
             {room.guests && room.guests.length > 0 && (
               <div>
-                <p className="text-sm md:text-md font-semibold text-black mb-2">
+                <p className="text-sm md:text-md font-semibold text-surface-foreground mb-2">
                   {t("guests", "Guests")}
                 </p>
                 
@@ -356,16 +356,16 @@ const confirmCancel = (id, reason) => {
                     <div className="space-y-2">
                       {adults.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold  text-[#D3202D] tracking-wider">{t("adults", "Adults")}</p>
-                          <p className="text-sm text-black">
+                          <p className="text-xs font-semibold  text-primary tracking-wider">{t("adults", "Adults")}</p>
+                          <p className="text-sm text-surface-foreground">
                             {adults.map((g) => `${g.title} ${g.first} ${g.last}`).join(", ")}
                           </p>
                         </div>
                       )}
                       {children.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold  text-[#D3202D] tracking-wider">{t("children", "Children")}</p>
-                          <p className="text-sm text-black">
+                          <p className="text-xs font-semibold  text-primary tracking-wider">{t("children", "Children")}</p>
+                          <p className="text-sm text-surface-foreground">
                             {children.map((g) => `${g.first} ${g.last}`).join(", ")}
                           </p>
                         </div>
@@ -428,13 +428,13 @@ const confirmCancel = (id, reason) => {
                             <Field label="Belt" value={it.flight_info.belt} />
                             {it.flight_info.flight_monitoring && (
   <div>
-    <h4 className="text-sm font-semibold text-black">Flight Monitoring</h4>
+    <h4 className="text-sm font-semibold text-surface-foreground">Flight Monitoring</h4>
     <div className="flex items-center mt-1">
       <span className="relative flex h-3 w-3">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
         <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
       </span>
-      <span className="ml-2 text-base text-gray-900">Active</span>
+      <span className="ml-2 text-base text-foreground">Active</span>
     </div>
   </div>
 )}
@@ -449,7 +449,7 @@ const confirmCancel = (id, reason) => {
                 {it.driver && it.driver.name ? (
                   <DriverCard driver={it.driver} vehicle={it.vehicle} status={it.driver_status} />
                 ) : (
-                  <div className="flex justify-center text-black py-6 border mb-2 rounded-xl bg-gray-50">
+                  <div className="flex justify-center text-surface-foreground py-6 border mb-2 rounded-xl bg-muted">
                     <CarFront/> <span className="ml-4">{t('driverNotAssigned')}</span>
                   </div>
                 )}
@@ -457,23 +457,23 @@ const confirmCancel = (id, reason) => {
             )}
                          {/* Vehicle Info & Features */}
                     {(it.vehicle || it.features?.length > 0) && (
-                      <div className="bg-white rounded-2xl shadow-sm p-4 border">
+                      <div className="bg-surface rounded-2xl shadow-sm p-4 border">
                         {it.vehicle && (
                               <>
         
         <div className="flex flex-col lg:flex-row justify-between items-start">
          <div className="flex justify-between w-full">
            <div className="flex-col">
-            <h3 className="md:text-lg text-md font-semibold text-black">
+            <h3 className="md:text-lg text-md font-semibold text-surface-foreground">
               {it.vehicle.vehicle_type}
             </h3>
-            <p className="text-sm font-normal text-gray-900">
+            <p className="text-sm font-normal text-foreground">
               {t("vehicleNumber")}: {it.vehicle.vehicle_no || "N/A"}
             </p>
 
            
             <div className="hidden lg:block mt-2">
-              <p className="text-sm text-black leading-relaxed">
+              <p className="text-sm text-surface-foreground leading-relaxed">
                 {it.vehicle.description || t("NoVehicleDescriptionAvailable")}
               </p>
             </div>
@@ -508,15 +508,15 @@ const confirmCancel = (id, reason) => {
                             )}
 
                             {/* Amenities */}
-                            <h3 className="md:text-lg text-md font-semibold text-black mb-3">
+                            <h3 className="md:text-lg text-md font-semibold text-surface-foreground mb-3">
                               {t('vehicleAmenities')}
                             </h3>
-                            <ul className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 list-disc list-inside text-sm text-black">
+                            <ul className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 list-disc list-inside text-sm text-surface-foreground">
                               {it.features.map((feature, i) => (
                                 <li key={i} className="leading-snug">
                                   <span className="font-medium">{feature.title}</span>
                                   {/* {feature.flag && (
-                                    <p className="text-xs text-[#D3202D] ml-5 mt-0.5">{feature.flag}</p>
+                                    <p className="text-xs text-primary ml-5 mt-0.5">{feature.flag}</p>
                                   )} */}
                                 </li>
                               ))}
@@ -537,11 +537,11 @@ const confirmCancel = (id, reason) => {
           
                    {/* ✅ Special Requests Section */}
     {it.special_request?.length > 0 && (
-      <div className="bg-white rounded-2xl shadow-sm p-4 border">
-        <h3 className="text-lg font-semibold text-black mb-3">
+      <div className="bg-surface rounded-2xl shadow-sm p-4 border">
+        <h3 className="text-lg font-semibold text-surface-foreground mb-3">
           {t('specialRequests')}
         </h3>
-        <ul className="list-disc pl-6 space-y-1 text-sm text-black">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-surface-foreground">
           {it.special_request.map((req, i) => (
             <li key={i}>{req}</li>
           ))}
@@ -559,7 +559,7 @@ const confirmCancel = (id, reason) => {
 )}
 {it.arrival_map_image && (
   <div>
-    <h3 className="text-lg font-semibold text-black mb-4">Arrival Map</h3>
+    <h3 className="text-lg font-semibold text-surface-foreground mb-4">Arrival Map</h3>
 
     <div className="relative w-full h-44 lg:h-64 rounded-xl">
       <Image
@@ -582,17 +582,17 @@ const confirmCancel = (id, reason) => {
 
 {/* Remarks Section */}
 {(it?.category_id === 2 || it?.category_id === 11) && (
-  <div className="bg-white p-2 md:p-0">
-    <h4 className="text-md font-semibold text-gray-900 mb-4">{t('pickupNotes', 'Pickup Notes')}</h4>
+  <div className="bg-surface p-2 md:p-0">
+    <h4 className="text-md font-semibold text-foreground mb-4">{t('pickupNotes', 'Pickup Notes')}</h4>
 
     {it.pickup_point_remarks ? (
       <details className="group">
-        <summary className="flex justify-between items-center cursor-pointer text-sm font-semibold text-[#D3202D]">
+        <summary className="flex justify-between items-center cursor-pointer text-sm font-semibold text-primary">
           {t('viewNotes')}
-          <span className="ml-2 text-black group-open:rotate-180 transition-transform">▼</span>
+          <span className="ml-2 text-surface-foreground group-open:rotate-180 transition-transform">▼</span>
         </summary>
 
-        <div className="mt-2 space-y-1 text-sm text-gray-700 leading-relaxed">
+        <div className="mt-2 space-y-1 text-sm text-muted-foreground leading-relaxed">
           {(() => {
     const urls = [];
     const remarkWithPlaceholders = it.pickup_point_remarks.replace(
@@ -631,7 +631,7 @@ const confirmCancel = (id, reason) => {
       };
 
       if (trimmed.startsWith("Changi Airport") || trimmed.endsWith(":")) {
-        return <p key={idx} className="font-semibold text-black mt-2">{renderLine(trimmed)}</p>;
+        return <p key={idx} className="font-semibold text-surface-foreground mt-2">{renderLine(trimmed)}</p>;
       }
 
       if (/^(\\+|-|→)/.test(trimmed)) {
@@ -648,7 +648,7 @@ const confirmCancel = (id, reason) => {
         </div>
       </details>
     ) : (
-      <p className="text-sm text-black">{t("noBookingNotesAvailable", "No Booking notes available.")}</p>
+      <p className="text-sm text-surface-foreground">{t("noBookingNotesAvailable", "No Booking notes available.")}</p>
     )}
   </div>
 )}
@@ -659,14 +659,14 @@ const confirmCancel = (id, reason) => {
   <div className=" w-full rounded-xl">
    <div className="flex justify-between">
    
-     <h4 className="text-base font-semibold text-black mb-1">
+     <h4 className="text-base font-semibold text-surface-foreground mb-1">
       {t("cancelServiceTitle", "Change in Plans")}
     </h4>
     <div>
   <div className=" rounded  justify-end flex">
       {/* <button
       
-      className="bg-gray-600 text-white font-medium py-1 px-2 rounded-lg text-sm hover:bg-gray-800 transition-colors"
+      className="text-muted-foreground text-white font-medium py-1 px-2 rounded-lg text-sm hover:bg-secondary transition-colors"
     >
       {t("cancelNow","Cancel")}
     </button> */}
@@ -674,11 +674,11 @@ const confirmCancel = (id, reason) => {
    </div>
    </div>
 
-    <p className="text-sm text-gray-900 mb-1 leading-snug">
+    <p className="text-sm text-foreground mb-1 leading-snug">
         You can <span  onClick={() => {
         setSelectedItineraryId(it.id);
         setCancelModalOpen(true);
-      }} className="font-semibold text-[#D3202D] cursor-pointer">cancel your service </span> without incurring any charges 24 hours before the pickup time.
+      }} className="font-semibold text-primary cursor-pointer">cancel your service </span> without incurring any charges 24 hours before the pickup time.
       
     </p>
 
@@ -688,7 +688,7 @@ const confirmCancel = (id, reason) => {
 
 
   {/* {!canCancel(it) && (
-    <span className="text-gray-400 text-sm">Cannot cancel within 24 hours of pickup</span>
+    <span className="text-muted-foreground text-sm">Cannot cancel within 24 hours of pickup</span>
   )} */}
 </div>
 
@@ -718,7 +718,7 @@ const confirmCancel = (id, reason) => {
                 <Image src={fullscreenImage} alt="Arrival Map" layout="fill" className="object-contain" />
             <button
                 onClick={() => setFullscreenImage(null)}
-                className="absolute top-0 right-1 bg-white text-black px-2 rounded-full hover:bg-opacity-75 transition"
+                className="absolute top-0 right-1 bg-surface text-surface-foreground px-2 rounded-full hover:bg-opacity-75 transition"
                 aria-label="Close image"
             >
                 &times;

@@ -13,19 +13,19 @@ const ReviewSummary = () => {
   const getBarWidth = (count) => `${(count / totalReviews) * 100}%`;
 
   return (
-    <div className="p-4 bg-white  max-w-xl">
+    <div className="p-4 bg-surface  max-w-xl">
       <div className="flex gap-8 items-start">
         {/* Score */}
         <div className="flex flex-col items-center justify-center">
           <div className="text-4xl font-bold">4.0</div>
-          <div className="text-sm text-gray-500 mb-1">/5</div>
+          <div className="text-sm text-muted-foreground mb-1">/5</div>
           {/* Star rating visual */}
           <div className="flex text-yellow-400 text-sm mb-1">
             {[1, 2, 3, 4, 5].map((i) => (
               <span key={i}>★</span>
             ))}
           </div>
-          <div className="text-sm text-gray-500">({totalReviews.toLocaleString()} Ratings)</div>
+          <div className="text-sm text-muted-foreground">({totalReviews.toLocaleString()} Ratings)</div>
         </div>
 
         {/* Progress Bars */}
@@ -33,7 +33,7 @@ const ReviewSummary = () => {
           {ratings.map((rating) => (
             <div key={rating.star} className="flex items-center text-sm">
               <span className="w-6">{rating.star}★</span>
-              <div className="flex-1 h-2 bg-gray-200 rounded-full mx-2">
+              <div className="flex-1 h-2 bg-secondary rounded-full mx-2">
                 <div
                   className="h-2 bg-yellow-400 rounded-full"
                   style={{ width: getBarWidth(rating.count) }}

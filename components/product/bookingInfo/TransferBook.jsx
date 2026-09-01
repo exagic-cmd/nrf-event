@@ -307,17 +307,17 @@ setShowPayNow(true);
        
   <div className="flex flex-col lg:flex-row gap-8 max-w-full md:mx-24 mx-2 mt-24 p-2 md:p-12">
      
-      <div className="w-full lg:w-3/3 bg-white rounded-xl p-2 shadow-md">
+      <div className="w-full lg:w-3/3 bg-surface rounded-xl p-2 shadow-md">
       <>
       <button
           onClick={onBack}
-          className="flex items-center px-5 py-2 border border-gray-400 rounded-full text-gray-600 hover:bg-gray-100"
+          className="flex items-center px-5 py-2 border border-border rounded-full text-muted-foreground hover:bg-muted"
         >
          <ChevronLeft/>
           Back
         </button>
         <div className="p-6">
-       <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+       <h2 className="text-2xl font-semibold text-foreground mb-2">
                     Book Your Private Transfer        {" "}
         </h2>
                {" "}
