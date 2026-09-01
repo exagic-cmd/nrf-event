@@ -11,6 +11,6 @@ export interface EventAppearance {
 
 // Default fallback — override with API data
 export const eventAppearance: EventAppearance = {
-  theme: 'dark',
-  primaryColor: '#d6be22ff',
+  theme: 'light',
+  primaryColor: '#a80d17ff',
 };

@@ -549,8 +549,8 @@ export default function SearchFilterCard({
       onClick={() => onSetTab?.(tab.id)}
       className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
         filterActiveTab === tab.id
-          ? "bg-primary text-foreground sm:py-2.5"
-          : "bg-muted text-foreground "
+          ? "bg-primary text-white sm:py-2.5"
+          : "bg-muted text-sm "
       }`}
     >
       {tab.name}
