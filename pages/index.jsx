@@ -21,65 +21,50 @@ export default function LandingPage() {
   const router = useRouter()
   const { token } = useUserStore()
   const [checkingAuth, setCheckingAuth] = useState(true)
-    const { trackAffiliateRedirect } = useAffiliateStore();
-    const { FetchEvent } = useEventStore();
+  const { trackAffiliateRedirect } = useAffiliateStore();
+  const { event, FetchEvent, isLoading: eventStoreLoading } = useEventStore();
+
   useEffect(() => {
     if (token) {
       setCheckingAuth(false)
-      // router.push("/order")
     } else {
-    
       setCheckingAuth(false)
     }
   }, [token, router])
-  useEffect(() => {
-    
-    if (!router.isReady) return;
 
+  useEffect(() => {
+    if (!router.isReady) return;
     trackAffiliateRedirect(router);
- 
-   
   }, [router.isReady]); 
 
   useEffect(() => {
+    if (router.isReady && !event) {
+      FetchEvent(router);
+    }
+  }, [router.isReady, event, FetchEvent, router]);
 
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-     // setIsVisible(true) 
     }, 500) 
 
     return () => clearTimeout(timer)
   }, [])
 
-  if (isLoading) {
+  if (isLoading || checkingAuth || eventStoreLoading || !event) {
     return <Preloader /> 
   }
- if (checkingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Preloader />
-      </div>
-    )
-  }
+
   return (
     <Layout className=" ">
-   <div>
-       <div className="bg-surface-secondary pt-16">
-        <ImageSlider />
+      <div>
+        <div className="bg-surface-secondary pt-16">
+          <ImageSlider />
+        </div>
+        <Herosection />
       </div>
- < Herosection/>
-
-   </div>
-        {/* ottom Gradient */}
-   
-
-        {/* Transfer Benefits Section */}
-        {/* <CountdownTimer /> */}
-     <ReviewsSection />
-        <TransferBenefitsSection />
-        {/* Reviews Section */}
-        {/* <ReviewsSection /> */}
-       
+      <ReviewsSection />
+      <TransferBenefitsSection />
     </Layout>
   )
 }

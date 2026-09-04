@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { useEventStore } from "@/store/useEventStore";
 
 export const ReviewsSection = () => {
   const icon1 =
@@ -8,68 +9,73 @@ export const ReviewsSection = () => {
     `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/yellow_paper_airplane.png`;
   const icon3 =
     `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/card.png`;
+  const { event } = useEventStore();
 
   const bannerSm = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png`;
   const bannerLg = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/CURATED_ALL-INCLUSIVE_PACKAGES_1.png`;
 
   return (
     <section className="w-full mt-32 md:mt-4 ">
-<div className="w-full px-4 md:px-8 lg:px-12 mb-10">
-  <Link
-    href="/shuttle"
-    className="block w-full transition-transform hover:scale-[1.01] duration-300"
-  >
+{event?.shuttle_banner_url && (
+  <div className="w-full px-4 md:px-8 lg:px-12 mb-10">
+    <Link
+      href="/shuttle"
+      className="block w-full transition-transform hover:scale-[1.01] duration-300"
+    >
+      {/* ================= Desktop Banner ================= */}
+      <div className="relative hidden md:block">
+        <img
+          src={bannerLg}
+          alt="Explore Singapore"
+          className="w-full h-auto rounded-2xl shadow-md"
+        />
 
-    {/* ================= Desktop Banner ================= */}
-    <div className="relative hidden md:block">mage/uploa
-      <img
-        src={bannerLg}
-        alt="Explore Singapore"
-        className="w-full h-auto rounded-2xl shadow-md"
-      />
+        {/* Desktop Overlay */}
+        <div className="absolute inset-0 flex items-center">
+          <div className="ml-10 max-w-md bg-black/40 backdrop-blur-md text-white p-6 rounded-2xl">
+            <h2 className="text-2xl font-semibold mb-2">
+              {event?.shuttle_title}
+            </h2>
 
-      {/* Desktop Overlay */}
-      <div className="absolute inset-0 flex items-center">
-        <div className="ml-10 max-w-md bg-black/40 backdrop-blur-md text-white p-6 rounded-2xl">
-          <h2 className="text-2xl font-semibold mb-2">
-            Singapore Shuttle Services
-          </h2>
-          <p className="text-sm opacity-90 mb-4">
-            Airport & city shuttle transfers — simple, reliable, comfortable
-          </p>
-          <div className="inline-block bg-surface text-surface-foreground text-sm font-semibold px-5 py-2 rounded-lg">
-            Book Shuttle
+            <p className="text-sm opacity-90 mb-4">
+              {event?.shuttle_description}
+            </p>
+
+            <div className="inline-block bg-surface text-surface-foreground text-sm font-semibold px-5 py-2 rounded-lg">
+              Book Shuttle
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    {/* ================= Mobile Banner (FIXED) ================= */}
-  <div className="relative block md:hidden">
-  <img
-    src={bannerSm}
-    alt="Explore Singapore"
-    className="w-full h-48 rounded-2xl shadow-md"
-  />
+      {/* ================= Mobile Banner ================= */}
+      <div className="relative block md:hidden">
+        <img
+          src={bannerSm}
+          alt="Explore Singapore"
+          className="w-full h-48 rounded-2xl shadow-md"
+        />
 
-  {/* Mobile Overlay */}
-  <div className="absolute inset-4 flex items-start justify-start px-0">
-    <div className="max-w-sm text-white p-2 rounded-2xl text-start shadow-lg">
-      <h2 className="text-lg font-semibold mb-2">
-       
-      </h2>
-      <p className="text-xs opacity-90 mb-3">
-        Airport & city shuttle transfers simple & reliable
-      </p>
-      <div className="inline-block bg-surface text-surface-foreground text-xs font-semibold px-4 py-2 rounded-lg">
-        Book Shuttle
+        {/* Mobile Overlay */}
+        <div className="absolute inset-4 flex items-start justify-start px-0">
+          <div className="max-w-sm text-white p-2 rounded-2xl text-start shadow-lg">
+            <h2 className="text-lg font-semibold mb-2">
+              {event?.shuttle_title}
+            </h2>
+
+            <p className="text-xs opacity-90 mb-3">
+              {event?.shuttle_description}
+            </p>
+
+            <div className="inline-block bg-surface text-surface-foreground text-xs font-semibold px-4 py-2 rounded-lg">
+              Book Shuttle
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </Link>
   </div>
-</div>
-
-  </Link>
-</div>
+)}
 
       <div className="px-2 md:px-8 lg:px-12  grid grid-cols-1 md:grid-cols-4 gap-10 md:bg-surface bg-[#F7F7F780] py-4 rounded-lg md:mx-0 mx-4">
         {/* LeftIntro Text */}
@@ -110,24 +116,39 @@ export const ReviewsSection = () => {
           </p>
         </div>
       </div>
-           <div className="w-full my-8 px-2 lg:px-6 ">
-          
-                  <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="hidden lg:block w-full">
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/TourEast_Banner_1080x350.png`}
-                      alt="TourEast Banner Large"
-                      className="w-full h-auto rounded-lg shadow-md"
-                    />
-                  </a>
-                  {/* Small Banner */}
-                  <a href="https://www.singaporeair.com/" target="_blank" rel="noopener noreferrer" className="lg:hidden w-full">
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/TourEast_Banner_350_x_350_px.png`}
-                      alt="TourEast Banner Small"
-                      className="w-full h-auto rounded-lg shadow-md"
-                    />
-                  </a>
-                </div>
+         {event?.externallinkbanner_url && event?.externallinkbanner_text && (
+  <div className="w-full my-8 px-2 lg:px-6">
+    
+    {/* Large Banner */}
+    <a
+      href={event.externallinkbanner_text}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hidden lg:block w-full"
+    >
+      <img
+        src={event.externallinkbanner_url}
+        alt="External Link Banner"
+        className="w-full h-auto rounded-lg shadow-md"
+      />
+    </a>
+
+    {/* Small Banner */}
+    <a
+      href={event.externallinkbanner_text}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="lg:hidden w-full"
+    >
+      <img
+        src={event.externallinkbanner_url}
+        alt="External Link Banner"
+        className="w-full h-auto rounded-lg shadow-md"
+      />
+    </a>
+
+  </div>
+)}
         </section>
   );
 };

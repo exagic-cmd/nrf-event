@@ -1,6 +1,3 @@
-// ─── Single Source of Truth for Event Appearance ────────────────────
-// Update these values from your API response.
-// ThemeProvider reads this and applies CSS variables site-wide.
 
 export type ThemeMode = 'light' | 'dark';
 

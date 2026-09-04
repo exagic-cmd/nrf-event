@@ -75,9 +75,9 @@ export default function HomePage() {
     { id: 4, label: "hotels", name: "Accommodations" },
     { id: 3, label: "day-tours", name: "DayTours" },
     { id: 2, label: "transfer", name: "Transfers" },
-    { id: 1, label: "coming-soon", name: "Coming Soon" },
-    { id: 5, label: "search", name: "Search Text" },
     { id: 8, label: "packages", name: "Package Tours" },
+    { id: 1, label: "admission", name: "Admissions" },
+  //  { id: 5, label: "search", name: "Search Text" },
   ], []);
 
   const visibleTabs = useMemo(() => {
@@ -90,8 +90,11 @@ export default function HomePage() {
 
     return filterTabs.filter((tab) => {
       if (tab.id === 4) return categoryIds.includes(4); // Accommodations
-      if (tab.id === 3) return categoryIds.includes(1); // DayTours (API ID 1)
+      if (tab.id === 3) return categoryIds.includes(1) || categoryIds.includes(3); // DayTours (API ID 1 or 3)
       if (tab.id === 2) return categoryIds.includes(2); // Transfers (API ID 2)
+      if (tab.id === 8) return categoryIds.includes(8); // Package Tours (API ID 8)
+      if (tab.id === 5) return categoryIds.includes(5); // Search Text (API ID 5)
+      if (tab.id === 1) return categoryIds.includes(1); // Coming Soon (API ID 1)
       return false; });
   }, [event, filterTabs]);
 
