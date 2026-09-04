@@ -25,6 +25,7 @@ import BookingModal from "@/components/accommodations/BookingModal";
 import { getFullImageUrl } from "@/utils/imageService";
 import helpers from "@/lib/helpers";
 import { Hotel } from "lucide-react";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 const normalizeStubaAccommodationData = (stubaItem) => {
   if (!stubaItem || !stubaItem.Hotel_Data) return null;
@@ -168,6 +169,7 @@ export default function AccommodationDetailPage() {
   const { items, removeItem } = useCartStore();
   const { openDrawer, setDrawerContent } = useDrawerStore();
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addRecentlyViewed);
+  const storeCurrencyId = useCurrencyStore((state) => state.currencyId);
 
   const lastFetchedIdRef = useRef(null);
 
@@ -394,15 +396,22 @@ export default function AccommodationDetailPage() {
   useEffect(() => {
     const fetchAccommodationDetail = async () => {
       if (!router.isReady || !accommodationId) return;
-      // Guard against double invocation (React 18 StrictMode) and same-ID re-renders
-      if (lastFetchedIdRef.current === accommodationId) return;
-      lastFetchedIdRef.current = accommodationId;
+
+      const currencyId =
+        storeCurrencyId ||
+        (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+        2;
+
+      // Guard against double invocation (React 18 StrictMode) and same-ID/currency re-renders
+      const fetchKey = `${accommodationId}_${currencyId}`;
+      if (lastFetchedIdRef.current === fetchKey) return;
+      lastFetchedIdRef.current = fetchKey;
 
       setLoading(true);
       setError(null);
 
       try {
-        console.log("Stuba Detail Page - Hotel ID:", accommodationId);
+        console.log("Stuba Detail Page - Hotel ID:", accommodationId, "Currency ID:", currencyId);
 
         // Get search params from store or default
         let effectiveSearchParams = { ...searchParams };
@@ -449,6 +458,7 @@ export default function AccommodationDetailPage() {
           nationality: "all",
           stars: null,
           pax: pax,
+          currency_id: currencyId,
         };
 
         console.log("Calling Stuba API with payload:", payload);
@@ -505,6 +515,23 @@ export default function AccommodationDetailPage() {
     };
 
     fetchAccommodationDetail();
+  }, [router.isReady, accommodationId, storeCurrencyId]);
+
+  useEffect(() => {
+    const handleCurrencyChange = (e) => {
+      const newCurrencyId = e.detail?.currency_id || e.detail?.currencyId;
+      if (newCurrencyId) {
+        lastFetchedIdRef.current = null;
+        if (router.isReady && accommodationId) {
+          // Trigger re-render by updating lastFetchedIdRef
+          useCurrencyStore.getState().setCurrency(newCurrencyId);
+        }
+      }
+    };
+    window.addEventListener("currencyChange", handleCurrencyChange);
+    return () => {
+      window.removeEventListener("currencyChange", handleCurrencyChange);
+    };
   }, [router.isReady, accommodationId]);
 
   useEffect(() => {

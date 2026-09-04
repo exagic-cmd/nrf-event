@@ -150,7 +150,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       };
     }
 
-    useCartStore.getState().addItem({
+    const result = useCartStore.getState().addItem({
       tourId: id,
       title,
       image,
@@ -168,6 +168,11 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       totalPax: formData.adults + formData.child,
       pricing,
     });
+
+    if (result?.status === "currency_mismatch") {
+      setLoadingButton(null);
+      return;
+    }
 
     setJustAdded(true);
     setShowCartOptions(true);

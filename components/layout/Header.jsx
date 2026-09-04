@@ -8,6 +8,7 @@ import LocalizedLink from "@/components/LocalizedLink";
 import useUserStore from "@/store/useAuthStore";
 import { User, ShoppingBag, LogOut } from "lucide-react";
 import { useEventStore } from "@/store/useEventStore";
+import CurrencySelector from "@/components/layout/CurrencySelector";
 
 export default function Header() {
  // const setLocale = useLanguageStore((state) => state.setLocale);
@@ -18,7 +19,7 @@ export default function Header() {
   const setEvent = useEventStore((state) => state.setEvent);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const dropdownRef = useRef(null);
+  const userMenuRef = useRef(null);
   const hasFetchedEventRef = useRef(false);
   const hasRunUserCheckRef = useRef(false);
 
@@ -63,9 +64,9 @@ export default function Header() {
   
 
 
-  useEffect(() => {
+   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setUserMenuOpen(false);
       }
     };
@@ -80,7 +81,7 @@ export default function Header() {
   };
 
   const renderUserMenu = (isMobile = false) => (
-    <div className="relative">
+    <div className="relative" ref={userMenuRef}>
       <button
         onClick={() => setUserMenuOpen(!userMenuOpen)}
       className={`p-2 rounded-full hover:bg-secondary`}
@@ -135,14 +136,17 @@ export default function Header() {
 </div>
 <div></div>
 
-      {/* RIGHT SIDE: LANGUAGE → LOGIN / USER */}
-      <div className="ml-auto flex items-center gap-2 sm:gap-4" ref={dropdownRef}>
-        {/* DESKTOP */}
+      {/* RIGHT SIDE: CURRENCY SELECTOR & USER MENU */}
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        {/* Currency Selector */}
+        <CurrencySelector />
+
+        {/* DESKTOP USER MENU */}
       <nav className="hidden lg:flex items-center gap-4">
           {token && renderUserMenu()}
         </nav>
 
-      
+       {/* MOBILE USER MENU */}
         <div className="lg:hidden flex items-center gap-3 sm:gap-4">
           {token && renderUserMenu(true)}
         </div>

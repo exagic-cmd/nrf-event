@@ -24,6 +24,7 @@ import AccommodationAmenities from "@/components/accommodations/AccommodationAme
 import BookingModal from "@/components/accommodations/BookingModal";
 import { getFullImageUrl } from "@/utils/imageService";
 import { Hotel } from "lucide-react";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 export async function getServerSideProps({ locale }) {
   const translations = await serverSideTranslations(locale || "en", [
@@ -51,6 +52,7 @@ export default function AccommodationDetailPage() {
   const { items, removeItem } = useCartStore();
   const { openDrawer, setDrawerContent } = useDrawerStore();
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addRecentlyViewed);
+  const storeCurrencyId = useCurrencyStore((state) => state.currencyId);
 
   const lastFetchedIdRef = useRef(null);
 
@@ -277,9 +279,16 @@ const detectedCurrency =
 useEffect(() => {
   const fetchAccommodationDetail = async () => {
     if (!router.isReady || !accommodationId) return;
-    // Guard against React 18 StrictMode double-invoke and same-ID re-renders
-    if (lastFetchedIdRef.current === accommodationId) return;
-    lastFetchedIdRef.current = accommodationId;
+
+    const currencyId =
+      storeCurrencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2;
+
+    // Guard against React 18 StrictMode double-invoke and same-ID/currency re-renders
+    const fetchKey = `${accommodationId}_${currencyId}`;
+    if (lastFetchedIdRef.current === fetchKey) return;
+    lastFetchedIdRef.current = fetchKey;
 
     setLoading(true);
     setError(null);
@@ -423,6 +432,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
         start_date: effectiveSearchParams.start_date,
         end_date: effectiveSearchParams.end_date,
         rooms: effectiveSearchParams.rooms,
+        currency_id: currencyId,
       };
 
       // Save the payload to sessionStorage for reload persistence
@@ -465,7 +475,7 @@ if (urlLinkTypeId != null && urlLinkTypeId !== 9) {
   };
 
   fetchAccommodationDetail();
-}, [router.isReady, accommodationId]); // Simplified dependencies
+}, [router.isReady, accommodationId, storeCurrencyId]);
 
 useEffect(() => {
   if (accommodation?.normalizedHotelData && accommodation.normalizedHotelData.title) {

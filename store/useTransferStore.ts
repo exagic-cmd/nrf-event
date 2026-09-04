@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 export const useTransferStore = create(
   persist(
@@ -207,11 +208,18 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
        fetchTransfers: async (payload) => {
         set({ isLoading: true })
         try {
+          const currencyId =
+            payload?.currency_id ||
+            useCurrencyStore.getState()?.currencyId ||
+            (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+            2;
+
           const apiPayload = {
             tripType: payload.tripType,
             returnDate: payload.returnDate,
             pickup_point_id: payload.pickup?.id,
             dropoff_point_id: payload.dropoff?.id,
+            currency_id: currencyId,
           };
 
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transfer/search`, {

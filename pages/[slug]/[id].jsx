@@ -39,6 +39,10 @@ export default function ProductDetail() {
 
   const result = addItem(cartItem);
 
+  if (result.status === "currency_mismatch") {
+    return;
+  }
+
   if (result.status === "added") {
     setPopupMessage("✅ Added to cart!");
     setShowPopup(true);

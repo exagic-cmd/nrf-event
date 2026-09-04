@@ -122,6 +122,19 @@ function AccommodationCard({ accommodation }) {
         } else if (accommodation?.link_type_id === 10) {
           // RateHawk flow — use hid from get_hotels response
           const hid = accommodation?.hid;
+          const payload = {
+            "region": null,
+            "hotel_id": hid,
+            "start_date": searchParams?.start_date,
+            "end_date": searchParams?.end_date,
+            "nights": searchParams?.nights || 1,
+            "rooms": searchParams?.rooms || [{ "adult": 2, "children": [] }],
+            "nationality": "all",
+            "stars": null,
+            "pax": totalAdults + totalChildren
+          };
+          sessionStorage.setItem("stubaAccommodationPayload", JSON.stringify(payload));
+          sessionStorage.setItem("rhAccommodationPayload", JSON.stringify(payload));
           localizedPush({
             pathname: `/rh/${slugify(name)}/${hid}`,
           });

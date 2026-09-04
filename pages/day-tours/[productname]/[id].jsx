@@ -24,6 +24,7 @@ import TourRoute from "@/components/daytours/tour-detail/TourRoute.jsx";
 import {ChevronDown, ChevronRight} from "lucide-react"
 import { useTranslation } from "next-i18next";
 import { useScrollToTop } from '@/hooks/use-scroll-top';
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 export async function getServerSideProps(context) {
   const { productname, id: productid } = context.params;
@@ -35,6 +36,7 @@ export async function getServerSideProps(context) {
     ja: 5,
   };
   const languageId = languageMap[locale] || 1;
+  const currencyId = context.req?.cookies?.currency_id || context.query?.currency_id || 2;
   let initialBookedProductDetail = null;
   let initialTieredPricingData = {};
   let initialTourMapData = [];
@@ -43,13 +45,13 @@ const translations = await serverSideTranslations(locale, ["common", "daytour"])
   if (productid) {
     try {
       const productData = await apiRequest({
-        endpoint: `product/${productid}/${languageId}`,
+        endpoint: `product/${productid}/${languageId}?currency_id=${currencyId}`,
         method: "GET",
       })
       initialBookedProductDetail = productData
 
       const tieredPricing = await apiRequest({
-        endpoint: `product_tiered_pricing/${productid}`,
+        endpoint: `product_tiered_pricing/${productid}?currency_id=${currencyId}`,
         method: "GET",
       })
       initialTieredPricingData = tieredPricing
@@ -83,15 +85,15 @@ const translations = await serverSideTranslations(locale, ["common", "daytour"])
       initialBookedProductDetail,
       initialTieredPricingData,
       initialTourMapData,
-       productname,
-        productid,
-       
+      productname,
+      productid,
+      currencyId: Number(currencyId) || 2,
     },
   }
 }
 
 const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingData, initialTourMapData , productname,
-  productid}) => {
+  productid, currencyId = 2}) => {
   const { t } = useTranslation("common", "daytour");
   const { trackAffiliateRedirect } = useAffiliateStore()
   const { setSelectedVariant, setBookedProductDetail, setTieredPricingData, setTourMap } = useProductStore()
@@ -119,6 +121,9 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
     es: 6,
     ja: 5,
   }
+
+  const storeCurrencyId = useCurrencyStore((state) => state.currencyId);
+  const [activeCurrencyId, setActiveCurrencyId] = useState(currencyId);
 
   const slugify = useCallback((text) => {
     if (!text) return "";
@@ -179,18 +184,18 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
     }
   }, [bookedProductDetail, router.isReady, router.query, localizedReplace, slugify]);
 
-  const fetchDataForLanguage = async (locale, productId) => {
+  const fetchDataForLanguage = async (locale, productId, currId = activeCurrencyId) => {
     const languageId = languageMap[locale] || 1
 
     try {
       setIsLanguageLoading(true)
       const [productData, tieredPricing, tourMapRes] = await Promise.all([
         apiRequest({
-          endpoint: `product/${productId}/${languageId}`,
+          endpoint: `product/${productId}/${languageId}?currency_id=${currId}`,
           method: "GET",
         }),
         apiRequest({
-          endpoint: `product_tiered_pricing/${productId}`,
+          endpoint: `product_tiered_pricing/${productId}?currency_id=${currId}`,
           method: "GET",
         }),
         apiRequest({
@@ -218,6 +223,13 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
   }
 
   useEffect(() => {
+    if (storeCurrencyId && storeCurrencyId !== activeCurrencyId && productid) {
+      setActiveCurrencyId(storeCurrencyId);
+      fetchDataForLanguage(router.locale, productid, storeCurrencyId);
+    }
+  }, [storeCurrencyId, activeCurrencyId, productid, router.locale]);
+
+  useEffect(() => {
 
     if (
       router.isReady &&
@@ -226,12 +238,12 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
       previousLocale !== null 
     ) {
       console.log(`Language changed from ${previousLocale} to ${router.locale}`)
-      fetchDataForLanguage(router.locale, productid)
+      fetchDataForLanguage(router.locale, productid, activeCurrencyId)
       setPreviousLocale(router.locale)
     } else if (router.isReady && previousLocale === null) {
       setPreviousLocale(router.locale)
     }
-  }, [router.locale, router.isReady, productid, previousLocale])
+  }, [router.locale, router.isReady, productid, previousLocale, activeCurrencyId])
 
   useEffect(() => {
     if (initialBookedProductDetail) {

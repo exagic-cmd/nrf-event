@@ -1,6 +1,7 @@
 // stores/useAccommodationsStore.js
 import { create } from "zustand";
 import helpers from "@/lib/helpers";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 
 let hotelRegionDebounceTimeout = null;
@@ -198,8 +199,14 @@ export const useAccommodationsStore = create((set, get) => ({
       return [];
     }
 
+    const currencyId =
+      searchPayload?.currency_id ||
+      useCurrencyStore.getState()?.currencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2;
+
     // Fix 2: Deduplication guard — skip if same params are already being fetched
-    const fetchSig = JSON.stringify(searchPayload);
+    const fetchSig = JSON.stringify({ ...searchPayload, currency_id: currencyId });
     const now = Date.now();
 
     if (get().lastFetchSignature === fetchSig) {
@@ -215,7 +222,7 @@ export const useAccommodationsStore = create((set, get) => ({
     }
 
     // Fix 3: Single set() call instead of two to avoid double re-renders
-    console.log("🔍 Fetching accommodations with payload:", searchPayload);
+    console.log("🔍 Fetching accommodations with payload:", searchPayload, "currency_id:", currencyId);
     set({
       isLoading: true,
       error: null,
@@ -301,6 +308,7 @@ export const useAccommodationsStore = create((set, get) => ({
             //  get_stb_items: true,
             region: 18196,
             is_b2b_only: 1,
+            currency_id: currencyId,
           };
           if (searchPayload.end_date) params.end_date = searchPayload.end_date;
           const baseParams = new URLSearchParams(params).toString();
@@ -345,7 +353,8 @@ export const useAccommodationsStore = create((set, get) => ({
         region: 18196,
         rooms: searchPayload.rooms || [{ adult: 1, children: [] }],
         // get_stb_items: true,
-        is_b2b_only: 1
+        is_b2b_only: 1,
+        currency_id: currencyId,
       };
 
       const fetchPostApi = async (endpoint, label) => {
@@ -398,7 +407,11 @@ export const useAccommodationsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const payload = { ids: [Number(hotelId)] };
+      const currencyId =
+        useCurrencyStore.getState()?.currencyId ||
+        (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+        2;
+      const payload = { ids: [Number(hotelId)], currency_id: currencyId };
 
       // console.log("Calling /affliate/get_public_products with:", payload);
 

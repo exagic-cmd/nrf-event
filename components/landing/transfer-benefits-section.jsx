@@ -11,7 +11,7 @@ import { useEventStore } from "@/store/useEventStore";
 export function TransferBenefitsSection() {
   const { t } = useTranslation("common");
   const { localizedPush } = useLocalizedRouter();
-  const { fetchSearchResults } = useDaytoursStore();
+  const { fetchSearchResults, searchResults } = useDaytoursStore();
   const { event } = useEventStore();
 
   const scrollContainerRef = useRef(null);
@@ -32,6 +32,12 @@ export function TransferBenefitsSection() {
   }, [benefits.length]);
 
   const hasFetchedToursRef = useRef(false);
+  /* Sync with searchResults from store (e.g. when currency refetches) */
+  useEffect(() => {
+    if (searchResults?.length) {
+      setTopDayTours(searchResults.slice(0, 6));
+    }
+  }, [searchResults]);
 
   /* Load top day tours dynamically from recommended_products if available, otherwise fetch from API */
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
 import { persist } from "zustand/middleware";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 export const useProductStore = create(
   persist(
@@ -43,14 +44,18 @@ setSelectedVariant: (variant) => set({ selectedVariant: variant }),
       bookProduct: async (id, lang_id) => {
         console.log("Booking product with ID (client-side re-fetch):", id)
         try {
+          const currencyId =
+            useCurrencyStore.getState()?.currencyId ||
+            (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+            2;
 
           const productData = await apiRequest({
-            endpoint: `product/${id}/${lang_id}`,
+            endpoint: `product/${id}/${lang_id}?currency_id=${currencyId}`,
             method: "GET",
           });
 
           const tieredPricing = await apiRequest({
-            endpoint: `product_tiered_pricing/${id}`,
+            endpoint: `product_tiered_pricing/${id}?currency_id=${currencyId}`,
             method: "GET",
           });
 

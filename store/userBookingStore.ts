@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiRequest } from '@/lib/clientApi';
+import useCurrencyStore from '@/store/useCurrencyStore';
 
 // import { ensureCsrfCookie, getCookie } from "@/utils/CSRFtoken";
 
@@ -197,9 +198,15 @@ fetchAvailableDates: async (productId, adults, children) => {
   loadingTransferAddons: false,
   errorTransferAddons: '',
 
-  fetchTransferAddons: async ({ language_id=1, product_id, pickup_id, dropoff_id }) => {
+  fetchTransferAddons: async ({ language_id=1, product_id, pickup_id, dropoff_id, currency_id }) => {
     set({ loadingTransferAddons: true, errorTransferAddons: '' });
     try {
+      const resolvedCurrencyId =
+        currency_id ||
+        useCurrencyStore.getState()?.currencyId ||
+        (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+        2;
+
       const data = await apiRequest({
         endpoint: 'transfer-adons',
         method: "POST",
@@ -208,6 +215,7 @@ fetchAvailableDates: async (productId, adults, children) => {
           product_id,
           pickup_id,
           dropoff_id,
+          currency_id: resolvedCurrencyId,
         },
       });
       set({ transferAddons: data?.data?.transfer_add_ons || [], loadingTransferAddons: false });

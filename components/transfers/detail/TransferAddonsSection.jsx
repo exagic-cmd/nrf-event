@@ -6,6 +6,7 @@ import { getFullImageUrl } from "@/utils/imageService";
 import { Check, ChevronDown, ChevronUp, Plus, Minus, Calendar, X } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useTranslation } from "next-i18next";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 const TransferAddonsSection = ({ onAddonsChange, tripPart, disabled = false }) => {
   const [selectedAddons, setSelectedAddons] = useState([]);
@@ -20,7 +21,8 @@ const TransferAddonsSection = ({ onAddonsChange, tripPart, disabled = false }) =
     fetchTransferAddons,
   } = useBookingStore();
 
-const { setAddons, selectedPickupDate, selectedReturnDate, selectedTransfer } = useTransferStore();
+  const storeCurrencyId = useCurrencyStore((state) => state.currencyId);
+  const { setAddons, selectedPickupDate, selectedReturnDate, selectedTransfer } = useTransferStore();
 
 const pickupDate = selectedPickupDate;
 const returnDate = selectedReturnDate;
@@ -45,13 +47,14 @@ const formatDate = (dateString) => {
   useEffect(() => {
     if (selectedTransfer?.product_id) {
       fetchTransferAddons({
-        language_id:1,
+        language_id: 1,
         product_id: selectedTransfer.product_id,
         pickup_id: selectedTransfer.pickup_point_id,
         dropoff_id: selectedTransfer.dropoff_point_id,
+        currency_id: storeCurrencyId,
       });
     }
-  }, [fetchTransferAddons, selectedTransfer?.product_id, selectedTransfer?.pickup_point_id, selectedTransfer?.dropoff_point_id]);
+  }, [fetchTransferAddons, selectedTransfer?.product_id, selectedTransfer?.pickup_point_id, selectedTransfer?.dropoff_point_id, storeCurrencyId]);
 
   useEffect(() => {
     const addonsWithTotal = selectedAddons.map((a) => ({
