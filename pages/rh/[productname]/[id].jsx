@@ -23,13 +23,22 @@ import NearbyLandmarks from "@/components/accommodations/NearbyLandmarks.jsx";
 import AccommodationAmenities from "@/components/accommodations/AccommodationAmenities";
 import BookingModal from "@/components/accommodations/BookingModal";
 import helpers from "@/lib/helpers";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 // ─── RateHawk normalizer ──────────────────────────────────────────────────────
-const normalizeRatehawkAccommodationData = (rhItem) => {
+const normalizeRatehawkAccommodationData = (rhItem, fallbackCurrency = "SGD") => {
   if (!rhItem || !rhItem.Hotel_Data) return null;
 
   const { Hotel_Data, rates = [] } = rhItem;
-  const currency = Hotel_Data.currency || "USD";
+  const firstPayment = rates[0]?.payment_options?.payment_types?.[0];
+  const currency =
+    firstPayment?.currency_code ||
+    firstPayment?.show_currency_code ||
+    rhItem.currency ||
+    rhItem.currency_code ||
+    Hotel_Data.currency ||
+    fallbackCurrency ||
+    "SGD";
   const hotelImages = (Hotel_Data.media || []).map((m) => m.image);
 
   const hotelAmenities = Hotel_Data.highlight
@@ -79,7 +88,11 @@ const normalizeRatehawkAccommodationData = (rhItem) => {
   const normalizedRooms = Object.entries(roomMap).map(([roomName, roomRates]) => {
     const ratePlans = roomRates.map((rate) => {
       const paymentType = rate.payment_options?.payment_types?.[0];
-      const price = parseFloat(paymentType?.amount || 0);
+      const price = parseFloat(paymentType?.show_amount || paymentType?.amount || 0);
+      const rateCurrency =
+        paymentType?.currency_code ||
+        paymentType?.show_currency_code ||
+        currency;
       const cancellationBefore =
         paymentType?.cancellation_penalties?.free_cancellation_before;
       const isRefundable = !!cancellationBefore;
@@ -112,7 +125,7 @@ const normalizeRatehawkAccommodationData = (rhItem) => {
           ...rate,
           pricing: {
             total: price,
-            currency,
+            currency: rateCurrency,
             nights:
               rate.daily_prices?.map((p) => ({ price: parseFloat(p) })) || [],
           },
@@ -121,7 +134,7 @@ const normalizeRatehawkAccommodationData = (rhItem) => {
         view: null,
         pricing: {
           total: price,
-          currency,
+          currency: rateCurrency,
           nights:
             rate.daily_prices?.map((p) => ({ price: parseFloat(p) })) || [],
         },
@@ -186,6 +199,8 @@ export default function RatehawkAccommodationDetailPage() {
   const addRecentlyViewed = useRecentlyViewedStore(
     (state) => state.addRecentlyViewed
   );
+  const storeCurrencyId = useCurrencyStore((state) => state.currencyId);
+  const storeCurrency = useCurrencyStore((state) => state.currency);
 
   const lastFetchedIdRef = useRef(null);
 
@@ -271,124 +286,156 @@ export default function RatehawkAccommodationDetailPage() {
     openDrawer();
   };
 
-  useEffect(() => {
-    const fetchAccommodationDetail = async () => {
-      if (!router.isReady || !accommodationId) return;
-      // Guard against React 18 StrictMode double-invoke and same-ID re-renders
-      if (lastFetchedIdRef.current === accommodationId) return;
-      lastFetchedIdRef.current = accommodationId;
+  const fetchAccommodationDetail = useCallback(async (forcedCurrencyId = null) => {
+    if (!router.isReady || !accommodationId) return;
 
-      setLoading(true);
-      setError(null);
+    const currencyId =
+      forcedCurrencyId ||
+      storeCurrencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2;
 
-      try {
-        // Resolve effective search params
-        let effectiveSearchParams = { ...searchParams };
+    const currencyCode =
+      (currencyId === 3 || storeCurrency === "USD" || (typeof window !== "undefined" && localStorage.getItem("currency") === "USD"))
+        ? "USD"
+        : "SGD";
 
-        if (
-          !searchParams ||
-          !searchParams.start_date ||
-          !searchParams.end_date
-        ) {
-          const savedPayload = sessionStorage.getItem(
-            "stubaAccommodationPayload"
-          );
-          if (savedPayload) {
-            const parsed = JSON.parse(savedPayload);
-            effectiveSearchParams = {
-              start_date: parsed.start_date,
-              end_date: new Date(
+    // Guard against React 18 StrictMode double-invoke and same-ID/currency re-renders
+    const fetchKey = `${accommodationId}_${currencyId}`;
+    if (lastFetchedIdRef.current === fetchKey) return;
+    lastFetchedIdRef.current = fetchKey;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Resolve effective search params
+      let effectiveSearchParams = { ...searchParams };
+
+      if (
+        !searchParams ||
+        !searchParams.start_date ||
+        !searchParams.end_date
+      ) {
+        const savedPayload =
+          sessionStorage.getItem("rhAccommodationPayload") ||
+          sessionStorage.getItem("stubaAccommodationPayload");
+        if (savedPayload) {
+          const parsed = JSON.parse(savedPayload);
+          effectiveSearchParams = {
+            start_date: parsed.start_date,
+            end_date:
+              parsed.end_date ||
+              new Date(
                 new Date(parsed.start_date).getTime() +
                   (parsed.nights || 2) * 86400000
               )
                 .toISOString()
                 .split("T")[0],
-              rooms: parsed.rooms || [{ adult: 2, children: [] }],
-              nights: parsed.nights || 2,
-            };
-          } else {
-            effectiveSearchParams = {
-              start_date: new Date().toISOString().split("T")[0],
-              end_date: new Date(Date.now() + 2 * 86400000)
-                .toISOString()
-                .split("T")[0],
-              rooms: [{ adult: 2, children: [] }],
-              nights: 2,
-            };
-          }
-          useAccommodationsStore.getState().setSearchParams(effectiveSearchParams);
+            rooms: parsed.rooms || [{ adult: 2, children: [] }],
+            nights: parsed.nights || 2,
+          };
+        } else {
+          effectiveSearchParams = {
+            start_date: new Date().toISOString().split("T")[0],
+            end_date: new Date(Date.now() + 2 * 86400000)
+              .toISOString()
+              .split("T")[0],
+            rooms: [{ adult: 2, children: [] }],
+            nights: 2,
+          };
         }
+        useAccommodationsStore.getState().setSearchParams(effectiveSearchParams);
+      }
 
-        const rooms = effectiveSearchParams.rooms || [
-          { adult: 2, children: [] },
-        ];
-        const pax = rooms.reduce((sum, r) => {
-          const adults = Number(r.adult) || 0;
-          const children = Array.isArray(r.children) ? r.children.length : 0;
-          return sum + adults + children;
-        }, 0);
+      const rooms = effectiveSearchParams.rooms || [
+        { adult: 2, children: [] },
+      ];
+      const pax = rooms.reduce((sum, r) => {
+        const adults = Number(r.adult) || 0;
+        const children = Array.isArray(r.children) ? r.children.length : 0;
+        return sum + adults + children;
+      }, 0);
 
-        // Build RateHawk hotel_details payload
-        const payload = {
-          region: null,
-          hotel_id: String(accommodationId),
-          start_date: effectiveSearchParams.start_date,
-          end_date: effectiveSearchParams.end_date,
-          nights: effectiveSearchParams.nights || 2,
-          rooms,
-          nationality: "all",
-          stars: null,
-          pax,
-        };
+      // Build RateHawk hotel_details payload
+      const payload = {
+        region: null,
+        hotel_id: String(accommodationId),
+        start_date: effectiveSearchParams.start_date,
+        end_date: effectiveSearchParams.end_date,
+        nights: effectiveSearchParams.nights || 2,
+        rooms,
+        nationality: "all",
+        stars: null,
+        pax,
+        currency_id: currencyId,
+        currency: currencyCode,
+        currency_code: currencyCode,
+      };
 
-        const res = await fetch(
-          `${helpers.getApiAbsoluteURL("ratehawk/hotel_details")}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
-
-        if (!res.ok) throw new Error("RateHawk hotel_details API failed");
-
-        const responseData = await res.json();
-
-        // Find matching item by hid, fall back to first
-        const rhItem =
-          responseData.data?.find(
-            (item) => String(item.hid) === String(accommodationId)
-          ) || responseData.data?.[0];
-
-        if (!rhItem) throw new Error("No RateHawk hotel data found");
-
-        const normalizedData = normalizeRatehawkAccommodationData(rhItem);
-        if (!normalizedData) throw new Error("Failed to normalize RateHawk data");
-
-        setAccommodation(normalizedData);
-
-        // Fix slug if needed
-        const actualSlug = slugify(
-          normalizedData.normalizedHotelData.title || "accommodation"
-        );
-
-        if (productname !== actualSlug) {
-          localizedReplace(
-            { pathname: "/rh/[productname]/[id]", query: {} },
-            { pathname: `/rh/${actualSlug}/${accommodationId}`, query: {} },
-            { shallow: true }
-          );
+      const res = await fetch(
+        `${helpers.getApiAbsoluteURL("ratehawk/hotel_details")}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         }
-      } catch (err) {
-        console.error("RateHawk fetch error:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      );
+
+      if (!res.ok) throw new Error("RateHawk hotel_details API failed");
+
+      const responseData = await res.json();
+
+      // Find matching item by hid, fall back to first
+      const rhItem =
+        responseData.data?.find(
+          (item) => String(item.hid) === String(accommodationId)
+        ) || responseData.data?.[0];
+
+      if (!rhItem) throw new Error("No RateHawk hotel data found");
+
+      const normalizedData = normalizeRatehawkAccommodationData(rhItem, currencyCode);
+      if (!normalizedData) throw new Error("Failed to normalize RateHawk data");
+
+      setAccommodation(normalizedData);
+
+      // Fix slug if needed
+      const actualSlug = slugify(
+        normalizedData.normalizedHotelData.title || "accommodation"
+      );
+
+      if (productname !== actualSlug) {
+        localizedReplace(
+          { pathname: "/rh/[productname]/[id]", query: {} },
+          { pathname: `/rh/${actualSlug}/${accommodationId}`, query: {} },
+          { shallow: true }
+        );
+      }
+    } catch (err) {
+      console.error("RateHawk fetch error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [router.isReady, accommodationId, storeCurrencyId, storeCurrency, searchParams, productname, slugify, localizedReplace]);
+
+  useEffect(() => {
+    fetchAccommodationDetail();
+  }, [fetchAccommodationDetail]);
+
+  useEffect(() => {
+    const handleCurrencyChange = (e) => {
+      const newCurrencyId = e.detail?.currency_id || e.detail?.currencyId;
+      if (newCurrencyId) {
+        lastFetchedIdRef.current = null;
+        fetchAccommodationDetail(newCurrencyId);
       }
     };
-
-    fetchAccommodationDetail();
-  }, [router.isReady, accommodationId]);
+    window.addEventListener("currencyChange", handleCurrencyChange);
+    return () => {
+      window.removeEventListener("currencyChange", handleCurrencyChange);
+    };
+  }, [fetchAccommodationDetail]);
 
   useEffect(() => {
     if (accommodation?.normalizedHotelData?.title) {

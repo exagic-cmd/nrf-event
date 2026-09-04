@@ -700,7 +700,12 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
       holdExpiresAt: Date.now() + 7 * 60 * 1000, // 7 minute hold
       bookingData: updatedBookingData,
     };
-    useCartStore.getState().addAccommodationItem(cartItem);
+    const result = useCartStore.getState().addAccommodationItem(cartItem);
+    if (result?.status === "currency_mismatch") {
+      setLoadingButton(null);
+      setIsSubmitting(false);
+      return;
+    }
     setJustAdded(true);
     setShowCartOptions(true);
   };
@@ -808,7 +813,12 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
       bookingData: updatedBookingData,
     };
  console.log("cartItem: accomodation Booking", cartItem);
-    useCartStore.getState().addAccommodationItem(cartItem);
+    const result = useCartStore.getState().addAccommodationItem(cartItem);
+    if (result?.status === "currency_mismatch") {
+      setLoadingButton(null);
+      setIsSubmitting(false);
+      return;
+    }
     setJustAdded(true);
     setModalOpen(false);
     setShowCartOptions(true);

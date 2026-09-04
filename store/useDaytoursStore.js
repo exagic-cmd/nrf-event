@@ -1,6 +1,7 @@
 // stores/useDaytoursStore.js
 import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 export const useDaytoursStore = create((set, get) => ({
   countries: [],
@@ -17,6 +18,7 @@ export const useDaytoursStore = create((set, get) => ({
   currentCategory: null, // "daytour" | "accommodation"
   searchParams: null,
   searchQuery: "",
+  lastSuggestedQuery: "",
 
   // Fetch countries & cities
   fetchCountriesCities: async () => {
@@ -47,7 +49,19 @@ export const useDaytoursStore = create((set, get) => ({
   // Unified fetch for Day Tours (3) and Accommodation (4)
   fetchSearchResults: async (payload) => {
     set({ isLoading: true, error: null });
-    console.log("fetchSearchResults payload:", payload);
+
+    const currencyId =
+      payload?.currency_id ||
+      useCurrencyStore.getState()?.currencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2;
+
+    const requestPayload = {
+      ...payload,
+      currency_id: currencyId,
+    };
+
+    console.log("fetchSearchResults payload:", requestPayload);
 
     try {
       const res = await fetch(
@@ -55,7 +69,7 @@ export const useDaytoursStore = create((set, get) => ({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(requestPayload),
         }
       );
 
@@ -76,7 +90,7 @@ export const useDaytoursStore = create((set, get) => ({
       const data = await res.json();
       const results = data?.products || data?.data || [];
 
-      const isDayTour = payload.category_id === 3;
+      const isDayTour = requestPayload.category_id === 3;
       const categoryType = isDayTour ? "daytour" : "accommodation";
 
       // Keep only first language
@@ -94,7 +108,7 @@ export const useDaytoursStore = create((set, get) => ({
         filteredResults: finalResults,
         isLoading: false,
         currentCategory: categoryType,
-        searchParams: payload,
+        searchParams: requestPayload,
       });
 
       console.log(`${categoryType.toUpperCase()} API Response:`, data);
@@ -106,8 +120,27 @@ export const useDaytoursStore = create((set, get) => ({
     }
   },
 
+  // Alias for listings/other components
+  fetchDaytours: async (payload) => {
+    return get().fetchSearchResults(payload);
+  },
+
   // Suggestions for input search
-  fetchSuggestedResults: async (query) => {
+  fetchSuggestedResults: async (query, currency_id) => {
+    const q = typeof query === "string" ? query : get().lastSuggestedQuery;
+    if (!q || !q.trim()) {
+      set({ suggestedResults: [], lastSuggestedQuery: "" });
+      return [];
+    }
+
+    set({ lastSuggestedQuery: q });
+
+    const currencyId =
+      currency_id ||
+      useCurrencyStore.getState()?.currencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2;
+
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_products`,
@@ -115,10 +148,11 @@ export const useDaytoursStore = create((set, get) => ({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name: query,
+            name: q,
             is_b2c_only: 1,
             is_active: true,
             category_id: 3, // Daytour category
+            currency_id: currencyId,
           }),
         }
       );
@@ -141,9 +175,11 @@ export const useDaytoursStore = create((set, get) => ({
       const suggestions = data?.products || data?.data || [];
 
       set({ suggestedResults: suggestions.slice(0, 5) });
+      return suggestions.slice(0, 5);
     } catch (err) {
       console.error("fetchSuggestedResults error:", err);
       set({ suggestedResults: [] });
+      return [];
     }
   },
 
@@ -185,5 +221,39 @@ export const useDaytoursStore = create((set, get) => ({
       selectedCountry: null,
       currentCategory: null,
       searchQuery: "",
+      lastSuggestedQuery: "",
     }),
 }));
+
+// Automatically re-fetch records when currency changes
+if (typeof window !== "undefined") {
+  const handleCurrencyChange = (newCurrencyId) => {
+    if (!newCurrencyId) return;
+    const state = useDaytoursStore.getState();
+
+    // 1. Refetch suggested results if there is an active search query
+    const activeQuery = state.lastSuggestedQuery || state.searchQuery;
+    if (activeQuery && activeQuery.trim().length > 1) {
+      state.fetchSuggestedResults(activeQuery, newCurrencyId);
+    }
+
+    // 2. Refetch search results if there are existing searchParams
+    if (state.searchParams) {
+      state.fetchSearchResults({
+        ...state.searchParams,
+        currency_id: newCurrencyId,
+      });
+    }
+  };
+
+  window.addEventListener("currencyChange", (e) => {
+    const newCurrencyId = e?.detail?.currencyId || e?.detail?.currency_id;
+    handleCurrencyChange(newCurrencyId);
+  });
+
+  useCurrencyStore.subscribe((state, prevState) => {
+    if (state?.currencyId && state.currencyId !== prevState?.currencyId) {
+      handleCurrencyChange(state.currencyId);
+    }
+  });
+}

@@ -8,6 +8,7 @@ import LoaderSvg from "@/components/common/LoaderSvg";
 import { ChevronLeft, ChevronRight, X, ChevronDown } from "lucide-react"; // ⬅️ added ChevronDown
 import Image from "next/image";
 import { useTranslation } from "next-i18next";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 const slugify = (text) => {
   if (!text) return "";
@@ -108,8 +109,12 @@ export default function SuggestionsSection({
     setComparedProductDetails(null);
 
     try {
+      const currencyId =
+        useCurrencyStore.getState()?.currencyId ||
+        (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+        2;
       const productData = await apiRequest({
-        endpoint: `product/${product.productId}/${languageId}`,
+        endpoint: `product/${product.productId}/${languageId}?currency_id=${currencyId}`,
         method: "GET",
       });
       if (productData?.data?.basicinfo) {
@@ -130,7 +135,7 @@ export default function SuggestionsSection({
     setIsModalOpen(false);
     setSelectedRelatedProduct(null);
     setComparedProductDetails(null);
-    setIsDropdownOpen(false); 
+    setIsDropdownOpen(false);
   };
 
   const handleBookNow = (product, productId) => {
@@ -351,11 +356,10 @@ export default function SuggestionsSection({
                           setIsDropdownOpen(false);
                           handleCompare(p);
                         }}
-                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-secondary ${
-                          selectedRelatedProduct?.productId === p.productId
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-secondary ${selectedRelatedProduct?.productId === p.productId
                             ? "bg-muted text-primary"
                             : "text-surface-foreground"
-                        }`}
+                          }`}
                       >
                         {p.name}
                       </button>

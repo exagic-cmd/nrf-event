@@ -257,6 +257,10 @@ const executeBookTransfer = () => {
 
     searchParams,
   });
+  if (result.status === "currency_mismatch") {
+    setIsAddingToCart(false);
+    return;
+  }
   if (result.status === "exists") {
     setItemToUpdate(result.item);
     setAlreadyModalOpen(true);
@@ -402,6 +406,10 @@ const handleUpdate = () => {
 
     searchParams,
   });
+
+  if (result?.status === "currency_mismatch") {
+    return;
+  }
 
   setAlreadyModalOpen(false);
   setIsAddedToCart(true);

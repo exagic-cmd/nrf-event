@@ -1,6 +1,7 @@
 // src/store/useEventStore.js
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import useCurrencyStore from "@/store/useCurrencyStore";
 
 export const useEventStore = create(
   persist(
@@ -10,7 +11,12 @@ export const useEventStore = create(
       isLoading: false,
       error: null,
 
-      setEvent: data => set({ event: data, lastFetched: Date.now() }),
+      setEvent: (data) => {
+        set({ event: data, lastFetched: Date.now() });
+        if (data?.currencies && Array.isArray(data.currencies)) {
+          useCurrencyStore.getState().setCurrencies(data.currencies);
+        }
+      },
 
       FetchEvent: async (router) => {
         const { isLoading, lastFetched, event } = get();
@@ -21,6 +27,9 @@ export const useEventStore = create(
         // Skip if data is still fresh (within 1 hour)
         const ONE_HOUR = 60 * 60 * 1000;
         if (lastFetched && Date.now() - lastFetched < ONE_HOUR && event?.event) {
+          if (event?.currencies && Array.isArray(event.currencies)) {
+            useCurrencyStore.getState().setCurrencies(event.currencies);
+          }
           return event;
         }
 
@@ -55,6 +64,10 @@ export const useEventStore = create(
 
           const eventData = json?.data || null;
 
+          if (eventData?.currencies && Array.isArray(eventData.currencies)) {
+            useCurrencyStore.getState().setCurrencies(eventData.currencies);
+          }
+
           set({
             event: eventData,
             lastFetched: Date.now(),
@@ -73,7 +86,13 @@ export const useEventStore = create(
 
     {
       name: "event-store",
-      storage: createJSONStorage(() => sessionStorage)
+      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => sessionStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state?.event?.currencies && Array.isArray(state.event.currencies)) {
+          useCurrencyStore.getState().setCurrencies(state.event.currencies);
+        }
+      }
     }
   )
 );

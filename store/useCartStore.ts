@@ -3,6 +3,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useOrderStore } from "./useOrderStore";
 import { toast } from 'react-toastify';
+import useCurrencyStore from "./useCurrencyStore";
+import Cookies from "js-cookie";
+
 // Utility: slugify strings
 const slug = (s: string | undefined | null): string =>
   String(s || "")
@@ -10,6 +13,51 @@ const slug = (s: string | undefined | null): string =>
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-_]/g, "")
     .slice(0, 64);
+
+// Currency resolution helpers
+export const getItemCurrency = (item: any): string => {
+  if (!item) return "";
+  const direct =
+    item.currency ||
+    item.currency_code ||
+    item.currencyCode ||
+    item.currencyName ||
+    item.pricing?.currency ||
+    item.hotel_info?.roomsDetails?.[0]?.pricing?.currency ||
+    item.hotel_info?.roomsDetails?.[0]?.currency ||
+    item.hotel_info?.rate?.currency ||
+    item.vehicle?.currency ||
+    item.selectedTransfer?.currency;
+
+  if (direct && typeof direct === "string" && direct.trim()) {
+    return direct.trim().toUpperCase();
+  }
+
+  try {
+    const storeCurrency = useCurrencyStore.getState()?.currency;
+    if (storeCurrency && typeof storeCurrency === "string" && storeCurrency.trim()) {
+      return storeCurrency.trim().toUpperCase();
+    }
+  } catch (e) {}
+
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("currency") || Cookies.get("currency");
+    if (saved && typeof saved === "string" && saved.trim()) {
+      return saved.trim().toUpperCase();
+    }
+  }
+
+  return "SGD";
+};
+
+export const getCartCurrency = (items: CartItem[]): string | null => {
+  if (!items || items.length === 0) return null;
+  for (const item of items) {
+    const curr = getItemCurrency(item);
+    if (curr) return curr;
+  }
+  return null;
+};
 
 // Type guards
 const isTransferItem = (item: any): boolean =>
@@ -62,6 +110,7 @@ interface CartItem {
   key: string;
   baseKey: string;
   type?: "daytour" | "accommodation" | "transfer" | "upsell";
+  currency?: string;
   [key: string]: any;
 }
 
@@ -71,8 +120,20 @@ interface CartState {
   itemToEdit: CartItem | null;
 
   // Actions
-  addItem: (item: any) => { status: "added" | "exists"; item?: CartItem };
-  addAccommodationItem: (item: any) => { status: "added" | "exists"; item?: CartItem };
+  addItem: (item: any) => {
+    status: "added" | "exists" | "currency_mismatch";
+    item?: CartItem;
+    message?: string;
+    cartCurrency?: string;
+    itemCurrency?: string;
+  };
+  addAccommodationItem: (item: any) => {
+    status: "added" | "exists" | "currency_mismatch";
+    item?: CartItem;
+    message?: string;
+    cartCurrency?: string;
+    itemCurrency?: string;
+  };
   updateItem: (key: string, updates: Partial<CartItem>) => void;
   removeItem: (key: string) => void;
   clearCart: () => void;
@@ -80,6 +141,7 @@ interface CartState {
   clearItemToEdit: () => void;
 
   // Helpers
+  getCartCurrency: () => string | null;
   getAccommodationItems: () => CartItem[];
   getDayTourItems: () => CartItem[];
   getTransferItems: () => CartItem[];
@@ -101,29 +163,80 @@ export const useCartStore = create<CartState>()(
 
       // Generic add (used by day tours, transfers, etc.)
       addItem: (item) => {
+        const itemCurrency = getItemCurrency(item);
+        const existingItems = get().items;
+        const cartCurrency = getCartCurrency(existingItems);
+
+        // Disallow adding products with different currencies to the cart
+        if (cartCurrency && itemCurrency && cartCurrency !== itemCurrency) {
+          const alertMessage = `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`;
+          toast.error(alertMessage, {
+            position: "top-center",
+            autoClose: 5000,
+          });
+          if (typeof window !== "undefined" && typeof window.alert === "function") {
+            window.alert(alertMessage);
+          }
+          return {
+            status: "currency_mismatch",
+            message: alertMessage,
+            cartCurrency,
+            itemCurrency,
+          };
+        }
+
         const baseKey = buildBaseKey(item);
-        const exists = get().items.find((i) => i.baseKey === baseKey);
+        const exists = existingItems.find((i) => i.baseKey === baseKey);
 
         if (exists) {
           return { status: "exists", item: exists };
         }
 
         const key = buildUniqueKey(baseKey);
-        const newItem = { ...item, key, baseKey, type: item.type || "daytour" };
+        const newItem = {
+          ...item,
+          key,
+          baseKey,
+          currency: itemCurrency,
+          type: item.type || "daytour",
+        };
 
-        set({ items: [...get().items, newItem] });
+        set({ items: [...existingItems, newItem] });
         return { status: "added", item: newItem };
       },
 
       // Specific for accommodation
       addAccommodationItem: (item) => {
+        const itemCurrency = getItemCurrency(item);
+        const existingItems = get().items;
+        const cartCurrency = getCartCurrency(existingItems);
+
+        // Disallow adding accommodation with different currencies to the cart
+        if (cartCurrency && itemCurrency && cartCurrency !== itemCurrency) {
+          const alertMessage = `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`;
+          toast.error(alertMessage, {
+            position: "top-center",
+            autoClose: 5000,
+          });
+          if (typeof window !== "undefined" && typeof window.alert === "function") {
+            window.alert(alertMessage);
+          }
+          return {
+            status: "currency_mismatch",
+            message: alertMessage,
+            cartCurrency,
+            itemCurrency,
+          };
+        }
+
         const accommodationItem = {
           ...item,
+          currency: itemCurrency,
           type: "accommodation" as const,
         };
 
         const baseKey = buildBaseKey(accommodationItem);
-        const exists = get().items.find((i) => i.baseKey === baseKey);
+        const exists = existingItems.find((i) => i.baseKey === baseKey);
 
         if (exists) {
           return { status: "exists", item: exists };
@@ -132,12 +245,11 @@ export const useCartStore = create<CartState>()(
         const key = buildUniqueKey(baseKey);
         const newItem = { ...accommodationItem, key, baseKey };
 
-        set({ items: [...get().items, newItem] });
-   setTimeout(() => {
+        set({ items: [...existingItems, newItem] });
+        setTimeout(() => {
           try {
             get().startHoldForItem(key);
-          } catch (err) {
-          }
+          } catch (err) {}
         }, 0);
 
         return { status: "added", item: newItem };
@@ -170,6 +282,7 @@ export const useCartStore = create<CartState>()(
       clearItemToEdit: () => set({ itemToEdit: null }),
 
       // Helper filters
+      getCartCurrency: () => getCartCurrency(get().items),
       getAccommodationItems: () => get().items.filter((i) => i.type === "accommodation"),
       getDayTourItems: () => get().items.filter((i) => !i.type || i.type === "daytour"),
       getTransferItems: () => get().items.filter(isTransferItem),
