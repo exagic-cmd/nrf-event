@@ -11,10 +11,11 @@ import {
   Globe,
 } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
-
+import { useEventStore } from "@/store/useEventStore";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const [event, setEvent] = useState(null);
+  const event = useEventStore((state) => state.event);
+  const setEvent = useEventStore((state) => state.setEvent);
 
   useEffect(() => {
     async function loadEvent() {
@@ -63,7 +64,7 @@ const Footer = () => {
           <div className="space-y-2">
             <LocalizedLink href="/">
               <img
-                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Desktop_red.png`}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
        alt="Logo"
                 className="h-12 w-auto"
               />

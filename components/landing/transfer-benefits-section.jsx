@@ -4,22 +4,15 @@ import LoaderSvg from "@/components/common/LoaderSvg";
 import { useTranslation } from "next-i18next";
 import { useState, useEffect, useRef, useTransition } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useLocalizedRouter } from "@/components/localizedRouter";
+import { useEventStore } from "@/store/useEventStore";
 
 export function TransferBenefitsSection() {
   const { t } = useTranslation("common");
   const { localizedPush } = useLocalizedRouter();
   const { fetchSearchResults } = useDaytoursStore();
+  const { event } = useEventStore();
 
   const scrollContainerRef = useRef(null);
 
@@ -40,33 +33,48 @@ export function TransferBenefitsSection() {
 
   const hasFetchedToursRef = useRef(false);
 
-  /* Load top day tours */
+  /* Load top day tours dynamically from recommended_products if available, otherwise fetch from API */
   useEffect(() => {
-    if (hasFetchedToursRef.current) return;
-    hasFetchedToursRef.current = true;
+    if (event?.event?.recommended_products?.length) {
+      const mappedTours = event.event.recommended_products.map((tour) => ({
+        id: tour.id,
+        product_title: tour.title,
+        category_name: tour.category_name || "Day Tours",
+        image: tour.image,
+        short_desc: tour.short_description || tour.short_desc,
+        currency: tour.currency || "SGD",
+        starting_price: tour.starting_price,
+        rating: tour.rating || 5.0,
+      }));
+      setTopDayTours(mappedTours);
+      setIsLoadingDay(false);
+    } else {
+      if (hasFetchedToursRef.current) return;
+      hasFetchedToursRef.current = true;
 
-    const loadDayTours = async () => {
-      setIsLoadingDay(true);
-      try {
-        const results = await fetchSearchResults({
-          category_id: 3,
-          is_b2c_only: 1,
-          is_active: 1,
-        });
+      const loadDayTours = async () => {
+        setIsLoadingDay(true);
+        try {
+          const results = await fetchSearchResults({
+            category_id: 3,
+            is_b2c_only: 1,
+            is_active: 1,
+          });
 
-        if (results?.length) {
-          setTopDayTours(results.slice(0, 6));
+          if (results?.length) {
+            setTopDayTours(results.slice(0, 6));
+          }
+        } catch (err) {
+          hasFetchedToursRef.current = false; // allow retry on error
+          console.error("Error loading day tours:", err);
+        } finally {
+          setIsLoadingDay(false);
         }
-      } catch (err) {
-        hasFetchedToursRef.current = false; // allow retry on error
-        console.error("Error loading day tours:", err);
-      } finally {
-        setIsLoadingDay(false);
-      }
-    };
+      };
 
-    loadDayTours();
-  }, [fetchSearchResults]);
+      loadDayTours();
+    }
+  }, [event, fetchSearchResults]);
 
   const handleCardClick = (tour) => {
     setLoadingTourId(tour.id);
@@ -136,7 +144,7 @@ export function TransferBenefitsSection() {
                     <div className="relative h-56 md:h-64 overflow-hidden">
                       <img
                         src={
-                          `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${tour.image}` ||
+                          `${tour.image}` ||
                           "/placeholder.jpg"
                         }
                         alt={tour.product_title}

@@ -7,13 +7,15 @@ import "@/styles/globals.css";
 import LocalizedLink from "@/components/LocalizedLink";
 import useUserStore from "@/store/useAuthStore";
 import { User, ShoppingBag, LogOut } from "lucide-react";
+import { useEventStore } from "@/store/useEventStore";
 
 export default function Header() {
  // const setLocale = useLanguageStore((state) => state.setLocale);
   const { token, logout, user } = useUserStore();
   const [hydrated, setHydrated] = useState(false);
   const router = useRouter()
-  const [event, setEvent] = useState(null);
+  const event = useEventStore((state) => state.event);
+  const setEvent = useEventStore((state) => state.setEvent);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -118,14 +120,14 @@ export default function Header() {
   <LocalizedLink href="/">
     {/* Mobile + Tablet Logo */}
     <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Desktop_red.png`}
+      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
       alt="Mobile Logo"
       className="h-14 w-auto object-contain lg:hidden"
     />
 
     {/* Desktop Logo */}
     <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Desktop_red.png`}
+      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
       alt="Desktop Logo"
       className="hidden lg:block h-16 w-auto object-contain"
     />

@@ -27,8 +27,12 @@ export const useEventStore = create(
         set({ isLoading: true, error: null });
 
         try {
+          const apiBaseUrl = (typeof $helpers !== "undefined" && $helpers?.getEnv)
+            ? $helpers.getEnv("API_BASE_URL")
+            : (process.env.NEXT_PUBLIC_API_BASE_URL || "");
+
           const res = await fetch(
-            `${$helpers.getEnv("API_BASE_URL")}/events/details/3`,
+            `${apiBaseUrl}/events/details/3`,
             { method: "GET", headers: { "Content-Type": "application/json" } }
           );
 
