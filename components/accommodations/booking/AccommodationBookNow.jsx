@@ -4,7 +4,7 @@ import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import useUserStore from "@/store/useAuthStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore, getCartCurrency, getItemCurrency } from "@/store/useCartStore";
 import $helpers from "@/lib/helpers";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { toast } from 'react-toastify';
@@ -316,6 +316,13 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
 
   const rooms = bookingData?.searchParams?.rooms || [];
   const nights = bookingData.nights || 1;
+  const cartItems = useCartStore((state) => state.items);
+  const cartCurrency = getCartCurrency(cartItems);
+  const itemCurrency = getItemCurrency({
+    currency: bookingData?.currency || bookingData?.prebooking_rates?.[0]?.currency || bookingData?.hotelData?.currency,
+    hotel_info: { rate: bookingData?.prebooking_rates?.[0] },
+  });
+  const isCurrencyMismatch = Boolean(cartCurrency && itemCurrency && cartCurrency.toUpperCase() !== itemCurrency.toUpperCase());
 
   const initGuestsByRoom = () => {
     return rooms.map((room) => {
@@ -561,6 +568,16 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
   // === HANDLE SUBMIT ===
   const handleAddToCart = async (e) => {
     e.preventDefault();
+    if (isCurrencyMismatch) {
+      toast.error(
+        `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`,
+        {
+          position: "top-right",
+          autoClose: 5000,
+        }
+      );
+      return;
+    }
     setLoadingButton("addToCart");
     setIsSubmitting(true);
     setErrors({});
@@ -1049,14 +1066,15 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="
+                title={isCurrencyMismatch ? `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.` : ""}
+                className={`
         w-full sm:w-auto
         bg-primary text-white 
         font-semibold text-base lg:px-10
         py-3 px-6 rounded-lg 
-        transition disabled:opacity-50 
-        flex items-center justify-center gap-2
-      "
+        transition flex items-center justify-center gap-2
+        ${isCurrencyMismatch ? "opacity-60 cursor-pointer" : "disabled:opacity-50"}
+      `}
               >
                 {isSubmitting ? (
                   <>

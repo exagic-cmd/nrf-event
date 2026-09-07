@@ -171,12 +171,9 @@ export const useCartStore = create<CartState>()(
         if (cartCurrency && itemCurrency && cartCurrency !== itemCurrency) {
           const alertMessage = `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`;
           toast.error(alertMessage, {
-            position: "top-center",
+            position: "top-right",
             autoClose: 5000,
           });
-          if (typeof window !== "undefined" && typeof window.alert === "function") {
-            window.alert(alertMessage);
-          }
           return {
             status: "currency_mismatch",
             message: alertMessage,
@@ -215,12 +212,9 @@ export const useCartStore = create<CartState>()(
         if (cartCurrency && itemCurrency && cartCurrency !== itemCurrency) {
           const alertMessage = `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`;
           toast.error(alertMessage, {
-            position: "top-center",
+            position: "top-right",
             autoClose: 5000,
           });
-          if (typeof window !== "undefined" && typeof window.alert === "function") {
-            window.alert(alertMessage);
-          }
           return {
             status: "currency_mismatch",
             message: alertMessage,

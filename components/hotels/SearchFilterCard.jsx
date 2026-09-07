@@ -22,6 +22,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useOrderStore } from "@/store/useOrderStore";
 import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import LoaderSvg from "@/components/common/LoaderSvg";
+import CurrencySelector from "@/components/layout/CurrencySelector";
 
 const dayTourPlaceholders = [
   "Search attractions like Marina Bay Sands",
@@ -560,11 +561,16 @@ export default function SearchFilterCard({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap gap-1 lg:gap-1">
-        {filterTabs
-          .map((t) => (
-            <Pill key={t.id} tab={t} />
-          ))}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+        <div className="flex flex-wrap gap-1 lg:gap-1">
+          {filterTabs
+            .map((t) => (
+              <Pill key={t.id} tab={t} />
+            ))}
+        </div>
+        <div className="ml-auto pb-1 mr-1">
+          <CurrencySelector />
+        </div>
       </div>
 <div className="transition-all duration-500 ease-in-out">
            {/* ====== TRANSFERS ====== */}
