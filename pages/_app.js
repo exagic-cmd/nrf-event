@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
 import useLanguageStore from '@/store/useLanguageStore';
@@ -8,6 +8,7 @@ import App from 'next/app';
 import '@/styles/globals.css';
 import ThemeProvider from '@/components/ThemeProvider';
 import { eventAppearance } from '@/lib/theme.config';
+import { useEventStore } from '@/store/useEventStore';
 
 const GA_TRACKING_ID = 'G-5SQKF4Y54M';
 
@@ -15,6 +16,12 @@ import '@/lib/helpers'; // loads globally
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const { currentLocale, setLocale } = useLanguageStore();
+const event = useEventStore((s) => s.event);
+   const appearance = useMemo(() => {
+    const themeMode = event?.event?.theme_mode === 'dark' ? 'dark' : event?.theme_mode === 'light' ? 'light' : eventAppearance.theme;
+    const primaryColor = event?.event?.theme_color || eventAppearance.primaryColor;
+    return { theme: themeMode, primaryColor };
+  }, [event?.event?.theme_mode, event?.event?.theme_color]);
 
   // Sync language with router
   useEffect(() => {
@@ -53,7 +60,7 @@ function MyApp({ Component, pageProps }) {
           gtag('config', '${GA_TRACKING_ID}');
         `}
       </Script>
-      <ThemeProvider appearance={eventAppearance}>
+      <ThemeProvider appearance={appearance}>
         <Header />
         <Component {...pageProps} />
       </ThemeProvider>
