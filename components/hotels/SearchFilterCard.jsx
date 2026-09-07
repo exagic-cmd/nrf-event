@@ -23,6 +23,7 @@ import { useOrderStore } from "@/store/useOrderStore";
 import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import CurrencySelector from "@/components/layout/CurrencySelector";
+import { useEventStore } from "@/store/useEventStore";
 const dayTourPlaceholders = [
   "Search attractions like Marina Bay Sands",
   "Try Merlion Park or Gardens by the Bay",
@@ -77,6 +78,7 @@ export default function SearchFilterCard({
   } = useDaytoursStore();
 
   const { daytourParams, setDaytourParams, transferParams, accommodationParams, setAccommodationParams } = useSearchValuesStore();
+  const { event, FetchEvent } = useEventStore();
 
   const [pickupQuery, setPickupQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -819,10 +821,12 @@ export default function SearchFilterCard({
                     ) : "Search"}
                    </button>
                  </div>
-                 <div className="md:col-span-12 right-0 flex justify-end gap-1">
-                   <span className="text-xs text-muted-foreground">Powered by </span>
-                   <img className="h-5 w-auto" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
-                 </div>
+                     {event?.partner?.logo && (
+        <div className="flex justify-end gap-1 mt-3">
+            <span className="text-xs text-muted-foreground">Powered by </span>
+            <img className="h-5 w-auto" src={event?event?.partner?.logo:null} alt="Toureast Logo" />
+          </div>
+)}
                </div>
              </form>
            )}
@@ -1018,10 +1022,10 @@ export default function SearchFilterCard({
                 ) : "Search"}
               </button>
             </div>
-            <div className=" flex justify-end md:col-span-12 gap-1">
-              <span className="text-xs text-muted-foreground">Powered by </span>
-              <img className="h-5 w-auto" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
-            </div>
+                <div className=" flex justify-end md:col-span-12 gap-1">
+                  <span className="text-xs text-muted-foreground">Powered by </span>
+                  <img className="h-5 w-auto" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
+                </div>
           </div>
         </form>
       )}
