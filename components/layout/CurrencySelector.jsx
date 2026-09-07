@@ -4,10 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown, Check, Coins } from "lucide-react";
 import useCurrencyStore, { STATIC_CURRENCIES } from "@/store/useCurrencyStore";
 import { useEventStore } from "@/store/useEventStore";
+import { useCartStore, getCartCurrency } from "@/store/useCartStore";
+import { toast } from "react-toastify";
 
 export default function CurrencySelector() {
   const { currency, currencyId, currencies, setCurrency } = useCurrencyStore();
   const eventCurrencies = useEventStore((state) => state.event?.currencies);
+  const cartItems = useCartStore((state) => state.items);
+  const cartCurrency = getCartCurrency(cartItems);
+
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef(null);
@@ -59,6 +64,14 @@ export default function CurrencySelector() {
     ) || currencyList[0];
 
   const handleSelect = (item) => {
+    const itemCode = (item.code || item.name || "").toUpperCase();
+    if (cartCurrency && itemCode !== cartCurrency.toUpperCase()) {
+      toast.error(`In your cart you have a product in ${cartCurrency}, so you cannot change currency.`, {
+        position: "top-right",
+        autoClose: 5000,
+      });
+      return;
+    }
     setCurrency(item.id);
     setIsOpen(false);
   };
@@ -104,6 +117,9 @@ export default function CurrencySelector() {
                 (item.id === currentCurrency?.id ||
                   item.name?.toUpperCase() === currentCurrency?.name?.toUpperCase());
 
+              const itemCode = (item.code || item.name || "").toUpperCase();
+              const isOptionDisabled = Boolean(cartCurrency && itemCode !== cartCurrency.toUpperCase());
+
               return (
                 <button
                   key={item.id}
@@ -111,8 +127,11 @@ export default function CurrencySelector() {
                   role="option"
                   aria-selected={isSelected}
                   onClick={() => handleSelect(item)}
+                  title={isOptionDisabled ? `In your cart you have a product in ${cartCurrency}` : ""}
                   className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs sm:text-sm transition-colors text-left ${
-                    isSelected
+                    isOptionDisabled
+                      ? "opacity-40 cursor-pointer text-muted-foreground"
+                      : isSelected
                       ? "bg-primary/10 text-primary font-semibold"
                       : "text-foreground hover:bg-secondary/80"
                   }`}
@@ -120,7 +139,9 @@ export default function CurrencySelector() {
                   <div className="flex items-center gap-2">
                     <span
                       className={`w-5 h-5 flex items-center justify-center rounded-full ${
-                        isSelected
+                        isOptionDisabled
+                          ? "bg-muted text-muted-foreground"
+                          : isSelected
                           ? "bg-primary text-primary-foreground"
                           : "bg-secondary text-foreground"
                       }`}
@@ -143,4 +164,5 @@ export default function CurrencySelector() {
       )}
     </div>
   );
+
 }

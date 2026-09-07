@@ -3,7 +3,7 @@ import BookingPriceTable from "@/components/product/bookingInfo/BookingPriceTabl
 import BookingForm from "@/components/product/bookingInfo/TourBookingForm";
 import BookingPolicySection from "@/components/daytours/booking/BookingPolicySection";
 import { useProductStore } from "@/store/useProductStore";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore, getCartCurrency, getItemCurrency } from "@/store/useCartStore";
 import { calculateTierPricing } from "@/utils/tierPricing";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useRouter } from "next/router";
@@ -49,6 +49,9 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const apiData = bookedProductDetail?.data?.basicinfo;
   const imageUrl = getFullImageUrl(apiData?.images?.[0]?.image);
   const displayPrice = apiData?.starting_price || 0;
+  const itemCurrency = apiData?.currency || getItemCurrency(apiData);
+  const cartCurrency = getCartCurrency(cartItems);
+  const isCurrencyMismatch = Boolean(cartCurrency && itemCurrency && cartCurrency.toUpperCase() !== itemCurrency.toUpperCase());
 
   useEffect(() => {
     setJustAdded(false);
@@ -85,6 +88,16 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       }));
     }
   }, [prefillData]);  const handleBookNow = async () => {
+    if (isCurrencyMismatch) {
+      toast.error(
+        `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`,
+        {
+          position: "top-right",
+          autoClose: 5000,
+        }
+      );
+      return;
+    }
   setLoadingButton("addToCart");
     const validationErrors = {};
     if (!formData.adults) validationErrors.adults = "adultsError";
@@ -120,7 +133,6 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
     const currency = apiData?.currency ;
     
     const isShuttle = apiData?.category_id === 2;
-    alert(apiData?.category_id === 2);
     const selectedTime = isShuttle ? formData.pickupTime : formData.time;
 
     let pickupPointId = null;
@@ -260,7 +272,10 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                 <button
                   onClick={handleBookNow}
                   disabled={loadingButton === "addToCart"}
-                  className="bg-primary  text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2"
+                  title={isCurrencyMismatch ? `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.` : ""}
+                  className={`bg-primary text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2 ${
+                    isCurrencyMismatch ? "opacity-60 cursor-pointer" : ""
+                  }`}
                 >
                   {loadingButton === "addToCart" ? (
                     <>

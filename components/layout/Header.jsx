@@ -8,7 +8,6 @@ import LocalizedLink from "@/components/LocalizedLink";
 import useUserStore from "@/store/useAuthStore";
 import { User, ShoppingBag, LogOut } from "lucide-react";
 import { useEventStore } from "@/store/useEventStore";
-import CurrencySelector from "@/components/layout/CurrencySelector";
 
 export default function Header() {
  // const setLocale = useLanguageStore((state) => state.setLocale);
@@ -136,10 +135,8 @@ export default function Header() {
 </div>
 <div></div>
 
-      {/* RIGHT SIDE: CURRENCY SELECTOR & USER MENU */}
+      {/* RIGHT SIDE: USER MENU */}
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
-        {/* Currency Selector */}
-        <CurrencySelector />
 
         {/* DESKTOP USER MENU */}
       <nav className="hidden lg:flex items-center gap-4">

@@ -5,11 +5,17 @@ import { useRouter } from 'next/router';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSearchValuesStore } from '@/store/searchValues.store';
+import useCurrencyStore from '@/store/useCurrencyStore';
 import { toast } from 'react-toastify';
 
-const fetchRecommendedProducts = async () => {
+const fetchRecommendedProducts = async (currency_id) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/get-recommended-products`);
+    const resolvedId =
+      currency_id ||
+      useCurrencyStore.getState()?.currencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2;
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/get-recommended-products?currency_id=${resolvedId}`);
     if (!res.ok) {
       throw new Error('Network response was not ok');
     }
@@ -24,6 +30,15 @@ const fetchRecommendedProducts = async () => {
 export default function RecommendedProductsModal({ isOpen, onClose, hotelName }) {
   const router = useRouter();
   const { setTransferParams } = useSearchValuesStore();
+  const { currency, currencyId } = useCurrencyStore();
+  const resolvedCurrencyId =
+    currencyId ||
+    (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+    2;
+  const currencyName =
+    currency ||
+    (typeof window !== "undefined" && localStorage.getItem("currency")) ||
+    "SGD";
   const hasFetchedRef = useRef(false);
 
   const [loading, setLoading] = useState(true);
@@ -36,7 +51,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
       hasFetchedRef.current = true;
       setLoading(true);
       setProductLoading(null);
-      fetchRecommendedProducts().then((res) => {
+      fetchRecommendedProducts(resolvedCurrencyId).then((res) => {
         if (res.success) {
           const filteredData = res.data.filter(
             (cat) => cat.category_title !== "Additional Services"
@@ -53,7 +68,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
     if (!isOpen) {
       hasFetchedRef.current = false;
     }
-  }, [isOpen]);
+  }, [isOpen, resolvedCurrencyId]);
   
   const handleProductClick = async (product, category) => {
     setProductLoading(product.id);
@@ -195,7 +210,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
                           <div className="flex justify-between items-start gap-2 mb-2">
                             <h3 className="font-semibold text-foreground line-clamp-2 text-sm leading-tight">{product.title}</h3>
                             <span className="font-bold text-primary whitespace-nowrap text-sm">
-                              {Number(product.starting_price) > 0 ? `SGD ${product.starting_price}` : 'Free'}
+                              {Number(product.starting_price) > 0 ? `${currencyName} ${product.starting_price}` : 'Free'}
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">

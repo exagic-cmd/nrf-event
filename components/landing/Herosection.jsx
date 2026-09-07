@@ -193,7 +193,7 @@ export default function HomePage() {
 
   return (
     <div className="bg-background">
-      <section className="relative pb-24 md:pb-32">
+      <section className="relative pb-24 md:pb-40 mt-24">
       
 
         <div className="absolute -top-12 lg:-top-16 lg:px-8 min-w-full z-10">

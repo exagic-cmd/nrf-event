@@ -1,7 +1,7 @@
 import React, { useState, useEffect ,useCallback } from "react";
 import Layout from "@/components/layout/Layout";
 import { useTransferStore } from "@/store/useTransferStore";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore, getCartCurrency, getItemCurrency } from "@/store/useCartStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { format } from "date-fns";
 import BookingTransferInfo from "@/components/transfers/detail/BookingTransferInfo";
@@ -40,6 +40,10 @@ const { surchargePickup, surchargeReturn,resetTransferStore  } = useTransferStor
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [finalTotalPrice, setFinalTotalPrice] = useState(0);
   const [basePrice, setBasePrice] = useState(0);
+  const cart = useCartStore();
+  const cartCurrency = getCartCurrency(cart.items);
+  const transferCurrency = getItemCurrency(selectedTransfer);
+  const isCurrencyMismatch = Boolean(cartCurrency && transferCurrency && cartCurrency.toUpperCase() !== transferCurrency.toUpperCase());
 
   useEffect(() => {
     if (selectedTransfer) {
@@ -319,6 +323,16 @@ const validateBooking = () => {
   return true;
 };
 const handleBookTransfer = () => {
+  if (isCurrencyMismatch) {
+    toast.error(
+      `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`,
+      {
+        position: "top-right",
+        autoClose: 5000,
+      }
+    );
+    return;
+  }
   // validate first
   const isValid = validateBooking();
   if (!isValid) return;
@@ -697,7 +711,10 @@ const baggageSelectorProps = {
 
   <button
     onClick={handleBookTransfer}
-    className="bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+    title={isCurrencyMismatch ? `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.` : ""}
+    className={`bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto ${
+      isCurrencyMismatch ? "opacity-60 cursor-pointer" : ""
+    }`}
   >
     {t("booking.addToCart")}
   </button>
@@ -871,10 +888,13 @@ const baggageSelectorProps = {
 />
 
 </div>
- <div>
+  <div>
    <button
     onClick={handleBookTransfer}
-    className="bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto"
+    title={isCurrencyMismatch ? `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.` : ""}
+    className={`bg-primary text-white font-medium px-6 py-3 rounded-md w-full sm:w-auto ${
+      isCurrencyMismatch ? "opacity-60 cursor-pointer" : ""
+    }`}
   >
     {t("booking.addToCart")}
   </button>
