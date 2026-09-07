@@ -718,10 +718,12 @@ useEffect(() => {
      
      
        </div>
-         <div className="flex justify-end gap-1 mt-3">
+       {event?.partner?.logo && (
+        <div className="flex justify-end gap-1 mt-3">
             <span className="text-xs text-muted-foreground">Powered by </span>
-            <img className="h-5 w-auto" src= {`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
+            <img className="h-5 w-auto" src={event?event?.partner?.logo:null} alt="Toureast Logo" />
           </div>
+)}
     </form>
   );
 }
