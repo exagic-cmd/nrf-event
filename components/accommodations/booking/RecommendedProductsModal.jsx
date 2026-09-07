@@ -230,7 +230,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
         <div className="p-4 border-t bg-surface flex justify-between items-center">
           <p className="text-sm text-muted-foreground">Your hotel has been added to the cart.</p>
           <div className="flex gap-3 w-full sm:w-auto">
-            <Button onClick={onClose} className="flex-1 sm:flex-none bg-primary hover:bg-[#b71c1c]">
+            <Button onClick={onClose} className="flex-1 sm:flex-none bg-primary hover:bg-primary-hover">
               Continue
             </Button>
           </div>

@@ -22,8 +22,8 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.5)" }}
+      className="fixed inset-0 z-50 flex items-center bg-surface justify-center p-4"
+     
       onClick={onClose}
     >
       <div
@@ -33,7 +33,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface rounded-t-2xl">
           <div className="flex items-center gap-2">
-            <Check size={20} className="text-[#233BA0]" />
+            <Check size={20} className="text-primary" />
             <h2 className="text-lg font-bold text-foreground">Confirm Your Booking</h2>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors">
@@ -43,14 +43,14 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
 
         {loading ? (
           <div className="p-10 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#233BA0]" />
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
           </div>
         ) : rate ? (
           <div className="p-5 space-y-5">
             {/* Room name + meal badge */}
-            <div className="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-3 border border-blue-100">
+              <div className="flex items-center justify-between bg-primary/10 rounded-xl px-4 py-3 border border-primary/20">
               <div className="flex items-center gap-2">
-                <Bed size={18} className="text-[#233BA0]" />
+                <Bed size={18} className="text-primary" />
                 <span className="font-semibold text-foreground">{rate.room_name}</span>
               </div>
               <span className="text-xs bg-secondary text-white px-2 py-1 rounded-full">{rate.meal || "nomeal"}</span>
@@ -74,7 +74,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
             <div className="grid grid-cols-3 gap-3">
               <div className="border border-border rounded-xl p-3 text-center">
                 <p className="text-xs text-muted-foreground mb-1">Total Price</p>
-                <p className="text-base font-bold text-[#233BA0]">
+                <p className="text-base font-bold text-primary">
                   {paymentType?.show_currency_code || paymentType?.currency_code }{" "}
                   {parseFloat(paymentType?.show_amount || paymentType?.amount || 0).toFixed(2)}
                 </p>
@@ -93,7 +93,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
             {freeCancelDate && (
               <div>
                 <p className="text-sm font-semibold text-muted-foreground mb-2">Cancellation Policy</p>
-                <span className="inline-flex items-center gap-2 bg-green-600 text-white text-sm font-medium px-3 py-1.5 rounded-full">
+                <span className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-sm font-medium px-3 py-1.5 rounded-full">
                   <Check size={14} />
                   Free cancellation before {freeCancelDate}
                 </span>
@@ -124,7 +124,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
               )}
               {rg.class > 0 && (
                 <span className="flex items-center gap-1">
-                  <span className="text-yellow-400">★</span>
+                  <span className="text-primary">★</span>
                   Class {rg.class}
                 </span>
               )}
@@ -158,7 +158,7 @@ const PrebookingConfirmModal = ({ open, onClose, onProceed, data, loading }) => 
           <button
             onClick={onProceed}
             disabled={loading || !rate}
-            className="flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-[#B81E29] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Check size={16} />
             Proceed
@@ -186,14 +186,14 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
     s.includes("nonrefundable") ||
     s.includes("non-refundable")
   ) {
-    return { label: "Non-Refundable", cls: "bg-red-100 text-red-700" };
+    return { label: "Non-Refundable", cls: "bg-destructive/10 text-destructive" };
   }
 
   if (s.includes("refundable") || s.includes("free")) {
-    return { label: "Free Cancellation", cls: "bg-green-100 text-green-700" };
+    return { label: "Free Cancellation", cls: "bg-primary/10 text-primary" };
   }
 
-  return { label: status || "Non-Refundable", cls: "bg-red-100 text-red-700" };
+  return { label: status || "Non-Refundable", cls: "bg-destructive/10 text-destructive" };
 };
 
   return (
@@ -275,7 +275,7 @@ const RoomsBreakdownModal = ({ open, onClose, ratePlan }) => {
         <div className="px-5 pb-5">
           <div className="bg-muted rounded-xl p-4 flex items-center justify-between border border-border">
             <span className="text-sm font-semibold text-muted-foreground">Total Price</span>
-            <span className="text-xl font-bold text-[#233BA0]">
+            <span className="text-xl font-bold text-primary">
               {currency} {parseFloat(totalPrice || 0).toFixed(2)}
             </span>
           </div>
@@ -382,12 +382,12 @@ const StubaRoomList = ({
   const getCancellationDisplay = (policy) => {
     const p = (policy || "").toString().toLowerCase();
     if (p.includes("nonrefundable") || p.includes("non-refundable")) {
-      return { text: "Non-Refundable", color: "text-red-400", icon: <X className="lg:w-5 lg:h-5 h-3 w-3" />, staticDate: "Non-Refundable" };
+      return { text: "Non-Refundable", color: "text-destructive", icon: <X className="lg:w-5 lg:h-5 h-3 w-3" />, staticDate: "Non-Refundable" };
     }
     if (p.includes("refundable") || p.includes("free")) {
-      return { text: "Free Cancellation", color: "text-green-400", icon: <Check className="lg:w-5 lg:h-5 h-3 w-3" />, staticDate: "Free Cancellation" };
+      return { text: "Free Cancellation", color: "text-primary", icon: <Check className="lg:w-5 lg:h-5 h-3 w-3" />, staticDate: "Free Cancellation" };
     }
-    return { text: policy || "See terms", color: "text-yellow-400", icon: <Shield className="lg:w-5 lg:h-5 h-3 w-3" />, staticDate: policy || "See terms" };
+    return { text: policy || "See terms", color: "text-primary", icon: <Shield className="lg:w-5 lg:h-5 h-3 w-3" />, staticDate: policy || "See terms" };
   };
 
   const getMealDisplay = (mealType) => {
@@ -436,7 +436,7 @@ const StubaRoomList = ({
       <div className="">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
           <div>
-            <h2 className="text-xl font-bold text-[#233BA0]">Available Rooms</h2>
+            <h2 className="text-xl font-bold text-primary">Available Rooms</h2>
             {/* <p className="text-surface-foreground">
               {allRooms.length} room option{allRooms.length !== 1 ? "s" : ""} for your stay
             </p> */}
@@ -492,7 +492,7 @@ const StubaRoomList = ({
               </div>
 
               {/* Desktop Table Header */}
-              <div className="hidden lg:grid grid-cols-5 text-xs uppercase text-surface-foreground font-bold bg-[#dcdcdc] border-y border-border">
+              <div className="hidden lg:grid grid-cols-5 text-xs uppercase text-surface-foreground font-bold bg-muted border-y border-border">
                 <div className="py-3 px-4 border-r border-border">Room</div>
                 <div className="py-3 px-4 border-r border-border">Meals</div>
                 <div className="py-3 px-4 border-r border-border">Cancellation</div>
@@ -527,7 +527,7 @@ const StubaRoomList = ({
                       return (
                         <div
                           key={uniqueKey}
-                          className={`grid grid-cols-5 items-center transition-all ${isSelected ? "bg-muted border-l-4 border-red-500" : "hover:bg-muted"
+                          className={`grid grid-cols-5 items-center transition-all ${isSelected ? "bg-muted border-l-4 border-primary" : "hover:bg-muted"
                             }`}
                         >
                           <div className="p-4 border-r border-border">
@@ -562,7 +562,7 @@ const StubaRoomList = ({
                               {link_type_id === 9 && (
                                 <BadgeInfo
                                   size={14}
-                                  className="text-muted-foreground cursor-pointer hover:text-[#233BA0] transition-colors"
+                                  className="text-muted-foreground cursor-pointer hover:text-primary transition-colors"
                                   onClick={() => setBreakdownModal({ open: true, ratePlan })}
                                 />
                               )}
@@ -580,7 +580,7 @@ const StubaRoomList = ({
                               disabled={isLoading}
                               className={`px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center min-w-[110px] h-[40px] ${isSelected
                                 ? "bg-muted0 text-white shadow-md"
-                                : "bg-primary text-white hover:bg-red-700"
+                                : "bg-primary text-primary-foreground hover:bg-primary-hover"
                                 } disabled:bg-secondary disabled:cursor-wait`}
                             >
                               {isLoading ? (
@@ -661,7 +661,7 @@ const StubaRoomList = ({
                                     {link_type_id === 9 && (
                                       <BadgeInfo
                                         size={14}
-                                        className="text-muted-foreground cursor-pointer hover:text-[#233BA0] transition-colors"
+                                        className="text-muted-foreground cursor-pointer hover:text-primary transition-colors"
                                         onClick={() => setBreakdownModal({ open: true, ratePlan })}
                                       />
                                     )}
@@ -680,7 +680,7 @@ const StubaRoomList = ({
                                 disabled={isLoading}
                                 className={`w-full px-6 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center h-[48px] ${isSelected
                                   ? "bg-muted0 text-white shadow-md"
-                                  : "bg-primary text-white hover:bg-red-700"
+                                  : "bg-primary text-primary-foreground hover:bg-primary-hover"
                                   } disabled:bg-secondary disabled:cursor-wait`}
                               >
                                 {isLoading ? (
@@ -706,7 +706,7 @@ const StubaRoomList = ({
                 <div className="p-4 border-t border-border text-center">
                   <button
                     onClick={() => toggleExpandedRoom(roomType.id)}
-                    className="text-sm text-[#233BA0] font-semibold hover:underline"
+                    className="text-sm text-primary font-semibold hover:underline"
                   >
                     {isExpanded
                       ? "Show less"

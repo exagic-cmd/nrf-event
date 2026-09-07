@@ -172,7 +172,7 @@ setFlywireTotal(totalPrice);
      <div className="flex flex-col lg:flex-row gap-8 max-w-full md:mx-24 mx-2 mt-24 p-2 md:p-12">
       <div className="w-full lg-w-2/3 bg-surface rounded-xl p-2 shadow-md">
         <div className='p-5'>
-          <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
+          <h2 className="text-xl font-semibold mb-4">Personal Information2</h2>
           <form onSubmit={handlePayNow}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div>

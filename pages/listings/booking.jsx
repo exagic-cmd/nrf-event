@@ -752,7 +752,7 @@ const baggageSelectorProps = {
         type="text"
         value={userBookingDetails.meetAndGreetName || ""}
         onChange={(e) => handleInputChange("meetAndGreetName", e.target.value)}
-        className={` w-full lg:w-1/2 text-base mb-2 px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-muted cursor-not-allowed" : ""}`}
+        className={` w-full lg:w-1/2 text-base bg-surface mb-2 px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-[#D3202D] ${isLocked ? "bg-muted cursor-not-allowed" : ""}`}
         disabled={isLocked}
         placeholder={t("booking.meetAndGreetPlaceholder","Enter name") || "Enter name"}
       />

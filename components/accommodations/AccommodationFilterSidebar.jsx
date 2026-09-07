@@ -48,7 +48,7 @@ const Checkbox = ({ label, count, checked, onChange }) => (
       type="checkbox"
       checked={checked}
       onChange={onChange}
-      className="h-4 w-4 rounded border-border text-primary focus:ring-[#D3202D]"
+      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
     />
     <span className="text-sm text-muted-foreground flex-grow">{label}</span>
     {count > 0 && <span className="text-xs text-muted-foreground">{count}</span>}
@@ -70,7 +70,7 @@ const StarRatingFilter = ({ ratings, activeRatings, onRatingChange }) => (
               type="checkbox"
               checked={activeRatings.includes(value)}
               onChange={() => onRatingChange(value)}
-              className="h-4 w-4 rounded border-border text-primary focus:ring-[#D3202D] mr-3"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary mr-3"
             />
             <div className="flex items-center">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -78,7 +78,7 @@ const StarRatingFilter = ({ ratings, activeRatings, onRatingChange }) => (
                   key={i}
                   size={16}
                   className={
-                    i < value ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                    i < value ? "text-primary fill-primary" : "text-muted-foreground"
                   }
                 />
               ))}
@@ -372,7 +372,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
               const { value } = e.target;
               setActiveFilters(prev => ({ ...prev, searchText: value }));
             }}
-            className="w-full border border-border rounded-lg py-2 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+            className="w-full border border-border rounded-lg py-2 pl-4 pr-8 text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -381,7 +381,7 @@ export default function AccommodationFilterSidebar({ filters, onFilterChange, so
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
-            className="w-full appearance-none bg-surface border border-border rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
+            className="w-full appearance-none bg-surface border border-border rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option value="default">Recommended</option>
             <option value="price_asc">Price: Low to High</option>

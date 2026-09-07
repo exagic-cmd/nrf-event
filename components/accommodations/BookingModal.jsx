@@ -15,7 +15,7 @@ const BookingModal = ({ isOpen, onClose, onUpdate, onGoToCart, type = "accommoda
         <div className="flex flex-col gap-3">
           <button
             onClick={onUpdate}
-            className="bg-brand-secondary text-white px-4 py-2 rounded font-semibold hover:bg-[#b88a45] transition-colors"
+            className="bg-primary text-primary-foreground px-4 py-2 rounded font-semibold hover:bg-primary-hover transition-colors"
           >
             Update Selection
           </button>

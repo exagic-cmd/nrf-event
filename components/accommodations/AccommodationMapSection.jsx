@@ -48,7 +48,7 @@ const AccommodationMapSection = ({ hotelData, landmarks = [] }) => {
     let starsHtml = '';
     if (rating > 0) {
       for (let i = 0; i < 5; i++) {
-        starsHtml += `<span style="color: ${i < rating ? '#FFD700' : '#d3d3d3'};">★</span>`;
+        starsHtml += `<span style="color: ${i < rating ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'};">★</span>`;
       }
     }
 
@@ -56,7 +56,7 @@ const AccommodationMapSection = ({ hotelData, landmarks = [] }) => {
       <div style="
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         font-size: 14px;
-        color: #333;
+        color: hsl(var(--foreground));
         padding: 5px;
         display: flex;
         align-items: center;
@@ -136,15 +136,15 @@ const AccommodationMapSection = ({ hotelData, landmarks = [] }) => {
         <div style="
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
           font-size: 14px;
-          color: #333;
+          color: hsl(var(--foreground));
           padding: 10px;
           max-width: 200px;
         ">
-          <div style="font-weight: 600; font-size: 14px; margin-bottom: 5px; color: #1a73e8;">
+          <div style="font-weight: 600; font-size: 14px; margin-bottom: 5px; color: hsl(var(--primary));">
             ${landmark.title || landmark.name}
           </div>
-          ${distanceText ? `<div style="font-size: 12px; color: #666; margin-bottom: 8px;">${distanceText}</div>` : ''}
-          ${landmark.description ? `<div style="font-size: 12px; color: #555; line-height: 1.4;">${landmark.description}</div>` : ''}
+          ${distanceText ? `<div style="font-size: 12px; color: hsl(var(--muted-foreground)); margin-bottom: 8px;">${distanceText}</div>` : ''}
+          ${landmark.description ? `<div style="font-size: 12px; color: hsl(var(--muted-foreground)); line-height: 1.4;">${landmark.description}</div>` : ''}
         </div>
       `;
 
@@ -288,7 +288,7 @@ const AccommodationMapSection = ({ hotelData, landmarks = [] }) => {
       <h2 className="text-2xl font-bold text-primary mb-4">Location</h2>
       
       <div className="bg-secondary rounded-xl overflow-hidden">
-        <div className="aspect-[8/3] bg-gray-700">
+        <div className="aspect-[8/3] bg-muted">
           <div ref={mapRef} className="w-full h-full" />
         </div>
       </div>

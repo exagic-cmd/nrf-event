@@ -255,14 +255,14 @@ export default function FilterSidebar({
               placeholder="Search by name..."
               value={searchTerm || ''}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border text-xs border-border rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+              className="w-full px-3 py-2 border text-xs border-border rounded-lg  focus:border-transparent bg-surface transition"
             />
           </div>
           <div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-3 py-2 border border-border text-xs rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+              className="w-full px-3 py-2 border border-border text-xs rounded-lg  focus:border-transparent bg-surface transition"
             >
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
@@ -318,14 +318,14 @@ export default function FilterSidebar({
                   placeholder="Search by name..."
                   value={searchTerm || ''}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border text-xs border-border rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+                  className="w-full px-3 py-2 border text-xs border-border rounded-lg  focus:border-transparent bg-surface transition"
                 />
               </div>
               <div>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 border border-border text-xs rounded-lg focus:ring-2 focus:ring-[#D3202D] focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-border text-xs rounded-lg  focus:border-transparent bg-surface transition"
                 >
                   <option value="price_asc">Price: Low to High</option>
                   <option value="price_desc">Price: High to Low</option>
@@ -362,7 +362,7 @@ export default function FilterSidebar({
               {hasActiveFilters && (
                 <button
                   onClick={clearAll}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-primary hover:underline"
                 >
                   Clear all
                 </button>

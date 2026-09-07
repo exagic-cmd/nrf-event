@@ -51,7 +51,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
         <div className="p-6 md:p-10">
           <div className="flex justify-between items-start mb-8">
             <h3 className="text-1xl font-bold text-foreground flex items-center gap-3">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+              <CheckCircle className="h-6 w-6 text-primary" />
               Booking Summary
             </h3>
             <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground transition">
@@ -59,7 +59,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
             </button>
           </div>
 
-          <div className="bg-gradient-to-r from-[#D3202D] to-[#b88a45] text-white rounded-2xl p-6 mb-8">
+          <div className="bg-primary text-primary-foreground rounded-2xl p-6 mb-8">
             <h4 className="text-1xl font-bold flex items-center gap-3">
               <Home className="h-7 w-7" />
               {hotelName}
@@ -114,7 +114,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                         <div className="flex items-center gap-3"><AlertCircle className="h-5 w-5 text-muted-foreground" /><div><p className="opacity-90 text-sm">Cancellation Policy</p><p className="font-bold">{cancellationStatus}</p></div></div>
                       </div>
 
-                      <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-8 border border-border">
+                      <div className="bg-muted rounded-2xl p-6 mb-8 border border-border">
                         <h4 className="text-xl font-bold text-foreground mb-5 flex items-center gap-2">
                           <DollarSign className="h-6 w-6 text-primary" />
                           Price Details
@@ -148,12 +148,12 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                       </div>
 
                       <div className="mb-8 border-b pb-8 border-border">
-                        <h5 className="text-[17px] font-bold text-[#334155] mb-4">
+                        <h5 className="text-[17px] font-bold text-foreground mb-4">
                           Cancellation Policy
                         </h5>
                         
                         {cancellationStatus === "NonRefundable" ? (
-                          <div className="text-[#f26e6e] space-y-4">
+                          <div className="text-destructive space-y-4">
                             <div>
                               <p className="font-semibold text-[15px]">Non-Refundable</p>
                               <p className="text-[15px] font-normal opacity-90 mt-1">100% charge will be applied on cancellation.</p>
@@ -162,7 +162,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                         ) : canxFees.length > 0 ? (
                           <div className="space-y-4">
                             {canxFees[0]?.["@attributes"]?.from && (
-                              <div className="text-[#f26e6e]">
+                              <div className="text-destructive">
                                 <p className="font-semibold text-[15px]">Cancel up to {formatCancelDate(canxFees[0]["@attributes"].from, 1)}</p>
                                 <p className="text-[15px] font-normal opacity-90 mt-1">The full cost of the booking will be refunded to you. No cancellation charge applied.</p>
                               </div>
@@ -175,7 +175,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                               const formattedAmt = amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                               
                               return (
-                                <div key={fIdx} className="text-[#f26e6e] mt-4">
+                                <div key={fIdx} className="text-destructive mt-4">
                                   <p className="font-semibold text-[15px]">Cancel on or after {formatCancelDate(fromDate)}</p>
                                   <p className="text-[15px] font-normal opacity-90 mt-1">A cancellation charge of {currency}{formattedAmt} will be applied</p>
                                 </div>
@@ -183,7 +183,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                             })}
                           </div>
                         ) : (
-                          <div className="text-green-600 space-y-4">
+                          <div className="text-primary space-y-4">
                             <div>
                               <p className="font-semibold text-[15px]">Refundable</p>
                               <p className="text-[15px] font-normal opacity-90 mt-1">Free cancellation available.</p>
@@ -195,7 +195,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-surface/0 p-4 rounded-2xl border border-border">
                           <div className="flex items-center gap-3 mb-4">
-                            <Info className="h-5 w-5 text-blue-600" />
+                            <Info className="h-5 w-5 text-primary" />
                             <h5 className="text-lg font-semibold text-foreground">General Messages</h5>
                             <span className="ml-auto text-sm text-muted-foreground">{(generalMessages?.length || 0)}</span>
                           </div>
@@ -221,7 +221,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
 
                         <div className="bg-surface/0 p-4 rounded-2xl border border-border">
                           <div className="flex items-center gap-3 mb-4">
-                            <Info className="h-5 w-5 text-yellow-600" />
+                            <Info className="h-5 w-5 text-primary" />
                             <h5 className="text-lg font-semibold text-foreground">Internal Notes</h5>
                             <span className="ml-auto text-sm text-muted-foreground">{(internalNotes?.length || 0)}</span>
                           </div>
@@ -261,7 +261,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price 
             <button onClick={onClose} className="flex-1 bg-secondary hover:bg-secondary text-foreground font-bold py-5 rounded-2xl transition text-xl shadow-md">
               Cancel
             </button>
-            <button onClick={onConfirm} className="flex-1 bg-primary hover:bg-[#b88a45] text-white font-bold py-5 rounded-2xl transition text-xl shadow-xl">
+            <button onClick={onConfirm} className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground font-bold py-5 rounded-2xl transition text-xl shadow-xl">
               Confirm & Add to Cart
             </button>
           </div>
@@ -279,8 +279,8 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, onKeepExisting, hotelNam
     <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
       <div className="bg-surface rounded-2xl max-w-md w-full shadow-xl p-8 text-center">
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-            <RefreshCw className="w-8 h-8 text-red-500" />
+          <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+            <RefreshCw className="w-8 h-8 text-destructive" />
           </div>
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2">Item Already in Cart</h3>
@@ -296,7 +296,7 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, onKeepExisting, hotelNam
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 bg-primary hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition"
+            className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold py-3 rounded-lg transition"
           >
             Yes, Replace
           </button>
@@ -585,7 +585,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
     if (!validateGuestInfo()) {
       // Validation failed → find first error and scroll to it
       setTimeout(() => {
-        const firstErrorElement = document.querySelector('.text-red-500.text-xs.mt-1');
+        const firstErrorElement = document.querySelector('.text-destructive.text-xs.mt-1');
         if (firstErrorElement) {
           firstErrorElement.scrollIntoView({
             behavior: 'smooth',
@@ -891,14 +891,14 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                     {/* Title */}
                     <div>
                       <label className="block text-surface-foreground text-sm font-medium mb-2">
-                         {(roomIdx === 0 && i === 0) || isStuba ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-muted-foreground">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-red-500">*</span>}
+                        {(roomIdx === 0 && i === 0) || isStuba ? "Title" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-muted-foreground">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-destructive">*</span>}
                       </label>
                       <select
                         value={adult.title}
                         onChange={(e) =>
                           updateGuest(roomIdx, "adults", i, "title", e.target.value)
                         }
-                        className="w-full px-3 h-[42px] py-2.5 bg-surface border border-border rounded-md text-surface-foreground focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 h-[42px] py-2.5 bg-surface border border-border rounded-md text-surface-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                         required={roomIdx === 0 && i === 0}
                       >
                         {TITLE_OPTIONS.map((o) => (
@@ -912,7 +912,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                     {/* First Name */}
                     <div>
                       <label className="block text-surface-foreground text-sm font-medium mb-2">
-                        {(roomIdx === 0 && i === 0) || isStuba ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-muted-foreground">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-red-500">*</span>}
+                        {(roomIdx === 0 && i === 0) || isStuba ? "First Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-muted-foreground">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-destructive">*</span>}
                       </label>
                       <input
                         type="text"
@@ -922,21 +922,21 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                           const onlyText = e.target.value.replace(/[^a-zA-Z\s]/g, "");
                           updateGuest(roomIdx, "adults", i, "firstName", onlyText);
                         }}
-                        className={`w-full px-3 py-2 border border-border rounded-md text-surface-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${roomIdx === 0 && i === 0 && user?.name
+                        className={`w-full px-3 py-2 border border-border rounded-md text-surface-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary ${roomIdx === 0 && i === 0 && user?.name
                           ? "bg-secondary"
                           : "bg-surface"
                           }`}
                         readOnly={showCartOptions}
                       />
                       {errors[roomIdx]?.adults[i]?.firstName && (
-                        <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].firstName}</p>
+                        <p className="text-destructive text-xs mt-1">{errors[roomIdx].adults[i].firstName}</p>
                       )}
                     </div>
 
                     {/* Last Name */}
                     <div>
                       <label className="block text-surface-foreground text-sm font-medium mb-2">
-                        {(roomIdx === 0 && i === 0) || isStuba ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-muted-foreground">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-red-500">*</span>}
+                        {(roomIdx === 0 && i === 0) || isStuba ? "Last Name" : ""} {roomIdx === 0 && i === 0 && <span className="text-sm font-medium text-muted-foreground">(Lead)</span>} {((roomIdx === 0 && i === 0) || isStuba) && <span className="text-destructive">*</span>}
                       </label>
                       <input
                         type="text"
@@ -947,13 +947,13 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                           const onlyText = e.target.value.replace(/[^a-zA-Z\s]/g, "");
                           updateGuest(roomIdx, "adults", i, "lastName", onlyText);
                         }}
-                        className={`w-full px-3 py-2 border border-border rounded-md text-surface-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${roomIdx === 0 && i === 0 && user?.name ? "bg-secondary" : "bg-surface"
+                        className={`w-full px-3 py-2 border border-border rounded-md text-surface-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary ${roomIdx === 0 && i === 0 && user?.name ? "bg-secondary" : "bg-surface"
                           }`}
                         readOnly={showCartOptions}
                       />
 
                       {errors[roomIdx]?.adults[i]?.lastName && (
-                        <p className="text-red-500 text-xs mt-1">{errors[roomIdx].adults[i].lastName}</p>
+                        <p className="text-destructive text-xs mt-1">{errors[roomIdx].adults[i].lastName}</p>
                       )}
                     </div>
                   </div>
@@ -975,7 +975,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                         onChange={(e) =>
                           updateGuest(roomIdx, "children", i, "title", e.target.value)
                         }
-                        className="w-full px-3 py-2.5 bg-surface border border-border rounded-md text-surface-foreground focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 py-2.5 bg-surface border border-border rounded-md text-surface-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         {TITLE_OPTIONS.map((o) => (
                           <option key={o.value} value={o.value}>
@@ -988,7 +988,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                     {/* First Name */}
                     <div>
                       <label className="block text-surface-foreground text-sm font-medium mb-2">
-                        First Name {isStuba && <span className="text-red-500">*</span>}
+                        First Name {isStuba && <span className="text-destructive">*</span>}
                       </label>
                       <input
                         type="text"
@@ -1002,14 +1002,14 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                             e.target.value
                           )
                         }
-                        className="w-full px-3 py-2 bg-surface border border-border rounded-md text-surface-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 py-2 bg-surface border border-border rounded-md text-surface-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
 
                     {/* Last Name */}
                     <div>
                       <label className="block text-surface-foreground text-sm font-medium mb-2">
-                        Last Name {isStuba && <span className="text-red-500">*</span>}
+                        Last Name {isStuba && <span className="text-destructive">*</span>}
                       </label>
                       <input
                         type="text"
@@ -1023,7 +1023,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
                             e.target.value
                           )
                         }
-                        className="w-full px-3 py-2 bg-surface border border-border rounded-md text-surface-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
+                        className="w-full px-3 py-2 bg-surface border border-border rounded-md text-surface-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
 
@@ -1055,7 +1055,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
               onChange={(e) => setSpecialRequests(e.target.value)}
               rows={4}
               readOnly={showCartOptions}
-              className={`w-full px-3 py-2 border border-border rounded-md text-surface-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D3202D] ${showCartOptions ? 'bg-secondary cursor-not-allowed' : 'bg-surface'}`}
+              className={`w-full px-3 py-2 border border-border rounded-md text-surface-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary ${showCartOptions ? 'bg-secondary cursor-not-allowed' : 'bg-surface'}`}
               placeholder="Late check-in, extra bed, dietary needs, etc..."
             />
           </div>

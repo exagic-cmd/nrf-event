@@ -689,7 +689,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   setName(e.target.value);
                   setErrors(prev => ({ ...prev, name: undefined }));
                 }}
-                className={`w-full border border-border text-base rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-muted' : ''}`}
+                className={`w-full border border-border text-base  bg-surface rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-muted' : ''}`}
               />
               {errors.name && <p className="text-destructive text-xs mt-1">{t(errors.name)}</p>}
             </div>
@@ -709,7 +709,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
                   setErrors(prev => ({ ...prev, email: undefined }));
                 }}
                 readOnly={!!user}
-                className={`w-full border border-border text-base rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-muted' : ''}`}
+                className={`w-full border border-border text-base  bg-surface rounded px-4 py-3 mt-1 focus:outline-none ${user ? 'bg-muted' : ''}`}
               />
               {errors.email && <p className="text-destructive text-xs mt-1">{t(errors.email)}</p>}
             </div>

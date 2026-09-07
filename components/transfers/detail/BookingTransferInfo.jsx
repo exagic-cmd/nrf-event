@@ -266,7 +266,7 @@ const FlightNumberField = ({
           }}
           onKeyDown={handleKeyDown}
           placeholder={t("booking.flightPlaceholder")}
-          className={`w-full text-base px-4 py-2 md:py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/30 pr-24 ${
+          className={`w-full text-base px-4 py-2 md:py-3  bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/30 pr-24 ${
             disabled ? "bg-muted cursor-not-allowed" : ""
           }`}
           maxLength={8}

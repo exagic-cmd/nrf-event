@@ -94,14 +94,14 @@ const AccommodationInfoCard = ({
             
 
           {/* {selectedRoom && (
-            <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 text-[#233BA0] text-xs px-2 py-1 rounded-full">
+            <div className="mt-2 inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
               <Check className="h-3 w-3" />
               Room Selected
             </div>
           )} */}
 
           {/* {!selectedRoom && allRooms.length > 0 && (
-            <div className="text-[#233BA0] text-xs mt-1.5">
+            <div className="text-primary text-xs mt-1.5">
               {roomCountText} available
             </div>
           )} */}
@@ -111,15 +111,15 @@ const AccommodationInfoCard = ({
  </div>
         {/* Selected Room */}
         {/* {selectedRoom && (
-          <div className="mb-2 p-4 bg-gradient-to-r from-[#D3202D]/10 to-transparent border border-primary/30 rounded-xl">
-            <div className="text-[#233BA0] font-semibold text-sm mb-1">
+          <div className="mb-2 p-4 bg-primary/10 border border-primary/30 rounded-xl">
+            <div className="text-primary font-semibold text-sm mb-1">
               {selectedRoom.roomType}
             </div>
             <div className="text-surface-foreground text-xs">
               {selectedRoom.mealType}
             </div>
             {freeCancellation && (
-              <div className="text-[#233BA0] text-xs mt-1.5 flex items-center gap-1">
+              <div className="text-primary text-xs mt-1.5 flex items-center gap-1">
                 <Check className="h-3 w-3" />
                 Free cancellation
               </div>
@@ -136,7 +136,7 @@ const AccommodationInfoCard = ({
                   key={i}
                   className="bg-secondary text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1"
                 >
-                  {h.includes("star") && <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />}
+                  {h.includes("star") && <Star className="h-3 w-3 fill-primary text-primary" />}
                   {h}
                 </span>
               ))}
@@ -150,7 +150,7 @@ const AccommodationInfoCard = ({
             <h4 className="text-primary text-sm font-medium mb-2.5">Top Amenities</h4>
             <div className="flex flex-wrap gap-1.5">
               {amenities.map((a, i) => (
-                <span key={i} className="bg-blue-50 text-[#233BA0] px-2.5 py-1.5 rounded-md text-xs">
+                <span key={i} className="bg-primary/10 text-primary px-2.5 py-1.5 rounded-md text-xs">
                   {a}
                 </span>
               ))}
@@ -163,7 +163,7 @@ const AccommodationInfoCard = ({
           <button
             onClick={onScrollToOptions}
             disabled={!allRooms.length}
-            className="w-full bg-primary  text-white lg:py-3 font-semibold py-3 px-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-primary text-primary-foreground lg:py-3 font-semibold py-3 px-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {selectedRoom ? "Choose Room" : `Choose Room (${allRooms.length})`}
           </button>
@@ -179,7 +179,7 @@ const AccommodationInfoCard = ({
 
         {!selectedRoom && freeCancellation && (
           <div className="mt-4 text-center">
-            <span className="inline-flex items-center gap-1 text-green-400 text-xs">
+            <span className="inline-flex items-center gap-1 text-primary text-xs">
               <Check className="h-3.5 w-3.5" />
               Free cancellation available on some rooms
             </span>

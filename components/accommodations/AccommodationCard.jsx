@@ -197,7 +197,7 @@ function AccommodationCard({ accommodation }) {
             }
             if (star_rating) {
               return (
-                <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white rounded-md bg-yellow-500">
+                <span className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 text-xs font-semibold text-primary-foreground rounded-md bg-primary">
                   <Star size={10} />
                   <span>{parseFloat(star_rating).toFixed(1)}</span>
                 </span>
@@ -216,7 +216,7 @@ function AccommodationCard({ accommodation }) {
                   {name}
                 </h2>
                 {star_rating && (
-                  <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold text-white rounded bg-yellow-500 shrink-0 mt-0.5">
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground rounded bg-primary shrink-0 mt-0.5">
                     <Star size={10} fill="white" />
                     <span>{parseFloat(star_rating).toFixed(1)}</span>
                   </span>
@@ -269,7 +269,7 @@ function AccommodationCard({ accommodation }) {
               </div>
             </div>
             {/* Room Info Section */}
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-[#f5f5f5] p-2 rounded">
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm bg-muted p-2 rounded">
 
               {/* First Column: Guests */}
               <div>
@@ -350,7 +350,7 @@ function AccommodationCard({ accommodation }) {
             <button
               type="button"
               onClick={handleCardClick}
-              className="rounded-lg mb-2.5 bg-primary text-white px-4 py-2 active:bg-[#b71c1c] transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
+              className="rounded-lg mb-2.5 bg-primary text-white px-4 py-2 active:bg-primary/80 transition touch-manipulation cursor-pointer ml-auto flex justify-center items-center h-[40px] w-[110px]"
             >
               {isLoading ? (
                 <LoaderSvg className="h-5 w-5" />
