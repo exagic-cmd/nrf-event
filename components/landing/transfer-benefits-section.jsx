@@ -182,7 +182,7 @@ export function TransferBenefitsSection() {
                       </p>
 
                       {/* Footer */}
-                      <div className="flex items-center bg-[#F7F7F780] rounded-xl py-3 px-1 justify-between">
+                      <div className="flex items-center md:bg-surface bg-foreground/20 rounded-xl py-3 px-1 justify-between">
                         <p className="text-2xl font-bold text-foreground">
                          <span className="">{tour?.currency}</span> {tour?.starting_price} 
                         </p>
