@@ -93,7 +93,7 @@ function AccommodationList({ accommodations, isLoading, isSubLoading, sortBy, se
           <select
             value={sortBy}
             onChange={(e) => { setCurrentPage(1); setSortBy(e.target.value); }}
-            className="appearance-none bg-surface border border-border rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#D3202D] focus:border-transparent"
+            className="appearance-none bg-surface border border-border rounded-lg py-2 pl-4 pr-10 text-sm font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option value="default">Sort by</option>
             <option value="price_desc">Price: High to Low</option>

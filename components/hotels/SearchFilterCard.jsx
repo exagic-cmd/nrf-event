@@ -23,7 +23,6 @@ import { useOrderStore } from "@/store/useOrderStore";
 import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import CurrencySelector from "@/components/layout/CurrencySelector";
-
 const dayTourPlaceholders = [
   "Search attractions like Marina Bay Sands",
   "Try Merlion Park or Gardens by the Bay",

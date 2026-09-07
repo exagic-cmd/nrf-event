@@ -60,7 +60,7 @@ const AmenitiesCarousel = ({ items = [] }) => {
             <div
               key={amenity.id || amenity.name}
               title={amenity.name}
-              className="min-w-[110px] bg-muted text-foreground text-xs font-medium px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap"
+              className="min-w-[110px] bg-primary text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-lg flex items-center gap-1.5 whitespace-nowrap"
             >
               {amenity.icon ? (
                 <img
@@ -68,7 +68,7 @@ const AmenitiesCarousel = ({ items = [] }) => {
                     (amenity.icon || "").replace(/\\/g, "/")
                   )}
                   alt={amenity.name}
-                  className="w-4 h-4 object-contain"
+                  className="w-4 h-4 object-contain "
                 />
               ) : (
                 <span className="w-4 h-4 rounded bg-secondary/40" />

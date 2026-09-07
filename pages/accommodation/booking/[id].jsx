@@ -119,7 +119,7 @@ export default function AccommodationBookingPage() {
             {/* --- BOOKING SUMMARY BOX (Right side on Desktop, Top on Mobile) --- */}
             <div
               className="
-              bg-[white]  rounded-2xl 
+              bg-surface rounded-2xl 
               p-4 sm:p-5 
               lg:sticky lg:top-24 shadow-xl border border-white/10 
               max-h-[70vh]             /* Prevent full-screen takeover */
@@ -135,8 +135,8 @@ export default function AccommodationBookingPage() {
   <div className="space-y-4">
 
     {/* HOTEL */}
-    <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
-      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+    <div className="flex items-center gap-2 p-2 bg-muted rounded-xl">
+      <div className="w-9 h-9 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
         <Building className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
@@ -146,8 +146,8 @@ export default function AccommodationBookingPage() {
     </div>
 
     {/* ROOM DETAILS (Type, Count, Nights) */}
-    <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
-      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+    <div className="flex items-center gap-2 p-2 bg-muted rounded-xl">
+      <div className="w-9 h-9 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
         <BedDouble className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
@@ -160,8 +160,8 @@ export default function AccommodationBookingPage() {
     </div>
 
     {/* MEAL PLAN */}
-    <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
-      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+    <div className="flex items-center gap-2 p-2 bg-muted rounded-xl">
+      <div className="w-9 h-9 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
         <Utensils className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>
@@ -173,8 +173,8 @@ export default function AccommodationBookingPage() {
     </div>
 
     {/* DATES */}
-    <div className="flex items-center gap-2 p-2 bg-[#f3f4f6] rounded-xl">
-      <div className="w-9 h-9 bg-black/20 rounded-lg flex items-center justify-center">
+    <div className="flex items-center gap-2 p-2 bg-muted rounded-xl">
+      <div className="w-9 h-9 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
         <Calendar className="w-3 h-3 text-surface-foreground" />
       </div>
       <div>

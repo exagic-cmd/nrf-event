@@ -39,7 +39,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
   };
   // --- Iconshere ---
   const amenityIcons = {
-    Popular: <Flame size={20} className="text-orange-500" />,
+    Popular: <Flame size={20} className="text-primary" />,
     Rooms: <Bed size={20} className="text-muted-foreground" />,
     General: <Info size={20} className="text-muted-foreground" />,
     Accessibility: <Accessibility size={20} className="text-muted-foreground" />,
@@ -113,7 +113,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
 
                 <button
                   onClick={() => setIsExpanded(!isDescExpanded)}
-                  className="flex items-center gap-1 text-blue-600 text-sm font-semibold mt-3 hover:text-blue-700 transition-colors"
+                  className="flex items-center gap-1 text-primary text-sm font-semibold mt-3 hover:text-primary-hover transition-colors"
                 >
                   {isDescExpanded
                     ? "Hide the description"
@@ -190,14 +190,14 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                     <div
                       key={category?.id || `category-${index}`}
                       className={`break-inside-avoid mb-6 flex flex-col rounded-xl ${isPopular
-                          ? "bg-orange-50 border border-orange-200 p-4"
+                          ? "bg-primary/10 border border-primary/20 p-4"
                           : ""
                         }`}
                     >
                       <div className="flex items-center gap-3 mb-4">
                         {getAmenityIcon(category)}
                         <h3
-                          className={`font-bold text-[16px] ${isPopular ? "text-orange-600" : "text-foreground"
+                          className={`font-bold text-[16px] ${isPopular ? "text-primary" : "text-foreground"
                             }`}
                         >
                           {category?.name || FALLBACKS.amenityCategory}
@@ -210,7 +210,7 @@ const AccommodationHotelDetail = ({ hotelData }) => {
                             key={item?.id || subIndex}
                             className="flex items-start text-[14px] text-muted-foreground pl-1 group"
                           >
-                            <span className="mr-2 text-muted-foreground text-[10px] mt-1 group-hover:text-blue-400 transition-colors">
+                              <span className="mr-2 text-muted-foreground text-[10px] mt-1 group-hover:text-primary transition-colors">
                               ●
                             </span>
                             <span className="leading-snug">{item?.text || item}</span>

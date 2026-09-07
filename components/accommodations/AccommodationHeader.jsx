@@ -46,7 +46,7 @@ const AccommodationHeader = ({ hotelData }) => {
   const renderStars = (count) => {
     const stars = [];
     for (let i = 0; i < count; i++) {
-      stars.push(<Star key={i} size={14} className="text-yellow-500 fill-yellow-500" />);
+      stars.push(<Star key={i} size={14} className="text-primary fill-primary" />);
     }
     return stars;
   };
@@ -68,14 +68,14 @@ const AccommodationHeader = ({ hotelData }) => {
         
         {/* Hotel Type Badge */}
         {hotelData?.category_name && (
-          <span className="bg-[#dadada] text-surface-foreground px-2 py-1 rounded-md text-sm">
+          <span className="bg-muted text-surface-foreground px-2 py-1 rounded-md text-sm">
             {hotelData.category_name}
           </span>
         )}
         
         {/* Rating Description Badge */}
         {ratingDescription && (
-          <span className="bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
+          <span className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm">
             {ratingDescription}
           </span>
         )}
@@ -87,7 +87,7 @@ const AccommodationHeader = ({ hotelData }) => {
       </h1>
       
       {/* Location and Additional Info */}
-      <div className="flex flex-wrap items-center gap-4 text-[#aaabad]">
+      <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
         {/* Location */}
         {locationText && (
           <div className="flex items-center gap-1">
@@ -99,7 +99,7 @@ const AccommodationHeader = ({ hotelData }) => {
         {/* Rating Score (if available) */}
         {rating?.score && (
           <div className="flex items-center gap-1">
-            <Star size={16} className="text-yellow-400" />
+            <Star size={16} className="text-primary" />
             <span>Rating: {rating.score}/100</span>
           </div>
         )}
@@ -107,7 +107,7 @@ const AccommodationHeader = ({ hotelData }) => {
         {/* Hotel Rank (if available) */}
         {hotelData?.hotel_rank && (
           <div className="flex items-center gap-1">
-            <span className="text-sm bg-green-600 text-white px-2 py-1 rounded">
+            <span className="text-sm bg-primary text-primary-foreground px-2 py-1 rounded">
               Rank: #{hotelData.hotel_rank}
             </span>
           </div>

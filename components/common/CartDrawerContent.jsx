@@ -169,7 +169,7 @@ const CartDrawerContent = () => {
                                 .toString()
                                 .padStart(2, "0");
                               return (
-                                <div className="text-xs text-orange-700 bg-orange-100 rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-small">
+                                <div className="text-xs text-primary bg-surface rounded-full px-2 py-0.5 mt-2 inline-flex items-center font-small">
                                   <Clock size={12} className="mr-1" />
                                   <span>{item?.hotel_info?.roomsDetails?.length} {item?.hotel_info?.roomsDetails?.length === 1 ? 'room' : 'rooms'} reserved — expires in <strong>{mins}:{secs}.</strong></span>
                                 </div>

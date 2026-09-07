@@ -52,7 +52,7 @@ const AccommodationListMap = ({ accommodations = [] }) => {
           let starsHtml = '';
           if (m.rating > 0) {
             for (let i = 0; i < 5; i++) {
-              starsHtml += `<span style="color: ${i < m.rating ? '#FFD700' : '#d3d3d3'};">★</span>`;
+              starsHtml += `<span style="color: ${i < m.rating ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'};">★</span>`;
             }
           }
 
@@ -60,7 +60,7 @@ const AccommodationListMap = ({ accommodations = [] }) => {
   <div style="
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-size: 14px;
-    color: #333;
+    color: hsl(var(--foreground));
     padding: 5px;
     display: flex;
     align-items: center;
