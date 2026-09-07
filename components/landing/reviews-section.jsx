@@ -77,7 +77,7 @@ export const ReviewsSection = () => {
   </div>
 )}
 
-      <div className="px-2 md:px-8 lg:px-12  grid grid-cols-1 md:grid-cols-4 gap-10 md:bg-surface bg-[#F7F7F780] py-4 rounded-lg md:mx-0 mx-4">
+      <div className="px-2 md:px-8 lg:px-12  mt-6 md:mt-12 grid grid-cols-1 md:grid-cols-4 gap-10 md:bg-surface bg-[#F7F7F780] py-4 rounded-lg md:mx-0 mx-4">
         {/* LeftIntro Text */}
         <div className="md:col-span-1 space-y-3 text-center md:text-left">
           <p className="text-primary font-semibold tracking-wide">WHAT WE SERVE</p>
