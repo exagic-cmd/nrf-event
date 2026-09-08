@@ -2,19 +2,27 @@
 
 import { useState, useEffect, useRef } from "react"
 import Layout from "@/components/layout/Layout"
-import { TransferBenefitsSection } from "@/components/landing/transfer-benefits-section"
+import { ShuttleBannerWeServeSection} from "@/components/landing/shuttle-banner-weServe-section"
 import  CountdownTimer  from "@/components/landing/event-count-down"
-import { ReviewsSection } from "@/components/landing/reviews-section"
+import {  OurRecommendation } from "@/components/landing/our-recommendation"
 import { Preloader } from "@/components/landing/preloader"
 import LocalizedLink from "@/components/LocalizedLink"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/router"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations"
-import Herosection from "@/components/landing/Herosection"
 import useUserStore from "@/store/useAuthStore"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
 import { useEventStore } from "@/store/useEventStore";
-import ImageSlider from "@/components/landing/ImageSlider";
+import Herosection from "@/components/landing/hero-section";
+import {AboutSection} from "@/components/landing/event-about-section";
+import HeroFilter from "@/components/landing/hero-category-filter"
+function normalizeLayout(value) {
+  const normalizedValue = String(value ?? "1").trim().toLowerCase();
+  if (["2","layout_2"].includes(normalizedValue)) return 2;
+ // if (["2", "layout3", "layout-3", "layout_3"].includes(normalizedValue)) return 3;
+  return 1;
+}
+
 export default function LandingPage() {
   const { t } = useTranslation("common")
   const [isLoading, setIsLoading] = useState(true)
@@ -23,6 +31,9 @@ export default function LandingPage() {
   const [checkingAuth, setCheckingAuth] = useState(true)
   const { trackAffiliateRedirect } = useAffiliateStore();
   const { event, FetchEvent, isLoading: eventStoreLoading } = useEventStore();
+  const eventDetails = event?.event || {};
+  const layoutValue = eventDetails.landing_layout ?? eventDetails.layout ?? eventDetails.layout_id;
+  const layout = normalizeLayout(layoutValue);
 
   useEffect(() => {
     if (token) {
@@ -59,12 +70,15 @@ export default function LandingPage() {
     <Layout className=" ">
       <div>
         <div className="bg-surface-secondary pt-16">
-          <ImageSlider />
+            <Herosection layout={layout}  />
+            <HeroFilter layout={layout} />
         </div>
-        <Herosection />
-      </div>
-      <ReviewsSection />
-      <TransferBenefitsSection />
+          <AboutSection layout={layout} className="mb-24" />
+          <ShuttleBannerWeServeSection layout={layout}   />
+          <OurRecommendation layout={layout} />
+         </div>
+      
+     
     </Layout>
   )
 }

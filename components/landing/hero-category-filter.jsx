@@ -27,7 +27,7 @@ import { getFullImageUrl } from "@/utils/imageService";
 import { useTranslation } from "next-i18next";
 import SearchFilterCard from "@/components/hotels/SearchFilterCard"; // ✅ your existing multi-tab component
 
-export default function HomePage() {
+export default function HeroFilter() {
   const router = useRouter();
   const { t } = useTranslation("common");
   const { event, FetchEvent } = useEventStore();
