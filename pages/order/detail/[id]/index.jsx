@@ -211,7 +211,7 @@ const confirmCancel = (id, reason) => {
             <p className="text-foreground mb-4">
               {t("noOrderFoundForId")} <b>{id}</b>.
             </p>
-            <button onClick={() => router.back()} className="bg-black text-white px-4 py-2 rounded-lg">
+            <button onClick={() => router.back()} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg">
               {t("goBack")}
             </button>
           </div>
@@ -225,10 +225,10 @@ const confirmCancel = (id, reason) => {
       <ProtectedRoute>
         <div className="min-h-screen bg-surface flex items-center justify-center">
           <div className="text-center">
-            <div className="text-red-500 text-xl mb-4">⚠️</div>
+            <div className="text-destructive text-xl mb-4">⚠️</div>
             <h2 className="text-xl text-surface-foreground mb-2">{t("errorLoadingOrder")}</h2>
             <p className="text-foreground mb-4">{error}</p>
-            <button onClick={() => router.back()} className="bg-primary text-surface-foreground px-4 py-2 rounded-lg">
+            <button onClick={() => router.back()} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg">
               {t("goBack")}
             </button>
           </div>
@@ -253,7 +253,7 @@ const confirmCancel = (id, reason) => {
             query: { post: "true" },
           });
         }}
-        className="fixed bottom-6 right-6 bg-primary text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#b3843f] transition-colors z-50"
+        className="fixed bottom-6 right-6 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg hover:bg-primary-hover transition-colors z-50"
       >
      
          <span className="inline-flex items-center gap-1">

@@ -86,7 +86,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
       <div className="text-end">
         <button
           onClick={() => setShowPastBookings(!showPastBookings)}
-          className="inline-flex items-center space-x-3 bg-primary text-white px-4 py-2 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          className="inline-flex items-center space-x-3 bg-primary text-primary-foreground px-4 py-2 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <History className="w-6 h-6" />
           <span>{showPastBookings ? t("hidePastTrips") : t("viewPastTrips")}</span>
@@ -114,7 +114,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                   placeholder={t("searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                 />
               </div>
 
@@ -122,7 +122,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 <select
                   value={filterBy}
                   onChange={(e) => setFilterBy(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
+                  className="w-full sm:w-auto px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                 >
                   <option value="all">{t("allStatus")}</option>
                   <option value="confirmed">{t("confirmed")}</option>
@@ -132,7 +132,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-[#D3202D] focus:border-transparent outline-none"
+                  className="w-full sm:w-auto px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                 >
                   <option value="date">{t("sortByDate")}</option>
                   <option value="name">{t("sortByName")}</option>
@@ -173,7 +173,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                         />
                         <span
                           className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold shadow-md ${
-                            isConfirmed ? "bg-secondary text-white" : "bg-primary text-white"
+                            isConfirmed ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground"
                           }`}
                         >
                           {isConfirmed ? t("confirmed") : t("unconfirmed")}
@@ -200,7 +200,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                                 onReviewClick(item);
                               }}
                               disabled={loadingItemId === item.id}
-                              className="flex-1 bg-primary  text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 transition-colors text-sm disabled:opacity-50"
+                              className="flex-1 bg-primary text-primary-foreground font-medium py-2 rounded-lg flex items-center justify-center space-x-1 transition-colors text-sm disabled:opacity-50"
                             >
                               <Star className="w-4 h-4" />
                               <span>{t("review")}</span>
@@ -212,7 +212,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                                 onDetailsClick({ order_id: item.order_id, itinerary_id: item.id });
                               }}
                               disabled={loadingItemId === item.id}
-                              className="flex-1 bg-secondary text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
+                              className="flex-1 bg-secondary text-secondary-foreground font-medium py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-secondary/80 transition-colors text-sm disabled:opacity-50"
                             >
                               <Eye className="w-3 h-3" />
                               <span>{t("details")}</span>

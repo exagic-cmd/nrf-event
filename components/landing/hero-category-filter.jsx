@@ -206,8 +206,8 @@ export default function HeroFilter() {
               />
             </Head>
           )}
-          <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 max-w-full ">
-            <div className="flex w-full lg:mx-0 justify-center">
+          <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 max-w-full mx-4 ">
+            <div className="flex w-full lg:mx-0 justify-center bg-muted rounded-lg ">
               <Card className="min-h-[200px] w-full max-w-7xl flex justify-center items-center p-0 bg-transparent border-0 shadow-none">
                 <SearchFilterCard
                 isHomepage={true}

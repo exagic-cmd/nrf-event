@@ -151,7 +151,7 @@ const UserProfileScreen = () => {
             <div className="lg:col-span-1">
               <div className="bg-surface rounded-2xl shadow-lg overflow-hidden">
                 {/* Profile Header */}
-                <div className="bg-gradient-to-br from-[#D3202D] to-[#ffbbbb] px-6 pt-2 text-white relative">
+                <div className="bg-primary px-6 pt-2 text-primary-foreground relative">
                   <div className="relative flex flex-col items-center">
                     <div className="relative">
                       <div className="w-24 h-24 bg-surface/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl font-bold mb-4">
@@ -159,10 +159,10 @@ const UserProfileScreen = () => {
                       </div>
                     </div>
                     <h2 className="text-xl font-bold text-center">{user?.name}</h2>
-                    <p className="text-white/80 text-sm">@{user?.username}</p>
+                    <p className="text-primary-foreground/80 text-sm">@{user?.username}</p>
                     <div className="flex items-center mt-2">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-300 text-yellow-300" />
+                        <Star key={i} className="w-4 h-4 fill-primary-foreground text-primary-foreground" />
                       ))}
                     </div>
                   </div>
@@ -176,7 +176,7 @@ const UserProfileScreen = () => {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           user?.user_status === "registered"
-                            ? "bg-blue-100 text-blue-700"
+                            ? "bg-primary/10 text-primary"
                             : "bg-muted text-muted-foreground"
                         }`}
                       >
@@ -189,8 +189,8 @@ const UserProfileScreen = () => {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           user?.verification_status === "verified"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-destructive/10 text-destructive"
                         }`}
                       >
                         {user?.verification_status === "verified"
@@ -270,7 +270,7 @@ const UserProfileScreen = () => {
                     </button>
                     <button
                       onClick={handleSave}
-                      className="px-4 py-2 bg-primary text-white rounded"
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded"
                     >
                       {t("save")}
                     </button>

@@ -170,7 +170,7 @@ export default function RecommendedProducts() {
                     <button
                       onClick={() => goToDetail(item)}
                       disabled={loadingCardId}
-                      className="bg-primary  text-white px-2.5 md:py-2 py-1 rounded-md text-[11px] sm:text-xs font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="bg-primary text-primary-foreground px-2.5 md:py-2 py-1 rounded-md text-[11px] sm:text-xs font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {loadingCardId === item.id
                         ? t("loading", "Loading...")

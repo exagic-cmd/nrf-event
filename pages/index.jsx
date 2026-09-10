@@ -19,7 +19,8 @@ import HeroFilter from "@/components/landing/hero-category-filter"
 function normalizeLayout(value) {
   const normalizedValue = String(value ?? "1").trim().toLowerCase();
   if (["2","layout_2"].includes(normalizedValue)) return 2;
- // if (["2", "layout3", "layout-3", "layout_3"].includes(normalizedValue)) return 3;
+  if (["1", "layout1", "layout-1", "layout_1"].includes(normalizedValue)) return 1;
+  if (["3", "layout3", "layout-3", "layout_3"].includes(normalizedValue)) return 3;
   return 1;
 }
 

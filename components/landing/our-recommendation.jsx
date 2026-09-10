@@ -8,7 +8,9 @@ import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useEventStore } from "@/store/useEventStore";
 
-export function OurRecommendation({ layout =2  }) {
+export function OurRecommendation({ layout = 1
+  
+ }) {
   const { t } = useTranslation("common");
   const { localizedPush } = useLocalizedRouter();
   const { fetchSearchResults, searchResults } = useDaytoursStore();
@@ -218,110 +220,110 @@ export function OurRecommendation({ layout =2  }) {
   }
 
 
-  //   LAYOUT 2 
-  // if (layout === 2) {
-  //   return (
-  //     <section className="w-full py-12 md:py-16">
-  //       <div className="px-4 md:px-8 lg:px-12">
-  //         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-  //           <div>
-  //             <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
-  //               EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
-  //             </p>
-  //             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
-  //               Top Day Tours
-  //             </h2>
-  //           </div>
+    //LAYOUT 2 
+  if (layout === 2) {
+    return (
+      <section className="w-full py-12 md:py-16">
+        <div className="px-4 md:px-8 lg:px-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+              <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
+                EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+                Top Day Tours
+              </h2>
+            </div>
 
-  //           <div className="hidden md:flex gap-2 mt-4 md:mt-0">
-  //             <button
-  //               onClick={() => scroll("left")}
-  //               className="p-2 bg-secondary rounded-full text-muted-foreground hover:bg-secondary transition-all"
-  //             >
-  //               <ChevronLeft size={20} />
-  //             </button>
-  //             <button
-  //               onClick={() => scroll("right")}
-  //               className="p-2 bg-primary rounded-full text-primary-foreground hover:bg-primary-hover transition-all"
-  //             >
-  //               <ChevronRight size={20} />
-  //             </button>
-  //           </div>
-  //         </div>
+            <div className="hidden md:flex gap-2 mt-4 md:mt-0">
+              <button
+                onClick={() => scroll("left")}
+                className="p-2 bg-secondary rounded-full text-muted-foreground hover:bg-secondary transition-all"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={() => scroll("right")}
+                className="p-2 bg-primary rounded-full text-primary-foreground hover:bg-primary-hover transition-all"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
 
-  //         {isLoadingDay ? (
-  //           <p className="text-center text-muted-foreground">Loading top day tours...</p>
-  //         ) : (
-  //           <div
-  //             ref={scrollContainerRef}
-  //             className="flex overflow-x-auto gap-5 snap-x snap-mandatory scrollbar-hide pb-8"
-  //           >
-  //             {topDayTours.map((tour) => (
-  //               <div
-  //                 key={tour.id}
-  //                 className="flex-shrink-0 w-[80%] sm:w-[47%] md:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)] snap-start"
-  //               >
-  //                 <div className="rounded-2xl overflow-hidden h-full flex flex-col bg-surface shadow-sm hover:shadow-md transition-shadow">
-  //                   <div className="relative h-44 md:h-48">
-  //                     <img
-  //                       src={`${tour.image}` || "/placeholder.jpg"}
-  //                       alt={tour.product_title}
-  //                       className="w-full h-full object-cover"
-  //                     />
-  //                     <div className="absolute top-3 right-3 bg-primary-foreground px-2.5 py-1 rounded-full flex items-center gap-1">
-  //                       <Star size={13} className="text-yellow-400 fill-yellow-400" />
-  //                       <span className="font-semibold text-foreground text-xs">5.0</span>
-  //                     </div>
-  //                   </div>
+          {isLoadingDay ? (
+            <p className="text-center text-muted-foreground">Loading top day tours...</p>
+          ) : (
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto gap-5 snap-x snap-mandatory scrollbar-hide pb-8"
+            >
+              {topDayTours.map((tour) => (
+                <div
+                  key={tour.id}
+                  className="flex-shrink-0 w-[80%] sm:w-[47%] md:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)] snap-start"
+                >
+                  <div className="rounded-2xl overflow-hidden h-full flex flex-col bg-surface shadow-sm hover:shadow-md transition-shadow">
+                    <div className="relative h-44 md:h-48">
+                      <img
+                        src={`${tour.image}` || "/placeholder.jpg"}
+                        alt={tour.product_title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-3 right-3 bg-primary-foreground px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <Star size={13} className="text-yellow-400 fill-yellow-400" />
+                        <span className="font-semibold text-foreground text-xs">5.0</span>
+                      </div>
+                    </div>
 
-  //                   <div className="p-4 flex flex-col flex-1">
-  //                     <h3 className="text-base font-bold text-foreground line-clamp-1">
-  //                       {tour.product_title}
-  //                     </h3>
-  //                     <p className="text-muted-foreground text-xs mt-0.5">
-  //                       {tour.category_name}
-  //                     </p>
-  //                     <p className="text-muted-foreground text-sm mt-2 line-clamp-2 flex-1">
-  //                       {tour.short_desc || "Explore amazing experiences!"}
-  //                     </p>
+                    <div className="p-4 flex flex-col flex-1">
+                      <h3 className="text-base font-bold text-foreground line-clamp-1">
+                        {tour.product_title}
+                      </h3>
+                      <p className="text-muted-foreground text-xs mt-0.5">
+                        {tour.category_name}
+                      </p>
+                      <p className="text-muted-foreground text-sm mt-2 line-clamp-2 flex-1">
+                        {tour.short_desc || "Explore amazing experiences!"}
+                      </p>
 
-  //                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-  //                       <p className="text-lg font-bold text-foreground">
-  //                         {tour?.currency} {tour?.starting_price}
-  //                       </p>
-  //                       <button
-  //                         onClick={() => handleCardClick(tour)}
-  //                         className="border border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-1.5 px-3 rounded-lg transition-colors text-sm flex justify-center items-center min-w-[90px]"
-  //                         disabled={loadingTourId === tour.id}
-  //                       >
-  //                         {loadingTourId === tour.id ? <LoaderSvg /> : "See More"}
-  //                       </button>
-  //                     </div>
-  //                   </div>
-  //                 </div>
-  //               </div>
-  //             ))}
-  //           </div>
-  //         )}
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
+                        <p className="text-lg font-bold text-foreground">
+                          {tour?.currency} {tour?.starting_price}
+                        </p>
+                        <button
+                          onClick={() => handleCardClick(tour)}
+                          className="border border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-1.5 px-3 rounded-lg transition-colors text-sm flex justify-center items-center min-w-[90px]"
+                          disabled={loadingTourId === tour.id}
+                        >
+                          {loadingTourId === tour.id ? <LoaderSvg /> : "See More"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-  //         <div className="flex justify-center gap-2 mt-0 md:hidden">
-  //           <button
-  //             onClick={() => scroll("left")}
-  //             className="p-2 bg-secondary rounded-full text-muted-foreground hover:bg-secondary transition-all"
-  //           >
-  //             <ChevronLeft size={20} />
-  //           </button>
-  //           <button
-  //             onClick={() => scroll("right")}
-  //             className="p-2 bg-primary rounded-full text-primary-foreground hover:bg-primary-hover transition-all"
-  //           >
-  //             <ChevronRight size={20} />
-  //           </button>
-  //         </div>
-  //       </div>
-  //     </section>
-  //   );
-  // }
+          <div className="flex justify-center gap-2 mt-0 md:hidden">
+            <button
+              onClick={() => scroll("left")}
+              className="p-2 bg-secondary rounded-full text-muted-foreground hover:bg-secondary transition-all"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="p-2 bg-primary rounded-full text-primary-foreground hover:bg-primary-hover transition-all"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const scrollCarousel3ToIndex = (i) => {
     const el = carousel3Ref.current;
