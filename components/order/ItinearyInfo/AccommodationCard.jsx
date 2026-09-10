@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useState } from 'react'; 
 import { AlertCircle } from 'lucide-react';
 import LoaderSvg from '@/components/common/LoaderSvg'; 
+import { encodeShareToken } from "@/utils/cryptoUtils";
 
 export default function AccommodationCard({ data }) {
   const accommodation = data;
@@ -34,11 +35,12 @@ export default function AccommodationCard({ data }) {
   const hotelImage = accommodation?.pictures?.[0]?.image;
   const finalImageUrl = hotelImage ? getFullImageUrl(hotelImage) : "/placeholder.svg";
   const goToDetail = (order_id ,itinerary_id) => {
-    setIsLoading(true); // Set loading to true
     if (itinerary_id) {
-      router.push(`/order/detail/${order_id}?itineraryId=${itinerary_id}`);
-    } else {
-      router.push(`/order/detail/${order_id}`);
+      const encoded = encodeShareToken(itinerary_id);
+      if (encoded.success) {
+        setIsLoading(true);
+        router.push(`/order/detail/${encoded.data}`);
+      }
     }
     // Note: isLoading will reset when the component unmounts during navigation.
   };
@@ -47,7 +49,7 @@ export default function AccommodationCard({ data }) {
     <div className="bg-surface w-[280px] rounded-xl shadow-lg overflow-hidden border border-border h-full flex flex-col">
       
       {/* Image Section */}
-      <div className="relative h-40 w-full bg-secondary">
+      <div className="relative h-40 w-full bg-muted">
         <Image
           src={finalImageUrl || "/placeholder.svg"}
           alt={accommodation?.hotel_name || 'Hotel'}
@@ -93,41 +95,41 @@ export default function AccommodationCard({ data }) {
         {accommodation?.meal_plan && accommodation?.meal_plan !== 'Not Included' && (
           <div className="flex items-center gap-2">
             <UtensilsCrossed className="w-4 h-4 text-primary flex-shrink-0" />
-            <span className="text-xs bg-muted text-primary  px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-muted text-primary px-2 py-0.5 rounded-full">
               {accommodation?.meal_plan}
             </span>
           </div>
         )}
 
         {/* Check-in / Check-out */}
-        <div className="space-y-2  border-t border-border">
-          <div className='flex items-center justify-between bg-surface-muted p-1 rounded gap-2'>
+        <div className="space-y-2  border-t border-gray-200">
+          <div className='flex items-center justify-between bg-[#f4f4f4] p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-primary" />
-              <p className="text-xs font-semibold text-foreground  tracking-wide">
+              <Calendar className="w-4 h-4 text-[#cc9a55]" />
+              <p className="text-xs font-semibold text-gray-900  tracking-wide">
                 Check-in
               </p>
             </div>
             <div className="text-right p-1">
-              <p className="text-xs font-medium text-foreground">
+              <p className="text-xs font-medium text-gray-900">
                 {formatDate(accommodation?.checkin_date)}
               </p>
-              {/* <p className="text-xs text-foreground">{accommodation?.checkin_time?.substring(0, 5)}</p> */}
+              {/* <p className="text-xs text-gray-900">{accommodation?.checkin_time?.substring(0, 5)}</p> */}
             </div>
           </div>
 
-          <div className='flex items-center justify-between bg-surface-muted p-1 rounded gap-2'>
+          <div className='flex items-center justify-between bg-[#f4f4f4] p-1 rounded gap-2'>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-primary" />
-              <p className="text-xs font-semibold text-foreground  tracking-wide">
+              <Calendar className="w-4 h-4 text-[#cc9a55]" />
+              <p className="text-xs font-semibold text-gray-900  tracking-wide">
                 Check-out
               </p>
             </div>
             <div className="text-right p-1">
-              <p className="text-xs font-medium text-foreground">
+              <p className="text-xs font-medium text-gray-900">
                 {formatDate(accommodation?.checkout_date)}
               </p>
-              {/* <p className="text-xs text-foreground">{accommodation?.checkout_time?.substring(0, 5)}</p> */}
+              {/* <p className="text-xs text-gray-900">{accommodation?.checkout_time?.substring(0, 5)}</p> */}
             </div>
           </div>
         </div>
@@ -135,7 +137,7 @@ export default function AccommodationCard({ data }) {
         {/* Action Button */}
       {accommodation?.payment_status !== 'Paid' ? (
         // Display "Awaiting Confirmation" message
-        <div className="flex items-center justify-center text-muted-foreground bg-muted px-3 py-2 rounded-lg text-sm font-medium w-full">
+        <div className="flex items-center justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
           <AlertCircle className="w-4 h-4 mr-2" />
             Awaiting Confirmation
         </div>
@@ -143,11 +145,11 @@ export default function AccommodationCard({ data }) {
         // Display "View Details" button
         <button
             onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
-            className="w-full bg-primary text-primary-foreground font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
+            className="w-full bg-[#cc9a55] text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
             disabled={isLoading}
           >
             {isLoading ? (
-              <LoaderSvg className="animate-spin h-5 w-5 text-primary-foreground" />
+              <LoaderSvg className="animate-spin h-5 w-5 text-white" />
             ) : (
               'View Details'
             )}

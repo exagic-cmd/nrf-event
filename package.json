@@ -75,6 +75,7 @@
     "recharts": "2.15.0",
     "remark-gfm": "^4.0.1",
     "sonner": "^1.7.1",
+     "sqids": "^0.3.0",
     "swiper": "^11.2.6",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

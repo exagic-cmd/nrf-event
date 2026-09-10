@@ -4,10 +4,11 @@ import { ChevronLeft, ChevronRight, Filter, PlayCircle } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import SvgLoader2 from "@/components/common/Loader2Svg";
 import { getFullImageUrl } from "@/utils/imageService";
+import useLanguageStore from "@/store/useLanguageStore";
 import { useRouter } from "next/router";
 
 export default function LandmarkList({ itineraryId , customColor }) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["common", "order"]);
   const scrollRef = useRef(null);
   const router = useRouter();
 
@@ -23,7 +24,8 @@ export default function LandmarkList({ itineraryId , customColor }) {
   useEffect(() => {
   const fetchTypes = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/landmark-types`);
+      const { languageId } = useLanguageStore.getState();
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/landmark-types/${languageId || 1}`);
       const data = await res.json();
       setTypes(data?.data || []);
     } catch (err) {
@@ -42,14 +44,16 @@ useEffect(() => {
   const fetchLandmarks = async () => {
 
     try {
+      const { languageId } = useLanguageStore.getState();
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/itinerary/nearby-landmarks`,
+        `${process.env.NEXT_PUBLIC_API_URL}/customer/itinerary/nearby-landmarks`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             itinerary_id: itineraryId,
             landmark_type: selectedType ? [selectedType] : [],
+            language_id: languageId || 1,
           }),
         }
       );
@@ -143,8 +147,8 @@ useEffect(() => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Filter Section */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-surface-foreground flex items-center gap-2">
-            <Filter size={20} /> {t("nearby_landmarks", "Nearby Landmarks")}
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-foreground flex items-center gap-2">
+            <Filter size={20} /> {t("nearby_landmarks")}
           </h2>
 
           {/* Scroll Arrows */}
@@ -152,8 +156,8 @@ useEffect(() => {
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
-              className={`p-2 rounded-full border border-primary transition ${
-                canScrollLeft ? "hover:bg-primary hover:text-primary-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
+              className={`p-2 rounded-full border border-border transition ${
+                canScrollLeft ? "hover:bg-primary hover:text-primary-foreground text-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronLeft size={20} />
@@ -161,8 +165,8 @@ useEffect(() => {
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
-              className={`p-2 rounded-full border border-primary transition ${
-                canScrollRight ? "hover:bg-primary hover:text-primary-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
+              className={`p-2 rounded-full border border-border transition ${
+                canScrollRight ? "hover:bg-primary hover:text-primary-foreground text-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronRight size={20} />
@@ -178,10 +182,10 @@ useEffect(() => {
       className={`inline-block rounded-full text-sm px-3 py-1 ${
         selectedType === null
           ? "bg-primary text-primary-foreground"
-          : "text-primary border border-primary hover:bg-primary hover:text-white"
+          : "text-primary border border-primary hover:bg-primary hover:text-primary-foreground"
       }`}
     >
-      {t("all", "All")}
+      {t("all")}
     </button>
 
     {types.map((type) => (
@@ -191,7 +195,7 @@ useEffect(() => {
         className={`inline-block rounded-full text-sm px-3 py-1 ${
           selectedType === type.id
             ? "bg-primary text-primary-foreground"
-            : "text-primary border border-primary hover:bg-primary hover:text-white"
+            : "text-primary border border-primary hover:bg-primary hover:text-primary-foreground"
         }`}
       >
         {type.name}
@@ -203,7 +207,7 @@ useEffect(() => {
       {/* Landmark Cards */}
       {!loading && landmarks.length === 0 && (
         <div className="text-center text-foreground py-4 lg:py-8">
-          <p>{t("no_landmarks_found", "No landmarks found for this category.")}</p>
+          <p>{t("no_landmarks_found")}</p>
         </div>
       )}
           <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2">
@@ -211,17 +215,17 @@ useEffect(() => {
               <div
                 key={item.id}
                 data-card
-               
-                className="group flex flex-col flex-shrink-0 w-[180px] sm:w-[200px] md:w-[220px] lg:w-[240px] xl:w-[260px] bg-surface rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden relative"
+                onClick={() => handleViewLandmark(item)}
+                className="cursor-pointer group flex flex-col flex-shrink-0 w-[180px] sm:w-[200px] md:w-[220px] lg:w-[240px] xl:w-[260px] bg-surface rounded-xl shadow-sm hover:shadow-md transition-all border border-border overflow-hidden relative"
               >
                 {navigatingId === item.id && (
-                  <div className="absolute inset-0 bg-surface/70 flex justify-center items-center z-20 rounded-xl">
+                  <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-20 rounded-xl">
                     <SvgLoader2 />
                   </div>
                 )}
                 <div className="relative w-full h-36 sm:h-40 md:h-44 rounded-t-xl overflow-hidden">
                   <Image
-                    src={getFullImageUrl(item.image) || "/placeholder.jpg"}
+                    src={getFullImageUrl(item.image) || "/placeholder.svg"}
                     alt={item.title}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -233,15 +237,14 @@ useEffect(() => {
                   )} */}
                 </div>
                 <div className="p-3 flex flex-col flex-grow">
-                  <h3 className="text-surface-foreground font-medium text-xs sm:text-sm line-clamp-2 mb-1.5 h-9 sm:h-10">
+                  <h3 className="text-black font-medium text-xs sm:text-sm line-clamp-2 mb-1.5 h-9 sm:h-10">
                     {item.title}
                   </h3>
-                  <p className="text-[11px] sm:text-xs text-foreground line-clamp-4 mb-2 flex-grow">
+                  <p className="text-[11px] sm:text-xs text-gray-800 line-clamp-4 mb-2 flex-grow">
                     {item.description}
                   </p>
                    <div className="flex justify-between items-end mt-2">
-                    <span className="font-semibold text-surface-foreground text-xs sm:text-sm mt-auto">{item.type}</span>
-                    <button  onClick={() => handleViewLandmark(item)} className="text-primary-foreground font-semibold rounded-md px-2 py-1 bg-primary text-xs lg:text-sm">{t("details", "Details")}</button>
+                    <span className="font-semibold text-black text-xs sm:text-sm mt-auto">{item.type}</span>
                   </div>
                   
                 </div>

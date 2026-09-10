@@ -6,8 +6,8 @@ import { Expand, ChevronLeft, ChevronRight } from 'lucide-react';
 const ImageGallery = ({ images, onImageClick, autoPlay = false, interval = 3000, compact = false }) => {
   if (!images || images.length === 0) {
     return (
-      <div className="relative w-full h-64 bg-secondary rounded-xl flex items-center justify-center">
-        <p className="text-muted-foreground">No images available</p>
+      <div className="relative w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
+        <p className="text-gray-500">No images available</p>
       </div>
     );
   }
@@ -36,7 +36,7 @@ const ImageGallery = ({ images, onImageClick, autoPlay = false, interval = 3000,
     <div className="relative w-full">
       <div className={`relative w-full ${compact ? 'h-36 md:h-40' : 'h-64 md:h-96'} rounded-xl overflow-hidden group`}>
         <Image
-          src={getFullImageUrl(mainImage.image)}
+          src={getFullImageUrl(mainImage?.image) || "/placeholder.svg"}
           alt={mainImage.name || 'Hotel Image'}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -74,12 +74,12 @@ const ImageGallery = ({ images, onImageClick, autoPlay = false, interval = 3000,
             <div
               key={img.id}
               className={`relative ${compact ? 'w-1/4 h-12' : 'w-1/5 h-16'} rounded-md overflow-hidden cursor-pointer border-2 ${
-                currentIndex === index ? 'border-primary' : 'border-transparent'
+                currentIndex === index ? 'border-[#cc9a55]' : 'border-transparent'
               }`}
               onClick={() => setCurrentIndex(index)}
             >
-              <Image
-                src={getFullImageUrl(img.image)}
+              <Image // Apply the same safe access and fallback for thumbnails
+                src={getFullImageUrl(img?.image) }
                 alt={img.name || 'Thumbnail'}
                 fill
                 className="object-cover"

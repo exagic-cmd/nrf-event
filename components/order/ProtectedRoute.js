@@ -24,7 +24,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!token) {
-    return <p className="text-center py-10">Redirecting to login...</p>
+    return <p className="text-center py-10">Redirecting ...</p>
   }
 
   return children

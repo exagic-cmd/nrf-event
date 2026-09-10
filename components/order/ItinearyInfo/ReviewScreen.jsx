@@ -108,7 +108,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
                 onChange={(e) =>
                   setReviewData({ ...reviewData, comments: e.target.value })
                 }
-                className="w-full p-3 sm:p-4 border-2 border-border rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-28 sm:h-32"
+                className="w-full p-3 sm:p-4 border-2 bg-surface border-border text-foreground rounded-xl focus:border-primary focus:ring-0 resize-none h-28 sm:h-32"
                 placeholder={t("shareThoughts")}
               />
             </div>
@@ -122,7 +122,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-5 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+                className="flex-1 px-5 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary-hover hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
               >
                 {t("submitReview")}
               </button>
