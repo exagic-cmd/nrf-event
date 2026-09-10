@@ -80,7 +80,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
         </button>
         <button
           onClick={() => setStep(2)}
-          className="px-4 py-2 rounded-md text-muted-foreground text-white "
+          className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
         >
           {t("common.yes")}
         </button>
@@ -97,7 +97,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
         <div
           className={`mb-4 text-sm p-2 rounded-md ${
             message.type === "success"
-              ? "bg-[#cfc1ae] text-primary"
+              ? "bg-primary/10 text-primary"
               : "bg-muted text-muted-foreground"
           }`}
         >
@@ -122,7 +122,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
             </button>
             <button
               onClick={handleConfirm}
-              className="px-4 py-2 rounded-md text-muted-foreground text-white"
+              className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
               disabled={loading}
             >
               {loading ? t("cancel.processing") : t("cancel.confirm")}

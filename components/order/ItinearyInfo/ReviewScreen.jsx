@@ -27,7 +27,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-surface-muted">
       <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6 sm:py-8">
         <button
           onClick={onBack}
@@ -122,7 +122,7 @@ const ReviewScreen = ({ trip, onBack, onSubmit }) => {
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-5 py-3 bg-primary text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+                className="flex-1 px-5 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm sm:text-base"
               >
                 {t("submitReview")}
               </button>

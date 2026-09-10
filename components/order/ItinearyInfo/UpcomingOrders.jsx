@@ -84,7 +84,7 @@ const handleVirtualTourClick = (item) => {
         <h2 className="text-xl font-semibold text-primary">
           {t("upcomingOrders")}
         </h2>
-        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
           {totalItems} {totalItems === 1 ? t("item") : t("items")}
         </span>
       </div>
@@ -110,8 +110,8 @@ const handleVirtualTourClick = (item) => {
               <span
                 className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${
                   item.booking_status?.toLowerCase() === "confirmed"
-                    ? "bg-secondary text-white font-semibold"
-                    : "bg-primary text-white font-semibold"
+                    ? "bg-secondary text-secondary-foreground font-semibold"
+                    : "bg-primary text-primary-foreground font-semibold"
                 }`}
               >
                 {item.booking_status}
@@ -153,7 +153,7 @@ const handleVirtualTourClick = (item) => {
           });
         }}
         disabled={loadingItemId === item.id}
- className="flex-1 bg-primary text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1  transition-colors text-sm"
+ className="flex-1 bg-primary text-primary-foreground font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1  transition-colors text-sm"
       >
         <Eye className="w-4 h-4 mr-2" />
         <span>{t("details")}</span>
@@ -163,7 +163,7 @@ const handleVirtualTourClick = (item) => {
         <button
           onClick={() => handleVirtualTourClick(item)}
           disabled={loadingItemId === item.id}
-          className="flex-1 bg-secondary text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
+          className="flex-1 bg-secondary text-secondary-foreground font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-secondary/80 transition-colors text-sm disabled:opacity-50"
         >
           <Eye className="w-4 h-4 mr-2" />
           <span>{t("virtualTour","Virtual Tour")}</span>

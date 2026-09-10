@@ -66,35 +66,35 @@ export default function HeroSection({ layout = 2 }) {
      directly on it inside a padded content wrapper, plus a
      small accent rule under the eyebrow.
   ============================================================ */
-  // if (layout === 2) {
-  //   return (
-  //     <div className="w-full bg-surface">
-  //       <div className="px-4 py-6 md:px-8 md:py-10 lg:px-12">
-  //         <div className="bg-foreground grid overflow-hidden rounded-2xl shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
-  //           <div className="order-2 flex flex-col justify-center px-6 py-10 text-background sm:px-10 md:order-1 md:px-12 lg:px-16">
-  //             <p className="mb-4 w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground">
-  //               {heroTitle}
-  //             </p>
-  //             <div className="mb-5 h-1 w-14 rounded-full bg-primary" />
-  //             <h1 className="max-w-xl text-2xl font-bold leading-[1] sm:text-4xl lg:text-5xl">
-  //               {heroHeading}
-  //             </h1>
-  //             <p className="mt-5 max-w-lg text-sm leading-7 text-background/75 sm:text-base">
-  //               {heroParagraph}
-  //             </p>
-  //           </div>
-  //           <div className="order-1 min-h-[16rem] bg-foreground md:order-2 md:min-h-[30rem]">
-  //             <img
-  //               src={heroImage}
-  //               alt={heroHeading}
-  //               className="h-full w-full object-contain object-center md:object-right"
-  //             />
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (layout === 2) {
+    return (
+      <div className="w-full ">
+        <div className="px-4 py-6 md:px-8 md:py-10  lg:px-12">
+          <div className="bg-primary/30 grid overflow-hidden rounded-2xl shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
+            <div className="order-2 flex flex-col justify-center px-6 py-10 text-background sm:px-10 md:order-1 md:px-12 ">
+              <p className="mb-4 w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white sm:text-sm">
+                {heroTitle}
+              </p>
+              <div className="mb-5 h-1 w-14 rounded-full bg-primary" />
+              <h1 className="max-w-xl text-2xl md:text-4xl text-foreground font-semibold leading-[1] ">
+                {heroHeading}
+              </h1>
+              <p className="mt-5 max-w-lg text-foreground text-sm leading-7  sm:text-base">
+                {heroParagraph}
+              </p>
+            </div>
+            <div className="order-1 min-h-[16rem] md:order-2 md:min-h-[30rem]">
+              <img
+                src={heroImage}
+                alt={heroHeading}
+                className="h-full w-full object-contain object-center md:object-right"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   /* ============================================================
      LAYOUT 3 — Framed modular
@@ -103,13 +103,13 @@ export default function HeroSection({ layout = 2 }) {
      of a shadow, paragraph runs alongside as a caption column.
   ============================================================ */
   return (
-    <div className="w-full bg-surface">
+    <div className="w-ful bg-surface">
       <div className="px-4 md:px-8 lg:px-12 py-10 md:py-16">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className=" max-w-3xl mx-auto text-center">
           <p className="text-primary text-sm font-semibold tracking-wide">
             {heroTitle}
           </p>
-          <h1 className="text-foreground text-3xl md:text-5xl font-bold leading-tight mt-3">
+          <h1 className="text-foreground text-2xl md:text-4xl font-semibold leading-tight mt-3">
             {heroHeading}
           </h1>
         </div>

@@ -57,8 +57,8 @@ export default function AccommodationCard({ data }) {
         {/* Payment Status Badge */}
         <div className={`absolute top-2 right-2 text-xs font-semibold px-3 py-1 rounded-full ${
           accommodation?.payment_status === 'Paid' 
-            ? 'bg-primary text-white' 
-            : 'bg-gray-700 text-white'
+            ? 'bg-primary text-primary-foreground' 
+            : 'bg-secondary text-secondary-foreground'
         }`}>
           {accommodation?.payment_status || 'Unpaid'}
         </div>
@@ -143,11 +143,11 @@ export default function AccommodationCard({ data }) {
         // Display "View Details" button
         <button
             onClick={() => goToDetail(accommodation.order_id, accommodation.itinerary_id)}
-            className="w-full bg-primary text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
+            className="w-full bg-primary text-primary-foreground font-medium py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center"
             disabled={isLoading}
           >
             {isLoading ? (
-              <LoaderSvg className="animate-spin h-5 w-5 text-white" />
+              <LoaderSvg className="animate-spin h-5 w-5 text-primary-foreground" />
             ) : (
               'View Details'
             )}

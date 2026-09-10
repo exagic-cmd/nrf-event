@@ -117,7 +117,7 @@ const TravelInfoPage = () => {
       <div className="min-h-screen bg-surface-muted mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg mb-4">
               <div className="flex justify-between items-center">
                 <span>{error}</span>
                 <button
@@ -131,7 +131,7 @@ const TravelInfoPage = () => {
           )}
 <button
   onClick={() => router.push("/chat")} 
-  className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#D3202D] to-[#e5a1a1] text-white 
+  className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground 
              p-4 rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
   aria-label="Chat with AI"
 >
@@ -139,7 +139,7 @@ const TravelInfoPage = () => {
 </button>
 
           {weatherInfo ? (
-            <div className="relative mt-4 md:mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-[#D3202D] to-[#e5a1a1] text-white shadow-2xl">
+            <div className="relative mt-4 md:mt-12 overflow-hidden rounded-2xl bg-primary text-primary-foreground shadow-2xl">
               <div className="absolute inset-0 bg-black opacity-10"></div>
 
               <div className="relative p-8 flex justify-between items-start lg:items-center">
@@ -184,14 +184,14 @@ const TravelInfoPage = () => {
           )}
 
 {accommodations?.length > 0 && (
-  <div className="relative text-white">
+  <div className="relative">
     <div className="flex justify-between items-center px-4 mb-4">
       <h2 className="text-xl font-semibold text-primary">Accommodations</h2>
       <div className="flex space-x-2">
         <button 
           onClick={() => scroll('left')}
           type="button" 
-          className="p-2 rounded-full bg-secondary/50 hover:bg-primary hover:text-surface-foreground text-white shadow transition-colors duration-200"
+          className="p-2 rounded-full bg-secondary/50 hover:bg-primary hover:text-primary-foreground text-secondary-foreground shadow transition-colors duration-200"
         >
           <ChevronLeft size={20} />
         </button>

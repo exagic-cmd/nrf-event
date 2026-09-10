@@ -201,7 +201,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
             <button
               onClick={handleDownloadAll}
               disabled={downloadingAll}
-              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {downloadingAll ? (
                 <>
@@ -242,7 +242,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
                     type="checkbox"
                     checked={selectedVouchers.includes(voucher.id)}
                     onChange={() => handleSelectVoucher(voucher.id)}
-                    className="peer w-4 h-4 appearance-none border-2 border-border rounded cursor-pointer checked:bg-primary checked:border-primary focus:ring-2 focus:ring-[#D3202D] focus:ring-offset-1"
+                    className="peer w-4 h-4 appearance-none border-2 border-border rounded cursor-pointer checked:bg-primary checked:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-1"
                   />
                   <svg
                     className="absolute top-0 left-0 w-4 h-4 pointer-events-none hidden peer-checked:block text-white"
@@ -281,7 +281,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
                 <button
                   onClick={() => handleDownload(voucher.file_path, `${voucher.title}_${voucher.id}.pdf`, voucher.id)}
                   disabled={loadingStates[voucher.id] || downloadingAll}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Download PDF"
                 >
                   {loadingStates[voucher.id] ? (
@@ -295,7 +295,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
               {voucher.type === 'qr' && voucher.qr_link && (
                 <button
                   onClick={() => handleQROpen(voucher)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium"
                   title="Show QR Code"
                 >
                   <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -354,8 +354,8 @@ const VouchersAndQRSection = ({ vouchers }) => {
     
         {loadingStates[`qr-error-${showQRModal.id}`] && (
             <div className="flex flex-col items-center gap-2 text-center px-4">
-                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                <X className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+                <X className="w-6 h-6 text-destructive" />
                 </div>
                 <p className="text-sm font-medium text-foreground">Failed to load QR Code</p>
                 <p className="text-xs text-muted-foreground">Please try opening the link directly</p>
@@ -379,7 +379,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
           
           <button
             onClick={() => window.open(showQRModal.qr_link, '_blank', 'noopener,noreferrer')}
-            className="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+            className="w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 text-sm font-medium"
           >
             <ExternalLink className="w-4 h-4" />
             Open Link Directly

@@ -4,11 +4,11 @@ import { Heart, ThumbsUp, Meh, Frown, Smile } from 'lucide-react';
 
 const RatingSmiles = ({ rating, onRate, label }) => {
   const smiles = [
-    { icon: Frown, color: 'text-red-500', bg: 'bg-muted', border: 'border-red-200' },
-    { icon: Meh, color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-200' },
-    { icon: Smile, color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-200' },
-    { icon: ThumbsUp, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200' },
-    { icon: Heart, color: 'text-pink-500', bg: 'bg-pink-50', border: 'border-pink-200' }
+    { icon: Frown, color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30' },
+    { icon: Meh, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' },
+    { icon: Smile, color: 'text-accent-foreground', bg: 'bg-accent', border: 'border-border' },
+    { icon: ThumbsUp, color: 'text-secondary-foreground', bg: 'bg-secondary', border: 'border-border' },
+    { icon: Heart, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' }
   ];
 
   return (

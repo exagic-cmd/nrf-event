@@ -152,8 +152,8 @@ useEffect(() => {
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
-              className={`p-2 rounded-full border border-red-500 transition ${
-                canScrollLeft ? "hover:bg-red-600 text-surface-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
+              className={`p-2 rounded-full border border-primary transition ${
+                canScrollLeft ? "hover:bg-primary hover:text-primary-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronLeft size={20} />
@@ -161,8 +161,8 @@ useEffect(() => {
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
-              className={`p-2 rounded-full border border-red-500 transition ${
-                canScrollRight ? "hover:bg-red-600 text-surface-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
+              className={`p-2 rounded-full border border-primary transition ${
+                canScrollRight ? "hover:bg-primary hover:text-primary-foreground" : "opacity-40 cursor-not-allowed text-muted-foreground"
               }`}
             >
               <ChevronRight size={20} />
@@ -177,7 +177,7 @@ useEffect(() => {
       onClick={() => setSelectedType(null)}
       className={`inline-block rounded-full text-sm px-3 py-1 ${
         selectedType === null
-          ? "bg-primary text-white"
+          ? "bg-primary text-primary-foreground"
           : "text-primary border border-primary hover:bg-primary hover:text-white"
       }`}
     >
@@ -190,7 +190,7 @@ useEffect(() => {
         onClick={() => setSelectedType(type.id)}
         className={`inline-block rounded-full text-sm px-3 py-1 ${
           selectedType === type.id
-            ? "bg-primary text-white"
+            ? "bg-primary text-primary-foreground"
             : "text-primary border border-primary hover:bg-primary hover:text-white"
         }`}
       >
@@ -202,7 +202,7 @@ useEffect(() => {
 
       {/* Landmark Cards */}
       {!loading && landmarks.length === 0 && (
-        <div className="text-center text-white py-4 lg:py-8">
+        <div className="text-center text-foreground py-4 lg:py-8">
           <p>{t("no_landmarks_found", "No landmarks found for this category.")}</p>
         </div>
       )}
@@ -241,7 +241,7 @@ useEffect(() => {
                   </p>
                    <div className="flex justify-between items-end mt-2">
                     <span className="font-semibold text-surface-foreground text-xs sm:text-sm mt-auto">{item.type}</span>
-                    <button  onClick={() => handleViewLandmark(item)} className="text-white text font-semibold rounded-md px-2 py-1 bg-primary text-xs lg:text-sm">{t("details", "Details")}</button>
+                    <button  onClick={() => handleViewLandmark(item)} className="text-primary-foreground font-semibold rounded-md px-2 py-1 bg-primary text-xs lg:text-sm">{t("details", "Details")}</button>
                   </div>
                   
                 </div>
