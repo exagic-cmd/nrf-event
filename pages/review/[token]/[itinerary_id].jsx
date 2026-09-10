@@ -150,13 +150,13 @@ if (result?.success && result?.message?.toLowerCase()?.includes("success")) {
   };
   if (isLoading)
     return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
+      <div className="min-h-screen bg-surface-muted flex items-center justify-center">
         <LoadingSvg2 />
       </div>
     );
 if (successMessage)
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-surface-muted bg-opacity-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-surface p-6 rounded-xl shadow-lg max-w-md w-full text-center">
         <h2 className="text-lg sm:text-xl font-bold mb-4 text-primary">
           {t("success.title", { defaultValue: "Thank you!" })}
@@ -166,7 +166,7 @@ if (successMessage)
         </p>
         <button
           onClick={() => router.push("/order")}
-          className="px-6 py-2 bg-primary text-white rounded-lg "
+          className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover"
         >
           {t("button.back")}
         </button>
@@ -176,7 +176,7 @@ if (successMessage)
 
   if (invalidItinerary)
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 p-4">
         <div className="bg-surface p-6 rounded-xl shadow-lg max-w-md w-full text-center">
           {/* <h2 className="text-lg sm:text-xl font-bold mb-4">
             {t("invalid.title")}
@@ -186,7 +186,7 @@ if (successMessage)
           </p>
           <button
             onClick={() => router.push("/order")}
-            className="px-6 py-2 bg-primary text-white rounded-lg"
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg"
           >
             {t("button.back")}
           </button>
@@ -195,19 +195,19 @@ if (successMessage)
     );
 
   return (
-    <div className="min-h-screen lg:mt-20 md:mt-12 mt-12 bg-surface-muted">
+    <div className="min-h-screen lg:pt-20 md:pt-12 pt-12 bg-surface-muted">
       <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
         {/* Back button */}
         <button
           onClick={onBack ? onBack : () => router.push("/order")}
-          className="flex items-center mt-2  gap-2 text-gray-100 hover:text-primary mb-6 transition-colors"
+          className="flex items-center mt-2 gap-2 text-muted-foreground hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft size={20} /> {t("button.back")}
         </button>
 
         <div className="bg-surface rounded-3xl shadow-xl overflow-hidden p-6 sm:p-8 md:p-12">
           {errors.general && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg mb-6">
               <ul className="list-disc list-inside">
                 {errors.general.map((msg, i) => (
                   <li key={i}>{msg}</li>
@@ -216,7 +216,7 @@ if (successMessage)
             </div>
           )}
 {errors.general || !reviewQuestions?.length ? (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+  <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg mb-6">
     <p>
       {errorMessage ||
         errors.general?.[0] ||
@@ -224,7 +224,7 @@ if (successMessage)
     </p>
     <button
       onClick={() => router.push("/order")}
-      className="mt-4 px-6 py-2 bg-primary text-white rounded-lg"
+      className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg"
     >
       {t('goback')}
     </button>
@@ -249,7 +249,7 @@ if (successMessage)
             label={t("labels.overall")}
           />
           {errors.overall && (
-            <p className="text-red-500 text-sm">{errors.overall}</p>
+            <p className="text-destructive text-sm">{errors.overall}</p>
           )}
 
         {reviewQuestions?.length > 0 &&
@@ -268,12 +268,12 @@ if (successMessage)
                 <textarea
                   value={reviewData.answers[q.id] || ""}
                   onChange={(e) => handleInputChange(q.id, e.target.value)}
-                  className="w-full p-4 border-2 border-border rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-24"
+                  className="w-full p-4 border-2 border-border bg-surface text-foreground rounded-xl focus:border-primary focus:ring-0 resize-none h-24"
                   placeholder={t("placeholder.answer")}
                 />
               )}
               {errors[q.id] && (
-                <p className="text-red-500 text-sm">{errors[q.id]}</p>
+                <p className="text-destructive text-sm">{errors[q.id]}</p>
               )}
             </div>
           ))}
@@ -291,11 +291,11 @@ if (successMessage)
                   comments: e.target.value,
                 }));
               }}
-              className="w-full p-4 border-2 border-border rounded-xl focus:border-blue-500 focus:ring-0 resize-none h-32"
+              className="w-full p-4 border-2 border-border bg-surface text-foreground rounded-xl focus:border-primary focus:ring-0 resize-none h-32"
               placeholder={t("placeholder.comment")}
             />
             {errors.comments && (
-              <p className="text-red-500 text-sm">{errors.comments}</p>
+              <p className="text-destructive text-sm">{errors.comments}</p>
             )}
           </div>
 
@@ -311,12 +311,12 @@ if (successMessage)
               <button
                 onClick={handleSubmit}
                 disabled={storeLoading}
-                className="flex-1 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary-hover hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
               >
                 {storeLoading ? t("button.submitting") : t("button.submit")}
               </button>
             ) : (
-              <p className="bg-primary font-semibold flex-1 text-center self-center">
+              <p className="text-primary font-semibold flex-1 text-center self-center">
                 {t("alreadySubmitted")}
               </p>
             )}

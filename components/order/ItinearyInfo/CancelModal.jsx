@@ -7,7 +7,7 @@ import useUserStore from "@/store/useAuthStore"
 import { apiRequest } from "@/lib/clientApi"
 import { useTranslation } from "next-i18next"
 
-const CancelModal = ({ isOpen, onClose, itineraryId }) => {
+const CancelModal = ({ isOpen, onClose, itineraryId, orderId }) => {
   const { t } = useTranslation("order")
   const [reason, setReason] = useState("")
   const [message, setMessage] = useState(null)
@@ -40,7 +40,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
       const res = await apiRequest({
         endpoint: "cancelOrder",
         method: "POST",
-        data: { itineraryId, reason, accessCode: qrCode },
+        data: { order_id: orderId, itineraryId, reason, accessCode: qrCode },
       })
 
       if (res?.message === "success" && res?.data?.status) {
@@ -110,7 +110,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full border border-border rounded-md p-2 text-sm mb-4"
+            className="w-full border border-border rounded-md p-2 text-sm mb-4 bg-surface text-foreground"
             placeholder={t("cancel.reason_placeholder")}
           />
           <div className="flex justify-end gap-3">
@@ -135,7 +135,7 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
         <div className="flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted"
+            className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             {t("common.close")}
           </button>
@@ -146,9 +146,9 @@ const CancelModal = ({ isOpen, onClose, itineraryId }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-surface rounded-xl shadow-lg w-full max-w-md p-6 relative">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
         <button
-          className="absolute top-3 right-3 text-muted-foreground hover:text-muted-foreground"
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
           onClick={onClose}
         >
           <X className="w-5 h-5" />

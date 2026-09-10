@@ -25,7 +25,7 @@ const RatingSmiles = ({ rating, onRate, label }) => {
               className={`flex-shrink-0 w-20 sm:flex-1 p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${
                 isSelected 
                   ? `${smile.bg} ${smile.border} ${smile.color} shadow-lg scale-105` 
-                  : 'bg-muted border-border text-muted-foreground hover:bg-muted'
+                      : 'bg-muted border-border text-muted-foreground hover:bg-secondary'
               }`}
             >
               <IconComponent size={28} className="mx-auto mb-1 sm:mb-2" />

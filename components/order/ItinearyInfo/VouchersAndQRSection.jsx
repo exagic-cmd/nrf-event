@@ -1,5 +1,6 @@
 import { Download, ExternalLink, QrCode, FileText, Loader2, X } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 
 const VouchersAndQRSection = ({ vouchers }) => {
   const [loadingStates, setLoadingStates] = useState({});
@@ -7,6 +8,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
   const [downloadingAll, setDownloadingAll] = useState(false);
   const [showQRModal, setShowQRModal] = useState(null);
 
+  const { t } = useTranslation("order");
   if (!vouchers || vouchers.length === 0) {
     return null;
   }
@@ -188,7 +190,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
     <>
     <div className="mt-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <h2 className="text-md font-semibold text-foreground">Vouchers & QR Codes</h2>
+        <h2 className="text-md font-semibold text-gray-900">{t("vouchers_qr_codes")}</h2>
         
         {pdfVouchers.length > 1 && (
           <div className="flex items-center gap-2 flex-wrap">
@@ -196,7 +198,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
               onClick={handleSelectAll}
               className="px-3 py-1.5 text-xs sm:text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors whitespace-nowrap"
             >
-              {selectedVouchers.length === pdfVouchers.length ? 'Deselect All' : 'Select All'}
+              {selectedVouchers.length === pdfVouchers.length ? t("deselect_all") : t("select_all")}
             </button>
             <button
               onClick={handleDownloadAll}
@@ -206,17 +208,17 @@ const VouchersAndQRSection = ({ vouchers }) => {
               {downloadingAll ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                  <span className="hidden sm:inline">Downloading...</span>
-                  <span className="sm:hidden">Loading...</span>
+                                    <span className="hidden sm:inline">{t("downloading")}</span>
+                  <span className="sm:hidden">{t("loading")}</span>
                 </>
               ) : (
                 <>
                   <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">
-                    {selectedVouchers.length > 0 ? `Download (${selectedVouchers.length})` : 'Download All'}
+                    {selectedVouchers.length > 0 ? `${t("download")} (${selectedVouchers.length})` : t("download_all")}
                   </span>
                   <span className="sm:hidden">
-                    {selectedVouchers.length > 0 ? `(${selectedVouchers.length})` : 'All'}
+                    {selectedVouchers.length > 0 ? `(${selectedVouchers.length})` : t("all")}
                   </span>
                 </>
               )}
@@ -229,7 +231,7 @@ const VouchersAndQRSection = ({ vouchers }) => {
         {vouchers.map((voucher, index) => (
           <div
             key={voucher.id}
-            className={`flex items-center justify-between p-3 bg-muted rounded-lg border transition-colors ${
+            className={`flex items-center justify-between p-3 bg-gray-50 rounded-lg border transition-colors ${
               selectedVouchers.includes(voucher.id)
                 ? 'border-primary bg-primary/5'
                 : 'border-border hover:border-primary'
@@ -257,21 +259,21 @@ const VouchersAndQRSection = ({ vouchers }) => {
               )}
               
               {voucher.type === 'voucher' ? (
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#CC9A55]/10 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#CC9A55]" />
                 </div>
               ) : (
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <QrCode className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#CC9A55]/10 flex items-center justify-center flex-shrink-0">
+                  <QrCode className="w-4 h-4 sm:w-5 sm:h-5 text-[#CC9A55]" />
                 </div>
               )}
               
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-sm font-medium text-gray-900 truncate">
                   {voucher.title}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {voucher.type === 'voucher' ? 'PDF Document' : 'QR Code Link'}
+                <p className="text-xs text-gray-500">
+                  {voucher.type === 'voucher' ? t("pdf_document") : t("qr_code_link")}
                 </p>
               </div>
             </div>
@@ -281,9 +283,9 @@ const VouchersAndQRSection = ({ vouchers }) => {
                 <button
                   onClick={() => handleDownload(voucher.file_path, `${voucher.title}_${voucher.id}.pdf`, voucher.id)}
                   disabled={loadingStates[voucher.id] || downloadingAll}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Download PDF"
-                >
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#CC9A55] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={t("download_pdf")}
+                > {/* No static text here */}
                   {loadingStates[voucher.id] ? (
                     <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                   ) : (
@@ -295,9 +297,9 @@ const VouchersAndQRSection = ({ vouchers }) => {
               {voucher.type === 'qr' && voucher.qr_link && (
                 <button
                   onClick={() => handleQROpen(voucher)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium"
-                  title="Show QR Code"
-                >
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#CC9A55] text-white rounded-lg hover:bg-[#B88A45] transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium"
+                  title={t("show_qr_code")}
+                > {/* No static text here */}
                   <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               )}
@@ -306,16 +308,16 @@ const VouchersAndQRSection = ({ vouchers }) => {
         ))}
       </div>
       
-      <div className="mt-3 p-3 bg-primary/10 border border-primary/30 rounded-lg">
-        <p className="text-xs sm:text-sm text-primary">
-          <strong>Note:</strong> {(() => {
+      <div className="mt-3 p-3 bg-[#CC9A55]/10 border border-[#CC9A55]/30 rounded-lg">
+        <p className="text-xs sm:text-sm text-[#CC9A55]">
+          <strong>{t("note")}:</strong> {(() => {
             const browser = detectBrowser();
             if (browser.isIOS) {
-              return 'On iPhone/iPad, PDFs will open in Safari. Tap the share icon (⬆) and select "Save to Files" to download.';
+              return t("ios_download_note");
             } else if (browser.isAndroid) {
-              return 'On Android, files will be saved to your Downloads folder. Check your notification panel or Files app.';
+              return t("android_download_note");
             } else {
-              return 'Please keep these files accessible during your trip.';
+              return t("general_download_note");
             }
           })()}
         </p>
@@ -329,36 +331,36 @@ const VouchersAndQRSection = ({ vouchers }) => {
         onClick={() => setShowQRModal(null)}
       >
         <div 
-          className="bg-surface rounded-xl p-6 max-w-sm w-full relative"
+          className="bg-white rounded-xl p-6 max-w-sm w-full relative"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => setShowQRModal(null)}
-            className="absolute top-4 right-4 text-muted-foreground hover:text-muted-foreground transition-colors"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" /> {/* No static text here */}
           </button>
           
-          <h3 className="text-lg font-semibold text-foreground mb-4 pr-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 pr-8">
             {showQRModal.title}
           </h3>
           
-          <div className="bg-surface p-4 rounded-lg border-2 border-primary mb-4 relative">
+          <div className="bg-white p-4 rounded-lg border-2 border-[#CC9A55] mb-4 relative">
             <div className="w-full aspect-square flex items-center justify-center">
                 {loadingStates[`qr-${showQRModal.id}`] !== false && !loadingStates[`qr-error-${showQRModal.id}`] && (
                 <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                    <p className="text-sm text-muted-foreground">Loading QR Code...</p>
+                    <Loader2 className="w-8 h-8 text-[#CC9A55] animate-spin" />
+                    <p className="text-sm text-gray-600">{t("loading_qr_code")}</p>
                 </div>
                 )}
     
         {loadingStates[`qr-error-${showQRModal.id}`] && (
             <div className="flex flex-col items-center gap-2 text-center px-4">
-                <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-                <X className="w-6 h-6 text-destructive" />
-                </div>
-                <p className="text-sm font-medium text-foreground">Failed to load QR Code</p>
-                <p className="text-xs text-muted-foreground">Please try opening the link directly</p>
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <X className="w-6 h-6 text-red-600" />
+                </div> {/* No static text here */}
+                <p className="text-sm font-medium text-gray-900">{t("failed_to_load_qr_code")}</p>
+                <p className="text-xs text-gray-600">{t("try_opening_link_directly")}</p>
             </div>
             )}
             
@@ -373,17 +375,9 @@ const VouchersAndQRSection = ({ vouchers }) => {
         </div>
         </div>
           
-          <p className="text-sm text-muted-foreground mb-4 text-center">
-            Scan this QR code with your device
+          <p className="text-sm text-gray-600 mb-4 text-center">
+            {showQRModal.qr_link || t("no_code_available")}           
           </p>
-          
-          <button
-            onClick={() => window.open(showQRModal.qr_link, '_blank', 'noopener,noreferrer')}
-            className="w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Open Link Directly
-          </button>
         </div>
       </div>
     )}

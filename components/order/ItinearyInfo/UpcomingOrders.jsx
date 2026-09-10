@@ -3,13 +3,15 @@
 import { Calendar, Eye, AlertCircle } from "lucide-react"
 import { useOrderStore } from "@/store/useOrderStore"
 import { getFullImageUrl } from "@/utils/imageService"
+import CancelModal from "./CancelModal"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Loader2Svg from "@/components/common/Loader2Svg"
+
 const UpcomingOrders = ({ onViewDetails }) => {
   const { t } = useTranslation("order")
-  const { upcomingBookings,accommodations } = useOrderStore()
+  const { upcomingBookings } = useOrderStore()
   const router = useRouter()
   const [loadingItemId, setLoadingItemId] = useState(null)
   const formatDate = (dateString) => {
@@ -62,30 +64,29 @@ const handleVirtualTourClick = (item) => {
   });
 };
 
-  if ((!allItineraryItems || allItineraryItems.length === 0) && (!accommodations || accommodations.length === 0)) {
+  if (!allItineraryItems || allItineraryItems.length === 0) {
     return (
       <div className="text-center py-12 bg-muted rounded-xl">
         <Calendar className="w-16 h-16 text-primary mx-auto mb-4" />
-        <p className="text-surface-foreground text-lg font-medium">
+        <p className="text-foreground text-lg font-medium">
           {t("noUpcomingBookingsFound")}
         </p>
-        <p className="text-surface-foreground text-sm mt-2">
+        <p className="text-muted-foreground text-sm mt-2">
           {t("futureAdventuresAppearHere")}
         </p>
       </div>
     )
   }
 
-  const totalItems = allItineraryItems.length + (accommodations?.length || 0);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-primary">
+        <h2 className="text-2xl md:text-3xl font-bold text-primary">
           {t("upcomingOrders")}
         </h2>
         <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-          {totalItems} {totalItems === 1 ? t("item") : t("items")}
+          {allItineraryItems.length}{" "}
+          {allItineraryItems.length === 1 ? t("item") : t("items")}
         </span>
       </div>
 
@@ -93,10 +94,10 @@ const handleVirtualTourClick = (item) => {
         {allItineraryItems.map((item) => (
           <div
             key={`${item.order_id}-${item.id}`}
-            className="relative bg-surface rounded-xl shadow-lg overflow-hidden border border-border hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row"
+            className="bg-surface rounded-xl shadow-lg overflow-hidden border border-border hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row relative"
           >
             {loadingItemId === item.id && (
-              <div className="absolute inset-0 bg-surface/80 z-10 flex items-center justify-center">
+              <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
                 <Loader2Svg />
               </div>
             )}
@@ -105,7 +106,7 @@ const handleVirtualTourClick = (item) => {
               <img
                 src={getItineraryImage(item) || "/placeholder.svg"}
                 alt={item.title || t("activity")}
-                className="w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-t-none cursor-pointer"
+                className="w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-t-none"
               />
               <span
                 className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${
@@ -121,11 +122,11 @@ const handleVirtualTourClick = (item) => {
             {/* Content */}
             <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-1">
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 line-clamp-1">
                   {item.title}
                 </h3>
 
-                <div className="space-y-1 text-sm text-muted-foreground">
+                <div className="space-y-1 text-sm text-gray-600">
                   {/* Date & Pickup */}
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2" />
@@ -153,7 +154,7 @@ const handleVirtualTourClick = (item) => {
           });
         }}
         disabled={loadingItemId === item.id}
- className="flex-1 bg-primary text-primary-foreground font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1  transition-colors text-sm"
+        className="flex-1 bg-[#CC9A55] text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-[#cb913f] transition-colors text-sm disabled:opacity-50"
       >
         <Eye className="w-4 h-4 mr-2" />
         <span>{t("details")}</span>
@@ -163,7 +164,7 @@ const handleVirtualTourClick = (item) => {
         <button
           onClick={() => handleVirtualTourClick(item)}
           disabled={loadingItemId === item.id}
-          className="flex-1 bg-secondary text-secondary-foreground font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-secondary/80 transition-colors text-sm disabled:opacity-50"
+          className="flex-1 bg-gray-800 text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
         >
           <Eye className="w-4 h-4 mr-2" />
           <span>{t("virtualTour","Virtual Tour")}</span>
@@ -171,7 +172,7 @@ const handleVirtualTourClick = (item) => {
       )}
     </>
   ) : (
-    <div className="flex items-center justify-center text-muted-foreground bg-muted px-3 py-2 rounded-lg text-sm font-medium w-full">
+    <div className="flex items-center justify-center text-gray-500 bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium w-full">
       <AlertCircle className="w-4 h-4 mr-2" />
       {t("awaitingConfirmation")}
     </div>
