@@ -26,6 +26,7 @@
     opacity: 1;
   }
 }
+@keyframes partners-marquee { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 12px)); } }
 
 .scrollbar-hide {
   -ms-overflow-style: none;

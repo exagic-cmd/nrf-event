@@ -116,7 +116,7 @@ export function OurRecommendation({ layout = 1
     // LAYOUT 1 
   if (layout === 1) {
     return (
-      <section className="w-full py-12 md:py-16">
+      <section className="w-full pt-4 md:pt-8">
         <div className="container relative  min-w-full px-3 md:px-8 lg:px-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div>
