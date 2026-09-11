@@ -5,6 +5,7 @@ import Layout from "@/components/layout/Layout"
 import { ShuttleBannerWeServeSection} from "@/components/landing/shuttle-banner-weServe-section"
 import  CountdownTimer  from "@/components/landing/event-count-down"
 import {  OurRecommendation } from "@/components/landing/our-recommendation"
+import { EventPartners } from "@/components/landing/event-partners"
 import { Preloader } from "@/components/landing/preloader"
 import LocalizedLink from "@/components/LocalizedLink"
 import { useTranslation } from "next-i18next"
@@ -77,6 +78,7 @@ export default function LandingPage() {
           <AboutSection layout={layout} className="mb-24" />
           <ShuttleBannerWeServeSection layout={layout}   />
           <OurRecommendation layout={layout} />
+          <EventPartners layout={layout} />
          </div>
       
      

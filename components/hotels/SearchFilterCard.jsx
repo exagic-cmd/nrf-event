@@ -821,10 +821,10 @@ export default function SearchFilterCard({
                     ) : "Search"}
                    </button>
                  </div>
-                     {event?.partner?.logo && (
+                     {event?.organization?.logo && (
         <div className="flex justify-end gap-1 mt-3">
             <span className="text-xs text-muted-foreground">Powered by </span>
-            <img className="h-5 w-auto" src={event?event?.partner?.logo:null} alt="Toureast Logo" />
+            <img className="h-5 w-auto" src={event?event?.organization?.logo:null} alt="Toureast Logo" />
           </div>
 )}
                </div>
@@ -1022,10 +1022,12 @@ export default function SearchFilterCard({
                 ) : "Search"}
               </button>
             </div>
-                <div className=" flex justify-end md:col-span-12 gap-1">
-                  <span className="text-xs text-muted-foreground">Powered by </span>
-                  <img className="h-5 w-auto" src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/toureast_logo.png`} alt="Toureast Logo" />
-                </div>
+                                 {event?.organization?.logo && (
+        <div className="flex justify-end gap-1 mt-3">
+            <span className="text-xs text-muted-foreground">Powered by </span>
+            <img className="h-5 w-auto" src={event?event?.organization?.logo:null} alt="Toureast Logo" />
+          </div>
+)}
           </div>
         </form>
       )}

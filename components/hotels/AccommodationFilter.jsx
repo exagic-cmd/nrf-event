@@ -718,10 +718,10 @@ useEffect(() => {
      
      
        </div>
-       {event?.partner?.logo && (
+       {event?.organization?.logo && (
         <div className="flex justify-end gap-1 mt-3">
             <span className="text-xs text-muted-foreground">Powered by </span>
-            <img className="h-5 w-auto" src={event?event?.partner?.logo:null} alt="Toureast Logo" />
+            <img className="h-5 w-auto" src={event?event?.organization?.logo:null} alt="Toureast Logo" />
           </div>
 )}
     </form>

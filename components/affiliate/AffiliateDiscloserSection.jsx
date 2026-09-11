@@ -4,27 +4,27 @@ import { CheckCircle, Users, Globe, DollarSign, Heart, Star } from "lucide-react
 function AffiliateDiscloserSection() {
   const features = [
     {
-      icon: <Star className="w-6 h-6 text-[#FE6F4F]" />,
+      icon: <Star className="w-6 h-6 text-primary" />,
       title: "Promote Top-Rated Experiences",
       desc: "Share handpicked tours and attractions selected from trusted platform.",
     },
     {
-      icon: <Globe className="w-6 h-6 text-[#FE6F4F]" />,
+      icon: <Globe className="w-6 h-6 text-primary" />,
       title: "Enable Seamless Booking",
       desc: "Help travelers book experiences easily through verified networks.",
     },
     {
-      icon: <Users className="w-6 h-6 text-[#FE6F4F]" />,
+      icon: <Users className="w-6 h-6 text-primary" />,
       title: "Empower Content Creators",
       desc: "Earn commissions by sharing curated Singapore travel content.",
     },
     {
-      icon: <DollarSign className="w-6 h-6 text-[#FE6F4F]" />,
+      icon: <DollarSign className="w-6 h-6 text-primary" />,
       title: "Support Our Mission",
       desc: "Affiliate revenue helps us grow and deliver high-quality insights.",
     },
     {
-      icon: <Heart className="w-6 h-6 text-[#FE6F4F]" />,
+      icon: <Heart className="w-6 h-6 text-primary" />,
       title: "Champion Responsible Tourism",
       desc: "We promote meaningful, sustainable travel experiences in Singapore.",
     },
@@ -34,7 +34,7 @@ function AffiliateDiscloserSection() {
     <div className="my-16 px-4 md:px-12">
 
         <div className="justify-items-center mb-6">
-          <p className="text-[#FE6F4F] text-lg font-semibold mb-2">Why Join</p>
+          <p className="text-primary text-lg font-semibold mb-2">Why Join</p>
           <h2 className="text-xl md:text-4xl font-bold text-foreground mb-6">
             Our Affiliate Program
           </h2>
@@ -55,7 +55,7 @@ function AffiliateDiscloserSection() {
             ))}
           </div>
 
-          <button className="bg-[#FE6F4F] text-white font-medium py-2.5 px-6 mt-8 rounded-full flex items-center w-fit">
+          <button className="bg-primary text-white font-medium py-2.5 px-6 mt-8 rounded-full flex items-center w-fit">
             <a href="/contactUs">Contact Us</a>
             <svg
               className="w-4 h-4 ml-2"
