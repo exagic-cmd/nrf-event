@@ -37,7 +37,7 @@ const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-surface-secondary bg-opacity-70 z-50 flex items-center justify-center p-4">
       <div className="bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-3xl">
         <div className="p-6 md:p-8">
           <div className="flex justify-between items-start mb-6">
@@ -467,62 +467,65 @@ flight_dep_estimated_time:
   }
 
   else {
-    return {
-  adult_count: item.adults || 0,
-  child_count: item.child || 0,
-  dropoff_point:  item.hotelName ||item.searchParams?.dropoff?.name || '',
-      flight_number: item.pickupFlightNumber || '',
-  operator_email: 'operator@example.com',
-  operator_id: '12345', 
-  pickup_date: item.selectedDate,
-  pickup_point: item.hotelName||item.pickupPoint || item.searchParams?.pickup?.name || '',
-  dropoff_point: item.dropoffPoint ||item.searchParams?.dropoff?.name || '',
-  category_id:item.category_name||"",
-   pickup_point_id:
-      item.vehicle?.pickup_point_id ||item.pickupPointId ||
-      item.pickup?.id ||
-      item.searchParams?.pickup?.id ||
-      "",
-      dropoff_point_id:
-      item.vehicle?.dropoff_point_id || item.dropoffPointId||
+     return {
+          adult_count: item.adults || item.pax || 0,
+          child_count: item.child || 0,
+          twin_sharing: item.twin_sharing || 0,
+         single_sharing : item.single_sharing || 0,
+          child_with_bed: item.child_with_bed || 0,
+          child_without_bed: item.child_without_bed || 0,
+           accommodation_group_id: item.accommodation_group_id || '',
+        group_hotel_id: item.group_hotel_id || '',
+          category_id: item.category_name || 2,
+          dropoff_point: item.hotelName || item.searchParams?.dropoff?.name || '',
+          flight_number: item.pickupFlightNumber || '',
+          operator_email: 'operator@example.com',
+          operator_id: '12345',
+          pickup_date: item.selectedDate,
+          pickup_point: item.hotelName || item.searchParams?.pickup?.name || '',
+          pickup_point_id:
+            item.vehicle?.pickup_point_id ||
+            item.pickup?.id ||
+            item.searchParams?.pickup?.id ||
+            "",
+          dropoff_point_id:
+            item.vehicle?.dropoff_point_id ||
             item.dropoff?.id ||
-      item.searchParams?.dropoff?.id ||
-      "",
-two_way_pickup_point_id:
-      item.returnPickup?.id ||
-      item.vehicle?.dropoff_point_id ||
-      item.searchParams?.returnPickup?.id ||
-      "",
-      two_way_dropoff_point_id:
-      item.returnDropoff?.id ||
-      item.vehicle?.pickup_point_id ||
-      item.searchParams?.returnDropoff?.id ||
-      "",
-       feature_type_id: item.vehicle?.feature_type_id || 1,
-         flight_estimated_time: item.pickupFlightScheduleTime || item.flightEstimatedTime || "",
-flight_dep_estimated_time:
-      item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
-  pickup_time: item.selectedTime,
-  product_id: item.tourId,
-  total: item.pricing?.total || 0,
-  tour_date: item.selectedDate,
-  tourplan_hotel_id: '789', 
-  vehicle_id: 'V102', 
-  transfer_type: '', // in trasfer passing
-  flight_dep_number: '', // in trasfer passing
-  flight_estimated_time: '', // in trasfer passing
-  flight_dep_estimated_time: '', // in trasfer passing
-  two_way_dropoff_date: '', // in trasfer passing
-  two_way_dropoff_time: '', // in trasfer passing,
-  baggage: item.baggage || 0,
-    pickup_surcharge: item.pickupSurcharge || 0,
-    return_surcharge: item.returnSurcharge || 0,
-    return_surcharge_id: item.returnSurchargeId || 0,
-    pickup_surcharge_id: item.pickupSurchargeId || 0,
-     addons: addonsPayload,           
-      addons_round: addonsRoundPayload ,
-        exceptions: exceptionsPayload,
-}
+            item.searchParams?.dropoff?.id ||
+            "",
+          two_way_pickup_point_id:
+            item.returnPickup?.id ||
+            item.vehicle?.dropoff_point_id ||
+            item.searchParams?.returnPickup?.id ||
+            "",
+          two_way_dropoff_point_id:
+            item.returnDropoff?.id ||
+            item.vehicle?.pickup_point_id ||
+            item.searchParams?.returnDropoff?.id ||
+            "",
+          feature_type_id: item.vehicle?.feature_type_id || 1,
+          flight_estimated_time: item.pickupFlightScheduleTime || item.flightEstimatedTime || "",
+          flight_dep_estimated_time:
+            item.returnFlightScheduleTime || item.flightDepEstimatedTime || "",
+          pickup_time: item.selectedTime,
+          product_id: item.tourId,
+          total: item.pricing?.total || 0,
+          tour_date: item.selectedDate,
+          tourplan_hotel_id: '789',
+          vehicle_id: 'V102',
+          transfer_type: '',
+          flight_dep_number: '',
+          two_way_dropoff_date: '',
+          two_way_dropoff_time: '',
+          baggage: item.baggage || 0,
+          pickup_surcharge: item.pickupSurcharge || 0,
+          return_surcharge: item.returnSurcharge || 0,
+          return_surcharge_id: item.returnSurchargeId || 0,
+          pickup_surcharge_id: item.pickupSurchargeId || 0,
+          addons: addonsPayload,
+          addons_round: addonsRoundPayload,
+          exceptions: exceptionsPayload,
+        };
   }
 }
 );
@@ -714,35 +717,45 @@ console.log("cart_items:PAYNOW #####################", cart_items);
               {errors.email && <p className="text-destructive text-xs mt-1">{t(errors.email)}</p>}
             </div>
 
-            {/* Phone */}
-            <div>
-              <label className="text-sm  text-muted-foreground flex items-center gap-3">
-                <Phone className="w-4 h-4 text-base text-muted-foreground" />
-                {t("phoneNumber")} <span className="text-destructive">*</span>
-              </label>
-              <PhoneInput
-                country={'sg'}
-                value={phone}
-                onChange={value => {
-                  setPhone(value);
-                  setErrors(prev => ({ ...prev, phone: undefined }));
-                }}
-                inputStyle={{
-                  width: '100%',
-                  borderRadius: '6px',
-                  borderColor: '#D1D5DB',
-                  backgroundColor: phone ? '#F3F4F6' : '',
-                  padding: "22px 48px",
-                  fontSize: "14px",
-                }}
-                containerStyle={{ width: '100%' }}
-                inputProps={{
-                  name: 'phone_number',
-                  required: true,
-                }}
-              />
-              {errors.phone && <p className="text-destructive text-xs mt-1">{t(errors.phone)}</p>}
-            </div>
+       <div>
+  <label className="text-sm text-muted-foreground flex items-center gap-3">
+    <Phone className="w-4 h-4 text-base text-muted-foreground" />
+    {t("phoneNumber")} <span className="text-destructive">*</span>
+  </label>
+  <PhoneInput
+    country={'sg'}
+    value={phone}
+    onChange={value => {
+      setPhone(value);
+      setErrors(prev => ({ ...prev, phone: undefined }));
+    }}
+    // Main Input Field
+    inputStyle={{
+      width: '100%',
+      borderRadius: '6px',
+      borderColor: 'var(--border)',
+      backgroundColor: phone ? 'var(--surface)' : 'transparent',
+      padding: "22px 48px",
+      fontSize: "14px",
+      color: 'var(--foreground)',
+    }}
+     buttonStyle={{
+      backgroundColor: phone ? 'var(--surface)' : 'transparent',
+      borderColor: 'var(--border)',
+      borderRadius: '6px 0 0 6px',
+    }}
+     dropdownStyle={{
+      backgroundColor: 'var(--surface)',
+      color: 'var(--foreground)',
+    }}
+    containerStyle={{ width: '100%' }}
+    inputProps={{
+      name: 'phone_number',
+      required: true,
+    }}
+  />
+  {errors.phone && <p className="text-destructive text-xs mt-1">{t(errors.phone)}</p>}
+</div>
              {/* Preferred Communication */}
               {!user?.communication_mode && (
             <div>
