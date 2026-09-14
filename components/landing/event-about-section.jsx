@@ -89,7 +89,7 @@ export function AboutSection({ layout = 1 }) {
         className="w-full my-12 py-12 md:py-20"
         aria-labelledby="event-about-title"
       >
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-2 md:gap-12 md:px-8 lg:px-12">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center mt-12 md:mt-2 gap-8 px-4 md:grid-cols-2 md:gap-12 md:px-8 lg:px-12">
           <div className="order-2 flex flex-col justify-center md:order-1">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
               About the event
@@ -159,7 +159,7 @@ export function AboutSection({ layout = 1 }) {
         className="w-full my-12 py-12 md:py-20"
         aria-labelledby="event-about-title"
       >
-        <div className="mx-auto max-w-6xl px-4 md:px-14 lg:px-24">
+        <div className="mx-auto max-w-6xl px-4 mt-12 md:mt-2 md:px-14 lg:px-24">
           <div className="relative">
             {image && (
               <img
@@ -241,7 +241,7 @@ export function AboutSection({ layout = 1 }) {
       className="w-full my-12 py-12 md:py-20"
       aria-labelledby="event-about-title"
     >
-      <div className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-6xl mt-12 md:mt-2 px-4 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-12 md:gap-10">
           {image && (
             <div className="relative order-1 md:col-span-5">
