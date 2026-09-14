@@ -90,8 +90,18 @@ export const useDaytoursStore = create((set, get) => ({
       const data = await res.json();
       const results = data?.products || data?.data || [];
 
-      const isDayTour = requestPayload.category_id === 3;
-      const categoryType = isDayTour ? "daytour" : "accommodation";
+      const resultCategoryIds = results
+        .map((item) => Number(item?.category_id ?? item?.product?.category_id))
+        .filter((categoryId) => Number.isFinite(categoryId));
+      const categoryId = resultCategoryIds.length > 0
+        ? resultCategoryIds[0]
+        : Number(requestPayload.category_id);
+      const isDayTour = [3, 8, 12].includes(categoryId);
+      const categoryType = categoryId === 4
+        ? "accommodation"
+        : isDayTour
+          ? "daytour"
+          : "unknown";
 
       // Keep only first language
       const processedResults = results.map((item) => {

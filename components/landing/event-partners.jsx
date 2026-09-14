@@ -365,7 +365,7 @@ export function EventPartners({ layout = 1 }) {
   | LAYOUT 2
   |--------------------------------------------------------------------------*/
 
-  if (layout === 2) {
+  if (layout === 2 || layout === 3) {
     return (
       <section
         className="w-full py-14 md:py-20"
@@ -479,7 +479,7 @@ export function EventPartners({ layout = 1 }) {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 my-2">
           {sidePartners.slice(0, 2).map((partner, index) => (
             <div
               key={`${partner.id || partner.name}-left-${index}`}

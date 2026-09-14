@@ -75,7 +75,7 @@ export default function LandingPage() {
             <Herosection layout={layout}  />
             <HeroFilter layout={layout} />
         </div>
-          <AboutSection layout={layout} className="mb-24" />
+          <AboutSection  />
           <ShuttleBannerWeServeSection layout={layout}   />
           <OurRecommendation layout={layout} />
           <EventPartners layout={layout} />

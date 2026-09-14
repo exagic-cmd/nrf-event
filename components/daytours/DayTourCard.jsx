@@ -15,7 +15,10 @@ function DaytourCard({ tour, category = "daytour" }) {
   const [isLoading, setIsLoading] = useState(false);
   const [activitiesExpanded, setActivitiesExpanded] = useState(false);
 
-  const hasPromo = tour.originalPrice && tour.price < tour.originalPrice;
+  const isPackageTour = Number(tour.category_id || tour.rawData?.category_id) === 8;
+  const packagePrice = Number(tour.rawData?.adult_sharing || 0);
+  const displayPrice = isPackageTour && packagePrice > 0 ? packagePrice : tour.price;
+  const hasPromo = tour.originalPrice && displayPrice < tour.originalPrice;
 
   const handleBookNow = async () => {
     setIsLoading(true);
@@ -199,7 +202,7 @@ function DaytourCard({ tour, category = "daytour" }) {
           </p>
         )}
         <p className="text-xl font-bold text-primary">
-          {tour.currency || "SGD"} {formatPrice(tour.price)} 
+          {tour.currency || "SGD"} {formatPrice(displayPrice)}
         </p>
       </div>
     </div>

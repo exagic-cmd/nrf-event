@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
 import { persist } from "zustand/middleware";
-import useCurrencyStore from "@/store/useCurrencyStore";
+import useLanguageStore from "@/store/useLanguageStore"
 
 export const useProductStore = create(
   persist(
@@ -44,18 +44,14 @@ setSelectedVariant: (variant) => set({ selectedVariant: variant }),
       bookProduct: async (id, lang_id) => {
         console.log("Booking product with ID (client-side re-fetch):", id)
         try {
-          const currencyId =
-            useCurrencyStore.getState()?.currencyId ||
-            (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
-            2;
 
           const productData = await apiRequest({
-            endpoint: `product/${id}/${lang_id}?currency_id=${currencyId}`,
+            endpoint: `product/${id}/${lang_id}`,
             method: "GET",
           });
 
           const tieredPricing = await apiRequest({
-            endpoint: `product_tiered_pricing/${id}?currency_id=${currencyId}`,
+            endpoint: `product_tiered_pricing/${id}`,
             method: "GET",
           });
 
@@ -137,10 +133,11 @@ export const useCategoryStore = create(
     (set) => ({
       categories: [],
       fetchCategories: async () => {
+        const { languageId } = useLanguageStore.getState();
         try {
           const res = await apiRequest({
-            endpoint: "category",
-            method: "GET",
+            endpoint: `category/${languageId || 1}`,
+            method: "GET", 
           });
           const data = res?.data?.category || [];
           set({ categories: data });

@@ -70,7 +70,7 @@ export default function HeroSection({ layout = 2 }) {
     return (
       <div className="w-full ">
         <div className="px-4 py-6 md:px-8 md:py-10  lg:px-12">
-          <div className="bg-primary/30 grid overflow-hidden rounded-2xl shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
+          <div className="bg-primary/30  grid overflow-hidden rounded-2xl shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
             <div className="order-2 flex flex-col justify-center px-6 py-10 text-background sm:px-10 md:order-1 md:px-12 ">
               <p className="mb-4 w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white sm:text-sm">
                 {heroTitle}
