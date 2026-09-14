@@ -76,6 +76,7 @@ export default function HeroFilter() {
     { id: 3, label: "day-tours", name: "DayTours" },
     { id: 2, label: "transfer", name: "Transfers" },
     { id: 8, label: "packages", name: "Package Tours" },
+    { id: 12, label: "attractions", name: "Attractions" },
     { id: 1, label: "admission", name: "Admissions" },
   //  { id: 5, label: "search", name: "Search Text" },
   ], []);
@@ -93,6 +94,7 @@ export default function HeroFilter() {
       if (tab.id === 3) return categoryIds.includes(1) || categoryIds.includes(3); // DayTours (API ID 1 or 3)
       if (tab.id === 2) return categoryIds.includes(2); // Transfers (API ID 2)
       if (tab.id === 8) return categoryIds.includes(8); // Package Tours (API ID 8)
+      if (tab.id === 12) return categoryIds.includes(12); // Attractions (API ID 12)
       if (tab.id === 5) return categoryIds.includes(5); // Search Text (API ID 5)
       if (tab.id === 1) return categoryIds.includes(1); // Coming Soon (API ID 1)
       return false; });
@@ -158,9 +160,10 @@ export default function HeroFilter() {
       country,
       city,
       searchQuery: search || "",
+      category_id: payload.category_id || 3,
     });
 
-    router.push(`/listings?searched=true&type=daytour`);
+    router.push(`/listings?searched=true&type=daytour&category=${payload.category_id || 3}`);
     return;
   }
 

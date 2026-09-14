@@ -33,6 +33,7 @@ const dayTourPlaceholders = [
   "Search temples like Buddha Tooth Relic Temple",
   "Clarke Quay Riverside",
 ];
+const dayTourCategoryIds = [3, 8, 12];
 
 export default function SearchFilterCard({
   filterActiveTab,
@@ -79,6 +80,8 @@ export default function SearchFilterCard({
 
   const { daytourParams, setDaytourParams, transferParams, accommodationParams, setAccommodationParams } = useSearchValuesStore();
   const { event, FetchEvent } = useEventStore();
+  const isDaytourTab = dayTourCategoryIds.includes(Number(filterActiveTab));
+  const activeCategoryId = isDaytourTab ? Number(filterActiveTab) : 4;
 
   const [pickupQuery, setPickupQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -209,7 +212,7 @@ export default function SearchFilterCard({
 
   // Effect for rotating placeholder
   useEffect(() => {
-    if (filterActiveTab === 3) {
+    if (isDaytourTab) {
       const interval = setInterval(() => {
         setPlaceholderIndex(prevIndex => (prevIndex + 1) % dayTourPlaceholders.length);
       }, 3000); // Change every 3 seconds
@@ -239,7 +242,7 @@ export default function SearchFilterCard({
   }, [filterActiveTab, fetchPickupOptions, pickupOptions?.length, isHomepage]);
 
   useEffect(() => {
-    if ((filterActiveTab === 3 || filterActiveTab === 4) && countries.length === 0) {
+    if ((isDaytourTab || filterActiveTab === 4) && countries.length === 0) {
       fetchCountriesCities();
     }
   }, [filterActiveTab, fetchCountriesCities, countries.length]);
@@ -253,16 +256,16 @@ export default function SearchFilterCard({
     let mounted = true;
     const loadDayTours = async () => {
       if (isHomepage) return; // Don't auto-search on homepage
-      if (filterActiveTab !== 3) return;
+      if (!isDaytourTab) return;
 
-      const payloadKey = JSON.stringify({ country: selectedCountry?.id, city: selectedCity?.id, name: "" });
+      const payloadKey = JSON.stringify({ category_id: activeCategoryId, country: selectedCountry?.id, city: selectedCity?.id, name: "" });
       if (daytourAutoRunRef.current === payloadKey) return; // already ran for same payload
       daytourAutoRunRef.current = payloadKey;
 
       setIsSearching(true);
       try {
         const apiPayload = {
-          category_id: 3,
+          category_id: activeCategoryId,
           country_id: selectedCountry?.id,
           city_id: selectedCity?.id,
           name: "",
@@ -280,7 +283,7 @@ export default function SearchFilterCard({
               search: "",
               results: results,
               category: "daytour",
-              category_id: 3,
+              category_id: activeCategoryId,
               timestamp: Date.now(),
             });
           }, 100);
@@ -299,7 +302,7 @@ export default function SearchFilterCard({
       mounted = false;
       clearTimeout(t);
     };
-  }, [filterActiveTab, fetchSearchResults, selectedCountry, selectedCity, onFilterTransfer, isHomepage]);
+  }, [filterActiveTab, activeCategoryId, isDaytourTab, fetchSearchResults, selectedCountry, selectedCity, onFilterTransfer, isHomepage]);
 
   // Auto-run Accommodation search when tab becomes active using persisted params or prefill data
   useEffect(() => {
@@ -439,8 +442,8 @@ export default function SearchFilterCard({
     //   return;
     // }
 
-    const categoryId = filterActiveTab === 3 ? 3 : 4;
-    const categoryType = filterActiveTab === 3 ? 'daytour' : 'accommodation';
+    const categoryId = activeCategoryId;
+    const categoryType = isDaytourTab ? 'daytour' : 'accommodation';
 
     
     const apiPayload = {
@@ -518,7 +521,7 @@ export default function SearchFilterCard({
     e.preventDefault();
     if (filterActiveTab === 2) {
       handleTransferSearch();
-    } else if (filterActiveTab === 3) {
+    } else if (isDaytourTab) {
       handleCategorySearch();
     // Accommodation search is handled by AccommodationFilter's onSearch prop
     }
@@ -831,7 +834,7 @@ export default function SearchFilterCard({
              </form>
            )}
       {/* ====== DAY TOURS ====== */}
-      {filterActiveTab === 3 && (
+      {isDaytourTab && (
         <form onSubmit={handleSubmit} className="relative rounded-2xl bg-surface text-surface-foreground shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
 
@@ -969,7 +972,7 @@ export default function SearchFilterCard({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  placeholder={filterActiveTab === 3 ? dayTourPlaceholders[placeholderIndex] : "Search for tours..."}
+                  placeholder={isDaytourTab ? dayTourPlaceholders[placeholderIndex] : "Search for tours..."}
                   className="w-full bg-transparent text-base outline-none py-0.5 placeholder:text-muted-foreground"
                 />
                 {searchQuery && (
@@ -1046,7 +1049,7 @@ export default function SearchFilterCard({
       )}
 </div>
       {/* ====== COMING SOON ====== */}
-      {![4, 2, 3].includes(filterActiveTab) && (
+      {!isDaytourTab && ![4, 2].includes(filterActiveTab) && (
         <div className="rounded-2xl bg-surface shadow p-8 text-center text-muted-foreground">
           Coming Soon...
         </div>

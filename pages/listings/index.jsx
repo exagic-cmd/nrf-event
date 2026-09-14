@@ -25,6 +25,17 @@ import { Filter, X, ChevronDown } from "lucide-react";
 import AccommodationListMap from "@/components/accommodations/AccommodationListMap";
 import GoogleMap from "@/components/daytours/GoogleMap";
 
+const DAYTOUR_CATEGORY_IDS = [3, 8, 12];
+
+const getListingCategory = (categoryId, fallbackType) => {
+  const normalizedCategoryId = Number(categoryId);
+
+  if (normalizedCategoryId === 2) return "transfer";
+  if (normalizedCategoryId === 4) return "accommodation";
+  if (DAYTOUR_CATEGORY_IDS.includes(normalizedCategoryId)) return "daytour";
+  return fallbackType || "accommodation";
+};
+
 function ListingsPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -57,8 +68,9 @@ function ListingsPage() {
   const [cardAccommodationText, setCardAccommodationText] = useState(""); // For accommodations
   const [filterActiveTab, setFilterActiveTab] = useState(() => {
     const t = urlSearchParams.get("type");
+    const category = Number(urlSearchParams.get("category"));
     if (t === "accommodation" || t === "hotels") return 4;
-    if (t === "daytour" || t === "day-tours") return 3;
+    if (t === "daytour" || t === "day-tours") return DAYTOUR_CATEGORY_IDS.includes(category) ? category : 3;
     if (t === "transfer") return 2;
     return 4;
   });
@@ -70,6 +82,7 @@ function ListingsPage() {
     { id: 1, label: "coming-soon", name: "Coming Soon" },
     { id: 5, label: "search", name: "Search Text" },
     { id: 8, label: "packages", name: "Package Tours" },
+    { id: 12, label: "attractions", name: "Attractions" },
   ], []);
 
   const visibleTabs = useMemo(() => {
@@ -82,8 +95,10 @@ function ListingsPage() {
 
     return filterTabs.filter((tab) => {
       if (tab.id === 4) return categoryIds.includes(4); // Accommodations
-      if (tab.id === 3) return categoryIds.includes(1); // DayTours (API ID 1)
+      if (tab.id === 3) return categoryIds.includes(1) || categoryIds.includes(3); // DayTours
       if (tab.id === 2) return categoryIds.includes(2); // Transfers (API ID 2)
+      if (tab.id === 8) return categoryIds.includes(8); // Package Tours
+      if (tab.id === 12) return categoryIds.includes(12); // Attractions
       return false; 
     });
   }, [event, filterTabs]);
@@ -110,12 +125,13 @@ function ListingsPage() {
       return;
     }
 
-    if (filterActiveTab === 3) {
+    if ([3, 8, 12].includes(filterActiveTab)) {
       setSelectedCountry(payload.country);
       setSelectedCity(payload.city);
       setDaytourSearchQuery(payload.search);
-      setSearchDaytourParams({ country: payload.country, city: payload.city, search: payload.search });
-      router.push(`/listings?searched=true&type=daytour`);
+      const categoryId = payload.category_id || filterActiveTab;
+      setSearchDaytourParams({ country: payload.country, city: payload.city, search: payload.search, searchQuery: payload.search, category_id: categoryId });
+      router.push(`/listings?searched=true&type=daytour&category=${categoryId}`);
       setHasSearched(true);
       setSearchCategory("daytour");
       return;
@@ -338,8 +354,8 @@ function ListingsPage() {
     if (searched) {
       setHasSearched(true);
       setIsInitialSearch(false);
-      if (category) {
-        setSearchCategory(category.toLowerCase());
+        if (category) {
+          setSearchCategory(getListingCategory(category, type?.toLowerCase()));
       } else if (type) {
         setSearchCategory(type.toLowerCase());
       }
@@ -376,7 +392,14 @@ function ListingsPage() {
       // Trigger a fetch on page load if we have meaningful params
       const hasDaytourPayload = searchDaytourParams && (searchDaytourParams.country || searchDaytourParams.city || searchDaytourParams.searchQuery);
       if (hasDaytourPayload) {
-        fetchDaytours({ country: searchDaytourParams.country, city: searchDaytourParams.city, name: searchDaytourParams.searchQuery });
+        fetchDaytours({
+          category_id: [3, 8, 12].includes(Number(searchDaytourParams.category_id))
+            ? Number(searchDaytourParams.category_id)
+            : 3,
+          country: searchDaytourParams.country,
+          city: searchDaytourParams.city,
+          name: searchDaytourParams.searchQuery,
+        });
       }
     }
   }, [urlSearchParams, searchDaytourParams, setSearchDaytourParams, fetchDaytours]);
@@ -439,7 +462,7 @@ useEffect(() => {
 
     if (
       (filterActiveTab === 4 && (type === "accommodation" || type === "hotels")) ||
-      (filterActiveTab === 3 && (type === "daytour" || type === "day-tours")) ||
+      (DAYTOUR_CATEGORY_IDS.includes(filterActiveTab) && (type === "daytour" || type === "day-tours")) ||
       (filterActiveTab === 2 && type === "transfer")
     ) {
       return;
@@ -447,7 +470,7 @@ useEffect(() => {
 
     if (filterActiveTab === 4 && Object.keys(searchAccommodationParams).length > 0) {
       handleFilterFromCard(searchAccommodationParams);
-    } else if (filterActiveTab === 3 && Object.keys(searchDaytourParams).length > 0) {
+    } else if (DAYTOUR_CATEGORY_IDS.includes(filterActiveTab) && Object.keys(searchDaytourParams).length > 0) {
       handleFilterFromCard(searchDaytourParams);
     } else if (filterActiveTab === 2 && Object.keys(searchTransferParams).length > 0) {
       handleFilterFromCard(searchTransferParams);
