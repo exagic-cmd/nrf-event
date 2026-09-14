@@ -10,7 +10,7 @@ const BookingModal = ({ isOpen, onClose, onUpdate, onGoToCart, type = "accommoda
           {productType === "accommodation" ? "Accommodation Already in Cart" : "Tour Already in Cart"}
         </h3>
         <p className="text-muted-foreground mb-6">
-          This {productType} is already in your cart, Would you like to update your selection or proceed to checkout?
+          This {productType} is already in your cart. Would you like to update your selection or proceed to checkout?
         </p>
         <div className="flex flex-col gap-3">
           <button
