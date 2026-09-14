@@ -16,9 +16,10 @@ import { Separator } from "@/components/ui/separator"
 import { useTranslation } from "next-i18next"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import useLanguageStore from "@/store/useLanguageStore";
-
+// import { getCurrencyRate } from "@/utils/getIP";
+import formatPrice from "@/lib/formatPrice";
 const slugify = (text) => {
-    if (!text) return "";[]
+    if (!text) return "";
     const processedText = text
         .toString()
         .toLowerCase()
@@ -39,9 +40,11 @@ const DayTourBookingPage = () => {
   const { bookProduct, bookedProductDetail, isLoading, setSelectedVariant, selectedVariant } = useProductStore()
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
   const [allowed, setAllowed] = useState(false)
+  const [priceSummary, setPriceSummary] = useState(null)
   const [checkingAccess, setCheckingAccess] = useState(true)
   const [isLanguageHydrated, setIsLanguageHydrated] = useState(false)
   const { languageId, currentLocale } = useLanguageStore();
+  const [currencyData, setCurrencyData] = useState(null);
 
   useEffect(() => {
     if (useLanguageStore.persist.hasHydrated()) {
@@ -51,6 +54,20 @@ const DayTourBookingPage = () => {
         return () => unsub();
     }
   }, []);
+
+  // useEffect(() => {
+  //   const fetchRate = async () => {
+  //     try {
+  //       const rate = await getCurrencyRate();
+  //       if (rate && rate.exchange_rate !== 1) {
+  //         setCurrencyData(rate);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching currency rate:", err);
+  //     }
+  //   };
+  //   fetchRate();
+  // }, []);
 
   useEffect(() => {
     return () => {
@@ -78,7 +95,7 @@ const DayTourBookingPage = () => {
                 if (id && apiTitle) {
                     localizedReplace(`/day-tours/${slugify(apiTitle)}/${id}`);
                 } else {
-                    localizedReplace("/");
+                    localizedReplace("/transfers");
                 }
             }, 1200);
             return () => clearTimeout(timer);
@@ -96,7 +113,7 @@ const DayTourBookingPage = () => {
   }
 
   const handleContinueShopping = () => {
-    localizedPush("/")
+    localizedPush("/transfers")
   }
 
   const handleProceedToCheckout = () => {
@@ -118,10 +135,10 @@ const DayTourBookingPage = () => {
   if (!allowed) {
     return (
       <Layout>
-        <div className="flex items-center bg-surface-muted justify-center pb-12 min-h-screen text-center px-4">
+        <div className="flex items-center bg-surface-secondary justify-center pb-12 min-h-screen text-center px-4">
           <div>
-             <h2 className="text-xl font-semibold text-surface-foreground mb-2">{t("redirecting")}</h2>
-            <p className="text-surface-foreground">{t("redirectingMessage")}</p>
+             <h2 className="text-xl font-semibold text-white mb-2">{t("redirecting")}</h2>
+            <p className="text-gray-50">{t("redirectingMessage")}</p>
           </div>
         </div>
       </Layout>
@@ -139,11 +156,16 @@ const DayTourBookingPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-surface-muted pb-12 pt-12 md:pt-20">
-        <div className="full-width mx-auto px-1 md:px-4 py-8 lg:px-8">
+      <div className="min-h-screen bg-surface-secondary pb-12 pt-12 md:pt-20">
+        <div className="max-w-7xl mx-auto px-1 md:px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <BookNow id={displayId} productTitle={displayTitle} onBookNow={handleItemAddedToCart} />
+              <BookNow 
+                id={displayId} 
+                productTitle={displayTitle} 
+                onBookNow={handleItemAddedToCart} 
+                onPriceChange={setPriceSummary}
+              />
             </div>
          
             <div className="relative lg:block hidden">
@@ -167,24 +189,40 @@ const DayTourBookingPage = () => {
                     {/* Content Section */}
                     <div className="p-6 space-y-4">
                       <div>
-                        <h3 className="font-bold text-lg text-foreground leading-tight">{productTitle}</h3>
+                        <h3 className="font-semibold text-lg text-primary leading-tight">{productTitle}</h3>
         
                       </div>
 
                       <Separator />
 
-                      {/* Details Section */}
+                      {/* Dynamic Pricing Section */}
                       <div className="space-y-3">
                        
                         <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                           <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                            <Tag className="w-4 h-4 text-[#595c61]" />
+                            <Tag className="w-4 h-4 text-muted-foreground" />
                           </div>
-                          <div>
-     <p className="text-xs text-muted-foreground uppercase tracking-wide">{t("price")}</p>
-                            <p className="font-medium text-foreground">
-  {t("startingFrom")}  {apiData?.currency} { displayPrice }
-</p>
+                          <div className="flex-1">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                              {priceSummary?.totalPax > 0 ? t("total") : t("price")}
+                            </p>
+                            <div className="flex justify-between items-center">
+                              <div className="text-left">
+                                <p className="font-semibold text-primary text-lg">
+                                  {priceSummary?.totalPax > 0 ? "" : t("startingFrom") + " "} {apiData?.currency} {priceSummary?.totalPax > 0 ? priceSummary.total : displayPrice}
+                                </p>
+                                {currencyData && currencyData.exchange_rate !== 1 && (
+                                  <p className="text-xs text-muted-foreground font-normal mt-0.5">
+                                    Est. {formatPrice(displayPrice * currencyData.exchange_rate)} {currencyData.currency}
+                                  </p>
+                                )}
+                              </div>
+                              {priceSummary?.totalPax > 0 && (
+                                <p className="text-sm font-semibold text-[#CC9A55]">
+                                  x{priceSummary.totalPax} {t("pax")}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>            
                       </div>

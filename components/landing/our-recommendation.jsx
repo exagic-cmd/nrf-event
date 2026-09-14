@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useEventStore } from "@/store/useEventStore";
-
+import { getFullImageUrl } from "@/utils/imageService"
 export function OurRecommendation({ layout = 1
   
  }) {
@@ -159,11 +159,11 @@ export function OurRecommendation({ layout = 1
                   >
                     <div className=" rounded-2xl h-[426px] md:h-[446px] lg:w-[380px] ">
                       <div className="relative h-56 md:h-64 overflow-hidden">
-                        <img
-                          src={`${tour.image}` || "/placeholder.jpg"}
-                          alt={tour.product_title}
-                          className="w-full h-full object-cover rounded-xl"
-                        />
+                   <img
+   src={getFullImageUrl(tour?.image) || tour?.image || "/placeholder.jpg"}
+  alt={tour?.product_title}
+  className="w-full h-full object-cover rounded-xl"
+/>
                         <div className="absolute top-3 right-3 bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md">
                           <Star size={16} className="text-yellow-400 fill-yellow-400" />
                           <span className="font-semibold text-white text-sm">5.0</span>
@@ -266,8 +266,8 @@ export function OurRecommendation({ layout = 1
                   <div className="rounded-2xl overflow-hidden h-full flex flex-col bg-surface shadow-sm hover:shadow-md transition-shadow">
                     <div className="relative h-44 md:h-48">
                       <img
-                        src={`${tour.image}` || "/placeholder.jpg"}
-                        alt={tour.product_title}
+                        src={getFullImageUrl(tour?.image) || tour?.image || "/placeholder.jpg"}
+                        alt={tour?.product_title}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-3 right-3 bg-primary-foreground px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -389,8 +389,8 @@ export function OurRecommendation({ layout = 1
                   <div className="rounded-2xl overflow-hidden bg-surface shadow-lg">
                     <div className="relative h-56 md:h-64">
                       <img
-                        src={`${tour.image}` || "/placeholder.jpg"}
-                        alt={tour.product_title}
+                        src={getFullImageUrl(tour?.image) || tour?.image || "/placeholder.jpg"}
+                        alt={tour?.product_title}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-3 right-3 bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md">

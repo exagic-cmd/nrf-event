@@ -21,10 +21,13 @@ import TourDetailHead from "@/components/daytours/tour-detail/TourDetailHead.jsx
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import TourRoute from "@/components/daytours/tour-detail/TourRoute.jsx";
-import {ChevronDown, ChevronRight} from "lucide-react"
+import TourItinerary from "@/components/daytours/tour-detail/TourItinerary.jsx";
+import {ChevronDown, ChevronRight,Hotel,Eye,X,} from "lucide-react"
 import { useTranslation } from "next-i18next";
 import { useScrollToTop } from '@/hooks/use-scroll-top';
-import useCurrencyStore from "@/store/useCurrencyStore";
+import formatPrice from "@/lib/formatPrice";
+// Category constants
+const PACKAGE_TOUR_CATEGORY_ID = 8;
 
 export async function getServerSideProps(context) {
   const { productname, id: productid } = context.params;
@@ -34,24 +37,24 @@ export async function getServerSideProps(context) {
     en: 1,
     es: 6,
     ja: 5,
+    ko: 14, 'zh-CN': 4, ru: 16, de: 15
   };
   const languageId = languageMap[locale] || 1;
-  const currencyId = context.req?.cookies?.currency_id || context.query?.currency_id || 2;
   let initialBookedProductDetail = null;
   let initialTieredPricingData = {};
   let initialTourMapData = [];
   let notFound = false;
-const translations = await serverSideTranslations(locale, ["common", "daytour"]);
+const translations = await serverSideTranslations(locale, ["common", "daytour","virtualtour"]);
   if (productid) {
     try {
       const productData = await apiRequest({
-        endpoint: `product/${productid}/${languageId}?currency_id=${currencyId}`,
+        endpoint: `product/${productid}/${languageId}`,
         method: "GET",
       })
       initialBookedProductDetail = productData
 
       const tieredPricing = await apiRequest({
-        endpoint: `product_tiered_pricing/${productid}?currency_id=${currencyId}`,
+        endpoint: `product_tiered_pricing/${productid}`,
         method: "GET",
       })
       initialTieredPricingData = tieredPricing
@@ -85,16 +88,24 @@ const translations = await serverSideTranslations(locale, ["common", "daytour"])
       initialBookedProductDetail,
       initialTieredPricingData,
       initialTourMapData,
-      productname,
-      productid,
-      currencyId: Number(currencyId) || 2,
+       productname,
+        productid,
+       
     },
   }
 }
 
 const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingData, initialTourMapData , productname,
-  productid, currencyId = 2}) => {
+  productid}) => {
   const { t } = useTranslation("common", "daytour");
+  const [currencyData, setCurrencyData] = useState(null);
+
+  const parsePrice = (priceStr) => {
+    if (typeof priceStr === "number") return priceStr;
+    if (!priceStr) return 0;
+    const match = priceStr.toString().replace(/[^0-9.]/g, "");
+    return parseFloat(match) || 0;
+  };
   const { trackAffiliateRedirect } = useAffiliateStore()
   const { setSelectedVariant, setBookedProductDetail, setTieredPricingData, setTourMap } = useProductStore()
   const [bookedProductDetail, setLocalBookedProductDetail] = useState(initialBookedProductDetail)
@@ -112,7 +123,9 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
   const [showContent, setShowContent] = useState(!!initialBookedProductDetail?.data?.basicinfo)
   const [isNavigating, setIsNavigating] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
-
+  const [viewingHotels, setViewingHotels] = useState(null);
+  const [showAllHotels, setShowAllHotels] = useState(false);
+  const accommodationGroups = bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing || [];
   const [isLanguageLoading, setIsLanguageLoading] = useState(false)
   const [previousLocale, setPreviousLocale] = useState(router.locale)
 
@@ -121,9 +134,6 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
     es: 6,
     ja: 5,
   }
-
-  const storeCurrencyId = useCurrencyStore((state) => state.currencyId);
-  const [activeCurrencyId, setActiveCurrencyId] = useState(currencyId);
 
   const slugify = useCallback((text) => {
     if (!text) return "";
@@ -184,18 +194,18 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
     }
   }, [bookedProductDetail, router.isReady, router.query, localizedReplace, slugify]);
 
-  const fetchDataForLanguage = async (locale, productId, currId = activeCurrencyId) => {
+  const fetchDataForLanguage = async (locale, productId) => {
     const languageId = languageMap[locale] || 1
 
     try {
       setIsLanguageLoading(true)
       const [productData, tieredPricing, tourMapRes] = await Promise.all([
         apiRequest({
-          endpoint: `product/${productId}/${languageId}?currency_id=${currId}`,
+          endpoint: `product/${productId}/${languageId}`,
           method: "GET",
         }),
         apiRequest({
-          endpoint: `product_tiered_pricing/${productId}?currency_id=${currId}`,
+          endpoint: `product_tiered_pricing/${productId}`,
           method: "GET",
         }),
         apiRequest({
@@ -223,13 +233,6 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
   }
 
   useEffect(() => {
-    if (storeCurrencyId && storeCurrencyId !== activeCurrencyId && productid) {
-      setActiveCurrencyId(storeCurrencyId);
-      fetchDataForLanguage(router.locale, productid, storeCurrencyId);
-    }
-  }, [storeCurrencyId, activeCurrencyId, productid, router.locale]);
-
-  useEffect(() => {
 
     if (
       router.isReady &&
@@ -238,12 +241,12 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
       previousLocale !== null 
     ) {
       console.log(`Language changed from ${previousLocale} to ${router.locale}`)
-      fetchDataForLanguage(router.locale, productid, activeCurrencyId)
+      fetchDataForLanguage(router.locale, productid)
       setPreviousLocale(router.locale)
     } else if (router.isReady && previousLocale === null) {
       setPreviousLocale(router.locale)
     }
-  }, [router.locale, router.isReady, productid, previousLocale, activeCurrencyId])
+  }, [router.locale, router.isReady, productid, previousLocale])
 
   useEffect(() => {
     if (initialBookedProductDetail) {
@@ -330,8 +333,8 @@ useEffect(() => {
 
 
   const apiData = bookedProductDetail?.data?.basicinfo
-const startingPrice = apiData.starting_price || ""
-  
+  const itineraryData = apiData?.itinerary || bookedProductDetail?.data?.productitinerary || bookedProductDetail?.data?.product_itinerary || [];
+  const startingPrice = apiData.starting_price || ""
   if (!apiData) {
     return (
       <Layout>
@@ -349,7 +352,7 @@ const startingPrice = apiData.starting_price || ""
   if (isNavigating) {
     return (
       <Layout>
-        <div className="flex bg-surface-muted items-center justify-center min-h-screen">
+        <div className="flex bg-surface-secondary items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -359,7 +362,7 @@ const startingPrice = apiData.starting_price || ""
   if (!showContent || isLanguageLoading) {
     return (
       <Layout>
-        <div className="flex bg-surface-muted items-center justify-center min-h-screen">
+        <div className="flex bg-foreground items-center justify-center min-h-screen">
           <LoaderSvg height="120px" />
         </div>
       </Layout>
@@ -437,77 +440,199 @@ const handleVariantSelect = async (variant) => {
     openDrawer()
   }
 
+
+  const isPackageTour = Number(apiData?.category_id) === PACKAGE_TOUR_CATEGORY_ID;
+  const handleInquireNow = () => {
+    sessionStorage.setItem("fromDetail", "true")
+    localizedPush("/inquiry")
+  }
+
   return (
     <Layout>
     <TourDetailHead basicInfo={apiData} productname={productname} productid={productid} />
 
-      <div className="min-h-screen bg-surface-muted text-surface-foreground w-full pt-[80px] md:pt-10 pb-12">
+      <div className="min-h-screen bg-surface text-foreground w-full pt-[80px] md:pt-10 pb-12">
         <div className="relative overflow-hidden">
-          <div className="px-4 sm:px-6 lg:px-12 pt-12">
+          <div className="px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-8">
             <TourHeader apiData={apiData} />
    <TourHighlights apiData={apiData} fromOrderScreen={fromOrderScreen} />
   
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-              <div className="lg:col-span-3"> 
-                <ImageGallery
-                  apiData={apiData}
-                />
-              </div>
-              <div className="lg:col-span-1"> 
-                <TourInfoCard
-                  apiData={apiData}
-                  onScrollToOptions={scrollToTourOptions}
-                  onProceedBooking={handleProceedBooking}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-4 sm:px-6 lg:px-12 py-4 lg:pt-4">
+        <div className=" py-4 lg:pt-4">
        
-          {apiData?.category_id !== 2 && (
+
+         
+          {/* {!isPackageTour &&  (
             <TourRoute
               prod_id={productid}
               lang_id={languageMap[router.locale] || 1}
-              colortext="#fff"
-              colorheading="#000000"
+              colortext="#222"
+              colorheading="#ffff"
               fromOrderScreen={fromOrderScreen}
             />
-          )}
-          <TourAccordion apiData={apiData} />
+          )} */}
+          
+         
+          
         </div>
+     
+            <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-8">
+              <ImageGallery
+                apiData={apiData}
+                currentImageIndex={currentImageIndex}
+                setCurrentImageIndex={setCurrentImageIndex}
+              />
+
+              <TourInfoCard
+                apiData={apiData}
+                onScrollToOptions={scrollToTourOptions}
+                onProceedBooking={handleProceedBooking}
+                isPackageTour={isPackageTour}
+                onInquireNow={handleInquireNow}
+              />
+            </div>
+               {isPackageTour && (
+            <>
+              {apiData?.product_description?.long_desc && (
+                <div className="my-10">
+                  <h2 className="text-xl font-semi-bold mb-4 text-primary">
+                    {t("daytour:tourDetail.tourDescription", "Tour Description")}
+                  </h2>
+                  <div 
+                    className="text-gray-300 leading-relaxed prose prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: apiData.product_description.long_desc }} 
+                  />
+                </div>
+              )}
+              <TourItinerary itineraryData={itineraryData} />
+            </>
+          )}
+             <TourAccordion apiData={apiData} />
+          </div>
+        </div>
+
+    {!fromOrderScreen && (
+      <>
+     <div className="md:hidden block mb-6">
+       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+         {isPackageTour && (
+           <>
+             <div className="p-4 border-b bg-gray-50">
+               <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                 <Hotel size={18} className="text-[#CC9A55]" />
+                 {t("packageOptions")}
+               </h3>
+             </div>
+
+             {/* Mobile Stacked Cards */}
+             <div className="divide-y divide-gray-100">
+               {accommodationGroups.map((group) => (
+                 <div key={group.group_id} className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-gray-900">{group.name}</span>
+                      <div className="flex flex-col text-right">
+                        <span className="text-[#CC9A55] font-bold">
+                          {apiData?.currency} {group.b2c_tiers?.[0]?.adult_sharing || "N/A"}
+                        </span>
+                        {currencyData && currencyData.exchange_rate !== 1 && group.b2c_tiers?.[0]?.adult_sharing && (
+                          <span className="text-[10px] text-gray-500 font-medium mt-0.5">
+                            Est. {formatPrice(group.b2c_tiers?.[0]?.adult_sharing * currencyData.exchange_rate)} {currencyData.currency}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                   <div className="flex justify-between items-center text-xs">
+                     <span className="text-gray-500">{t("hotelSelection", "Hotel Selection")}: {group.allow_hotel_selection ? t("yes") : t("no")}</span>
+                     <button 
+                       onClick={() => { setViewingHotels(group); setShowAllHotels(false); }}
+                       className="text-[#CC9A55] font-bold flex items-center gap-1"
+                     >
+                       <Eye size={14} /> {t("viewHotels", "View Hotels")}
+                     </button>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </>
+         )}
+
+         <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 border-t border-orange-200">
+           <div className="text-center">
+             {!isPackageTour && (
+               <>
+                 <div className="text-sm text-gray-600">
+                   {t("starting_from", "Starting From")}
+                 </div>
+                  <div className="my-2 flex flex-col items-center">
+                    <span className="text-2xl font-bold text-gray-900">
+                      {apiData?.currency} {startingPrice}
+                    </span>
+                    {currencyData && currencyData.exchange_rate !== 1 && (
+                      <span className="text-sm text-gray-500 font-medium mt-0.5">
+                        Est. {formatPrice(displayPrice * currencyData.exchange_rate)} {currencyData.currency}
+                      </span>
+                    )}
+                  </div>
+               </>
+             )}
+
+             {apiData?.is_group && !isPackageTour ? (
+               <button
+                 onClick={scrollToTourOptions}
+                 className="w-full bg-[#CC9A55] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+               >
+                 {t("choose_tour_type", "Choose your Type")}
+                 <ChevronDown size={20} />
+               </button>
+             ) : (
+               <button
+                 onClick={handleProceedBooking}
+                 className="w-full bg-[#CC9A55] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+               >
+                 {t("proceedBooking")}
+                 <ChevronRight size={20} />
+               </button>
+             )}
+           </div>
+         </div>
+       </div>
+
+       {/* Hotel Selection Modal */}
+       {viewingHotels && (
+         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-secondary/60 backdrop-blur-sm">
+           <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
+             <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+               <h4 className="font-bold text-gray-900">{viewingHotels.name} - {t("hotelList", "Hotels")}</h4>
+               <button onClick={() => setViewingHotels(null)} className="p-1 hover:bg-gray-200 rounded-full transition-colors">
+                 <X size={20} className="text-gray-500" />
+               </button>
+             </div>
+             <div className="p-4 overflow-y-auto space-y-3">
+               {(showAllHotels ? viewingHotels.hotels : viewingHotels.hotels?.slice(0, 4))?.map((hotel, idx) => (
+                 <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                   <div className="bg-orange-100 p-2 rounded-lg"><Hotel size={16} className="text-[#CC9A55]" /></div>
+                   <span className="text-sm font-medium text-gray-800">{hotel.title || hotel}</span>
+                 </div>
+               ))}
+               {viewingHotels.hotels?.length > 4 && !showAllHotels && (
+                 <button 
+                   onClick={() => setShowAllHotels(true)}
+                   className="w-full py-2 text-sm font-bold text-[#CC9A55] hover:bg-orange-50 rounded-xl border-2 border-dashed border-orange-200 transition-colors"
+                 >
+                   {t("loadMore", "Load More Hotels")} ({viewingHotels.hotels.length - 4})
+                 </button>
+               )}
+             </div>
+           </div>
+         </div>
+       )}
+     </div>
+
+      </>
+ )}
 
         {apiData?.is_group && (
           <TourVariants ref={tourOptionsRef} groupProducts={groupProducts} onVariantSelect={handleVariantSelect} />
         )}
- {!fromOrderScreen && (
-       <div className=" md:hidden block mx-8 my-12 bg-surface p-4 rounded-xl border border-red-200 ">
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground">{t("starting_from","Starting From")}</div>
-          <div className="my-2">
-            <span className="text-2xl font-bold text-foreground">{apiData?.currency} {startingPrice}</span>
-          </div>
-          {apiData?.is_group ? (
-            <button
-              onClick={scrollToTourOptions}
-              className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              {t("choose_tour_type","Choose your Type")}
-              <ChevronDown size={20} />
-            </button>
-          ) : (
-            <button
-              onClick={handleProceedBooking}
-              className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              {t("proceed_booking","Proceed Booking")}
-              <ChevronRight size={20} />
-            </button>
-          )}
-        </div>
-      </div>
- )}
 
        <CompareSection
         currentProduct={apiData}

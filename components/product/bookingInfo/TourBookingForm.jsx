@@ -1,24 +1,24 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef,useMemo } from "react"
 import useBookingStore from "@/store/userBookingStore"
 import { useRouter } from "next/router"
 import { useProductStore } from "@/store/useProductStore"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import AsyncSelect from "react-select/async"
-import Select from "react-select"
 import PassengerModal from "@/components/product/ProductInfo/PassengerModal"
-import { Users, Hotel, CalendarDays, Clock, Tag, MapPin } from "lucide-react"
+import { Users, Hotel, CalendarDays, Clock, Tag, MapPin, Package } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "next-i18next";
+import BookingPriceTable from "@/components/product/bookingInfo/BookingPriceTable";
 
-const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {}, isBookingAdded = false, categoryId, pickupGroupList = [], dropoffPointGroupList = [] }) => {
+const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {}, isPackageTour = false }) => {
   const router = useRouter()
   const { t } = useTranslation("daytour");
   const { id: productId } = router.query
-  const { tieredPricingData } = useProductStore()
+  const { tieredPricingData, bookedProductDetail } = useProductStore()
   const [pickupTimesByDate, setPickupTimesByDate] = useState({});
   const pricingList = tieredPricingData?.tieredPricing?.data?.product_pricing || []
   const minPax = pricingList.length > 0 ? Math.min(...pricingList.map((p) => Number(p.min_pax))) : 1
@@ -28,27 +28,26 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
   adults: typeof value.adults === "number" && value.adults >= minPax ? value.adults : minPax,
   child: value.child ?? 0,
   hotel: value.hotel ?? "",
-  pickupPoint: value.pickupPoint ?? "",
-  dropoffPoint: value.dropoffPoint ?? "",
   time: value.time ?? "",
   date: value.date ?? "",
-  pickupTime: value.pickupTime ?? "",
+  twin_sharing: value.twin_sharing ?? 0,
+  single_sharing: value.single_sharing ?? 0,
+  child_with_bed: value.child_with_bed ?? 0,
+  child_without_bed: value.child_without_bed ?? 0,
+  accommodation_group_id: value.accommodation_group_id ?? "",
+  group_hotel_id: value.group_hotel_id ?? "",
 })
 
 
   const [availableDates, setAvailableDates] = useState([])
   const [availableDateStrings, setAvailableDateStrings] = useState(new Set())
   const [availableTimes, setAvailableTimes] = useState([])
-  
   const [loadingDates, setLoadingDates] = useState(false)
   const [loadingTimes, setLoadingTimes] = useState(false)
-  const [adultsError, setAdultsError] = useState("")
-  const [childError, setChildError] = useState("")
   const [errorDates, setErrorDates] = useState("")
   const [errorTimes, setErrorTimes] = useState("")
   const [showPassengerModal, setShowPassengerModal] = useState(false)
   const [formBeforeModal, setFormBeforeModal] = useState(null)
-  const [minSelectableDate, setMinSelectableDate] = useState(null)
 
   const {
     fetchPickupPointCity,
@@ -59,63 +58,67 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
     searchPickupPoints,
   } = useBookingStore()
 
- // const hasAdjustedDateRef = useRef(false);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
 
-useEffect(() => {
-  let initialDate = value.date ?? "";
-
-  // Pre-fill dropoff point if only one exists
-  let initialDropoffPoint = value.dropoffPoint ?? "";
-  if (categoryId === 2 && dropoffPointGroupList?.length === 1 && !initialDropoffPoint) {
-    initialDropoffPoint = dropoffPointGroupList[0].dropoff_point_name;
-  }
-
+  useEffect(() => {
+  // Initialize form state from props
   setForm(prev => {
-    const prevDateStr = prev.date;
+    // Prevent unnecessary updates if values are the same
     if (
       prev.adults === (typeof value.adults === "number" && value.adults >= minPax ? value.adults : minPax) &&
       prev.child === (value.child ?? 0) &&
       prev.hotel === (value.hotel ?? "") &&
-      prev.pickupPoint === (value.pickupPoint ?? "") &&
-      prev.dropoffPoint === initialDropoffPoint &&
       prev.time === (value.time ?? "") &&
-      prev.pickupTime === (value.pickupTime ?? "") &&
-      prevDateStr === initialDate
+      prev.date === (value.date ?? "") &&
+      prev.twin_sharing === (value.twin_sharing ?? 0) &&
+      prev.single_sharing === (value.single_sharing ?? 0) &&
+      prev.child_with_bed === (value.child_with_bed ?? 0) &&
+      prev.child_without_bed === (value.child_without_bed ?? 0) &&
+      prev.accommodation_group_id === (value.accommodation_group_id ?? "") &&
+      prev.group_hotel_id === (value.group_hotel_id ?? "")
     ) {
       return prev;
     }
+
+    const initialTwin = value.twin_sharing ?? 0;
+    const initialSingle = value.single_sharing ?? 0;
+    const initialCWB = value.child_with_bed ?? 0;
+    const initialCWOB = value.child_without_bed ?? 0;
+    const currentTotal = initialTwin + initialSingle + initialCWB + initialCWOB;
 
     return {
       adults: typeof value.adults === "number" && value.adults >= minPax ? value.adults : minPax,
       child: value.child ?? 0,
       hotel: value.hotel ?? "",
-      pickupPoint: value.pickupPoint ?? "",
-      dropoffPoint: initialDropoffPoint,
       time: value.time ?? "",
-      date: initialDate,
-      pickupTime: value.pickupTime ?? "",
+      date: value.date ?? "",
+      twin_sharing: isPackageTour && currentTotal === 0 ? minPax : initialTwin,
+      single_sharing: value.single_sharing ?? 0,
+      child_with_bed: value.child_with_bed ?? 0,
+      child_without_bed: value.child_without_bed ?? 0,
+      accommodation_group_id: value.accommodation_group_id ?? "",
+      group_hotel_id: value.group_hotel_id ?? "",
     };
   });
-}, [
-  value.date,
-  value.adults,
-  value.child,
-  value.hotel,
-  value.pickupPoint,
-  value.dropoffPoint,
-  value.time,
-  value.pickupTime,
-  minPax,
-  categoryId,
-  dropoffPointGroupList,
-]);
+}, [value, minPax, isPackageTour]); // Depend on the entire 'value' prop, minPax and tour type
 
 useEffect(() => {
-  const requiredField = categoryId === 2 ? form.pickupPoint : form.hotel;
-  if (!productId || !requiredField) return;
+  if (!productId) return;
+  if (!isPackageTour && !form.hotel) return;
+  
+  // Requirement 4: Conditional Logic for Package Tours
+  if (isPackageTour) {
+    if (!form.accommodation_group_id) return;
+    const selectedGroup = bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.find(g => String(g.group_id) === String(form.accommodation_group_id));
+    if (selectedGroup?.allow_hotel_selection && !form.group_hotel_id) return;
+  }
 
   setLoadingDates(true);
-  fetchAvailableDates(productId, form.adults, form.child)
+  fetchAvailableDates(productId, form.adults, form.child, form.accommodation_group_id, form.group_hotel_id)
     .then((availabilityData) => {
       const validDates = [];
       const dateMap = {};
@@ -133,33 +136,19 @@ useEffect(() => {
       };
 
       for (const entry of availabilityData) {
-   if (entry.available) {
-  validDates.push(entry.date);
-
-  let finalTimes = [];
-  if (entry.pickup_time && entry.pickup_time.length > 0) {
-    const parsedTimes = entry.pickup_time.map(t => deepParseJson(t)).flat(Infinity);
-    finalTimes = parsedTimes
-      .filter(item => typeof item === 'string' && item.trim() !== '')
-      .map(timeStr => {
-        if (!timeStr) return null;
-        const isPM = /pm/i.test(timeStr);
-        const isAM = /am/i.test(timeStr);
-        let [hours, minutes] = timeStr.replace(/am|pm/i, '').trim().split(':');
-        hours = parseInt(hours, 10);
-        minutes = parseInt(minutes, 10) || 0;
-
-        if (isNaN(hours) || isNaN(minutes)) return null;
-
-        if (isPM && hours < 12) hours += 12;
-        if (isAM && hours === 12) hours = 0; // Midnight case: 12 AM is 00:00
-
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-      }).filter(Boolean);
-  }
-  dateMap[entry.date] = finalTimes;
-}
-
+        if (entry.available) {
+          const entryDate = new Date(entry.date + "T00:00:00");
+          // Only include dates that are today or in the future
+          if (entryDate >= today) {
+            validDates.push(entry.date);
+          let finalTimes = [];
+          if (entry.pickup_time && entry.pickup_time.length > 0) {
+            const parsedTimes = entry.pickup_time.map(t => deepParseJson(t)).flat(Infinity);
+            finalTimes = parsedTimes.filter(item => typeof item === 'string' && item.trim() !== '');
+          }
+          dateMap[entry.date] = finalTimes;
+          }
+        }
       }
 
       setAvailableDates(validDates.map(d => new Date(d + "T00:00:00")));
@@ -167,36 +156,32 @@ useEffect(() => {
       setPickupTimesByDate(dateMap);
       setForm((prev) => {
         const updated = { ...prev };
-        if (!prev.date || isNaN(new Date(prev.date).getTime())) {
+
+        const dateStr = updated.date instanceof Date 
+           ? updated.date.getFullYear() + "-" + String(updated.date.getMonth() + 1).padStart(2, "0") + "-" + String(updated.date.getDate()).padStart(2, "0")
+           : updated.date;
+
+        // Only prefill or keep the date if it lies within the available dates fetched from API and is not in the past
+        if (!validDates.includes(dateStr) || !updated.date || isNaN(new Date(updated.date).getTime())) {
           updated.date = null;
           updated.time = "";
-          updated.pickupTime = "";
         }
 
         // Auto-select time if available for the selected date
         if (updated.date) {
-           const dateStr = updated.date instanceof Date 
+           const finalDateStr = updated.date instanceof Date 
               ? updated.date.getFullYear() + "-" + String(updated.date.getMonth() + 1).padStart(2, "0") + "-" + String(updated.date.getDate()).padStart(2, "0")
               : updated.date;
            
-           const times = dateMap[dateStr] || [];
+           const times = dateMap[finalDateStr] || [];
            
            if (times.length > 0) {
               // If current time is invalid or empty, select the first available time
-              if (categoryId !== 2) {
-                // For regular tours, auto-select time
-                if (!updated.time || !times.includes(updated.time)) {
-                   updated.time = times[0];
-                }
-              } else {
-                // For category 2 (shuttle), auto-select pickupTime
-                if (!updated.pickupTime || !times.includes(updated.pickupTime)) {
-                   updated.pickupTime = times[0];
-                }
+              if (!updated.time || !times.includes(updated.time)) {
+                 updated.time = times[0];
               }
            } else {
               updated.time = "";
-              updated.pickupTime = "";
            }
         }
 
@@ -213,9 +198,8 @@ useEffect(() => {
       setErrorDates(t("bookingForm.failedToLoadDates"));
       setLoadingDates(false);
     });
-}, [productId, form.adults, form.child, form.hotel, form.pickupPoint, minSelectableDate, categoryId]);
-
-  useEffect(() => {
+}, [productId, form.adults, form.child, form.hotel, isPackageTour, today, form.accommodation_group_id, form.group_hotel_id, tieredPricingData, bookedProductDetail]);
+    useEffect(() => {
     if (!productId) return
     fetchPickupPointCity(productId)
   }, [productId])
@@ -225,114 +209,6 @@ useEffect(() => {
       onHotelsAvailable(Array.isArray(pickupPoints) && pickupPoints.length > 0)
     }
   }, [pickupPoints, onHotelsAvailable])
-
-  // Validate pre-filled hotel/pickup point against available pickup points
-  useEffect(() => {
-    if (!productId || !pickupPoints || pickupPoints.length === 0) return;
-
-    if (categoryId === 2) {
-      // For category 2 (shuttle), validate pickup point
-      if (form.pickupPoint) {
-        const pickupExists = pickupGroupList.some(point => point.pickup_point_name === form.pickupPoint);
-        if (!pickupExists) {
-          setForm(prev => ({ ...prev, pickupPoint: "" }));
-          onChange && onChange({ ...form, pickupPoint: "", date: "", pickupTime: "" });
-        }
-      }
-    } else {
-      // For other categories, validate hotel
-      if (form.hotel) {
-        const hotelExists = pickupPoints.some(point => point.name === form.hotel);
-        if (!hotelExists) {
-          setForm(prev => ({ ...prev, hotel: "" }));
-          onChange && onChange({ ...form, hotel: "", date: "", time: "" });
-        }
-      }
-    }
-  }, [pickupPoints, productId, categoryId, pickupGroupList]);
-useEffect(() => {
-  if (
-    categoryId === 2 &&
-    dropoffPointGroupList?.length === 1 &&
-    !form.dropoffPoint
-  ) {
-    const autoDropoff = dropoffPointGroupList[0].dropoff_point_name;
-
-    setForm(prev => {
-      const updated = { ...prev, dropoffPoint: autoDropoff };
-      onChange && onChange(updated);
-      return updated;
-    });
-  }
-}, [categoryId, dropoffPointGroupList]);
-
-// Auto-select first available time when date is selected
-useEffect(() => {
-  if (!form.date) {
-    setForm(prev => {
-      const fieldToClear = categoryId === 2 ? 'pickupTime' : 'time';
-      if (prev[fieldToClear] !== "") {
-        const updated = { ...prev, [fieldToClear]: "" };
-        onChange && onChange(updated);
-        return updated;
-      }
-      return prev;
-    });
-    return;
-  }
-
-  const dateStr = form.date instanceof Date 
-    ? form.date.getFullYear() + "-" + String(form.date.getMonth() + 1).padStart(2, "0") + "-" + String(form.date.getDate()).padStart(2, "0")
-    : form.date;
-
-  const baseAPITimes = pickupTimesByDate[dateStr] || [];
-
-  if (baseAPITimes.length > 0) {
-    if (categoryId === 2) {
-      if (!form.pickupPoint) return; 
-
-      const selectedPickupPoint = pickupGroupList?.find(p => p.pickup_point_name === form.pickupPoint);
-      const pickupAdditionalTime = selectedPickupPoint?.additional_time || 0;
-      
-      const baseTime = baseAPITimes[0];
-      const [hours, minutes] = baseTime.split(':').map(Number);
-      const totalMinutes = hours * 60 + minutes + pickupAdditionalTime;
-      const adjustedHours = Math.floor(totalMinutes / 60) % 24;
-      const adjustedMinutes = totalMinutes % 60;
-      const newTime = `${String(adjustedHours).padStart(2, '0')}:${String(adjustedMinutes).padStart(2, '0')}`;
-      
-      setForm(prev => {
-        if (prev.pickupTime !== newTime) {
-          const updated = { ...prev, pickupTime: newTime };
-          onChange && onChange(updated);
-          return updated;
-        }
-        return prev;
-      });
-
-    } else {
-      const newTime = baseAPITimes[0];
-      setForm(prev => {
-        if (prev.time !== newTime) {
-          const updated = { ...prev, time: newTime };
-          onChange && onChange(updated);
-          return updated;
-        }
-        return prev;
-      });
-    }
-  } else {
-    setForm(prev => {
-      const fieldToClear = categoryId === 2 ? 'pickupTime' : 'time';
-      if (prev[fieldToClear] !== "") {
-        const updated = { ...prev, [fieldToClear]: "" };
-        onChange && onChange(updated);
-        return updated;
-      }
-      return prev;
-    });
-  }
-}, [form.date, form.pickupPoint, pickupTimesByDate, categoryId, pickupGroupList]);
 
   // for edit
  // Removed redundant useEffect that was causing conflicts with the main initialization effect
@@ -350,14 +226,25 @@ useEffect(() => {
     setShowPassengerModal(false)
   }
 
-  const handlePassengerApply = (newAdults, newChild) => {
+  const handlePassengerApply = (newPaxData) => {
     setShowPassengerModal(false)
-    const updatedForm = { ...form, adults: newAdults, child: newChild }
+    let updatedForm;
+    if (isPackageTour) {
+       updatedForm = { ...form, ...newPaxData };
+    } else {
+       updatedForm = { ...form, adults: newPaxData.adults, child: newPaxData.child }
+    }
+    
     setForm(updatedForm)
-    const totalPax = newAdults + newChild
-    if (totalPax < minPax) return
+    
+    const totalPaxCount = isPackageTour 
+      ? (Number(updatedForm.twin_sharing) || 0) + (Number(updatedForm.single_sharing) || 0) + (Number(updatedForm.child_with_bed) || 0) + (Number(updatedForm.child_without_bed) || 0) 
+      : (Number(updatedForm.adults) || 0) + (Number(updatedForm.child) || 0);
 
-   setLoadingDates(true)
+    if (totalPaxCount >= minPax) {
+      onChange && onChange({ ...updatedForm, availableTimes: [] });
+      setLoadingDates(true);
+    }
   }
 
   const handleChange = (field, value) => {
@@ -368,9 +255,34 @@ useEffect(() => {
       const day = String(value.getDate()).padStart(2, "0")
       newValue = `${year}-${month}-${day}`
     }
-    const updated = { ...form, [field]: newValue }
+    
+    // Requirement 6: Disable hotel selection until group is selected
+    if (field === "accommodation_group_id") {
+      const updatedForm = { ...form, accommodation_group_id: newValue, group_hotel_id: "" };
+      setForm(updatedForm);
+      onChange && onChange(updatedForm);
+      return;
+    }
+
+    let updated = { ...form, [field]: newValue }
+
+    if (field === "date") {
+      const times = pickupTimesByDate[newValue] || []
+      if (times.length > 0) {
+       if (!updated.time || !times.includes(updated.time)) {
+          updated.time = times[0]
+        }
+      } else {
+        updated.time = ""
+      }
+    }
+
     setForm(updated)
-    if (updated.adults + updated.child >= minPax) {
+    const currentTotalPax = isPackageTour 
+      ? (Number(updated.twin_sharing) || 0) + (Number(updated.single_sharing) || 0) + (Number(updated.child_with_bed) || 0) + (Number(updated.child_without_bed) || 0)
+      : (Number(updated.adults) || 0) + (Number(updated.child) || 0);
+
+    if (currentTotalPax >= minPax) {
       onChange && onChange({ ...updated, availableTimes })
     } else {
       console.warn(t("bookingForm.totalPax") + " " + minPax)
@@ -379,8 +291,8 @@ useEffect(() => {
 
   const loadPickupPoints = (inputValue, callback) => {
     if (!inputValue) {
-      callback([]); // Do not show options on focus, only on search
-      return
+      callback(pickupPoints.map(p => ({ label: p.name, value: p.name })));
+      return;
     }
     searchPickupPoints(productId, inputValue).then(results => {
       const formattedResults = results.map(p => ({ label: p.name, value: p.name }));
@@ -390,7 +302,7 @@ useEffect(() => {
 
   const CustomInput = React.forwardRef(({ value, onClick, className, placeholder }, ref) => (
     <div
-      className={`${className} w-full cursor-pointer border border-border text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-left bg-surface hover:border-primary transition-colors h-12`}
+      className={`${className} w-full cursor-pointer border border-border text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-left bg-background hover:border-primary transition-colors h-12`}
       onClick={onClick}
       ref={ref}
     >
@@ -398,30 +310,89 @@ useEffect(() => {
     </div>
   ))
 
-  const totalPax = form.adults + form.child
+  const displayTotalPax = isPackageTour
+    ? (Number(form.twin_sharing) || 0) + (Number(form.single_sharing) || 0) + (Number(form.child_with_bed) || 0) + (Number(form.child_without_bed) || 0)
+    : (Number(form.adults) || 0) + (Number(form.child) || 0);
+
+  const selectedGroupData = isPackageTour 
+    ? bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.find(g => String(g.group_id) === String(form.accommodation_group_id)) 
+    : null;
 
   return (
     <>
       {/* Main Form Card */}
       <Card className="">
         <CardContent className="p-6 space-y-6">
-          {/* Passenger Count */}
+          {/* Requirement 3: Package Group & Hotel Selection */}
+          {isPackageTour && bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.length > 0 && (
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="flex font-medium text-sm text-foreground items-center gap-2">
+                  <Package className="w-4 h-4 text-primary" />
+                  {t("selectPackageGroup", "Select Package Group")} <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={form.accommodation_group_id}
+                  onChange={(e) => handleChange("accommodation_group_id", e.target.value)}
+                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary h-12 bg-background text-foreground"
+                >
+                  <option value="">{t("chooseGroup", "Choose a group")}</option>
+                  {bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.map(g => (
+                    <option key={g.group_id} value={g.group_id}>{g.name}</option>
+                  ))}
+                </select>
+                {errors.accommodation_group_id && <div className="text-sm text-red-500">{t("groupError", "Please select a group")}</div>}
+              </div>
+
+              {selectedGroupData?.allow_hotel_selection && (
+                <div className="space-y-3 animate-in fade-in slide-in-from-top-1">
+                  <label className="flex font-medium text-sm text-foreground items-center gap-2">
+                    <Hotel className="w-4 h-4 text-primary" />
+                    {t("selectPreferredHotel", "Select Preferred Hotel")} <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={form.group_hotel_id}
+                    onChange={(e) => handleChange("group_hotel_id", e.target.value)}
+                    className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary h-12 bg-background text-foreground"
+                  >
+                    <option value="">{t("chooseHotel", "Choose a hotel")}</option>
+                    {selectedGroupData.hotels?.map((h, i) => (
+                      <option key={i} value={h.id || h}>{h.title || h}</option>
+                    ))}
+                  </select>
+                  {errors.group_hotel_id && <div className="text-sm text-red-500">{t("hotelError", "Please select a hotel")}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 2. Pricing Table (Tier Pricing) */}
+          {(!isPackageTour || (isPackageTour && form.accommodation_group_id)) && (
+            <BookingPriceTable id={productId} accommodation_group_id={form.accommodation_group_id} />
+          )}
+
+          {/* Passenger Count (Pax) */}
           <div className="space-y-3">
-            <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+            <label className="flex font-medium text-sm text-foreground items-center gap-2">
               <Users className="w-4 h-4 text-primary" />
-              {categoryId === 2 ? (t("totalPax","Total Pax") || "Total Pax") : t("bookingForm.totalPax")} <span className="text-destructive">*</span>
+              {t("bookingForm.totalPax")} <span className="text-red-500">*</span>
             </label>
             <button
               type="button"
-              className="w-full border border-border rounded-lg px-4 py-3 text-left flex justify-between items-center bg-surface hover:border-primary transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-border rounded-lg px-4 py-3 text-left flex justify-between items-center bg-background hover:bg-muted hover:border-primary transition-colors h-12 focus:outline-none focus:ring-2 focus:ring-primary"
               onClick={handleOpenPassengerModal}
-              disabled={isBookingAdded}
             >
               <span className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-muted-foreground">
-                  {categoryId === 2 ? (
-                    `${form.adults || 0} ${t("Pax") || "Pax"}`
+                <span className="text-sm font-medium text-foreground">
+                  {isPackageTour ? (
+                    <span className="text-xs">
+                      {form.twin_sharing > 0 && `${form.twin_sharing} ${t("twinSharingAbbr", "Ad Sh")}, `}
+                      {form.single_sharing > 0 && `${form.single_sharing} ${t("singleSharingAbbr", "Ad Pr")}, `}
+                      {form.child_with_bed > 0 && `${form.child_with_bed} ${t("childWithBedAbbr", "Ch w/B")}, `}
+                      {form.child_without_bed > 0 && `${form.child_without_bed} ${t("childWithoutBedAbbr", "Ch w/o B")}`}
+                      {form.twin_sharing === 0 && form.single_sharing === 0 && form.child_with_bed === 0 && form.child_without_bed === 0 && t('selectParticipants')}
+                    </span>
                   ) : (
                     <>
                       {form.adults || 0} {form.adults === 1 ? t("bookingForm.adults") : t("bookingForm.adults_plural")}, {" "}
@@ -430,13 +401,13 @@ useEffect(() => {
                   )}
                 </span>
               </span>
-              <Badge variant="secondary" className="bg-primary text-primary-foreground hover:opacity-90 ">
-                {totalPax} {t("bookingForm.total")}
+              <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                {displayTotalPax} {t("bookingForm.total")}
               </Badge>
             </button>
           </div>
 
-          {/* Modal */}
+          {/* Passenger Modal */}
           <PassengerModal
             open={showPassengerModal}
             adults={form.adults}
@@ -444,22 +415,26 @@ useEffect(() => {
             minPax={minPax}
             maxPax={maxPax}
             pricingList={tieredPricingData?.tieredPricing?.data?.product_pricing || []}
-            adultsError={adultsError}
-            childError={childError}
             onClose={handleCancelPassengerModal}
             onApply={handlePassengerApply}
-            categoryId={categoryId}
+            isPackageTour={isPackageTour}
+            packageData={{
+              twin_sharing: form.twin_sharing,
+              single_sharing: form.single_sharing,
+              child_with_bed: form.child_with_bed,
+              child_without_bed: form.child_without_bed
+            }}
           />
 
-          {/* Hotel / Pickup Point */}
-          {categoryId !== 2 && (
+          {/* Hotel Selection (For non-package tours) */}
+          {!isPackageTour && (
             <div className="space-y-3 ">
-              <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+              <label className="flex font-medium text-sm text-foreground items-center gap-2">
                 <Hotel className="w-4 h-4 text-primary" />
-                {t("bookingForm.selectHotel")} <span className="text-destructive">*</span>
+                {t("bookingForm.selectHotel")} <span className="text-red-500">*</span>
               </label>
               <SelectField
-                required
+                className=""
                 value={form.hotel ? { label: form.hotel, value: form.hotel } : null}
                 onChange={(selected) => {
                   handleChange("hotel", selected ? selected.value : "")
@@ -469,184 +444,66 @@ useEffect(() => {
                 loading={loadingPickup}
                 error={errorPickup}
                 t={t}
-                isDisabled={isBookingAdded}
               />
-              {errors.hotel && <div className="text-sm text-destructive mt-1">{t(errors.hotel)}</div>}
-            </div>
-          )}
-
-          {/* Pickup Point - Category 2 Only */}
-          {categoryId === 2 && (
-            <div className="space-y-3 ">
-              <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
-                {t("Select Pickup Point") || "Select Pickup Point"} <span className="text-destructive">*</span>
-              </label>
-              <StaticSelectField
-                value={form.pickupPoint ? { label: form.pickupPoint, value: form.pickupPoint } : null}
-                onChange={(selected) => {
-                  handleChange("pickupPoint", selected ? selected.value : "")
-                }}
-                options={pickupGroupList?.map(p => ({ label: p.pickup_point_name, value: p.pickup_point_name })) || []}
-                isDisabled={isBookingAdded}
-                placeholder={t("Select Pickup Point") || "Select Pickup Point"}
-              />
-              {errors.pickupPoint && <div className="text-sm text-destructive mt-1">{t(errors.pickupPoint)}</div>}
-            </div>
-          )}
-
-          {/* Drop-off Point - Category 2 Only */}
-          {categoryId === 2 && (
-            <div className="space-y-3 ">
-              <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
-                {t("Select Drop-off Point") || "Select Drop-off Point"}
-              </label>
-              <StaticSelectField
-                value={form.dropoffPoint ? { label: form.dropoffPoint, value: form.dropoffPoint } : null}
-                onChange={(selected) => {
-                  if (dropoffPointGroupList?.length > 1) {
-                    handleChange("dropoffPoint", selected ? selected.value : "")
-                  }
-                }}
-                options={dropoffPointGroupList?.map(p => ({ label: p.dropoff_point_name, value: p.dropoff_point_name })) || []}
-                isDisabled={isBookingAdded || dropoffPointGroupList?.length === 1}
-                placeholder={t("Select Drop-off Point") || "Select Drop-off Point"}
-              />
-              {dropoffPointGroupList?.length === 1 && (
-                <p className="text-sm text-muted-foreground">{t("onlyOneOption") || "Only one option available"}</p>
-              )}
+              {errors.hotel && <div className="text-sm text-red-500 mt-1">{t(errors.hotel)}</div>}
             </div>
           )}
 
           {/* Date */}
           <div className="space-y-3">
-            <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+            <label className="flex font-medium text-sm text-foreground items-center gap-2">
               <CalendarDays className="w-4 h-4 text-primary" />
-              {t("bookingForm.selectDate")} <span className="text-destructive">*</span>
+              {t("bookingForm.selectDate")} <span className="text-red-500">*</span>
             </label>
-          <DatePicker
-  selected={
-    form.date && !isNaN(new Date(form.date + "T00:00:00").getTime())
-      ? new Date(form.date + "T00:00:00")
-      : null
-  }
-  onChange={(date) => handleChange("date", date)}
-  dateFormat="yyyy-MM-dd"
-  popperPlacement="bottom-start"
-  placeholderText={t("bookingForm.selectDate")}
-
-  /* 🔥 ADD THIS */
-  filterDate={(date) => {
-    const dateStr =
-      date.getFullYear() +
-      "-" +
-      String(date.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(date.getDate()).padStart(2, "0");
-    return availableDateStrings.has(dateStr);
-  }}
-
-  dayClassName={(date) => {
-    const localDateStr =
-      date.getFullYear() +
-      "-" +
-      String(date.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(date.getDate()).padStart(2, "0");
-    return availableDateStrings.has(localDateStr)
-      ? "bg-muted text-muted-foreground hover:bg-primary"
-      : "text-muted-foreground cursor-not-allowed";
-  }}
-  customInput={React.createElement(CustomInput, { className: "w-full" })}
-  wrapperClassName="w-full"
-  disabled={isBookingAdded}
-/>
-
+            <DatePicker
+              selected={
+                form.date && !isNaN(new Date(form.date + "T00:00:00").getTime())
+                  ? new Date(form.date + "T00:00:00")
+                  : null
+              }
+              onChange={(date) => handleChange("date", date)}
+              dateFormat="yyyy-MM-dd"
+               popperPlacement="bottom-start"
+              placeholderText={t("bookingForm.selectDate")}
+              includeDates={availableDates}
+              minDate={today}
+              dayClassName={(date) => {
+                const localDateStr =
+                  date.getFullYear() +
+                  "-" +
+                  String(date.getMonth() + 1).padStart(2, "0") +
+                  "-" +
+                  String(date.getDate()).padStart(2, "0")
+                return availableDateStrings.has(localDateStr) ? "bg-primary/15 text-foreground hover:bg-primary hover:text-primary-foreground" : ""
+              }}
+              customInput={<CustomInput className="w-full" />}
+              wrapperClassName="w-full"
+            />
             {loadingDates && (
               <div className="text-sm text-primary mt-1 flex items-center gap-2">
-                <div className="w-4 h-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                 {t("bookingForm.loadingDates")}
               </div>
             )}
             {(errorDates || errors.date) && (
-              <div className="text-sm text-destructive mt-1">{t(errorDates || errors.date)}</div>
+              <div className="text-sm text-red-500 mt-1">{t(errorDates || errors.date)}</div>
             )}
           </div>
 
-         {/* Time - Regular (Category != 2) */}
-         {categoryId !== 2 && (
+         {/* Time */}
 <div className="space-y-3">
-  <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
+  <label className="flex font-medium text-sm text-foreground items-center gap-2">
     <Clock className="w-4 h-4 text-primary" />
-    Tour start time <span className="text-destructive">*</span>
+    {t("bookingForm.time")} <span className="text-red-500">*</span>
   </label>
-
   {form.date ? (
     (() => {
-      const times = pickupTimesByDate[form.date] || [];
-
-      if (!times.length) {
-        return (
-          <div className="text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-yellow-200">
-            Time is not available for selected date
-          </div>
-        );
-      }
-
-      return (
-        <select
-          className="w-full h-12 border border-border rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#D3202D]"
-          value={form.time}
-          onChange={(e) => handleChange("time", e.target.value)}
-          disabled={isBookingAdded}
-        >
-          <option value="">{t("bookingForm.time")}</option>
-          {times.map((time, idx) => (
-            <option key={idx} value={time}>
-              {time}
-            </option>
-          ))}
-        </select>
-      );
-    })()
-  ) : (
-    <div className="text-sm text-muted-foreground">
-      {t("bookingForm.selectDate")}
-    </div>
-  )}
-</div>
-         )}
-
-         {/* Pickup Time - Category 2 Only */}
-         {categoryId === 2 && (
-<div className="space-y-3">
-  <label className="block font-medium text-sm text-muted-foreground flex items-center gap-2">
-    <Clock className="w-4 h-4 text-primary" />
-    {t("Pickup Time") || "Pickup Time"} <span className="text-destructive">*</span>
-  </label>
-  {form.date && form.pickupPoint ? (
-    (() => {
       const dateStr = form.date;
-      const baseAPITimes = pickupTimesByDate[dateStr] || [];
-      
-      // Get pickup point additional time
-      const selectedPickupPoint = pickupGroupList?.find(p => p.pickup_point_name === form.pickupPoint);
-      const pickupAdditionalTime = selectedPickupPoint?.additional_time || 0;
-
-      // Calculate adjusted times: API time + pickup_point additional_time only
-      const adjustedTimes = baseAPITimes.map(timeStr => {
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        const totalMinutes = hours * 60 + minutes + pickupAdditionalTime;
-        const adjustedHours = Math.floor(totalMinutes / 60) % 24;
-        const adjustedMinutes = totalMinutes % 60;
-        return `${String(adjustedHours).padStart(2, '0')}:${String(adjustedMinutes).padStart(2, '0')}`;
-      });
-
-      if (adjustedTimes.length === 0) {
+      const times = pickupTimesByDate[dateStr] || [];
+      if (times.length === 0) {
         return (
-          <div className="text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-yellow-200">
-            Pickup time is not available, Proceed!
+          <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            {t("bookingForm.pickupTimesUnavailable")}
           </div>
         );
       }
@@ -654,117 +511,133 @@ useEffect(() => {
       const timeToDate = (timeStr) => {
         if (!timeStr) return null;
         const date = new Date();
-        const [hours, minutes] = timeStr.split(':').map(Number);
+        const isPM = /pm/i.test(timeStr);
+        const isAM = /am/i.test(timeStr);
+        let [hours, minutes] = timeStr.replace(/am|pm/i, '').trim().split(':');
+        hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
+        if (isPM && hours < 12) hours += 12;
+        if (isAM && hours === 12) hours = 0;
         date.setHours(hours, minutes, 0, 0);
         return date;
       };
 
       return (
         <DatePicker
-          selected={timeToDate(form.pickupTime)}
+          selected={timeToDate(form.time)}
           onChange={(date) => {
             if (date) {
               const timeString = date.toTimeString().slice(0, 5);
-              handleChange("pickupTime", timeString);
+              handleChange("time", timeString);
             } else {
-              handleChange("pickupTime", "");
+              handleChange("time", "");
             }
           }}
           showTimeSelect
           showTimeSelectOnly
           timeIntervals={15}
-          timeCaption={t("Pickup Time") || "Pickup Time"}
+          timeCaption={t("bookingForm.time")}
           dateFormat="h:mm aa"
-          placeholderText={t("Pickup Time") || "Pickup Time"}
-          customInput={React.createElement(CustomInput, { className: "w-full" })}
+          placeholderText={t("bookingForm.time")}
+          customInput={<CustomInput className="w-full" />}
           wrapperClassName="w-full"
-          includeTimes={adjustedTimes.map(timeToDate)}
-          disabled={isBookingAdded}
-          popperPlacement="bottom-start"
+          includeTimes={times.map(timeToDate)}
+           popperPlacement="bottom-start"
         />
       );
     })()
   ) : (
-    <div className="text-sm text-muted-foreground">
-      {!form.date ? t("bookingForm.selectDate") : "Select a pickup point"}
-    </div>
+    <div className="text-sm text-muted-foreground">{t("bookingForm.selectDate")}</div>
   )}
 </div>
-         )}
         </CardContent>
       </Card>
+      <style jsx global>{`
+        .react-datepicker__day--today {
+          background-color: transparent !important;
+          border: none !important;
+        }
+        .react-datepicker__day--keyboard-selected:not(.react-datepicker__day--selected) {
+          background-color: transparent !important;
+          color: inherit !important;
+        }
+      `}</style>
     </>
   )
 }
 
-const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPoints, isDisabled }) => {
+const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPoints, className = "" }) => {
   const customStyles = {
     control: (base, state) => ({
       ...base,
+      backgroundColor: "hsl(var(--background))",
+      color: "hsl(var(--foreground))",
       padding: "0.5rem 0.75rem",
       borderRadius: "0.5rem",
-      backgroundColor: "hsl(var(--surface))",
       borderColor: state.isFocused ? "hsl(var(--primary))" : "hsl(var(--border))",
+      boxShadow: state.isFocused ? "0 0 0 2px hsl(var(--primary) / 0.25)" : "none",
       minHeight: "48px",
       cursor: "pointer",
-      boxShadow: "none",
       "&:hover": {
         borderColor: "hsl(var(--primary))",
       },
       transition: "all 0.2s ease",
     }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: "hsl(var(--surface))",
-      border: "1px solid hsl(var(--border))",
-      zIndex: 50,
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected 
-        ? "hsl(var(--primary))" 
-        : state.isFocused 
-          ? "hsl(var(--surface-muted))" 
-          : "transparent",
-      color: state.isSelected 
-        ? "hsl(var(--primary-foreground))" 
-        : "hsl(var(--surface-foreground))",
-      cursor: "pointer",
-      "&:active": {
-        backgroundColor: "hsl(var(--primary))",
-      }
-    }),
     input: (base) => ({
       ...base,
-      color: "hsl(var(--surface-foreground))",
+      color: "hsl(var(--foreground))",
       "input:focus": { boxShadow: "none" },
     }),
     placeholder: (base) => ({
       ...base,
-      color: "hsl(var(--surface-muted-foreground))",
+      color: "hsl(var(--muted-foreground))",
       display: "flex",
       alignItems: "center",
     }),
     singleValue: (base) => ({
       ...base,
-      color: "hsl(var(--surface-foreground))",
+      color: "hsl(var(--foreground))",
       display: "flex",
       alignItems: "center",
     }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "hsl(var(--popover))",
+      color: "hsl(var(--popover-foreground))",
+      zIndex: 50,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused
+        ? "hsl(var(--muted))"
+        : "hsl(var(--popover))",
+      color: "hsl(var(--popover-foreground))",
+      cursor: "pointer",
+    }),
+    noOptionsMessage: (base) => ({
+      ...base,
+      color: "hsl(var(--muted-foreground))",
+    }),
   }
 
+  const defaultOptions = pickupPoints.map((opt) => ({
+    label: opt.name,
+    value: opt.name,
+  }));
+
   return (
-    <div>
+    <div className={className}>
       {loading ? (
         <div className="text-sm text-primary flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
           {t("bookingForm.loadingHotels")}
         </div>
       ) : error ? (
-        <div className="text-sm text-destructive bg-muted p-3 rounded-lg border border-red-200">{t("bookingForm.failedToLoadHotels")}</div>
+        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-200">{t("bookingForm.failedToLoadHotels")}</div>
       ) : (
         <AsyncSelect
           cacheOptions
+          defaultOptions={defaultOptions}
           loadOptions={loadOptions}
           value={value}
           onChange={onChange}
@@ -774,86 +647,11 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
               {t("bookingForm.searchHotel")}
             </div>
           }
-          //noOptionsMessage={() => t("bookingForm.noHotelsFound")}
+          noOptionsMessage={() => t("bookingForm.noHotelsFound")}
           styles={customStyles}
-          isDisabled={isDisabled}
         />
       )}
     </div>
-  )
-}
-
-const StaticSelectField = ({ value, onChange, options, isDisabled, placeholder }) => {
-  const customStyles = {
-    control: (base, state) => ({
-      ...base,
-      padding: "0.5rem 0.75rem",
-      borderRadius: "0.5rem",
-      backgroundColor: "hsl(var(--surface))",
-      borderColor: state.isFocused ? "hsl(var(--primary))" : "hsl(var(--border))",
-      minHeight: "48px",
-      cursor: "pointer",
-      boxShadow: "none",
-      "&:hover": {
-        borderColor: "hsl(var(--primary))",
-      },
-      transition: "all 0.2s ease",
-    }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: "hsl(var(--surface))",
-      border: "1px solid hsl(var(--border))",
-      zIndex: 50,
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected 
-        ? "hsl(var(--primary))" 
-        : state.isFocused 
-          ? "hsl(var(--surface-muted))" 
-          : "transparent",
-      color: state.isSelected 
-        ? "hsl(var(--primary-foreground))" 
-        : "hsl(var(--surface-foreground))",
-      cursor: "pointer",
-      "&:active": {
-        backgroundColor: "hsl(var(--primary))",
-      }
-    }),
-    input: (base) => ({
-      ...base,
-      color: "hsl(var(--surface-foreground))",
-      "input:focus": { boxShadow: "none" },
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "hsl(var(--surface-muted-foreground))",
-      display: "flex",
-      alignItems: "center",
-    }),
-    singleValue: (base) => ({
-      ...base,
-      color: "hsl(var(--surface-foreground))",
-      display: "flex",
-      alignItems: "center",
-    }),
-  }
-
-  return (
-    <Select
-      value={value}
-      onChange={onChange}
-      options={options}
-      placeholder={
-        <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-muted-foreground" />
-          {placeholder}
-        </div>
-      }
-      styles={customStyles}
-      isDisabled={isDisabled}
-      isClearable
-    />
   )
 }
 

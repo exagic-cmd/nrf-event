@@ -3,7 +3,7 @@ import BookingPriceTable from "@/components/product/bookingInfo/BookingPriceTabl
 import BookingForm from "@/components/product/bookingInfo/TourBookingForm";
 import BookingPolicySection from "@/components/daytours/booking/BookingPolicySection";
 import { useProductStore } from "@/store/useProductStore";
-import { useCartStore, getCartCurrency, getItemCurrency } from "@/store/useCartStore";
+import { useCartStore } from "@/store/useCartStore";
 import { calculateTierPricing } from "@/utils/tierPricing";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useRouter } from "next/router";
@@ -15,9 +15,8 @@ import { getFullImageUrl } from "@/utils/imageService";
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useOrderStore } from "@/store/useOrderStore";
 import useLanguageStore from "@/store/useLanguageStore";
-import {toast} from "react-toastify";
 
-const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
+const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit }) => {
   const { t } = useTranslation("daytour");
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -26,7 +25,14 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
     hotel: "",
     adults: 0,
     child: 0,
+    twin_sharing: 0,
+    single_sharing: 0,
+    child_with_bed: 0,
+    child_without_bed: 0,
+    accommodation_group_id: "",
+    group_hotel_id: "",
   });
+  const [localPriceSummary, setLocalPriceSummary] = useState(null);
 
   const { setJustAdded, justAdded } = useDrawerStore();
   const { tieredPricingData, bookedProductDetail, fetchCancellationPolicy } = useProductStore();
@@ -34,6 +40,10 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const { removeItem } = useCartStore();
   const { prefillData, updatePrefillDataFromCart } = useOrderStore();
   const { items: cartItems } = useCartStore();
+
+  const isPackageTourProduct = bookedProductDetail?.data?.basicinfo?.category_id === 8 || 
+                               tieredPricingData?.data?.tieredPricing?.data?.product_pricing?.some(p => p.adult_sharing);
+
   useEffect(() => {
     updatePrefillDataFromCart(cartItems);
   }, [cartItems, updatePrefillDataFromCart]);
@@ -42,6 +52,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const [selectedPolicies, setSelectedPolicies] = useState([]);
   const [policyErrors, setPolicyErrors] = useState(null);
   const [availablePolicyIds, setAvailablePolicyIds] = useState([]);
+  const [areTermsAvailable, setAreTermsAvailable] = useState(false);
   const [showCartOptions, setShowCartOptions] = useState(false);
   const [loadingButton, setLoadingButton] = useState(null);
   const [cancellationText, setCancellationText] = useState("");
@@ -49,13 +60,72 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   const apiData = bookedProductDetail?.data?.basicinfo;
   const imageUrl = getFullImageUrl(apiData?.images?.[0]?.image);
   const displayPrice = apiData?.starting_price || 0;
-  const itemCurrency = apiData?.currency || getItemCurrency(apiData);
-  const cartCurrency = getCartCurrency(cartItems);
-  const isCurrencyMismatch = Boolean(cartCurrency && itemCurrency && cartCurrency.toUpperCase() !== itemCurrency.toUpperCase());
 
   useEffect(() => {
     setJustAdded(false);
   }, [setJustAdded]);
+
+  useEffect(() => {
+    if (!tieredPricingData) return;
+
+    const totalPaxCount = isPackageTourProduct
+      ? (Number(formData.twin_sharing) || 0) + 
+        (Number(formData.single_sharing) || 0) + 
+        (Number(formData.child_with_bed) || 0) + 
+        (Number(formData.child_without_bed) || 0)
+      : (Number(formData.adults) || 0) + (Number(formData.child) || 0);
+
+    let pricing = isPackageTourProduct
+      ? calculateTierPricing(0, 0, tieredPricingData, true, {
+          twin_sharing: formData.twin_sharing,
+          single_sharing: formData.single_sharing,
+          child_with_bed: formData.child_with_bed,
+          child_without_bed: formData.child_without_bed,
+          selectedPackageId: formData.accommodation_group_id,
+          selectedHotelId: formData.group_hotel_id
+        })
+      : calculateTierPricing(formData.adults || 0, formData.child || 0, tieredPricingData, false);
+
+    // Re-calculate total based on individual counts and prices from the tier,
+    // as a safeguard if calculateTierPricing's total is incorrect or missing.
+    if (pricing) {
+        let reAggregatedTotal = 0;
+        if (isPackageTourProduct) {
+            reAggregatedTotal += (Number(formData.twin_sharing) || 0) * (Number(pricing.adultSharingPrice) || 0);
+            reAggregatedTotal += (Number(formData.single_sharing) || 0) * (Number(pricing.adultPrivatePrice) || 0);
+            reAggregatedTotal += (Number(formData.child_with_bed) || 0) * (Number(pricing.childWithBedPrice) || 0);
+            reAggregatedTotal += (Number(formData.child_without_bed) || 0) * (Number(pricing.childWithoutBedPrice) || 0);
+        } else {
+            reAggregatedTotal += (Number(formData.adults) || 0) * (Number(pricing.adultPrice) || 0);
+            reAggregatedTotal += (Number(formData.child) || 0) * (Number(pricing.childPrice) || 0);
+        }
+
+        // If re-aggregated total is valid and different from pricing.total, or pricing.total is 0, use re-aggregated.
+        // This handles cases where calculateTierPricing might return correct individual prices but a wrong total.
+        if (reAggregatedTotal > 0 && (pricing.total === 0 || pricing.total !== reAggregatedTotal)) {
+            pricing.total = reAggregatedTotal;
+        }
+    }
+
+    if (pricing) {
+      // Final fallback if pricing.total is still 0 or invalid after re-aggregation
+      if (pricing.total === 0) {
+        const startingPrice = Number(apiData?.starting_price) || 0;
+        pricing.total = startingPrice * totalPaxCount;
+        // Ensure other price properties are set for consistency if using fallback
+        if (isPackageTourProduct) {
+          pricing.adultSharingPrice = startingPrice; // Example, might need more detailed fallback
+        } else {
+          pricing.adultPrice = startingPrice;
+        }
+      }
+      const summary = { total: pricing.total, totalPax: totalPaxCount };
+      setLocalPriceSummary(summary);
+      if (onPriceChange) {
+        onPriceChange(summary);
+      }
+    }
+  }, [formData, tieredPricingData, isPackageTourProduct, onPriceChange, apiData?.starting_price, apiData?.currency]);
 
   useEffect(() => {
     if (id) {
@@ -85,26 +155,38 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
         hotel: prefillData.pickup_point || prev.hotel,
         adults: prefillData.total_adult || prev.adults,
         child: prefillData.total_child || prev.child,
+        twin_sharing: prefillData.twin_sharing || prev.twin_sharing,
+        single_sharing: prefillData.single_sharing || prev.single_sharing,
+        child_with_bed: prefillData.child_with_bed || prev.child_with_bed,
+        child_without_bed: prefillData.child_without_bed || prev.child_without_bed,
+        accommodation_group_id: prefillData.accommodation_group_id || prev.accommodation_group_id,
+        group_hotel_id: prefillData.group_hotel_id || prev.group_hotel_id,
       }));
     }
-  }, [prefillData]);  const handleBookNow = async () => {
-    if (isCurrencyMismatch) {
-      toast.error(
-        `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`,
-        {
-          position: "top-right",
-          autoClose: 5000,
-        }
-      );
-      return;
-    }
+  }, [prefillData]);
+  
+  const handleBookNow = async () => {
   setLoadingButton("addToCart");
     const validationErrors = {};
-    if (!formData.adults) validationErrors.adults = "adultsError";
+    
+    let totalPaxCount = 0;
+    if (isPackageTourProduct) {
+      totalPaxCount = formData.twin_sharing + formData.single_sharing + formData.child_with_bed + formData.child_without_bed;
+      if (totalPaxCount === 0) validationErrors.adults = "adultsError"; // Reusing adultsError for general pax count
+      if (!formData.accommodation_group_id) validationErrors.accommodation_group_id = "groupError";
+      const selectedGroup = bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.find(g => String(g.group_id) === String(formData.accommodation_group_id));
+      if (selectedGroup?.allow_hotel_selection && !formData.group_hotel_id) {
+        validationErrors.group_hotel_id = "hotelError";
+      }
+    } else {
+      totalPaxCount = formData.adults + formData.child;
+      if (formData.adults === 0) validationErrors.adults = "adultsError";
+    }
+
     if (!formData.date) validationErrors.date = "dateError";
     const isTermsAccepted = selectedPolicies.includes("terms_conditions");
 
-    if (!isTermsAccepted) {
+    if (areTermsAvailable && !isTermsAccepted) {
       setPolicyErrors("You must accept the Terms & Conditions");
       setLoadingButton(null);
       return;
@@ -131,72 +213,108 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
       productData?.basicinfo?.product_description?.title || "Untitled Tour";
     const image = productData?.basicinfo?.images?.[0]?.image || "img";
     const currency = apiData?.currency ;
-    
-    const isShuttle = apiData?.category_id === 2;
-    const selectedTime = isShuttle ? formData.pickupTime : formData.time;
 
-    let pickupPointId = null;
-    let dropoffPointId = null;
+    let pricing = isPackageTourProduct
+      ? calculateTierPricing(
+          0, // adultCount not directly used for package tours
+          0, // childCount not directly used for package tours
+          tieredPricingData,
+          true, // isPackageTour
+          {
+            twin_sharing: formData.twin_sharing,
+            single_sharing: formData.single_sharing,
+            child_with_bed: formData.child_with_bed,
+            child_without_bed: formData.child_without_bed,
+            selectedPackageId: formData.accommodation_group_id,
+          }
+        )
+      : calculateTierPricing(
+          formData.adults || 0,
+          formData.child || 0,
+          tieredPricingData,
+          false // isPackageTour
+        );
 
-    if (isShuttle) {
-      const pickupObj = apiData?.pickup_group_list?.find((p) => p.pickup_point_name === formData.pickupPoint);
-      if (pickupObj) pickupPointId = pickupObj.id || pickupObj.pickup_point_id;
+    // Re-calculate total based on individual counts and prices from the tier,
+    // as a safeguard if calculateTierPricing's total is incorrect or missing.
+    if (pricing) {
+        let reAggregatedTotal = 0;
+        if (isPackageTourProduct) {
+            reAggregatedTotal += (Number(formData.twin_sharing) || 0) * (Number(pricing.adultSharingPrice) || 0);
+            reAggregatedTotal += (Number(formData.single_sharing) || 0) * (Number(pricing.adultPrivatePrice) || 0);
+            reAggregatedTotal += (Number(formData.child_with_bed) || 0) * (Number(pricing.childWithBedPrice) || 0);
+            reAggregatedTotal += (Number(formData.child_without_bed) || 0) * (Number(pricing.childWithoutBedPrice) || 0);
+        } else {
+            reAggregatedTotal += (Number(formData.adults) || 0) * (Number(pricing.adultPrice) || 0);
+            reAggregatedTotal += (Number(formData.child) || 0) * (Number(pricing.childPrice) || 0);
+        }
 
-      const dropoffObj = apiData?.dropoff_point_group_list?.find((d) => d.dropoff_point_name === formData.dropoffPoint);
-      if (dropoffObj) dropoffPointId = dropoffObj.id || dropoffObj.dropoff_point_id;
+        // If re-aggregated total is valid and different from pricing.total, or pricing.total is 0, use re-aggregated.
+        if (reAggregatedTotal > 0 && (pricing.total === 0 || pricing.total !== reAggregatedTotal)) {
+            pricing.total = reAggregatedTotal;
+        }
     }
 
-    let pricing = calculateTierPricing(
-      formData.adults || 0,
-      formData.child || 0,
-      tieredPricingData
-    );
-    if (!pricing || pricing.total === 0) {
-      const startingPrice = productData?.basicinfo?.starting_price || 0;
-      pricing = {
-        total:
-          startingPrice * (formData.adults || 0) +
-          (formData.child || 0) * startingPrice,
-        adultPrice: startingPrice,
-        childPrice: startingPrice,
-      };
+    // Final fallback if pricing.total is still 0 or invalid after re-aggregation
+    if (isPackageTourProduct) {
+      // If pricing is not found or total is 0, use starting price logic (fallback)
+      if (!pricing || pricing.total === 0) {
+        const startingPrice = Number(productData?.basicinfo?.starting_price) || 0;
+        pricing = {
+          total: startingPrice * totalPaxCount,
+          adultSharingPrice: startingPrice, // Fallback, might not be accurate
+          adultPrivatePrice: startingPrice, // Fallback
+          childWithBedPrice: startingPrice, // Fallback
+          childWithoutBedPrice: startingPrice, // Fallback
+        };
+      }
+    } else {
+      if (!pricing || pricing.total === 0) {
+        const startingPrice = Number(productData?.basicinfo?.starting_price) || 0;
+        pricing = {
+          total:
+            startingPrice * (formData.adults || 0) +
+            (formData.child || 0) * startingPrice,
+          adultPrice: startingPrice,
+          childPrice: startingPrice,
+        };
+      }
     }
 
-    const result = useCartStore.getState().addItem({
+    useCartStore.getState().addItem({
       tourId: id,
       title,
       image,
-      category_name: apiData?.category_id,
+      category_name: isPackageTourProduct ? 8 : 2, // Assuming 8 is package tour category
       currency,
-      selectedDate: formData.date||"20-11-2018",
-      selectedTime: selectedTime || "09:00 AM",
-      pickupPoint: isShuttle ? formData.pickupPoint : formData.hotel,
-      dropoffPoint: isShuttle ? formData.dropoffPoint : "",
-      pickupPointId,
-      dropoffPointId,
-      type:isShuttle ? "shuttle Service" : "daytour",
-      adults: formData.adults,
-      child: formData.child,
-      totalPax: formData.adults + formData.child,
+      selectedDate: formData.date,
+      selectedTime: formData.time || "09:00 AM",
+      hotelName: formData.hotel,
+      adults: formData.adults, // Keep for general display if needed
+      child: formData.child,   // Keep for general display if needed
+      totalPax: totalPaxCount,
       pricing,
+      // Add package tour specific counts to cart item if it's a package tour
+      ...(isPackageTourProduct && {
+        twin_sharing: formData.twin_sharing,
+        single_sharing: formData.single_sharing,
+        child_with_bed: formData.child_with_bed,
+        child_without_bed: formData.child_without_bed,
+        accommodation_group_id: formData.accommodation_group_id,
+        group_hotel_id: formData.group_hotel_id,
+      }),
     });
-
-    if (result?.status === "currency_mismatch") {
-      setLoadingButton(null);
-      return;
-    }
 
     setJustAdded(true);
     setShowCartOptions(true);
     onBookNow(safeFormData);
     setLoadingButton(null);
-    toast.success("Added to cart");
   };
 
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
     await new Promise((res) => setTimeout(res, 1200)); // simulate loading
-    router.push("/");
+    router.push("/transfers");
     setLoadingButton(null);
   };
 
@@ -209,19 +327,18 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-0 md:mx-2 lg:mx-0">
+    <div className="flex flex-col lg:flex-row gap-8 max-w-full mx-0 md:mx-2 p-1 md:p-2">
       <div className="w-full lg:w-3/3">
         <div className="grid grid-cols-1 gap-6">
-          <div className="bg-surface rounded-lg p-1 md:p-6 shadow-sm border border-border">
-            {apiData?.category_id !== 2 && <BookingPriceTable id={id} />}
+          <div className="bg-card text-card-foreground rounded-lg p-1 md:p-6 shadow-sm border border-border">
+            {/* {!isPackageTourProduct && (
+              <BookingPriceTable id={id} />
+            )} */}
             <BookingForm
               value={formData}
               errors={errors}
               onChange={handleFormChange}
-              isBookingAdded={showCartOptions}
-              categoryId={apiData?.category_id}
-              pickupGroupList={apiData?.pickup_group_list}
-              dropoffPointGroupList={apiData?.dropoff_point_group_list}
+              isPackageTour={isPackageTourProduct} // Pass isPackageTour to TourBookingForm
             />
           </div>
 
@@ -239,11 +356,23 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                     {productTitle}
                   </h3>
                   <Separator />
-                  <div className="flex items-center gap-3 p-3 bg-\gray-50 rounded-lg">
-                    <Tag className="w-4 h-4 text-muted-foreground" />
-                    <p className="font-medium text-foreground">
-                      {t("startingFrom")} {apiData?.currency} {displayPrice}
-                    </p>
+                  <div className="flex items-center gap-3 p-3 bg-muted rounded-lg border border-border">
+                    <Tag className="w-4 h-4 text-primary" />
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        {localPriceSummary?.totalPax > 0 ? t("total") : t("price")}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <p className="font-medium text-foreground">
+                          {localPriceSummary?.totalPax > 0 ? "" : t("startingFrom") + " "} {apiData?.currency} {localPriceSummary?.totalPax > 0 ? localPriceSummary.total : displayPrice}
+                        </p>
+                        {localPriceSummary?.totalPax > 0 && (
+                          <p className="text-xs font-bold text-primary">
+                            x{localPriceSummary.totalPax} {t("pax")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -251,7 +380,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
           </div>
 
           {/* 📜 Policy + Buttons */}
-          <div className="bg-surface rounded-lg p-2 px-6 md:px-5 md:p-5 shadow-sm border border-border">
+          <div className="bg-card text-card-foreground rounded-lg p-2 px-6 md:px-5 md:p-5 shadow-sm border border-border">
             {cancellationText && (
               <p className="md:text-sm text-xs py-1 text-muted-foreground whitespace-pre-line">{cancellationText}</p>
             )}
@@ -265,6 +394,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   errors={policyErrors}
                   setErrors={setPolicyErrors}
                   setAvailablePolicyIds={setAvailablePolicyIds}
+                  onTermsAvailabilityChange={setAreTermsAvailable}
                 />
               </div>
 
@@ -272,14 +402,11 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                 <button
                   onClick={handleBookNow}
                   disabled={loadingButton === "addToCart"}
-                  title={isCurrencyMismatch ? `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.` : ""}
-                  className={`bg-primary text-white font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2 ${
-                    isCurrencyMismatch ? "opacity-60 cursor-pointer" : ""
-                  }`}
+                  className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium px-4 py-3 rounded-lg transition w-full sm:w-auto flex items-center justify-center gap-2"
                 >
                   {loadingButton === "addToCart" ? (
                     <>
-                      <LoaderSvg color="#fff"/> {t("processing")}
+                      <LoaderSvg /> {t("processing")}
                     </>
                   ) : (
                     t("addToCart")
@@ -294,7 +421,7 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   >
                     {loadingButton === "continue" ? (
                       <>
-                        <LoaderSvg color="#000" /> {t("processing")}
+                        <LoaderSvg /> {t("processing")}
                       </>
                     ) : (
                       t("continueShopping")
@@ -304,11 +431,11 @@ const BookNow = ({ onBookNow, id, productTitle, editMode, edit }) => {
                   <button
                     onClick={handleViewCart}
                     disabled={loadingButton === "checkout"}
-                    className="bg-primary text-white font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium px-4 py-3 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     {loadingButton === "checkout" ? (
                       <>
-                        <LoaderSvg color="#fff"/> {t("processing")}
+                        <LoaderSvg /> {t("processing")}
                       </>
                     ) : (
                       t("checkout","Checkout")
