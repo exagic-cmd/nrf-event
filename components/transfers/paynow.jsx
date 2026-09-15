@@ -21,6 +21,7 @@ import BookingPreviewSlider from "@/components/transfers/BookingPreviewSlider";
 import useUserStore from '@/store/useAuthStore';
 import { useEventStore } from "@/store/useEventStore";
 import { toast } from 'react-toastify';
+import PriceDiscrepancyModal from "@/components/checkout/PriceDiscrepancyModal";
 // === CANCELLATION POLICY MODAL FOR STUBA (link_type_id 9) ===
 const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => {
   const [expandedRoomIndex, setExpandedRoomIndex] = useState(0);
@@ -161,6 +162,19 @@ const PayNow = ({ totalPrice }) => {
   const [flywireTotal, setFlywireTotal] = useState(null);
   const [showFlywire, setShowFlywire] = useState(false);
   const [returnOrderId, setReturnOrderId] = useState(null);
+   // ── Price Discrepancy State & Handlers ─────────────────────────────────────
+  const [showPriceDiscrepancyModal, setShowPriceDiscrepancyModal] = useState(false);
+  const [priceDiscrepancyData, setPriceDiscrepancyData] = useState(null);
+
+  const handlePriceDiscrepancy = (data) => {
+    setPriceDiscrepancyData(data);
+    setShowPriceDiscrepancyModal(true);
+  };
+
+  const closePriceDiscrepancyModal = () => {
+    setShowPriceDiscrepancyModal(false);
+    setPriceDiscrepancyData(null);
+  };
   // Form fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -631,6 +645,21 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       const finalPayload = buildFinalPayload();
       console.log("Final Payload for submitBooking:", finalPayload);
       const response = await submitBooking(finalPayload);
+      // ── 1. CHECK FOR DISCREPANCIES IN 200 RESPONSE ────────────────────────
+      if (
+        response?.discrepancies &&
+        (Array.isArray(response.discrepancies) ? response.discrepancies.length > 0 : true)
+      ) {
+        handlePriceDiscrepancy(response);
+        return;
+      }
+      if (
+        response?.data?.discrepancies &&
+        (Array.isArray(response.data.discrepancies) ? response.data.discrepancies.length > 0 : true)
+      ) {
+        handlePriceDiscrepancy(response.data);
+        return;
+      }
       const orderId = response?.order_id;
       const totalPrice = response?.total_price;
 
@@ -639,7 +668,30 @@ console.log("cart_items:PAYNOW #####################", cart_items);
       setShowFlywire(true);
       useCartStore.getState().clearCart();
     } catch (error) {
-      alert("Booking failed: " + error.message);
+      console.error("Booking error:", error);
+
+      // ── 2. CHECK FOR DISCREPANCIES IN ERROR RESPONSE ───────────────────────
+      let errData = error?.data || error?.response?.data;
+      if (typeof errData === "string") {
+        try {
+          errData = JSON.parse(errData);
+        } catch (e) {}
+      }
+
+      const errMsg = String(
+        errData?.error || errData?.message || errData?.msg || error?.message || ""
+      );
+      const isDiscrepancy =
+        !!errData?.discrepancies ||
+        errMsg.toLowerCase().includes("price discrepancy") ||
+        errMsg.toLowerCase().includes("mismatch");
+
+      if (isDiscrepancy) {
+        handlePriceDiscrepancy(errData || { error: errMsg });
+        return;
+      }
+
+      toast.error(error.message || "Booking failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -1040,6 +1092,11 @@ console.log("cart_items:PAYNOW #####################", cart_items);
             }}
           />
         )}
+        <PriceDiscrepancyModal
+        isOpen={showPriceDiscrepancyModal}
+        discrepancyData={priceDiscrepancyData}
+        onClose={closePriceDiscrepancyModal}
+      />
     </>
   );
 };

@@ -1,4 +1,9 @@
 {
+  "price_discrepancy_detected": "Price Discrepancy Detected",
+  "price_discrepancy_message": "Price discrepancy detected. The price for this product has changed. Please update or remove it.",
+  "correct_and_rebook": "Correct & Rebook",
+  "old_price": "Old Price",
+  "new_price": "New Price",
   "search": {
     "placeholder": "Search destinations or activities",
     "button": "Search",

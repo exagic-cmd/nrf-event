@@ -134,8 +134,10 @@ interface CartState {
     cartCurrency?: string;
     itemCurrency?: string;
   };
+  setItems: (items: CartItem[]) => void;
   updateItem: (key: string, updates: Partial<CartItem>) => void;
   removeItem: (key: string) => void;
+  removeProductById: (targetId: string | number) => void;
   clearCart: () => void;
   setItemToEdit: (item: CartItem | null) => void;
   clearItemToEdit: () => void;
@@ -262,11 +264,82 @@ export const useCartStore = create<CartState>()(
           ),
         });
       },
-
+      setItems: (items) => {
+        set({ items });
+      },
       removeItem: (key) => {
         set({ items: get().items.filter((i) => i.key !== key) });
       },
+      removeProductById: (targetId) => {
+        if (!targetId) return;
+        const numTargetId = Number(targetId);
+        const strTargetId = String(targetId);
 
+        // Filter from Zustand items
+        const updatedItems = get().items.filter((item: any) => {
+          const id = Number(item.productId ?? item.product_id ?? item.tourId ?? item.id);
+          const strId = String(item.productId ?? item.product_id ?? item.tourId ?? item.id ?? "");
+          return id !== numTargetId && strId !== strTargetId && item.key !== strTargetId;
+        });
+        set({ items: updatedItems });
+
+        if (typeof window === "undefined") return;
+
+        // Clean from sessionStorage
+        try {
+          const sessionRaw = sessionStorage.getItem("cartItems");
+          if (sessionRaw) {
+            const parsed = JSON.parse(sessionRaw);
+            if (Array.isArray(parsed)) {
+              const filtered = parsed.filter((item: any) => {
+                const id = Number(item.productId ?? item.product_id ?? item.tourId ?? item.id);
+                const strId = String(item.productId ?? item.product_id ?? item.tourId ?? item.id ?? "");
+                return id !== numTargetId && strId !== strTargetId && item.key !== strTargetId;
+              });
+              sessionStorage.setItem("cartItems", JSON.stringify(filtered));
+            }
+          }
+        } catch (e) {
+          console.error("Error clearing cart item from sessionStorage:", e);
+        }
+
+        // Clean from localStorage keys: 'cartItems', 'cartItem', and user-scoped keys
+        const storageKeys = ["cartItems", "cartItem"];
+        try {
+          const authUser = localStorage.getItem("user");
+          if (authUser) {
+            const parsedUser = JSON.parse(authUser);
+            if (parsedUser?.id) {
+              storageKeys.push(`cartItems_${parsedUser.id}`);
+            }
+          }
+        } catch (e) {}
+
+        storageKeys.forEach((key) => {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                const filtered = parsed.filter((item: any) => {
+                  const id = Number(item.productId ?? item.product_id ?? item.tourId ?? item.id);
+                  const strId = String(item.productId ?? item.product_id ?? item.tourId ?? item.id ?? "");
+                  return id !== numTargetId && strId !== strTargetId && item.key !== strTargetId;
+                });
+                localStorage.setItem(key, JSON.stringify(filtered));
+              } else if (parsed && typeof parsed === "object") {
+                const id = Number(parsed.productId ?? parsed.product_id ?? parsed.tourId ?? parsed.id);
+                const strId = String(parsed.productId ?? parsed.product_id ?? parsed.tourId ?? parsed.id ?? "");
+                if (id === numTargetId || strId === strTargetId) {
+                  localStorage.removeItem(key);
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Error clearing cart item from localStorage:", e);
+          }
+        });
+      },
       clearCart: () => {
         set({ items: [] });
         useOrderStore.getState().updatePrefillDataFromCart([]);

@@ -9,6 +9,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useRouter } from "next/router";
 import { useAffiliateStore } from '@/store/useAffiliateStore';
+import PriceDiscrepancyModal from "@/components/checkout/PriceDiscrepancyModal";
 
 const PayNow = ({ bookingDetails, onBack }) => {
     const router = useRouter();
@@ -20,7 +21,32 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [paymentOptions, setPaymentOptions] = useState([]);
   const [promoAvailable, setPromoAvailable] = useState(false);
+  // ── Price Discrepancy State & Handlers ─────────────────────────────────────
+  const [showPriceDiscrepancyModal, setShowPriceDiscrepancyModal] = useState(false);
+  const [priceDiscrepancyData, setPriceDiscrepancyData] = useState(null);
 
+  const handlePriceDiscrepancy = (data) => {
+    setPriceDiscrepancyData(data);
+    setShowPriceDiscrepancyModal(true);
+  };
+
+  const closePriceDiscrepancyModal = () => {
+    setShowPriceDiscrepancyModal(false);
+    setPriceDiscrepancyData(null);
+  };
+    // ── Price Discrepancy State & Handlers ─────────────────────────────────────
+  const [showPriceDiscrepancyModal, setShowPriceDiscrepancyModal] = useState(false);
+  const [priceDiscrepancyData, setPriceDiscrepancyData] = useState(null);
+
+  const handlePriceDiscrepancy = (data) => {
+    setPriceDiscrepancyData(data);
+    setShowPriceDiscrepancyModal(true);
+  };
+
+  const closePriceDiscrepancyModal = () => {
+    setShowPriceDiscrepancyModal(false);
+    setPriceDiscrepancyData(null);
+  };
   // Form field states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -155,9 +181,46 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
     const finalPayload = buildFinalPayload();
     try {
       const response = await submitBooking(finalPayload);
+       // ── 1. CHECK FOR DISCREPANCIES IN 200 RESPONSE ────────────────────────
+      if (
+        response?.discrepancies &&
+        (Array.isArray(response.discrepancies) ? response.discrepancies.length > 0 : true)
+      ) {
+        handlePriceDiscrepancy(response);
+        return;
+      }
+      if (
+        response?.data?.discrepancies &&
+        (Array.isArray(response.data.discrepancies) ? response.data.discrepancies.length > 0 : true)
+      ) {
+        handlePriceDiscrepancy(response.data);
+        return;
+      }
       useProductStore.getState().setPersonalInfo(finalPayload?.cart_items);
       setIsPopupVisible(true);
     } catch (error) {
+      console.error("Booking error:", error);
+
+      // ── 2. CHECK FOR DISCREPANCIES IN ERROR RESPONSE ───────────────────────
+      let errData = error?.data || error?.response?.data;
+      if (typeof errData === "string") {
+        try {
+          errData = JSON.parse(errData);
+        } catch (e) {}
+      }
+
+      const errMsg = String(
+        errData?.error || errData?.message || errData?.msg || error?.message || ""
+      );
+      const isDiscrepancy =
+        !!errData?.discrepancies ||
+        errMsg.toLowerCase().includes("price discrepancy") ||
+        errMsg.toLowerCase().includes("mismatch");
+
+      if (isDiscrepancy) {
+        handlePriceDiscrepancy(errData || { error: errMsg });
+        return;
+      }
       alert("Booking failed: " + error.message);
     }
   };
@@ -322,6 +385,12 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
       {isPopupVisible && (
         <PopupMsg closePopup={closePopup} />
       )}
+      {/* Price Discrepancy Modal */}
+      <PriceDiscrepancyModal
+        isOpen={showPriceDiscrepancyModal}
+        discrepancyData={priceDiscrepancyData}
+        onClose={closePriceDiscrepancyModal}
+      />
     </div>
   );
 };
