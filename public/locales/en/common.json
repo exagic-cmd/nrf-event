@@ -1,4 +1,9 @@
 {
+  "price_discrepancy_detected": "Price Discrepancy Detected",
+  "price_discrepancy_message": "Price discrepancy detected. The price for this product has changed. Please update or remove it.",
+  "correct_and_rebook": "Correct & Rebook",
+  "old_price": "Old Price",
+  "new_price": "New Price",
   "find_perfect_transfer": "Find the perfect transfer...",
   "choice_for_singapore": "Choice for Singapore",
   "airport_transfers": "Airport Transfers.",

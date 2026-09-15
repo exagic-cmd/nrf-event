@@ -15,6 +15,7 @@ import Head from 'next/head';
 import { User, Mail, Phone, Tag, CreditCard } from "lucide-react";
 import { useTranslation } from "next-i18next";
 import useLanguageStore from "@/store/useLanguageStore";
+import PriceDiscrepancyModal from "@/components/checkout/PriceDiscrepancyModal";
 const PayNow = ({  }) => {
   const { t } = useTranslation("daytour");
    const { languageId, currentLocale } = useLanguageStore.getState();
@@ -31,7 +32,21 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
   const [promoAvailable, setPromoAvailable] = useState(false);
 const [returnOrderId, setReturnOrderId] = useState(null);
 const [showFlywire, setShowFlywire] = useState(false);
-const [flywireTotal, setFlywireTotal] = useState(null);  
+const [flywireTotal, setFlywireTotal] = useState(null);
+
+  // ── Price Discrepancy State & Handlers ─────────────────────────────────────
+  const [showPriceDiscrepancyModal, setShowPriceDiscrepancyModal] = useState(false);
+  const [priceDiscrepancyData, setPriceDiscrepancyData] = useState(null);
+
+  const handlePriceDiscrepancy = (data) => {
+    setPriceDiscrepancyData(data);
+    setShowPriceDiscrepancyModal(true);
+  };
+
+  const closePriceDiscrepancyModal = () => {
+    setShowPriceDiscrepancyModal(false);
+    setPriceDiscrepancyData(null);
+  };
 // Form field states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -198,6 +213,21 @@ const handlePayNow = async (e) => {
   try {
     const finalPayload = buildFinalPayload();
     const response = await submitBooking(finalPayload);
+      // ── 1. CHECK FOR DISCREPANCIES IN 200 RESPONSE ────────────────────────
+    if (
+      response?.discrepancies &&
+      (Array.isArray(response.discrepancies) ? response.discrepancies.length > 0 : true)
+    ) {
+      handlePriceDiscrepancy(response);
+      return;
+    }
+    if (
+      response?.data?.discrepancies &&
+      (Array.isArray(response.data.discrepancies) ? response.data.discrepancies.length > 0 : true)
+    ) {
+      handlePriceDiscrepancy(response.data);
+      return;
+    }
     const orderId = response?.order_id; 
 const totalPrice = response?.total_price;
 
@@ -213,6 +243,28 @@ setFlywireTotal(totalPrice);
     setIsPopupVisible(true);
    }
   } catch (error) {
+     console.error("Booking error:", error);
+
+    // ── 2. CHECK FOR DISCREPANCIES IN ERROR RESPONSE ───────────────────────
+    let errData = error?.data || error?.response?.data;
+    if (typeof errData === "string") {
+      try {
+        errData = JSON.parse(errData);
+      } catch (e) {}
+    }
+
+    const errMsg = String(
+      errData?.error || errData?.message || errData?.msg || error?.message || ""
+    );
+    const isDiscrepancy =
+      !!errData?.discrepancies ||
+      errMsg.toLowerCase().includes("price discrepancy") ||
+      errMsg.toLowerCase().includes("mismatch");
+
+    if (isDiscrepancy) {
+      handlePriceDiscrepancy(errData || { error: errMsg });
+      return;
+    }
     alert("Booking failed: " + error.message);
   } finally {
     setIsSubmitting(false);
@@ -397,7 +449,12 @@ setFlywireTotal(totalPrice);
         setShowFlywire(false);
       }}
     />
-  )}
+    {/* Price Discrepancy Modal */}
+    <PriceDiscrepancyModal
+      isOpen={showPriceDiscrepancyModal}
+      discrepancyData={priceDiscrepancyData}
+      onClose={closePriceDiscrepancyModal}
+    />
 </>
    </>
   );
