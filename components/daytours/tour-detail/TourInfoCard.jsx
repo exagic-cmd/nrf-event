@@ -165,11 +165,11 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking, isPackageT
                   <div className="text-sm text-muted-foreground">{t("starting_from")}</div>
                   <div className="my-2 flex flex-col items-center">
                     <span className="text-2xl font-bold text-foreground">{apiData?.currency} {startingPrice}</span>
-                    {currencyData && currencyData.exchange_rate !== 1 && (
+                    {/* {currencyData && currencyData.exchange_rate !== 1 && (
                       <span className="text-sm text-muted-foreground font-medium mt-0.5">
                         Est. {formatPrice(parsePrice(startingPrice) * currencyData.exchange_rate)} {currencyData.currency}
                       </span>
-                    )}
+                    )} */}
                   </div>
                 </>
               )}

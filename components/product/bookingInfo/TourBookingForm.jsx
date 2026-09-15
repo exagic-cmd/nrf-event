@@ -8,7 +8,7 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import AsyncSelect from "react-select/async"
 import PassengerModal from "@/components/product/ProductInfo/PassengerModal"
-import { Users, Hotel, CalendarDays, Clock, Tag, MapPin, Package } from "lucide-react"
+import { Users, Hotel, CalendarDays, Clock, Tag, MapPin, Package, Ticket, AlertTriangle, Info } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "next-i18next";
@@ -23,6 +23,11 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
   const pricingList = tieredPricingData?.tieredPricing?.data?.product_pricing || []
   const minPax = pricingList.length > 0 ? Math.min(...pricingList.map((p) => Number(p.min_pax))) : 1
   const maxPax = pricingList.length > 0 ? Math.max(...pricingList.map((p) => Number(p.max_pax))) : 1
+  
+  const productCategoryId = Number(bookedProductDetail?.data?.basicinfo?.category_id);
+  const isAttraction = productCategoryId === 1;
+  const isBookingAllowed = isAttraction ? (bookedProductDetail?.data?.basicinfo?.linked_type?.toLowerCase() === 'cebu' && bookedProductDetail?.data?.basicinfo?.cebu_sku_mappings?.length > 0) : true;
+
 
  const [form, setForm] = useState({
   adults: typeof value.adults === "number" && value.adults >= minPax ? value.adults : minPax,
@@ -36,7 +41,13 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
   child_without_bed: value.child_without_bed ?? 0,
   accommodation_group_id: value.accommodation_group_id ?? "",
   group_hotel_id: value.group_hotel_id ?? "",
+  selectedSkus: value.selectedSkus ?? {},
 })
+
+const [attractionData, setAttractionData] = useState(null);
+const [attractionLoading, setAttractionLoading] = useState(false);
+const [selectedSkus, setSelectedSkus] = useState(value.selectedSkus || {});
+
 
 
   const [availableDates, setAvailableDates] = useState([])
@@ -102,13 +113,17 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
       child_without_bed: value.child_without_bed ?? 0,
       accommodation_group_id: value.accommodation_group_id ?? "",
       group_hotel_id: value.group_hotel_id ?? "",
+      selectedSkus: value.selectedSkus ?? {},
     };
   });
+  if (value.selectedSkus && JSON.stringify(value.selectedSkus) !== JSON.stringify(selectedSkus)) {
+    setSelectedSkus(value.selectedSkus);
+  }
 }, [value, minPax, isPackageTour]); // Depend on the entire 'value' prop, minPax and tour type
 
 useEffect(() => {
   if (!productId) return;
-  if (!isPackageTour && !form.hotel) return;
+  if (!isPackageTour && !isAttraction && !form.hotel) return;
   
   // Requirement 4: Conditional Logic for Package Tours
   if (isPackageTour) {
@@ -198,7 +213,66 @@ useEffect(() => {
       setErrorDates(t("bookingForm.failedToLoadDates"));
       setLoadingDates(false);
     });
-}, [productId, form.adults, form.child, form.hotel, isPackageTour, today, form.accommodation_group_id, form.group_hotel_id, tieredPricingData, bookedProductDetail]);
+}, [productId, form.adults, form.child, form.hotel, isPackageTour, today, form.accommodation_group_id, form.group_hotel_id, tieredPricingData, bookedProductDetail, isAttraction]);
+
+const getTicketTimes = (data = attractionData) => {
+  if (!data) return [];
+  if (data.timeslots?.length > 0) return data.timeslots;
+  const times = new Set();
+  data.skus?.forEach(sku => {
+    sku.slots?.forEach(slot => {
+      if (slot.time) times.add(slot.time);
+    });
+  });
+  return Array.from(times).sort();
+};
+
+useEffect(() => {
+  if (!isAttraction || !form.date) return;
+  const fetchAttractionData = async () => {
+    setAttractionLoading(true);
+    setAttractionData(null);
+    setSelectedSkus({});
+    
+    let dateStr = form.date;
+    if (form.date instanceof Date) {
+      dateStr = form.date.getFullYear() + "-" + String(form.date.getMonth() + 1).padStart(2, "0") + "-" + String(form.date.getDate()).padStart(2, "0");
+    }
+
+    try {
+      // In a real app we might get token from a store or cookies. For now, try fetching
+      let token = "";
+      try { token = JSON.parse(localStorage.getItem("auth-storage"))?.state?.token || ""; } catch(e){}
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/cebu/grouped-sku-availabilities?product_id=${productId}&date=${dateStr}`, {
+        headers: {
+           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+           'Content-Type': 'application/json'
+        }
+      });
+      const res = await response.json();
+      if ((res.status === "success" || res.statuscode === "E_SUCC") && (res.data || res.output)) {
+        const data = res.data || res.output;
+        setAttractionData(data);
+        const times = getTicketTimes(data);
+        if (times.length === 1) {
+          handleChange("time", times[0]);
+        } else if (!times.includes(form.time)) {
+          handleChange("time", "");
+        }
+      } else {
+        setAttractionData({ skus: [], timeslots: [] });
+      }
+    } catch (error) {
+      console.error("Error fetching attraction data:", error);
+      setAttractionData(null);
+    } finally {
+      setAttractionLoading(false);
+    }
+  };
+  fetchAttractionData();
+}, [form.date, isAttraction, productId]);
+
     useEffect(() => {
     if (!productId) return
     fetchPickupPointCity(productId)
@@ -283,7 +357,25 @@ useEffect(() => {
       : (Number(updated.adults) || 0) + (Number(updated.child) || 0);
 
     if (currentTotalPax >= minPax) {
-      onChange && onChange({ ...updated, availableTimes })
+      let totalPrice = 0;
+      let skuDetails = [];
+      if (isAttraction && attractionData?.skus) {
+         Object.keys(updated.selectedSkus || {}).forEach(skuId => {
+            const qty = updated.selectedSkus[skuId];
+            const sku = attractionData.skus.find(s => s.sku_id === skuId);
+            if (sku) {
+               let price = 0;
+               if (!sku.slots?.length) price = 0;
+               else if (getTicketTimes().length === 0) price = sku.slots[0]?.price || 0;
+               else if (updated.time) price = sku.slots.find(s => s.time === updated.time)?.price || 0;
+               else price = sku.slots[0].price || 0;
+               
+               totalPrice += price * qty;
+               skuDetails.push({ ...sku, price, quantity: qty });
+            }
+         });
+      }
+      onChange && onChange({ ...updated, availableTimes, sku_details: skuDetails, totalAttractionPrice: totalPrice })
     } else {
       console.warn(t("bookingForm.totalPax") + " " + minPax)
     }
@@ -317,6 +409,114 @@ useEffect(() => {
   const selectedGroupData = isPackageTour 
     ? bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.find(g => String(g.group_id) === String(form.accommodation_group_id)) 
     : null;
+
+  const getSkuType = (skuName) => {
+    const name = (skuName || '').toLowerCase();
+    if (name.includes("child") && !name.includes("adult")) return "child";
+    return "adult";
+  };
+
+  const updatePaxFromSkus = (currentSelectedSkus) => {
+    let adults = 0;
+    let children = 0;
+    let totalPrice = 0;
+    const skuDetails = [];
+    Object.keys(currentSelectedSkus).forEach((skuId) => {
+      const qty = currentSelectedSkus[skuId];
+      const sku = attractionData?.skus?.find((s) => s.sku_id === skuId);
+      if (sku) {
+        if (getSkuType(sku.name) === "child") children += qty;
+        else adults += qty;
+        const price = getSkuPrice(sku);
+        totalPrice += price * qty;
+        skuDetails.push({ ...sku, price, quantity: qty });
+      }
+    });
+    setForm(prev => {
+      const updated = { ...prev, adults, child: children, selectedSkus: currentSelectedSkus };
+      onChange && onChange({ ...updated, availableTimes, sku_details: skuDetails, totalAttractionPrice: totalPrice });
+      return updated;
+    });
+  };
+
+  const filteredCebuSkus = () => {
+    if (!isAttraction || !attractionData?.skus) return [];
+    const times = getTicketTimes();
+    if (times.length === 0) return attractionData.skus;
+    if (!form.time) return [];
+    return attractionData.skus.filter(sku =>
+      sku.slots?.some(slot => slot.time === form.time)
+    );
+  };
+
+  const getSkuAvailability = (sku) => {
+    if (!isAttraction || !sku) return 0;
+    if (getTicketTimes().length === 0) {
+      return sku.slots?.[0]?.available_quantity || 0;
+    }
+    if (!form.time) return 0;
+    const currentSlot = sku.slots?.find(s => s.time === form.time);
+    if (!currentSlot) return 0;
+    const originalAvailability = currentSlot.available_quantity || 0;
+    if (sku.type !== 'shared' || !sku.slot_id) return originalAvailability;
+
+    let usedQuantity = 0;
+    const sharedSkus = attractionData?.skus?.filter(s => s.slot_id === sku.slot_id) || [];
+    sharedSkus.forEach(sharedSku => {
+      if (sharedSku.slots?.some(s => s.time === form.time)) {
+        usedQuantity += selectedSkus[sharedSku.sku_id] || 0;
+      }
+    });
+    return Math.max(0, originalAvailability - usedQuantity);
+  };
+
+  const getSkuPrice = (sku) => {
+    if (!sku?.slots?.length) return 0;
+    if (getTicketTimes().length === 0) return sku.slots[0]?.price || 0;
+    if (form.time) {
+      return sku.slots.find(s => s.time === form.time)?.price || 0;
+    }
+    return sku.slots[0].price || 0;
+  };
+
+  const updateSkuQuantity = (skuId, delta) => {
+    const sku = attractionData?.skus?.find(s => s.sku_id === skuId);
+    if (!sku) return;
+    const currentQty = selectedSkus[skuId] || 0;
+    const newQty = Math.max(0, currentQty + delta);
+
+    if (delta > 0) {
+      if (getTicketTimes().length === 0) {
+        const available = getSkuAvailability(sku);
+        if (newQty > available) return; // Cannot exceed
+      } else {
+        const targetTime = form.time;
+        const currentSlot = sku.slots?.find(s => s.time === targetTime);
+        if (!currentSlot) return;
+        const originalAvailability = currentSlot.available_quantity || 0;
+        let totalSelectedInGroup = delta;
+        const sharedSkus = (sku.type === 'shared' && sku.slot_id)
+          ? (attractionData?.skus?.filter(s => s.slot_id === sku.slot_id) || [])
+          : [sku];
+        sharedSkus.forEach(s => {
+          if (s.slots?.some(sl => sl.time === targetTime)) {
+            totalSelectedInGroup += selectedSkus[s.sku_id] || 0;
+          }
+        });
+        if (totalSelectedInGroup > originalAvailability) return; // Cannot exceed
+      }
+    }
+    
+    const newSelectedSkus = { ...selectedSkus };
+    if (newQty === 0) {
+      delete newSelectedSkus[skuId];
+    } else {
+      newSelectedSkus[skuId] = newQty;
+    }
+    setSelectedSkus(newSelectedSkus);
+    updatePaxFromSkus(newSelectedSkus);
+  };
+
 
   return (
     <>
@@ -367,11 +567,12 @@ useEffect(() => {
           )}
 
           {/* 2. Pricing Table (Tier Pricing) */}
-          {(!isPackageTour || (isPackageTour && form.accommodation_group_id)) && (
+          {(!isPackageTour || (isPackageTour && form.accommodation_group_id)) && !isAttraction && (
             <BookingPriceTable id={productId} accommodation_group_id={form.accommodation_group_id} />
           )}
 
           {/* Passenger Count (Pax) */}
+          {!isAttraction && (
           <div className="space-y-3">
             <label className="flex font-medium text-sm text-foreground items-center gap-2">
               <Users className="w-4 h-4 text-primary" />
@@ -406,7 +607,7 @@ useEffect(() => {
               </Badge>
             </button>
           </div>
-
+ )}
           {/* Passenger Modal */}
           <PassengerModal
             open={showPassengerModal}
@@ -425,9 +626,61 @@ useEffect(() => {
               child_without_bed: form.child_without_bed
             }}
           />
+         
+
+          {/* Attraction Ticket Selection */}
+          {isAttraction && !isBookingAllowed && (
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg flex items-start gap-3">
+               <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
+               <div>
+                 <h6 className="font-semibold text-yellow-800 text-sm mb-1">{t("bookingNotAvailable", "Booking Not Available")}</h6>
+                 <p className="text-sm text-yellow-700">{t("noSkuMapping", "No SKU Mappings were found for this attraction. Booking cannot proceed.")}</p>
+               </div>
+            </div>
+          )}
+          
+          {isAttraction && isBookingAllowed && form.date && (getTicketTimes().length === 0 || form.time) && (
+            <div className="space-y-3">
+               <label className="flex font-medium text-sm text-foreground items-center gap-2">
+                 <Ticket className="w-4 h-4 text-primary" />
+                 {t("selectTickets", "Select Tickets")}
+               </label>
+               {attractionLoading ? (
+                 <div className="flex justify-center p-4">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                 </div>
+               ) : filteredCebuSkus().length > 0 ? (
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {filteredCebuSkus().map(sku => (
+                       <div key={sku.sku_id} className="border border-border rounded-lg p-3 flex justify-between items-center bg-background">
+                         <div className="flex flex-col gap-1 overflow-hidden pr-2">
+                           <span className="text-sm font-semibold truncate text-foreground">{sku.name}</span>
+                           <span className="text-sm font-bold text-primary">{bookedProductDetail?.data?.basicinfo?.currency || ''} {getSkuPrice(sku)}</span>
+                           {getSkuAvailability(sku) > 0 ? (
+                             <span className="text-xs text-muted-foreground">{t("available", "Available")}: {getSkuAvailability(sku)}</span>
+                           ) : (
+                             <span className="text-xs text-red-600 font-semibold">{t("soldOut", "Sold Out")}</span>
+                           )}
+                         </div>
+                         <div className="flex items-center gap-3">
+                           <button type="button" disabled={!(selectedSkus[sku.sku_id] > 0)} onClick={() => updateSkuQuantity(sku.sku_id, -1)} className="w-7 h-7 rounded-full border border-primary/30 bg-primary/10 text-primary flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary hover:text-white transition-colors">-</button>
+                           <span className="text-sm font-bold w-4 text-center">{selectedSkus[sku.sku_id] || 0}</span>
+                           <button type="button" disabled={getSkuAvailability(sku) <= (selectedSkus[sku.sku_id] || 0)} onClick={() => updateSkuQuantity(sku.sku_id, 1)} className="w-7 h-7 rounded-full border border-primary/30 bg-primary/10 text-primary flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary hover:text-white transition-colors">+</button>
+                         </div>
+                       </div>
+                    ))}
+                 </div>
+               ) : (
+                 <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg flex items-center gap-2 text-sm text-blue-800">
+                    <Info className="w-4 h-4" />
+                    <span>{t("noTicketsFound", "No tickets found for the selected date and time.")}</span>
+                 </div>
+               )}
+            </div>
+          )}
 
           {/* Hotel Selection (For non-package tours) */}
-          {!isPackageTour && (
+          {!isPackageTour && !isAttraction && (
             <div className="space-y-3 ">
               <label className="flex font-medium text-sm text-foreground items-center gap-2">
                 <Hotel className="w-4 h-4 text-primary" />
@@ -499,7 +752,7 @@ useEffect(() => {
   {form.date ? (
     (() => {
       const dateStr = form.date;
-      const times = pickupTimesByDate[dateStr] || [];
+      const times = isAttraction ? getTicketTimes() : (pickupTimesByDate[dateStr] || []);
       if (times.length === 0) {
         return (
           <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">

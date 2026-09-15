@@ -41,8 +41,10 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
   const { prefillData, updatePrefillDataFromCart } = useOrderStore();
   const { items: cartItems } = useCartStore();
 
-  const isPackageTourProduct = bookedProductDetail?.data?.basicinfo?.category_id === 8 || 
+  const productCategoryId = Number(bookedProductDetail?.data?.basicinfo?.category_id);
+  const isPackageTourProduct = productCategoryId === 8 || 
                                tieredPricingData?.data?.tieredPricing?.data?.product_pricing?.some(p => p.adult_sharing);
+  const isAttraction = productCategoryId === 1;
 
   useEffect(() => {
     updatePrefillDataFromCart(cartItems);
@@ -66,7 +68,7 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
   }, [setJustAdded]);
 
   useEffect(() => {
-    if (!tieredPricingData) return;
+    if (!tieredPricingData && !isAttraction) return;
 
     const totalPaxCount = isPackageTourProduct
       ? (Number(formData.twin_sharing) || 0) + 
@@ -74,6 +76,14 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
         (Number(formData.child_with_bed) || 0) + 
         (Number(formData.child_without_bed) || 0)
       : (Number(formData.adults) || 0) + (Number(formData.child) || 0);
+
+    if (isAttraction) {
+      const total = formData.totalAttractionPrice || 0;
+      const summary = { total, totalPax: totalPaxCount };
+      setLocalPriceSummary(summary);
+      if (onPriceChange) onPriceChange(summary);
+      return;
+    }
 
     let pricing = isPackageTourProduct
       ? calculateTierPricing(0, 0, tieredPricingData, true, {
@@ -161,6 +171,8 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
         child_without_bed: prefillData.child_without_bed || prev.child_without_bed,
         accommodation_group_id: prefillData.accommodation_group_id || prev.accommodation_group_id,
         group_hotel_id: prefillData.group_hotel_id || prev.group_hotel_id,
+        selectedSkus: prefillData.selectedSkus || prev.selectedSkus,
+        sku_details: prefillData.sku_details || prev.sku_details,
       }));
     }
   }, [prefillData]);
@@ -214,30 +226,39 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
     const image = productData?.basicinfo?.images?.[0]?.image || "img";
     const currency = apiData?.currency ;
 
-    let pricing = isPackageTourProduct
-      ? calculateTierPricing(
-          0, // adultCount not directly used for package tours
-          0, // childCount not directly used for package tours
-          tieredPricingData,
-          true, // isPackageTour
-          {
-            twin_sharing: formData.twin_sharing,
-            single_sharing: formData.single_sharing,
-            child_with_bed: formData.child_with_bed,
-            child_without_bed: formData.child_without_bed,
-            selectedPackageId: formData.accommodation_group_id,
-          }
-        )
-      : calculateTierPricing(
-          formData.adults || 0,
-          formData.child || 0,
-          tieredPricingData,
-          false // isPackageTour
-        );
+    let pricing;
+    if (isAttraction) {
+      pricing = {
+         total: formData.totalAttractionPrice || 0,
+         adultPrice: 0,
+         childPrice: 0,
+      };
+    } else {
+      pricing = isPackageTourProduct
+        ? calculateTierPricing(
+            0, // adultCount not directly used for package tours
+            0, // childCount not directly used for package tours
+            tieredPricingData,
+            true, // isPackageTour
+            {
+              twin_sharing: formData.twin_sharing,
+              single_sharing: formData.single_sharing,
+              child_with_bed: formData.child_with_bed,
+              child_without_bed: formData.child_without_bed,
+              selectedPackageId: formData.accommodation_group_id,
+            }
+          )
+        : calculateTierPricing(
+            formData.adults || 0,
+            formData.child || 0,
+            tieredPricingData,
+            false // isPackageTour
+          );
+    }
 
     // Re-calculate total based on individual counts and prices from the tier,
     // as a safeguard if calculateTierPricing's total is incorrect or missing.
-    if (pricing) {
+    if (!isAttraction && pricing) {
         let reAggregatedTotal = 0;
         if (isPackageTourProduct) {
             reAggregatedTotal += (Number(formData.twin_sharing) || 0) * (Number(pricing.adultSharingPrice) || 0);
@@ -256,7 +277,7 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
     }
 
     // Final fallback if pricing.total is still 0 or invalid after re-aggregation
-    if (isPackageTourProduct) {
+    if (!isAttraction && isPackageTourProduct) {
       // If pricing is not found or total is 0, use starting price logic (fallback)
       if (!pricing || pricing.total === 0) {
         const startingPrice = Number(productData?.basicinfo?.starting_price) || 0;
@@ -268,7 +289,7 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
           childWithoutBedPrice: startingPrice, // Fallback
         };
       }
-    } else {
+    } else if (!isAttraction) {
       if (!pricing || pricing.total === 0) {
         const startingPrice = Number(productData?.basicinfo?.starting_price) || 0;
         pricing = {
@@ -285,7 +306,9 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
       tourId: id,
       title,
       image,
-      category_name: isPackageTourProduct ? 8 : 2, // Assuming 8 is package tour category
+      category_id: productCategoryId,
+      category_name: productCategoryId,
+      type: isAttraction ? "admission" : "daytour",
       currency,
       selectedDate: formData.date,
       selectedTime: formData.time || "09:00 AM",
@@ -302,6 +325,11 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
         child_without_bed: formData.child_without_bed,
         accommodation_group_id: formData.accommodation_group_id,
         group_hotel_id: formData.group_hotel_id,
+      }),
+      ...(isAttraction && {
+        sku_details: formData.sku_details,
+        selectedSkus: formData.selectedSkus,
+        totalAttractionPrice: formData.totalAttractionPrice || 0,
       }),
     });
 
