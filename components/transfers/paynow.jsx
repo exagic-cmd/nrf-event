@@ -81,7 +81,7 @@ const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => 
                         <h5 className="text-sm font-bold text-muted-foreground mb-3">Cancellation Policy</h5>
 
                         {cancellationStatus === "NonRefundable" ? (
-                          <div className="text-[#f26e6e] space-y-1">
+                          <div className="text-primary space-y-1">
                             <p className="font-semibold text-sm">Non-Refundable</p>
                             <p className="text-sm opacity-90">100% charge will be applied on cancellation.</p>
                           </div>
@@ -100,7 +100,7 @@ const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => 
                               if (!fromDate || isNaN(amt)) return null;
                               const formattedAmt = amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                               return (
-                                <div key={fIdx} className="text-[#f26e6e] mt-2">
+                                <div key={fIdx} className="text-primary mt-2">
                                   <p className="font-semibold text-sm">Cancel on or after {formatCancelDate(fromDate)}</p>
                                   <p className="text-sm opacity-90 mt-0.5">Cancellation charge of {currency}{formattedAmt} will be applied.</p>
                                 </div>
@@ -221,14 +221,15 @@ const PayNow = ({ totalPrice }) => {
 
     if (typeof window === "undefined") return [];
 
-    const saved = sessionStorage.getItem("cartItems");
+    const saved = sessionStorage.getItem("cartItems") || localStorage.getItem("tour_cart");
     if (!saved) return [];
 
     try {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed)) {
-        setItems(parsed); // Sync to Zustand
-        return parsed;
+      const storedItems = Array.isArray(parsed) ? parsed : parsed?.state?.items;
+      if (Array.isArray(storedItems)) {
+        setItems(storedItems); // Sync to Zustand
+        return storedItems;
       }
     } catch (e) {
       console.error("Failed to parse cart from sessionStorage", e);
@@ -237,6 +238,16 @@ const PayNow = ({ totalPrice }) => {
   })();
 
   const hasLinkType10 = items.some(item => item.link_type_id === 10);
+
+  const getCartCategoryId = (item) => {
+    if (item?.category_id !== undefined && item?.category_id !== null) {
+      return Number(item.category_id);
+    }
+    if (item?.sku_details?.length || Object.keys(item?.selectedSkus || {}).length > 0) {
+      return 1;
+    }
+    return Number(item?.category_name ?? 0);
+  };
 
   useEffect(() => {
     const hasPendingPayment = typeof window !== "undefined" && !!localStorage.getItem("pendingPaymentOrderId");
@@ -342,7 +353,16 @@ const PayNow = ({ totalPrice }) => {
       rate: a.rate || 0,
       total: a.total || 0,
     }));
-const exceptionsPayload = item.exceptions || []; 
+    const exceptionsPayload = item.exceptions || [];
+    const itemCategoryId = getCartCategoryId(item);
+    const selectedSkuDetails = Array.isArray(item.sku_details)
+      ? item.sku_details
+      : Object.entries(item.selectedSkus || {}).map(([skuId, quantity]) => ({
+          sku_id: skuId,
+          date: item.selectedDate || item.tour_date || "",
+          time: item.selectedTime || item.time || "",
+          quantity,
+        }));
     console.log("Building cart item for:", item);
 
     // For accommodation items, use the existing structure from cart
@@ -490,7 +510,7 @@ flight_dep_estimated_time:
           child_without_bed: item.child_without_bed || 0,
            accommodation_group_id: item.accommodation_group_id || '',
         group_hotel_id: item.group_hotel_id || '',
-          category_id: item.category_name || 2,
+          category_id: itemCategoryId ||item.category_name|| 2,
           dropoff_point: item.hotelName || item.searchParams?.dropoff?.name || '',
           flight_number: item.pickupFlightNumber || '',
           operator_email: 'operator@example.com',
@@ -539,6 +559,12 @@ flight_dep_estimated_time:
           addons: addonsPayload,
           addons_round: addonsRoundPayload,
           exceptions: exceptionsPayload,
+            selected_cebu_skus: itemCategoryId === 1 ? selectedSkuDetails.map(t => ({
+          sku_id: t.sku_id,
+          date: t.date,
+          time: t.time || "",
+          quantity: t.quantity
+        })) : [],
         };
   }
 }

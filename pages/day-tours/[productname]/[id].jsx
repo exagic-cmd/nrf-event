@@ -518,7 +518,7 @@ const handleVariantSelect = async (variant) => {
            <>
              <div className="p-4 border-b bg-gray-50">
                <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                 <Hotel size={18} className="text-[#CC9A55]" />
+                 <Hotel size={18} className="text-primary" />
                  {t("packageOptions")}
                </h3>
              </div>
@@ -530,7 +530,7 @@ const handleVariantSelect = async (variant) => {
                     <div className="flex justify-between items-start">
                       <span className="font-bold text-gray-900">{group.name}</span>
                       <div className="flex flex-col text-right">
-                        <span className="text-[#CC9A55] font-bold">
+                        <span className="text-primary font-bold">
                           {apiData?.currency} {group.b2c_tiers?.[0]?.adult_sharing || "N/A"}
                         </span>
                         {currencyData && currencyData.exchange_rate !== 1 && group.b2c_tiers?.[0]?.adult_sharing && (
@@ -544,7 +544,7 @@ const handleVariantSelect = async (variant) => {
                      <span className="text-gray-500">{t("hotelSelection", "Hotel Selection")}: {group.allow_hotel_selection ? t("yes") : t("no")}</span>
                      <button 
                        onClick={() => { setViewingHotels(group); setShowAllHotels(false); }}
-                       className="text-[#CC9A55] font-bold flex items-center gap-1"
+                       className="text-primary font-bold flex items-center gap-1"
                      >
                        <Eye size={14} /> {t("viewHotels", "View Hotels")}
                      </button>
@@ -555,11 +555,11 @@ const handleVariantSelect = async (variant) => {
            </>
          )}
 
-         <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 border-t border-orange-200">
+         <div className="bg-secondary p-4 border-t border-primary">
            <div className="text-center">
              {!isPackageTour && (
                <>
-                 <div className="text-sm text-gray-600">
+                 <div className="text-sm text-primary font-semibold">
                    {t("starting_from", "Starting From")}
                  </div>
                   <div className="my-2 flex flex-col items-center">
@@ -578,7 +578,7 @@ const handleVariantSelect = async (variant) => {
              {apiData?.is_group && !isPackageTour ? (
                <button
                  onClick={scrollToTourOptions}
-                 className="w-full bg-[#CC9A55] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                 className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                >
                  {t("choose_tour_type", "Choose your Type")}
                  <ChevronDown size={20} />
@@ -586,7 +586,7 @@ const handleVariantSelect = async (variant) => {
              ) : (
                <button
                  onClick={handleProceedBooking}
-                 className="w-full bg-[#CC9A55] text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                 className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                >
                  {t("proceedBooking")}
                  <ChevronRight size={20} />
@@ -609,14 +609,14 @@ const handleVariantSelect = async (variant) => {
              <div className="p-4 overflow-y-auto space-y-3">
                {(showAllHotels ? viewingHotels.hotels : viewingHotels.hotels?.slice(0, 4))?.map((hotel, idx) => (
                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                   <div className="bg-orange-100 p-2 rounded-lg"><Hotel size={16} className="text-[#CC9A55]" /></div>
+                   <div className="bg-orange-100 p-2 rounded-lg"><Hotel size={16} className="text-primary" /></div>
                    <span className="text-sm font-medium text-gray-800">{hotel.title || hotel}</span>
                  </div>
                ))}
                {viewingHotels.hotels?.length > 4 && !showAllHotels && (
                  <button 
                    onClick={() => setShowAllHotels(true)}
-                   className="w-full py-2 text-sm font-bold text-[#CC9A55] hover:bg-orange-50 rounded-xl border-2 border-dashed border-orange-200 transition-colors"
+                   className="w-full py-2 text-sm font-bold text-primary hover:bg-primary/10 rounded-xl border-2 border-dashed border-secondry transition-colors"
                  >
                    {t("loadMore", "Load More Hotels")} ({viewingHotels.hotels.length - 4})
                  </button>

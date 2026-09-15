@@ -91,12 +91,12 @@ export default function HeroFilter() {
 
     return filterTabs.filter((tab) => {
       if (tab.id === 4) return categoryIds.includes(4); // Accommodations
-      if (tab.id === 3) return categoryIds.includes(1) || categoryIds.includes(3); // DayTours (API ID 1 or 3)
+      if (tab.id === 3) return categoryIds.includes(3); // DayTours
       if (tab.id === 2) return categoryIds.includes(2); // Transfers (API ID 2)
       if (tab.id === 8) return categoryIds.includes(8); // Package Tours (API ID 8)
       if (tab.id === 12) return categoryIds.includes(12); // Attractions (API ID 12)
       if (tab.id === 5) return categoryIds.includes(5); // Search Text (API ID 5)
-      if (tab.id === 1) return categoryIds.includes(1); // Coming Soon (API ID 1)
+      if (tab.id === 1) return categoryIds.includes(1); // Admissions (API ID 1)
       return false; });
   }, [event, filterTabs]);
 
@@ -153,7 +153,7 @@ export default function HeroFilter() {
   }
 
   // DAYTOURS
-  if (payload.category === "daytour") {
+  if (payload.category === "daytour" || payload.category === "admission") {
     const { country, city, search, results } = payload;
 
     setSearchDaytourParams({
@@ -163,7 +163,9 @@ export default function HeroFilter() {
       category_id: payload.category_id || 3,
     });
 
-    router.push(`/listings?searched=true&type=daytour&category=${payload.category_id || 3}`);
+    const categoryId = Number(payload.category_id || (payload.category === "admission" ? 1 : 3));
+    const listingType = payload.category === "admission" ? "admission" : "daytour";
+    router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
     return;
   }
 
@@ -249,8 +251,12 @@ export default function HeroFilter() {
                         const cat = noResults.category;
                         if (cat === "accommodation") {
                           router.push(`/listings?searched=true&type=accommodation`);
-                        } else if (cat === "daytour") {
-                          router.push(`/listings?searched=true&type=daytour`);
+                        } else if (cat === "daytour" || cat === "admission") {
+                          const categoryId = cat === "admission"
+                            ? 1
+                            : ([3, 8, 12].includes(filterActiveTab) ? filterActiveTab : 3);
+                          const listingType = cat === "admission" ? "admission" : "daytour";
+                          router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
                         } else {
                           router.push(`/listings?searched=true&type=transfer`);
                         }

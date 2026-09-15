@@ -26,12 +26,14 @@ import AccommodationListMap from "@/components/accommodations/AccommodationListM
 import GoogleMap from "@/components/daytours/GoogleMap";
 
 const DAYTOUR_CATEGORY_IDS = [3, 8, 12];
+const ADMISSION_CATEGORY_ID = 1;
 
 const getListingCategory = (categoryId, fallbackType) => {
   const normalizedCategoryId = Number(categoryId);
 
   if (normalizedCategoryId === 2) return "transfer";
   if (normalizedCategoryId === 4) return "accommodation";
+  if (normalizedCategoryId === ADMISSION_CATEGORY_ID) return "admission";
   if (DAYTOUR_CATEGORY_IDS.includes(normalizedCategoryId)) return "daytour";
   return fallbackType || "accommodation";
 };
@@ -70,6 +72,7 @@ function ListingsPage() {
     const t = urlSearchParams.get("type");
     const category = Number(urlSearchParams.get("category"));
     if (t === "accommodation" || t === "hotels") return 4;
+    if (t === "admission") return ADMISSION_CATEGORY_ID;
     if (t === "daytour" || t === "day-tours") return DAYTOUR_CATEGORY_IDS.includes(category) ? category : 3;
     if (t === "transfer") return 2;
     return 4;
@@ -79,7 +82,7 @@ function ListingsPage() {
     { id: 4, label: "hotels", name: "Accommodations" },
     { id: 3, label: "day-tours", name: "DayTours" },
     { id: 2, label: "transfer", name: "Transfers" },
-    { id: 1, label: "coming-soon", name: "Coming Soon" },
+    { id: 1, label: "admission", name: "Admissions" },
     { id: 5, label: "search", name: "Search Text" },
     { id: 8, label: "packages", name: "Package Tours" },
     { id: 12, label: "attractions", name: "Attractions" },
@@ -95,10 +98,11 @@ function ListingsPage() {
 
     return filterTabs.filter((tab) => {
       if (tab.id === 4) return categoryIds.includes(4); // Accommodations
-      if (tab.id === 3) return categoryIds.includes(1) || categoryIds.includes(3); // DayTours
+      if (tab.id === 3) return categoryIds.includes(3); // DayTours
       if (tab.id === 2) return categoryIds.includes(2); // Transfers (API ID 2)
       if (tab.id === 8) return categoryIds.includes(8); // Package Tours
       if (tab.id === 12) return categoryIds.includes(12); // Attractions
+      if (tab.id === 1) return categoryIds.includes(1); // Admissions
       return false; 
     });
   }, [event, filterTabs]);
@@ -125,15 +129,16 @@ function ListingsPage() {
       return;
     }
 
-    if ([3, 8, 12].includes(filterActiveTab)) {
+    if ([1, 3, 8, 12].includes(filterActiveTab)) {
       setSelectedCountry(payload.country);
       setSelectedCity(payload.city);
       setDaytourSearchQuery(payload.search);
       const categoryId = payload.category_id || filterActiveTab;
       setSearchDaytourParams({ country: payload.country, city: payload.city, search: payload.search, searchQuery: payload.search, category_id: categoryId });
-      router.push(`/listings?searched=true&type=daytour&category=${categoryId}`);
+      const listingType = filterActiveTab === 1 ? "admission" : "daytour";
+      router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
       setHasSearched(true);
-      setSearchCategory("daytour");
+      setSearchCategory(listingType);
       return;
     }
 
@@ -384,7 +389,7 @@ function ListingsPage() {
 
   useEffect(() => {
     const type = urlSearchParams.get("type");
-    if (type === "daytour") {
+    if (type === "daytour" || type === "admission") {
       setDaytourSelectedCountry(searchDaytourParams.country);
       setDaytourSelectedCity(searchDaytourParams.city);
       setCardSearchQuery(searchDaytourParams.searchQuery);
@@ -393,7 +398,7 @@ function ListingsPage() {
       const hasDaytourPayload = searchDaytourParams && (searchDaytourParams.country || searchDaytourParams.city || searchDaytourParams.searchQuery);
       if (hasDaytourPayload) {
         fetchDaytours({
-          category_id: [3, 8, 12].includes(Number(searchDaytourParams.category_id))
+          category_id: [1, 3, 8, 12].includes(Number(searchDaytourParams.category_id))
             ? Number(searchDaytourParams.category_id)
             : 3,
           country: searchDaytourParams.country,
@@ -462,7 +467,7 @@ useEffect(() => {
 
     if (
       (filterActiveTab === 4 && (type === "accommodation" || type === "hotels")) ||
-      (DAYTOUR_CATEGORY_IDS.includes(filterActiveTab) && (type === "daytour" || type === "day-tours")) ||
+      ((DAYTOUR_CATEGORY_IDS.includes(filterActiveTab) || filterActiveTab === 1) && (type === "daytour" || type === "day-tours" || type === "admission")) ||
       (filterActiveTab === 2 && type === "transfer")
     ) {
       return;
@@ -470,7 +475,7 @@ useEffect(() => {
 
     if (filterActiveTab === 4 && Object.keys(searchAccommodationParams).length > 0) {
       handleFilterFromCard(searchAccommodationParams);
-    } else if (DAYTOUR_CATEGORY_IDS.includes(filterActiveTab) && Object.keys(searchDaytourParams).length > 0) {
+    } else if ((DAYTOUR_CATEGORY_IDS.includes(filterActiveTab) || filterActiveTab === 1) && Object.keys(searchDaytourParams).length > 0) {
       handleFilterFromCard(searchDaytourParams);
     } else if (filterActiveTab === 2 && Object.keys(searchTransferParams).length > 0) {
       handleFilterFromCard(searchTransferParams);
@@ -493,6 +498,7 @@ useEffect(() => {
         return <TransfersList searchParams={searchParams} searchPerformed={hasValidTransferSearch} />;
       case "daytour":
       case "day-tours":
+      case "admission":
         return (
           <DaytoursList
             searchTerm={daytourSearchTerm}
@@ -618,7 +624,7 @@ useEffect(() => {
             </div>
           )}
 
-          {(searchCategory === "daytour" || searchCategory === "day-tours") && (
+          {(searchCategory === "daytour" || searchCategory === "day-tours" || searchCategory === "admission") && (
             <div className="h-fit md:sticky z-30 top-24 self-start w-full lg:w-56">
               {!isLoading && searchResults.length > 0 && (
                 <FilterSidebar
@@ -667,7 +673,7 @@ useEffect(() => {
 
           {/* Right: Map or FAQs */}
           <div className="lg:w-1/4 h-fit sticky top-24 self-start z-10">
-            {(searchCategory === "daytour" || searchCategory === "day-tours") && (
+            {(searchCategory === "daytour" || searchCategory === "day-tours" || searchCategory === "admission") && (
               <GoogleMap
                 center={{ lat: 1.3521, lng: 103.8198 }}
                 zoom={12}
