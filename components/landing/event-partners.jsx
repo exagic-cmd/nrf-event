@@ -3,103 +3,149 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useEventStore } from "@/store/useEventStore";
 
-
 function getPartnerLogo(partner) {
   return partner?.logo_url || partner?.logo || null;
 }
 
+/**
+ * Contrast-safe wrapper for partner logos using theme `bg-surface`.
+ * Ensures dark/light logos render crisp without missing issues.
+ */
+function LogoImage({ logo, name, featured = false, large = false, className = "" }) {
+  return (
+    <div className="relative flex h-full w-full items-center justify-center rounded-2xl bg-primary/10 p-2 shadow-sm border border-border/60 transition-all">
+      <img
+        src={logo}
+        alt={name || "Event partner"}
+        className={`w-full object-contain transition-all duration-300 drop-shadow-sm ${
+          large
+            ? "max-h-20 sm:max-h-24 md:max-h-28"
+            : featured
+            ? "max-h-16 sm:max-h-20 md:max-h-24"
+            : "max-h-10 sm:max-h-12 md:max-h-14"
+        } ${className}`}
+        loading="lazy"
+      />
+    </div>
+  );
+}
 
-
+/**
+ * PartnerCard component rendering cards tailored per layout.
+ */
 function PartnerCard({
   partner,
   index,
   highlighted = false,
   featured = false,
+  large = false,
   layout = 1,
+  onClick,
 }) {
   const logo = getPartnerLogo(partner);
+  if (!logo) return null;
 
-  const cardClasses =
-    layout === 2
-      ? `
-        flex
-        items-center
-        justify-center
-        rounded-2xl
-        border
-        bg-surface
-        transition-all
-        duration-700
-        ${
-          highlighted
-            ? "border-primary/60 shadow-xl shadow-primary/10 scale-105"
-            : "border-border/50 shadow-sm scale-100"
-        }
-        ${featured ? "h-36 md:h-44" : "h-24 md:h-28"}
-        px-6
-      `
-      : `
-        flex
-        items-center
-        justify-center
-        rounded-xl
-        border
-        border-border/60
-        bg-surface
-        px-6
-        py-5
-        shadow-sm
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:border-primary/40
-        hover:shadow-md
-        ${featured ? "h-40 md:h-48" : "h-24 md:h-28"}
-      `;
-
-  const content = (
-    <div
-      className={`
-        ${cardClasses}
-        ${featured ? "w-full" : "w-full"}
-      `}
-    >
-      <img
-        src={logo}
-        alt={partner?.name || `Partner ${index + 1}`}
+  // LAYOUT 1: Masked Sliding Curtain Card (Single Logo at a Time)
+  if (layout === 1) {
+    const cardContent = (
+      <div
         className={`
-          w-full
-          object-contain
-          transition-all
-          duration-700
+          flex h-32 sm:h-36 md:h-40 w-full items-center justify-center  px-4 py-3
+        `}
+      >
+        <LogoImage logo={logo} name={partner?.name} large={true} />
+      </div>
+    );
+
+    if (partner?.url) {
+      return (
+        <a
+          href={partner.url}
+          target="_blank"
+          rel="noreferrer"
+          className="block w-full"
+          aria-label={partner?.name || "Event partner"}
+        >
+          {cardContent}
+        </a>
+      );
+    }
+    return cardContent;
+  }
+
+  // LAYOUT 2: Solid Primary Color Center Spotlight Stage Card
+  if (layout === 2) {
+    const cardContent = (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`
+          relative flex w-full items-center justify-center rounded-2xl border bg-primary/0 p-2 text-left
+          transition-all duration-500 cursor-pointer outline-none focus:outline-none
+           text-primary-foreground border-primary
           ${
             highlighted
-              ? "max-h-20 md:max-h-24"
-              : featured
-              ? "max-h-20 md:max-h-24"
-              : "max-h-14 md:max-h-16"
+              ? "z-20 scale-105 shadow-xl shadow-primary/30 ring-4 ring-primary/20 border-primary-hover"
+              : "scale-90 opacity-40 hover:opacity-80 border-primary/60"
           }
+          ${featured || highlighted ? "h-28 sm:h-32 md:h-36" : "h-20 sm:h-24 md:h-28"}
         `}
-        loading="lazy"
-      />
-    </div>
+      >
+        <LogoImage logo={logo} name={partner?.name} featured={featured || highlighted} />
+      </button>
+    );
+
+    if (partner?.url && !onClick) {
+      return (
+        <a
+          href={partner.url}
+          target="_blank"
+          rel="noreferrer"
+          className="block w-full"
+          aria-label={partner?.name || "Event partner"}
+        >
+          {cardContent}
+        </a>
+      );
+    }
+    return cardContent;
+  }
+
+  // LAYOUT 3: Primary Gradient Cards (Single Row with ~1/3 Larger Active Card)
+  const cardContent = (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`
+        relative flex w-full items-center justify-center text-left
+        transition-all duration-500 cursor-pointer outline-none focus:outline-none
+        bg-gradient-to-br from-primary/25 via-primary/15 to-primary/35 dark:from-primary/35 dark:via-primary/20 dark:to-primary/10 border-primary/30
+        ${
+          highlighted
+            ? "z-10 scale-115 md:scale-125 border-2 border-primary shadow-xl bg-primary/10 ring-pimary-30 ring-1 "
+            : "scale-90 md:scale-95 opacity-70 hover:opacity-100 hover:scale-100 hover:border-primary/50"
+        }
+        ${featured ? "h-28 sm:h-32 md:h-36" : "h-20 sm:h-24 md:h-28"}
+      `}
+    >
+      <LogoImage logo={logo} name={partner?.name} featured={featured || highlighted} />
+    </button>
   );
 
-  if (partner?.url) {
+  if (partner?.url && !onClick) {
     return (
       <a
         href={partner.url}
         target="_blank"
         rel="noreferrer"
-        className="block"
+        className="block w-full"
         aria-label={partner?.name || "Event partner"}
       >
-        {content}
+        {cardContent}
       </a>
     );
   }
-
-  return content;
+  return cardContent;
 }
 
 /*
@@ -108,20 +154,26 @@ function PartnerCard({
 |--------------------------------------------------------------------------
 */
 
-export function EventPartners({ layout = 1 }) {
+export function EventPartners({ layout: layoutProp }) {
   const { event } = useEventStore();
-
-  const sectionRef = useRef(null);
-
-  const [shouldMarquee, setShouldMarquee] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Normalize layout from props or store dynamically
+  const layout = useMemo(() => {
+    if (layoutProp !== undefined && layoutProp !== null) return Number(layoutProp);
+    const eventDetails = event?.event || {};
+    const val = eventDetails.landing_layout ?? eventDetails.layout ?? eventDetails.layout_id;
+    const strVal = String(val ?? "1").trim().toLowerCase();
+    if (["2", "layout_2", "layout2"].includes(strVal)) return 2;
+    if (["3", "layout_3", "layout3"].includes(strVal)) return 2;
+    return 1;
+  }, [layoutProp, event]);
 
   /*
   |--------------------------------------------------------------------------
-  | Get active partners
+  | Active partners calculation
   |--------------------------------------------------------------------------
   */
-
   const partners = useMemo(() => {
     const eventPartners = event?.event?.partners || [];
 
@@ -137,224 +189,102 @@ export function EventPartners({ layout = 1 }) {
 
   /*
   |--------------------------------------------------------------------------
-  | Marquee overflow detection
+  | Auto spotlight interval for Layout 1, Layout 2 & Layout 3
   |--------------------------------------------------------------------------
   */
-
   useEffect(() => {
-    if (layout !== 1) {
-      setShouldMarquee(false);
-      return;
-    }
-
-    const measureOverflow = () => {
-      const element = sectionRef.current;
-
-      if (!element) return;
-
-      const isDesktop = window.innerWidth >= 768;
-
-      const tileWidth = isDesktop ? 190 : 160;
-      const gap = isDesktop ? 24 : 16;
-
-      const totalLogoWidth =
-        displayPartners.length * tileWidth +
-        Math.max(0, displayPartners.length - 1) * gap;
-
-      setShouldMarquee(totalLogoWidth > element.clientWidth);
-    };
-
-    measureOverflow();
-
-    window.addEventListener("resize", measureOverflow);
-
-    return () => {
-      window.removeEventListener("resize", measureOverflow);
-    };
-  }, [displayPartners.length, layout]);
-
-  /*
-  |--------------------------------------------------------------------------
-  | Layout 2 spotlight animation
-  |--------------------------------------------------------------------------
-  |
-  | Every 3 seconds the highlighted partner moves to the next one.
-  |--------------------------------------------------------------------------
-  */
-
-  useEffect(() => {
-    if (layout !== 2 || displayPartners.length <= 1) {
+    if (displayPartners.length <= 1) {
       setActiveIndex(0);
       return;
     }
 
     const interval = window.setInterval(() => {
-      setActiveIndex((current) => {
-        return (current + 1) % displayPartners.length;
-      });
+      setActiveIndex((current) => (current + 1) % displayPartners.length);
     }, 3000);
 
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [displayPartners.length, layout]);
+    return () => window.clearInterval(interval);
+  }, [displayPartners.length]);
 
   /*
   |--------------------------------------------------------------------------
-  | No partners
+  | No partners fallback
   |--------------------------------------------------------------------------
   */
-
   if (!displayPartners.length) {
     return null;
   }
 
   /*
   |--------------------------------------------------------------------------
-  | SECTION STYLING
+  | LAYOUT 1: Masked Sliding Curtain Slider (Single Logo Visible at a Time)
   |--------------------------------------------------------------------------
   */
-
-  const sectionClasses =
-    layout === 3
-      ? "w-full py-14 md:py-20 bg-surface-secondary/40"
-      : "w-full py-12 md:py-16";
-
-  /*
-  |--------------------------------------------------------------------------
-  | Small partner counts
-  |--------------------------------------------------------------------------
-  |
-  | One or two partner logos should feel intentionally centered, not like an
-  | incomplete carousel/grid.
-  |
-  |--------------------------------------------------------------------------
-  */
-
-  if (displayPartners.length <= 2) {
-    return (
-      <section
-        className={sectionClasses}
-        aria-labelledby="event-partners-title"
-      >
-        <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
-          <div className="mb-8 text-center">
-            <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
-              OUR PARTNERS
-            </p>
-
-            <h2
-              id="event-partners-title"
-              className="mt-2 text-3xl md:text-4xl font-bold text-foreground"
-            >
-              Trusted By
-            </h2>
-          </div>
-
-          <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-4 md:gap-6">
-            {displayPartners.map((partner, index) => (
-              <div
-                key={`${partner.id || partner.name}-${index}`}
-                className="w-[170px] sm:w-[200px] md:w-[220px]"
-              >
-                <PartnerCard
-                  partner={partner}
-                  index={index}
-                  layout={layout}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | LAYOUT 1
-  |--------------------------------------------------------------------------
-  |
-  | Continuous horizontal marquee.
-  |
-  | Important:
-  | If logos fit inside the container, they stay CENTERED.
-  |
-  |--------------------------------------------------------------------------
-  */
-
   if (layout === 1) {
-    const logoItems = shouldMarquee
-      ? [...displayPartners, ...displayPartners]
-      : displayPartners;
-
     return (
       <section
-        className={sectionClasses}
-        aria-labelledby="event-partners-title"
+        className="w-full py-12 md:py-16"
+        aria-labelledby="event-partners-title-1"
       >
         <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
           <div className="mb-8 text-center">
-            <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
+            <p className="text-primary font-semibold text-xs md:text-sm tracking-widest uppercase">
               OUR PARTNERS
             </p>
-
             <h2
-              id="event-partners-title"
+              id="event-partners-title-1"
               className="mt-2 text-3xl md:text-4xl font-bold text-foreground"
             >
               Trusted By
             </h2>
           </div>
 
-          <div
-            ref={sectionRef}
-            className="relative overflow-hidden"
-          >
-            {shouldMarquee && (
-              <>
-                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background via-background/80 to-transparent" />
-
-                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background via-background/80 to-transparent" />
-              </>
-            )}
-
-            <div
-              className={
-                shouldMarquee
-                  ? `
-                    flex
-                    w-max
-                    animate-[partners-marquee_28s_linear_infinite]
-                    items-center
-                    gap-4
-                    hover:[animation-play-state:paused]
-                    md:gap-6
-                  `
-                  : `
-                    flex
-                    flex-wrap
-                    items-center
-                    justify-center
-                    gap-4
-                    md:gap-6
-                  `
-              }
-            >
-              {logoItems.map((partner, index) => (
-                <div
-                  key={`${partner.id || partner.name}-${index}`}
-                  className="w-[160px] flex-shrink-0 md:w-[190px]"
-                >
-                  <PartnerCard
-                    partner={partner}
-                    index={index}
-                    layout={1}
-                  />
-                </div>
-              ))}
+          {/* Masked Slider Box: Width bounded, overflow-hidden mask */}
+          <div className="mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md py-2">
+            <div className="relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-primary/5 dark:bg-primary/10 p-3 shadow-lg">
+              {/* Sliding Track */}
+              <div
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+              >
+                {displayPartners.map((partner, index) => (
+                  <div
+                    key={`${partner.id || partner.name}-${index}`}
+                    className="w-full flex-shrink-0 px-1"
+                  >
+                    <PartnerCard
+                      partner={partner}
+                      index={index}
+                      large={true}
+                      layout={1}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Carousel Control Dots */}
+          <div className="mt-6 flex flex-col items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2">
+              {displayPartners.map((_, index) => (
+                <button
+                  type="button"
+                  key={index}
+                  onClick={() => setActiveIndex(index)}
+                  className={`
+                    h-2 rounded-full transition-all duration-500 cursor-pointer
+                    ${
+                      index === activeIndex
+                        ? "w-7 bg-primary"
+                        : "w-2 bg-border hover:bg-muted-foreground/40"
+                    }
+                  `}
+                  aria-label={`Go to partner ${index + 1}`}
+                />
+              ))}
+            </div>
+           
+          </div>
         </div>
       </section>
     );
@@ -362,78 +292,123 @@ export function EventPartners({ layout = 1 }) {
 
   /*
   |--------------------------------------------------------------------------
-  | LAYOUT 2
-  |--------------------------------------------------------------------------*/
+  | LAYOUT 2: Center Spotlight Stage Carousel (Single Visible Center Logo)
+  |--------------------------------------------------------------------------
+  */
+  if (layout === 2) {
+    const count = displayPartners.length;
 
-  if (layout === 2 || layout === 3) {
+    // Single partner case
+    if (count === 1) {
+      return (
+        <section
+          className="w-full py-12 md:py-16"
+          aria-labelledby="event-partners-title-2"
+        >
+          <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
+            <div className="mb-8 text-center">
+              <p className="text-primary font-semibold text-xs md:text-sm tracking-widest uppercase">
+                OUR PARTNERS
+              </p>
+              <h2
+                id="event-partners-title-2"
+                className="mt-2 text-3xl md:text-4xl font-bold text-foreground"
+              >
+                Trusted By
+              </h2>
+            </div>
+            <div className="mx-auto w-[220px] sm:w-[260px]">
+              <PartnerCard
+                partner={displayPartners[0]}
+                index={0}
+                highlighted
+                layout={2}
+              />
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // Multiple partners spotlight stage (prev, active, next)
+    const prevIndex = (activeIndex - 1 + count) % count;
+    const nextIndex = (activeIndex + 1) % count;
+
     return (
       <section
-        className="w-full py-14 md:py-20"
-        aria-labelledby="event-partners-title"
+        className="w-full py-12 md:py-16 overflow-hidden"
+        aria-labelledby="event-partners-title-2"
       >
         <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
-          <div className="mb-10 text-center">
-            <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
+          <div className="mb-6 text-center">
+            <p className="text-primary font-semibold text-xs md:text-sm tracking-widest uppercase">
               OUR PARTNERS
             </p>
-
             <h2
-              id="event-partners-title"
+              id="event-partners-title-2"
               className="mt-2 text-3xl md:text-4xl font-bold text-foreground"
             >
               Trusted By
             </h2>
-
-            <p className="mt-3 text-sm md:text-base text-muted-foreground">
-              Trusted by leading partners around the world
-            </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-5 md:gap-7">
-            {displayPartners.map((partner, index) => {
-              const isHighlighted = index === activeIndex;
+          {/* Spotlight Stage View: Previous (dimmed side), Active (center spotlight), Next (dimmed side) */}
+          <div className="mx-auto flex items-center justify-center gap-3 sm:gap-6 py-6 max-w-4xl">
+            {/* Left Side Logo (Previous) */}
+            <div className="w-[120px] sm:w-[160px] md:w-[190px] flex-shrink-0 transition-all duration-700">
+              <PartnerCard
+                partner={displayPartners[prevIndex]}
+                index={prevIndex}
+                highlighted={false}
+                layout={2}
+                onClick={() => setActiveIndex(prevIndex)}
+              />
+            </div>
 
-              return (
-                <div
-                  key={`${partner.id || partner.name}-${index}`}
+            {/* Center Spotlight Stage Logo (Active) */}
+            <div className="w-[200px] sm:w-[250px] md:w-[280px] flex-shrink-0 transition-all duration-700">
+              <PartnerCard
+                partner={displayPartners[activeIndex]}
+                index={activeIndex}
+                highlighted={true}
+                featured={true}
+                layout={2}
+              />
+            </div>
+
+            {/* Right Side Logo (Next) */}
+            <div className="w-[120px] sm:w-[160px] md:w-[190px] flex-shrink-0 transition-all duration-700">
+              <PartnerCard
+                partner={displayPartners[nextIndex]}
+                index={nextIndex}
+                highlighted={false}
+                layout={2}
+                onClick={() => setActiveIndex(nextIndex)}
+              />
+            </div>
+          </div>
+
+          {/* Carousel Controls & Caption */}
+          <div className="mt-4 flex flex-col items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2">
+              {displayPartners.map((_, index) => (
+                <button
+                  type="button"
+                  key={index}
+                  onClick={() => setActiveIndex(index)}
                   className={`
-                    w-[155px]
-                    md:w-[190px]
-                    transition-all
-                    duration-700
+                    h-2 rounded-full transition-all duration-500 cursor-pointer
                     ${
-                      isHighlighted
-                        ? "relative z-10"
-                        : "opacity-70 hover:opacity-100"
+                      index === activeIndex
+                        ? "w-7 bg-primary"
+                        : "w-2 bg-border hover:bg-muted-foreground/40"
                     }
                   `}
-                >
-                  <PartnerCard
-                    partner={partner}
-                    index={index}
-                    highlighted={isHighlighted}
-                    layout={2}
-                  />
-
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-8 flex justify-center gap-2">
-            {displayPartners.map((_, index) => (
-              <span
-                key={index}
-                className={`
-                  h-1.5 rounded-full transition-all duration-500
-                  ${
-                    index === activeIndex
-                      ? "w-7 bg-primary"
-                      : "w-1.5 bg-border"
-                  }
-                `}
-              />
-            ))}
+                  aria-label={`Go to partner ${index + 1}`}
+                />
+              ))}
+            </div>
+          
           </div>
         </div>
       </section>
@@ -442,106 +417,72 @@ export function EventPartners({ layout = 1 }) {
 
   /*
   |--------------------------------------------------------------------------
-  | LAYOUT 3
-  |--------------------------------------------------------------------------
-  |
-  | Premium featured partner layout.
-  |
-  | The active partner is large in the center.
-  | Other partners are smaller around it.
-  |
+  | LAYOUT 3: Primary Gradient Cards (Single Row with Active ~1/3 Larger)
   |--------------------------------------------------------------------------
   */
-
-  const featuredPartner =
-    displayPartners[activeIndex % displayPartners.length];
-
-  const sidePartners = displayPartners.filter(
-    (_, index) => index !== activeIndex
-  );
-
   return (
     <section
-      className="w-full py-14 md:py-20 bg-surface-secondary/40"
-      aria-labelledby="event-partners-title"
+      className="w-full py-12 md:py-16"
+      aria-labelledby="event-partners-title-3"
     >
       <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
-        <div className="mb-10 text-center">
-          <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
+        <div className="mb-8 text-center">
+          <p className="text-primary font-semibold text-xs md:text-sm tracking-widest uppercase">
             OUR PARTNERS
           </p>
-
           <h2
-            id="event-partners-title"
+            id="event-partners-title-3"
             className="mt-2 text-3xl md:text-4xl font-bold text-foreground"
           >
             Trusted By
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 my-2">
-          {sidePartners.slice(0, 2).map((partner, index) => (
-            <div
-              key={`${partner.id || partner.name}-left-${index}`}
-              className="flex items-center"
-            >
-              <PartnerCard
-                partner={partner}
-                index={index}
-                layout={3}
-              />
-            </div>
-          ))}
+        {/* Clean Single Row Layout with Enlarged Active Spotlight Item */}
+        <div className="mx-auto flex flex-wrap md:flex-nowrap items-center justify-center gap-4 sm:gap-6 md:gap-8 py-6">
+          {displayPartners.map((partner, index) => {
+            const isHighlighted = index === activeIndex;
 
-          <div className="col-span-2 row-span-2 flex items-center justify-center">
-            <div className="w-full max-w-md">
-              <div className="mb-3 text-center">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                  Featured Partner
-                </span>
-              </div>
-
-              <div className="rounded-3xl border border-primary/20 bg-background p-2 shadow-xl">
+            return (
+              <div
+                key={`${partner.id || partner.name}-${index}`}
+                className="w-[120px] sm:w-[120px] md:w-[140px] flex-shrink-0"
+              >
                 <PartnerCard
-                  partner={featuredPartner}
-                  index={activeIndex}
-                  featured
+                  partner={partner}
+                  index={index}
+                  highlighted={isHighlighted}
                   layout={3}
+                  onClick={() => setActiveIndex(index)}
                 />
               </div>
+            );
+          })}
+        </div>
 
-              <div className="mt-4 text-center">
-                <div className="flex justify-center gap-2">
-                  {displayPartners.map((_, index) => (
-                    <span
-                      key={index}
-                      className={`
-                        h-1.5 rounded-full transition-all duration-500
-                        ${
-                          index === activeIndex
-                            ? "w-7 bg-primary"
-                            : "w-1.5 bg-border"
-                        }
-                      `}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {sidePartners.slice(2, 4).map((partner, index) => (
-            <div
-              key={`${partner.id || partner.name}-right-${index}`}
-              className="flex items-center"
-            >
-              <PartnerCard
-                partner={partner}
-                index={index + 2}
-                layout={3}
+        {/* Carousel Pagination & Helper */}
+        <div className="mt-6 flex flex-col items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2">
+            {displayPartners.map((_, index) => (
+              <button
+                type="button"
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`
+                  h-2 rounded-full transition-all duration-500 cursor-pointer
+                  ${
+                    index === activeIndex
+                      ? "w-7 bg-primary"
+                      : "w-2 bg-border hover:bg-muted-foreground/40"
+                  }
+                `}
+                aria-label={`Go to slide ${index + 1}`}
               />
-            </div>
-          ))}
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground font-medium">
+            Auto-advances every 3s (Tap any card to spotlight)
+          </p>
         </div>
       </div>
     </section>
