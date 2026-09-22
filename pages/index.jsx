@@ -78,7 +78,7 @@ export default function LandingPage() {
           <AboutSection  />
           <ShuttleBannerWeServeSection layout={layout}   />
           <OurRecommendation layout={layout} />
-          <EventPartners layout={layout} />
+          <EventPartners  />
          </div>
       
      

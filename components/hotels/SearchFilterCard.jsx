@@ -274,6 +274,7 @@ export default function SearchFilterCard({
           name: "",
           is_b2c_only: 1,
           is_active: true,
+          event_id: event?.id || event?.event?.id || null,
         };
         let results = await fetchSearchResults(apiPayload);
 
