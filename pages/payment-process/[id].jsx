@@ -178,13 +178,13 @@ console.log(order.email)
                 </div>
             
             {/* Decorative bottom element */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-transparent via-[#D3202D] to-transparent rounded-full"></div>
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-transparent via-primary-color to-transparent rounded-full"></div>
           </div>
         </div>
       ) : (
         <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden">
           <div className="bg-surface p-8 md:p-12 rounded-3xl shadow-2xl mx-[250px] text-center relative z-10 border  backdrop-blur-sm">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D3202D] to-transparent rounded-t-3xl"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-color to-transparent rounded-t-3xl"></div>
             
             <div className="relative mb-6">
              
@@ -246,7 +246,7 @@ console.log(order.email)
             {/* Resume Payment Button (hidden if unrecoverable payment error) */}
             {!paymentError && (
               <button
-                className="group relative w-full bg-primary hover:to-[#D3202D] transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
+                className="group relative w-full bg-primary hover:to-primary-color transition-all duration-300 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
                 onClick={handleResumePayment}
               >
                 {/* Button background effect */}
@@ -271,20 +271,20 @@ console.log(order.email)
             </div>
 
         {/* Bottom decorative element */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-transparent via-[#D3202D] to-transparent rounded-full"></div>
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-transparent via-primary-colorto-transparent rounded-full"></div>
       </div>
 
       {/* Demo alert for Flywire state */}
       {showFlywire && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-surface bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-surface p-6 rounded-2xl shadow-2xl max-w-sm mx-auto text-center">
             <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">Payment Resumed!</h3>
-            <p className="text-muted-foreground mb-4">Redirecting to secure payment...</p>
+            <h3 className="text-lg font-semibold text-primary mb-2">Payment Resumed!</h3>
+            <p className="text-primary mb-4">Redirecting to secure payment...</p>
             <button
               onClick={() => setShowFlywire(false)}
               className="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-orange-500 transition-colors"

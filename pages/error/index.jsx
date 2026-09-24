@@ -29,7 +29,7 @@ function index() {
     ">
       
       {/* Top gradient bar */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D3202D] to-transparent rounded-t-3xl"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-color to-transparent rounded-t-3xl"></div>
 
       {/* Icon */}
       <div className="mb-6 flex justify-center">
@@ -104,7 +104,7 @@ function index() {
       </button>
 
       {/* Bottom gradient bar */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-transparent via-[#D3202D] to-transparent rounded-full"></div>
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-transparent via-primary-color to-transparent rounded-full"></div>
     </div>
   </div>
 );

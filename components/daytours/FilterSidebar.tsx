@@ -397,7 +397,7 @@ function FilterGroup({
 }) {
   return (
     <div>
-      <h4 className="font-medium text--[#D3202D] text-sm mb-2">{title}</h4>
+      <h4 className="font-medium text--primary-color text-sm mb-2">{title}</h4>
       <div className="space-y-1 max-h-96 overflow-y-auto pr-2">
         {options.map((opt) => {
           const count = counts[opt] || 0;
