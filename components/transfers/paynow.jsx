@@ -992,6 +992,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
           </div>
 
           <EventFAQs
+          className="my-6"
             eventId={eventId}
             onChange={setEventFaqs}
             onValidityChange={setAreEventFaqsValid}
