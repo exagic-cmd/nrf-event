@@ -22,6 +22,7 @@ import useUserStore from '@/store/useAuthStore';
 import { useEventStore } from "@/store/useEventStore";
 import { toast } from 'react-toastify';
 import PriceDiscrepancyModal from "@/components/checkout/PriceDiscrepancyModal";
+import EventFAQs from "@/components/events/EventFAQs";
 // === CANCELLATION POLICY MODAL FOR STUBA (link_type_id 9) ===
 const CancellationPolicyModal = ({ isOpen, onClose, onConfirm, stubaItems }) => {
   const [expandedRoomIndex, setExpandedRoomIndex] = useState(0);
@@ -155,6 +156,7 @@ const PayNow = ({ totalPrice }) => {
   const { refId, refType, track_agent_id } = useAffiliateStore();
   const user = useUserStore(state => state.user);
   const { event } = useEventStore();
+  const eventId = event?.event?.id || event?.id;
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [paymentOptions, setPaymentOptions] = useState([]);
   const [showPromoField, setShowPromoField] = useState(false);
@@ -189,6 +191,8 @@ const PayNow = ({ totalPrice }) => {
     user?.roaming_enabled === 1 || user?.roaming_enabled === true ? 'yes' : 
     (user?.roaming_enabled === 0 || user?.roaming_enabled === false ? 'no' : '')
   ); const [isSubmitting, setIsSubmitting] = useState(false);
+  const [eventFaqs, setEventFaqs] = useState([]);
+  const [areEventFaqsValid, setAreEventFaqsValid] = useState(true);
   const [promoMessage, setPromoMessage] = useState({ text: '', type: '' });
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const commModeRef = useRef(null);
@@ -600,7 +604,13 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     visitor_number: 'V68261',
     redemption_voucher_id: 0,
     agent_id: event?.event?.user_id || null,
-    event_id:event?.event?.id|| null,
+    event_id:eventId || null,
+    event: eventId
+      ? {
+          event_id: eventId,
+          faqs: eventFaqs,
+        }
+      : null,
     ref_type: refType || null,
     track_agent_id: track_agent_id || null,
     user_comment: userComment.trim() || null,
@@ -726,6 +736,10 @@ console.log("cart_items:PAYNOW #####################", cart_items);
   const handlePayNow = async (e) => {
     e.preventDefault();
     if (!validate() || isSubmitting) return;
+    if (eventId && !areEventFaqsValid) {
+      toast.error("Please answer all required event questions.");
+      return;
+    }
 
     // For link_type_id 9 (stuba) items, show cancellation policy modal first
     const stubaItems = items.filter(item => item.link_type_id === 9 && item.hotel_info?.stuba_response);
@@ -976,6 +990,12 @@ console.log("cart_items:PAYNOW #####################", cart_items);
             )} */}
          
           </div>
+
+          <EventFAQs
+            eventId={eventId}
+            onChange={setEventFaqs}
+            onValidityChange={setAreEventFaqsValid}
+          />
 
           {/* Payment Options */}
           {/* <div className="mt-6">

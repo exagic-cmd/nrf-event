@@ -417,7 +417,7 @@ export default function TourDetailPage() {
                         step.type === 'travel'
                             ? 'bg-[#ffffff] border text-surface-foreground border-primary'
                             : isActive
-                            ? 'bg-gradient-to-br from-[#D3202D] via-[#e05b5b] to-[#ff105c] shadow-lg shadow-[#D3202D]/50'
+                            ? 'bg-gradient-to-br from-primary-color via-[#e05b5b] to-[#ff105c] shadow-lg shadow-[#D3202D]/50'
                             : 'bg-secondary border text-surface-foreground border-border'
                     } transition-all duration-300`}>
                         

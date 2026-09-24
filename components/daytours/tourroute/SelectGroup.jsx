@@ -86,7 +86,7 @@ export default function SelectGroup({
     value={selectedLanguage}
     onChange={(e) => setSelectedLanguage(e.target.value)}
     style={{ backgroundColor: colortext, color: colorheading }}
-    className="border border-border rounded-lg pl-8 pr-2 py-1 appearance-none focus:outline-none focus:ring-2 focus:ring-[#D3202D] transition-all"
+    className="border border-border rounded-lg pl-8 pr-2 py-1 appearance-none focus:outline-none focus:ring-2 focus:ring-primary-color transition-all"
   >
     <option value="">Select language</option>
     {languages.map((lang) => (
