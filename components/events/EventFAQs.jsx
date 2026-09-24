@@ -212,7 +212,7 @@ export default function EventFAQs({ eventId, onChange, onValidityChange }) {
     <div key={question.id}>
       <label className="flex items-center gap-3 text-sm text-muted-foreground">
         <CircleHelp className="h-4 w-4 shrink-0" />
-        <span>General: {question.question}</span>
+        <span>{question.question}</span>
         {(question.is_required || question.mandatory) && <span className="text-destructive"> *</span>}
       </label>
       <QuestionControl
@@ -224,7 +224,7 @@ export default function EventFAQs({ eventId, onChange, onValidityChange }) {
   );
 
   return (
-    <section className="mt-8 border-t border-border pt-6" aria-labelledby="event-faq-title">
+    <section>
       {/* {loading && <p className="mt-3 text-sm text-muted-foreground">Loading questions...</p>}
       {error && <p className="mt-3 text-sm text-destructive">{error}</p>} */}
       {!loading && !error && (
