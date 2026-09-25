@@ -286,7 +286,7 @@ export default function SearchFilterCard({
               city: selectedCity,
               search: "",
               results: results,
-              category: isAdmissionTab ? "admission" : "daytour",
+              category: isAdmissionTab ? "admission" : (activeCategoryId === 8 ? "package-tours" : activeCategoryId === 12 ? "attractions" : "day-tours"),
               category_id: activeCategoryId,
               timestamp: Date.now(),
             });
@@ -447,7 +447,7 @@ export default function SearchFilterCard({
     // }
 
     const categoryId = activeCategoryId;
-    const categoryType = isAdmissionTab ? 'admission' : 'daytour';
+    const categoryType = isAdmissionTab ? 'admission' : (activeCategoryId === 8 ? 'package-tours' : activeCategoryId === 12 ? 'attractions' : 'day-tours');
 
     
     const apiPayload = {
