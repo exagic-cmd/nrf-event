@@ -240,7 +240,7 @@ export default function HeroFilter() {
               </Card>
             </div>
             {noResults && (
-              <div className="w-full flex justify-center mt-4">
+              <div className="w-full flex justify-center mt-">
                 <div className="max-w-7xl w-full bg-yellow-50 border border-yellow-200 rounded p-4">
                   <p className="text-sm text-yellow-800">{noResults.message}</p>
                   <div className="mt-3 flex gap-2">

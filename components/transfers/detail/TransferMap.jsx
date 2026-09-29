@@ -73,8 +73,7 @@ const TransferMap = ({ mapDetails }) => {
   const dropoffPosition = [dLat, dLng];
   const bounds = [pickupPosition, dropoffPosition]
 
-  const mapThemeUrl = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-
+const mapThemeUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   return (
     <div className="relative h-full w-full">
       <MapContainer 
@@ -86,7 +85,7 @@ const TransferMap = ({ mapDetails }) => {
         touchZoom={false}
         doubleClickZoom={false}
         zoomControl={false}
-        attributionControl={false}
+        attributionControl
       >
         <MapInteractionHandler isInteractive={isExpanded} />
         <MapBounds bounds={bounds} />

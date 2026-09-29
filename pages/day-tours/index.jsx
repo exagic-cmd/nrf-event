@@ -64,7 +64,7 @@ function DaytoursPage() {
 
   return (
     <Layout>
-      <section className="relative mt-12 md:mt-20 pt-6 pb-44 bg-black min-h-[80vh]">
+      <section className="relative mt-12 md:mt-20 pt-6 pb-44 bg-surface min-h-[80vh]">
         <div className="px-6">
           {hasSearched ? (
             isLoading ? (
