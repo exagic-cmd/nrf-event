@@ -41,7 +41,7 @@ export const useEventStore = create(
             : (process.env.NEXT_PUBLIC_API_BASE_URL || "");
 
           const res = await fetch(
-            `${apiBaseUrl}/events/details/3`,
+            `${apiBaseUrl}/events/details/6`,
             { method: "GET", headers: { "Content-Type": "application/json" } }
           );
 

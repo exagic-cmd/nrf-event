@@ -152,8 +152,8 @@ export default function HeroFilter() {
     return;
   }
 
-  // DAYTOURS
-  if (payload.category === "daytour" || payload.category === "admission") {
+  // DAYTOURS / PACKAGES / ATTRACTIONS
+  if (["day-tours", "admission", "package-tours", "attractions", "daytour"].includes(payload.category)) {
     const { country, city, search, results } = payload;
 
     setSearchDaytourParams({
@@ -164,7 +164,7 @@ export default function HeroFilter() {
     });
 
     const categoryId = Number(payload.category_id || (payload.category === "admission" ? 1 : 3));
-    const listingType = payload.category === "admission" ? "admission" : "daytour";
+    const listingType = payload.category === "daytour" ? "day-tours" : payload.category;
     router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
     return;
   }
@@ -240,7 +240,7 @@ export default function HeroFilter() {
               </Card>
             </div>
             {noResults && (
-              <div className="w-full flex justify-center mt-4">
+              <div className="w-full flex justify-center mt-">
                 <div className="max-w-7xl w-full bg-yellow-50 border border-yellow-200 rounded p-4">
                   <p className="text-sm text-yellow-800">{noResults.message}</p>
                   <div className="mt-3 flex gap-2">
@@ -251,11 +251,11 @@ export default function HeroFilter() {
                         const cat = noResults.category;
                         if (cat === "accommodation") {
                           router.push(`/listings?searched=true&type=accommodation`);
-                        } else if (cat === "daytour" || cat === "admission") {
+                        } else if (["day-tours", "admission", "package-tours", "attractions", "daytour"].includes(cat)) {
                           const categoryId = cat === "admission"
                             ? 1
                             : ([3, 8, 12].includes(filterActiveTab) ? filterActiveTab : 3);
-                          const listingType = cat === "admission" ? "admission" : "daytour";
+                          const listingType = cat === "daytour" ? "day-tours" : cat;
                           router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
                         } else {
                           router.push(`/listings?searched=true&type=transfer`);

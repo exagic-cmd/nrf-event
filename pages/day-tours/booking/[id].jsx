@@ -218,7 +218,7 @@ const DayTourBookingPage = () => {
                                 )}
                               </div>
                               {priceSummary?.totalPax > 0 && (
-                                <p className="text-sm font-semibold text-[#CC9A55]">
+                                <p className="text-sm font-semibold text-primary">
                                   x{priceSummary.totalPax} {t("pax")}
                                 </p>
                               )}

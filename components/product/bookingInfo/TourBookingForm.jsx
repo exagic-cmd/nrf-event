@@ -541,7 +541,7 @@ useEffect(() => {
                     <option key={g.group_id} value={g.group_id}>{g.name}</option>
                   ))}
                 </select>
-                {errors.accommodation_group_id && <div className="text-sm text-red-500">{t("groupError", "Please select a group")}</div>}
+                {errors.accommodation_group_id && <div className="text-sm text-primary">{t("groupError", "Please select a group")}</div>}
               </div>
 
               {selectedGroupData?.allow_hotel_selection && (
@@ -886,7 +886,7 @@ const SelectField = ({ value, onChange, loading, error, t, loadOptions, pickupPo
           {t("bookingForm.loadingHotels")}
         </div>
       ) : error ? (
-        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-200">{t("bookingForm.failedToLoadHotels")}</div>
+        <div className="text-sm text-primary bg-surface p-3 rounded-lg border ">{t("bookingForm.failedToLoadHotels")}</div>
       ) : (
         <AsyncSelect
           cacheOptions

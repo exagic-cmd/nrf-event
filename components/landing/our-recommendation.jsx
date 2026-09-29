@@ -113,6 +113,28 @@ export function OurRecommendation({ layout = 1
     carousel.scrollLeft = thirdProduct.offsetLeft - (carousel.offsetWidth - thirdProduct.offsetWidth) / 2;
   }, [topDayTours.length]);
 
+  /* Auto scroll for layout 3 */
+  useEffect(() => {
+    if (layout !== 3 || isLoadingDay || topDayTours.length === 0) return;
+    const interval = setInterval(() => {
+      setCarouselIndex((prev) => {
+        const next = (prev + 1) % topDayTours.length;
+        const el = carousel3Ref.current;
+        if (el && el.children.length > 0) {
+          const card = el.children[next];
+          if (card) {
+            el.scrollTo({
+              left: card.offsetLeft - (el.offsetWidth - card.offsetWidth) / 2,
+              behavior: "smooth",
+            });
+          }
+        }
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [layout, isLoadingDay, topDayTours.length]);
+
     // LAYOUT 1 
   if (layout === 1) {
     return (
