@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import useCurrencyStore from "@/store/useCurrencyStore";
+import { encodeEventId } from "@/utils/cryptoUtils";
 
 export const useEventStore = create(
   persist(
@@ -39,9 +40,10 @@ export const useEventStore = create(
           const apiBaseUrl = (typeof $helpers !== "undefined" && $helpers?.getEnv)
             ? $helpers.getEnv("API_BASE_URL")
             : (process.env.NEXT_PUBLIC_API_BASE_URL || "");
+          const eventId = encodeEventId(6);
 
           const res = await fetch(
-            `${apiBaseUrl}/events/details/6`,
+            `${apiBaseUrl}/events/details/${encodeURIComponent(eventId)}`,
             { method: "GET", headers: { "Content-Type": "application/json" } }
           );
 

@@ -280,17 +280,15 @@ export default function SearchFilterCard({
 
         // fallback if empty and no name
         if (mounted && Array.isArray(results)) {
-          setTimeout(() => {
-            onFilterTransfer?.({
-              country: selectedCountry,
-              city: selectedCity,
-              search: "",
-              results: results,
-              category: isAdmissionTab ? "admission" : (activeCategoryId === 8 ? "package-tours" : activeCategoryId === 12 ? "attractions" : "day-tours"),
-              category_id: activeCategoryId,
-              timestamp: Date.now(),
-            });
-          }, 100);
+          onFilterTransfer?.({
+            country: selectedCountry,
+            city: selectedCity,
+            search: "",
+            results: results,
+            category: isAdmissionTab ? "admission" : (activeCategoryId === 8 ? "package-tours" : activeCategoryId === 12 ? "attractions" : "day-tours"),
+            category_id: activeCategoryId,
+            timestamp: Date.now(),
+          });
         }
       } catch (err) {
         console.error("Daytour auto-load failed:", err);
@@ -457,6 +455,7 @@ export default function SearchFilterCard({
       name: searchQuery,
       is_b2c_only: 1,
       is_active: true,
+      event_id: event?.id || event?.event?.id || null,
     };
 
     try {
@@ -473,17 +472,15 @@ export default function SearchFilterCard({
       // Determine the final search query to persist
       const finalSearchQuery = (results && results.length > 0 && !searchQuery) ? "" : searchQuery;
 
-      setTimeout(() => {
-        onFilterTransfer?.({
-          country: selectedCountry,
-          city: selectedCity,
-          search: finalSearchQuery,
-          results: results,
-          category: categoryType,
-          category_id: categoryId,
-          timestamp: Date.now(),
-        });
-      }, 100);
+      onFilterTransfer?.({
+        country: selectedCountry,
+        city: selectedCity,
+        search: finalSearchQuery,
+        results: results,
+        category: categoryType,
+        category_id: categoryId,
+        timestamp: Date.now(),
+      });
 
       setSuggestedResults([]);
     } catch (error) {

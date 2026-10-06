@@ -7,7 +7,15 @@ import { getFullImageUrl } from "@/utils/imageService";
 
 const ITEMS_PER_PAGE = 8;
 
-function DaytoursList({ searchTerm, sortBy }) {
+const LISTING_CATEGORY_LABELS = {
+  daytour: { singular: 'Day Tour', plural: 'Day Tours' },
+  'day-tours': { singular: 'Day Tour', plural: 'Day Tours' },
+  admission: { singular: 'Admission', plural: 'Admissions' },
+  'package-tours': { singular: 'Package Tour', plural: 'Package Tours' },
+  attractions: { singular: 'Attraction', plural: 'Attractions' },
+};
+
+function DaytoursList({ searchTerm, sortBy, listingCategory = 'day-tours' }) {
   const { t } = useTranslation('daytour');
   const [currentPage, setCurrentPage] = useState(1);
   const { 
@@ -15,12 +23,11 @@ function DaytoursList({ searchTerm, sortBy }) {
     filteredResults, 
     isLoading,
   } = useDaytoursStore();
-   const activeData = useMemo(() => {
-    if (filteredResults && Array.isArray(filteredResults) && filteredResults.length > 0) {
-      return filteredResults;
-    }
-    return searchResults;
-  }, [filteredResults, searchResults]);
+  const categoryLabels = LISTING_CATEGORY_LABELS[listingCategory] || LISTING_CATEGORY_LABELS['day-tours'];
+  const activeData = useMemo(
+    () => Array.isArray(filteredResults) ? filteredResults : searchResults,
+    [filteredResults, searchResults]
+  );
 
   const daytoursData = useMemo(() => {
     if (!activeData || !Array.isArray(activeData)) return [];
@@ -105,23 +112,26 @@ switch (sortBy) {
   }, [daytoursData, searchTerm, sortBy]);
 
   const totalPages = Math.ceil(processedDaytours.length / ITEMS_PER_PAGE);
+  const displayedPage = Math.min(currentPage, Math.max(totalPages, 1));
   const paginatedDaytours = processedDaytours.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (displayedPage - 1) * ITEMS_PER_PAGE,
+    displayedPage * ITEMS_PER_PAGE
   );
 
   const showLoading = isLoading;
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl py-3 px-4 bg-surface">
-        <p className="text-lg font-semibold">
-          Showing {processedDaytours.length} Day Tours
-        </p>
-      </div>
+      {!showLoading && (
+        <div className="rounded-xl py-3 px-4 bg-surface">
+          <p className="text-lg font-semibold">
+            Showing {processedDaytours.length} {categoryLabels.plural}
+          </p>
+        </div>
+      )}
 
       {showLoading ? (
-        <div className="flex justify-center items-center py-20">
+        <div className="flex justify-center items-center py-20" role="status" aria-label={`Loading ${categoryLabels.plural.toLowerCase()}`}>
           <svg
             className="animate-spin h-8 w-8 text-primary"
             xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +153,7 @@ switch (sortBy) {
             />
           </svg>
         </div>
-      ) : paginatedDaytours.length > 0 ? (
+      ) : processedDaytours.length > 0 ? (
         <div className="space-y-6">
           {paginatedDaytours.map((tour) => (
             <DaytourCard key={tour.id} tour={tour} category="daytour" />
@@ -151,7 +161,7 @@ switch (sortBy) {
         </div>
       ) : (
         <div className="text-center py-16 bg-surface rounded-xl shadow-md">
-          <h3 className="text-xl font-semibold text-foreground">No Day Tours Found</h3>
+          <h3 className="text-xl font-semibold text-foreground">No {categoryLabels.singular} Found</h3>
           <p className="text-muted-foreground mt-2">
             Please try adjusting your search criteria or filters.
           </p>
@@ -160,7 +170,7 @@ switch (sortBy) {
 
       {!showLoading && totalPages > 1 && (
         <Pagination
-          currentPage={currentPage}
+          currentPage={displayedPage}
           totalPages={totalPages}
           onPageChange={(page) => setCurrentPage(page)}
         />

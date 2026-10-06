@@ -155,15 +155,22 @@ export default function HeroFilter() {
   // DAYTOURS / PACKAGES / ATTRACTIONS
   if (["day-tours", "admission", "package-tours", "attractions", "daytour"].includes(payload.category)) {
     const { country, city, search, results } = payload;
+    const categoryIdByType = {
+      daytour: 3,
+      "day-tours": 3,
+      admission: 1,
+      "package-tours": 8,
+      attractions: 12,
+    };
+    const categoryId = Number(payload.category_id || categoryIdByType[payload.category]);
 
     setSearchDaytourParams({
       country,
       city,
       searchQuery: search || "",
-      category_id: payload.category_id || 3,
+      category_id: categoryId,
     });
 
-    const categoryId = Number(payload.category_id || (payload.category === "admission" ? 1 : 3));
     const listingType = payload.category === "daytour" ? "day-tours" : payload.category;
     router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
     return;

@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
+import { useEventStore } from "@/store/useEventStore";
+import { encodeEventId } from "@/utils/cryptoUtils";
 
 export const useDaytoursStore = create((set, get) => ({
   countries: [],
@@ -53,12 +55,20 @@ export const useDaytoursStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
+      const activeEvent = useEventStore.getState().event;
+      const eventId = activeEvent?.event?.id || activeEvent?.id || payload?.event_id;
+      const requestPayload = {
+        ...payload,
+        ...(eventId !== null && eventId !== undefined
+          ? { event_id: encodeEventId(eventId) }
+          : {}),
+      };
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_b2b_products`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(requestPayload),
         }
       );
 
@@ -86,7 +96,7 @@ export const useDaytoursStore = create((set, get) => ({
         filteredResults: finalResults,
         isLoading: false,
         currentCategory: categoryType,
-        searchParams: payload,
+        searchParams: { ...payload, event_id: eventId },
       });
 
       console.log(`✅ ${categoryType.toUpperCase()} API Response:`, data);

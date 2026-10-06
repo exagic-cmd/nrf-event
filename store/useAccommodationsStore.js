@@ -2,6 +2,8 @@
 import { create } from "zustand";
 import helpers from "@/lib/helpers";
 import useCurrencyStore from "@/store/useCurrencyStore";
+import { useEventStore } from "@/store/useEventStore";
+import { encodeEventId } from "@/utils/cryptoUtils";
 
 
 let hotelRegionDebounceTimeout = null;
@@ -191,7 +193,12 @@ export const useAccommodationsStore = create((set, get) => ({
     }
 
     // If no payload provided, use existing searchParams
-    const searchPayload = payload;
+    const activeEvent = useEventStore.getState().event;
+    const eventId = activeEvent?.event?.id || activeEvent?.id || payload?.event_id;
+    const searchPayload = {
+      ...payload,
+      ...(eventId ? { event_id: eventId } : {}),
+    };
     console.log("🛎️ fetchAccommodations called with payload:", searchPayload);
     if (!searchPayload) {
       console.error("❌ No search payload provided");
@@ -309,6 +316,7 @@ export const useAccommodationsStore = create((set, get) => ({
             region: 18196,
             is_b2b_only: 1,
             currency_id: currencyId,
+            ...(searchPayload.event_id ? { event_id: encodeEventId(searchPayload.event_id) } : {}),
           };
           if (searchPayload.end_date) params.end_date = searchPayload.end_date;
           const baseParams = new URLSearchParams(params).toString();
@@ -355,6 +363,7 @@ export const useAccommodationsStore = create((set, get) => ({
         // get_stb_items: true,
         is_b2b_only: 1,
         currency_id: currencyId,
+        ...(searchPayload.event_id ? { event_id: encodeEventId(searchPayload.event_id) } : {}),
       };
 
       const fetchPostApi = async (endpoint, label) => {

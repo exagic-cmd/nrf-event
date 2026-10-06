@@ -66,6 +66,7 @@ export function OurRecommendation({ layout = 1
         try {
           const results = await fetchSearchResults({
             category_id: 3,
+            event_id: event?.event?.id || event?.id,
             is_b2c_only: 1,
             is_active: 1,
           });
@@ -135,6 +136,10 @@ export function OurRecommendation({ layout = 1
     return () => clearInterval(interval);
   }, [layout, isLoadingDay, topDayTours.length]);
 
+  if (!isLoadingDay && topDayTours.length === 0) {
+    return null;
+  }
+
     // LAYOUT 1 
   if (layout === 1) {
     return (
@@ -143,10 +148,10 @@ export function OurRecommendation({ layout = 1
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                Top Day Tours
+                Recommended For You
               </h2>
               <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
-                EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
+                DISCOVER OUR HAND-PICKED SELECTION OF TOP-RATED EXPERIENCES.
               </p>
             </div>
 
@@ -250,10 +255,10 @@ export function OurRecommendation({ layout = 1
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div>
               <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
-                EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
+                DISCOVER OUR HAND-PICKED SELECTION OF TOP-RATED EXPERIENCES.
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
-                Top Day Tours
+                Recommended For You
               </h2>
             </div>
 
@@ -385,10 +390,10 @@ export function OurRecommendation({ layout = 1
       <div className="px-4 md:px-8 lg:px-12">
         <div className="text-center mb-8">
           <p className="text-primary font-semibold text-sm md:text-base tracking-wide">
-            EXPLORE OUR HAND-PICKED SELECTION OF TOP-RATED DAY TOURS.
+          DISCOVER OUR HAND-PICKED SELECTION OF TOP-RATED EXPERIENCES.
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
-            Top Day Tours
+            Recommended For You
           </h2>
         </div>
 
