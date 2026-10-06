@@ -2,6 +2,10 @@
 import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
 import useCurrencyStore from "@/store/useCurrencyStore";
+import { useEventStore } from "@/store/useEventStore";
+import { encodeEventId } from "@/utils/cryptoUtils";
+
+let searchRequestId = 0;
 
 export const useDaytoursStore = create((set, get) => ({
   countries: [],
@@ -48,6 +52,7 @@ export const useDaytoursStore = create((set, get) => ({
 
   // Unified fetch for Day Tours (3) and Accommodation (4)
   fetchSearchResults: async (payload) => {
+    const requestId = ++searchRequestId;
     set({ isLoading: true, error: null });
 
     const currencyId =
@@ -60,16 +65,24 @@ export const useDaytoursStore = create((set, get) => ({
       ...payload,
       currency_id: currencyId,
     };
-
-    console.log("fetchSearchResults payload:", requestPayload);
+    const activeEvent = useEventStore.getState().event;
+    const eventId = activeEvent?.event?.id || activeEvent?.id || requestPayload.event_id;
+    if (eventId !== null && eventId !== undefined) {
+      requestPayload.event_id = eventId;
+    }
 
     try {
+      const encodedPayload = requestPayload.event_id
+        ? { ...requestPayload, event_id: encodeEventId(requestPayload.event_id) }
+        : requestPayload;
+      console.log("fetchSearchResults payload:", encodedPayload);
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/affliate/get_public_b2b_products`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestPayload),
+          body: JSON.stringify(encodedPayload),
         }
       );
 
@@ -88,6 +101,7 @@ export const useDaytoursStore = create((set, get) => ({
       }
 
       const data = await res.json();
+      if (requestId !== searchRequestId) return [];
       const results = data?.products || data?.data || [];
 
       const resultCategoryIds = results
@@ -124,6 +138,7 @@ export const useDaytoursStore = create((set, get) => ({
       console.log(`${categoryType.toUpperCase()} API Response:`, data);
       return finalResults;
     } catch (err) {
+      if (requestId !== searchRequestId) return [];
       console.error("fetchSearchResults error:", err);
       set({ isLoading: false, error: err.message });
       return [];

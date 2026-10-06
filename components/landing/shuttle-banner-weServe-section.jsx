@@ -2,6 +2,52 @@ import React from "react";
 import Link from "next/link";
 import { useEventStore } from "@/store/useEventStore";
 
+const PromotionalBanner = ({ image, alt, href, external = false, title, description }) => {
+  const content = (
+    <div className="group relative h-48 overflow-hidden rounded-xl shadow-md sm:h-52 md:h-60 lg:h-[280px]">
+      <img
+        src={image}
+        alt={alt}
+        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
+      />
+      {title && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent" />
+          <div className="absolute inset-y-0 left-0 flex w-full items-center p-4 text-white sm:p-6 md:p-8">
+            <div className="max-h-full max-w-[85%] overflow-y-auto md:max-w-[55%]">
+              <h2 className="text-lg font-bold leading-tight sm:text-xl md:text-2xl">
+                {title}
+              </h2>
+              {description && (
+                <p className="mt-2 line-clamp-2 text-xs text-white/90 sm:text-sm">
+                  {description}
+                </p>
+              )}
+              <span className="mt-3 inline-flex rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground sm:text-sm">
+                Book Shuttle
+              </span>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      {external ? (
+        <a href={href} target="_blank" rel="noopener noreferrer" className="block">
+          {content}
+        </a>
+      ) : (
+        <Link href={href} className="block">
+          {content}
+        </Link>
+      )}
+    </div>
+  );
+};
+
 export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
   const icon1 = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/Travel_anywhere_in_the_world_with_a_suitcase.png`;
   const icon2 = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}External+Links/yellow_paper_airplane.png`;
@@ -31,44 +77,16 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
   ============================================================ */
   if (layout === 1) {
     return (
-      <section className="w-full mt-32 md:mt-4">
+      <section className="w-full mt-8 md:mt-4">
         {hasShuttleBanner && (
-          <div className="w-full px-4 md:px-8 lg:px-12 mb-10">
-            <Link href="/shuttle" className="block w-full transition-transform hover:scale-[1.01] duration-300">
-              <div className="relative hidden md:block">
-                <img
-                  src={eventData?.shuttle_banner_url}
-                  alt={eventData?.shuttle_title || "Explore Shuttle"}
-                  className="w-full h-auto rounded-2xl shadow-md"
-                />
-                <div className="absolute inset-0 flex items-center">
-                  <div className="ml-10 max-w-md bg-black/40 backdrop-blur-md text-white p-6 rounded-2xl">
-                    <h2 className="text-2xl font-semibold mb-2">{eventData?.shuttle_title}</h2>
-                    <p className="text-sm opacity-90 mb-4">{eventData?.shuttle_description}</p>
-                    <div className="inline-block bg-surface text-surface-foreground text-sm font-semibold px-5 py-2 rounded-lg">
-                      Book Shuttle
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative block md:hidden">
-                <img
-                  src={eventData?.shuttle_banner_url}
-                  alt={eventData?.shuttle_title || "Explore Shuttle"}
-                  className="w-full h-48 rounded-2xl shadow-md"
-                />
-                <div className="absolute inset-4 flex items-start justify-start px-0">
-                  <div className="max-w-sm text-white p-2 rounded-2xl text-start shadow-lg">
-                    <h2 className="text-lg font-semibold mb-2">{eventData?.shuttle_title}</h2>
-                    <p className="text-xs opacity-90 mb-3">{eventData?.shuttle_description}</p>
-                    <div className="inline-block bg-surface text-surface-foreground text-xs font-semibold px-4 py-2 rounded-lg">
-                      Book Shuttle
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
+          <div className="mb-8">
+            <PromotionalBanner
+              image={eventData.shuttle_banner_url}
+              alt={eventData.shuttle_title || "Explore Shuttle"}
+              href="/shuttle"
+              title={eventData.shuttle_title}
+              description={eventData.shuttle_description}
+            />
           </div>
         )}
 
@@ -91,19 +109,13 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
         </div>
 
         {hasExternalBanner && (
-          <div className="w-full my-8 px-2 lg:px-6">
-            <a
-              href={eventData?.externallinkbanner_text}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full"
-            >
-              <img
-                src={eventData?.externallinkbanner_url}
-                alt="External Link Banner"
-                className="w-full h-auto rounded-lg shadow-md"
-              />
-            </a>
+          <div className="my-8">
+            <PromotionalBanner
+              image={eventData.externallinkbanner_url}
+              alt="External Link Banner"
+              href={eventData.externallinkbanner_text}
+              external
+            />
           </div>
         )}
       </section>
@@ -117,29 +129,14 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
     return (
       <section className="w-full mt-16 md:mt-6">
         {hasShuttleBanner && (
-          <div className="w-full px-4 md:px-8 lg:px-12 mb-12">
-            <Link href="/shuttle" className="block w-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden border border-border/50">
-                <div className="p-8 md:p-10 flex flex-col justify-center bg-surface order-2 md:order-1">
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-                    {eventData?.shuttle_title}
-                  </h2>
-                  <p className="text-muted-foreground text-sm md:text-base mb-6">
-                    {eventData?.shuttle_description}
-                  </p>
-                  <span className="inline-block w-fit bg-primary text-primary-foreground text-sm font-semibold px-5 py-2.5 rounded-lg">
-                    Book Shuttle
-                  </span>
-                </div>
-                <div className="h-48 md:h-auto order-1 md:order-2">
-                  <img
-                    src={eventData?.shuttle_banner_url}
-                    alt={eventData?.shuttle_title || "Explore Shuttle"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </Link>
+          <div className="mb-10">
+            <PromotionalBanner
+              image={eventData.shuttle_banner_url}
+              alt={eventData.shuttle_title || "Explore Shuttle"}
+              href="/shuttle"
+              title={eventData.shuttle_title}
+              description={eventData.shuttle_description}
+            />
           </div>
         )}
 
@@ -162,19 +159,13 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
         </div>
 
         {hasExternalBanner && (
-          <div className="w-full my-10 px-4 md:px-8 lg:px-12">
-            <a
-              href={eventData?.externallinkbanner_text}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full"
-            >
-              <img
-                src={eventData?.externallinkbanner_url}
-                alt="External Link Banner"
-                className="w-full h-auto rounded-lg"
-              />
-            </a>
+          <div className="my-8">
+            <PromotionalBanner
+              image={eventData.externallinkbanner_url}
+              alt="External Link Banner"
+              href={eventData.externallinkbanner_text}
+              external
+            />
           </div>
         )}
       </section>
@@ -187,33 +178,14 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
   return (
     <section className="w-full mt-10 md:mt-8">
       {hasShuttleBanner && (
-        <div className="px-4 md:px-8 lg:px-12">
-          <Link href="/shuttle" className="group block w-full max-w-6xl mx-auto">
-            <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-muted/30 shadow-sm">
-              <img
-                src={eventData?.shuttle_banner_url}
-                alt={eventData?.shuttle_title || "Explore Shuttle"}
-                className="block w-full h-44 sm:h-52 md:h-60 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
-              <div className="absolute inset-0 flex items-center">
-                <div className="max-w-md pl-4 sm:pl-6 md:pl-10 py-5 text-foreground">
-                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary/90">
-                    Shuttle
-                  </p>
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight text-foreground">
-                    {eventData?.shuttle_title}
-                  </h2>
-                  <p className="mt-2 max-w-sm text-xs sm:text-sm text-foreground/80">
-                    {eventData?.shuttle_description}
-                  </p>
-                  <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-xs sm:text-sm font-semibold shadow-sm">
-                    Book Shuttle
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Link>
+        <div className="mb-8 md:mb-10">
+          <PromotionalBanner
+            image={eventData.shuttle_banner_url}
+            alt={eventData.shuttle_title || "Explore Shuttle"}
+            href="/shuttle"
+            title={eventData.shuttle_title}
+            description={eventData.shuttle_description}
+          />
         </div>
       )}
 
@@ -242,19 +214,13 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
       </div>
 
       {hasExternalBanner && (
-        <div className="w-full mt-10 px-4 md:px-8 lg:px-12">
-          <a
-            href={eventData?.externallinkbanner_text}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full overflow-hidden rounded-2xl border border-border/60 shadow-sm"
-          >
-            <img
-              src={eventData?.externallinkbanner_url}
-              alt="External Link Banner"
-              className="block w-full h-auto object-cover"
-            />
-          </a>
+        <div className="my-8 md:mt-16">
+          <PromotionalBanner
+            image={eventData.externallinkbanner_url}
+            alt="External Link Banner"
+            href={eventData.externallinkbanner_text}
+            external
+          />
         </div>
       )}
     </section>

@@ -23,6 +23,24 @@ export const encodeShareToken = (itineraryId) => {
   };
 };
 
+export const encodeEventId = (eventId) => {
+  if (
+    eventId === null ||
+    eventId === undefined ||
+    eventId === "" ||
+    !["number", "string"].includes(typeof eventId) ||
+    !Number.isInteger(Number(eventId))
+  ) {
+    return eventId;
+  }
+
+  const encoded = encodeShareToken(eventId);
+  if (!encoded.success) {
+    throw new Error(`Failed to encode event ID: ${encoded.error}`);
+  }
+  return encoded.data;
+};
+
 export const decodeShareToken = (token) => {
   try {
     if (typeof token !== 'string' || !token) {

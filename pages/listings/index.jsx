@@ -31,6 +31,18 @@ const PACKAGE_TOUR_CATEGORY_ID = 8;
 const ATTRACTION_CATEGORY_ID = 12;
 
 const getListingCategory = (categoryId, fallbackType) => {
+  const normalizedFallbackType = fallbackType?.toLowerCase();
+  const categoryByType = {
+    daytour: "day-tours",
+    "day-tours": "day-tours",
+    admission: "admission",
+    "package-tours": "package-tours",
+    attractions: "attractions",
+  };
+  if (categoryByType[normalizedFallbackType]) {
+    return categoryByType[normalizedFallbackType];
+  }
+
   const normalizedCategoryId = Number(categoryId);
 
   if (normalizedCategoryId === 2) return "transfer";
@@ -40,6 +52,27 @@ const getListingCategory = (categoryId, fallbackType) => {
   if (normalizedCategoryId === ATTRACTION_CATEGORY_ID) return "attractions";
   if (normalizedCategoryId === 3 || DAYTOUR_CATEGORY_IDS.includes(normalizedCategoryId)) return "day-tours";
   return fallbackType || "accommodation";
+};
+
+const getProductCategoryId = (listingType, categoryId, fallbackCategoryId) => {
+  const categoryByType = {
+    daytour: 3,
+    "day-tours": 3,
+    admission: ADMISSION_CATEGORY_ID,
+    "package-tours": PACKAGE_TOUR_CATEGORY_ID,
+    attractions: ATTRACTION_CATEGORY_ID,
+  };
+  if (categoryByType[listingType]) return categoryByType[listingType];
+
+  const normalizedCategoryId = Number(categoryId);
+  if ([ADMISSION_CATEGORY_ID, ...DAYTOUR_CATEGORY_IDS, PACKAGE_TOUR_CATEGORY_ID, ATTRACTION_CATEGORY_ID].includes(normalizedCategoryId)) {
+    return normalizedCategoryId;
+  }
+
+  const normalizedFallbackCategoryId = Number(fallbackCategoryId);
+  return [ADMISSION_CATEGORY_ID, ...DAYTOUR_CATEGORY_IDS, PACKAGE_TOUR_CATEGORY_ID, ATTRACTION_CATEGORY_ID].includes(normalizedFallbackCategoryId)
+    ? normalizedFallbackCategoryId
+    : 3;
 };
 
 function ListingsPage() {
@@ -137,16 +170,21 @@ function ListingsPage() {
       return;
     }
 
-    if ([1, 3, 8, 12].includes(filterActiveTab)) {
+    const payloadCategoryId = Number(payload.category_id);
+    const productCategoryId = [1, 3, 8, 12].includes(payloadCategoryId)
+      ? payloadCategoryId
+      : filterActiveTab;
+
+    if ([1, 3, 8, 12].includes(productCategoryId)) {
       setSelectedCountry(payload.country);
       setSelectedCity(payload.city);
       setDaytourSearchQuery(payload.search);
-      const categoryId = payload.category_id || filterActiveTab;
+      const categoryId = productCategoryId;
       setSearchDaytourParams({ country: payload.country, city: payload.city, search: payload.search, searchQuery: payload.search, category_id: categoryId });
       const listingType =
-        filterActiveTab === 1 ? "admission" :
-        filterActiveTab === 8 ? "package-tours" :
-        filterActiveTab === 12 ? "attractions" :
+        categoryId === 1 ? "admission" :
+        categoryId === 8 ? "package-tours" :
+        categoryId === 12 ? "attractions" :
         "day-tours";
       router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
       setHasSearched(true);
@@ -373,8 +411,17 @@ function ListingsPage() {
       setIsInitialSearch(false);
         if (category) {
           setSearchCategory(getListingCategory(category, type?.toLowerCase()));
+          const categoryId = Number(category);
+          if ([ADMISSION_CATEGORY_ID, ...DAYTOUR_CATEGORY_IDS, PACKAGE_TOUR_CATEGORY_ID, ATTRACTION_CATEGORY_ID].includes(categoryId)) {
+            setFilterActiveTab(categoryId);
+          }
       } else if (type) {
-        setSearchCategory(type.toLowerCase());
+        const normalizedType = type.toLowerCase();
+        setSearchCategory(normalizedType);
+        const categoryId = getProductCategoryId(normalizedType);
+        if (["daytour", "day-tours", "admission", "package-tours", "attractions"].includes(normalizedType)) {
+          setFilterActiveTab(categoryId);
+        }
       }
       const params = {};
       for (const [key, value] of urlSearchParams.entries()) {
@@ -400,26 +447,27 @@ function ListingsPage() {
   }, [urlSearchParams, searchTransferParams]);
 
   useEffect(() => {
-    const type = urlSearchParams.get("type");
-    if (["daytour", "day-tours", "admission", "package-tours", "attractions"].includes(type)) {
-      setDaytourSelectedCountry(searchDaytourParams.country);
-      setDaytourSelectedCity(searchDaytourParams.city);
-      setCardSearchQuery(searchDaytourParams.searchQuery);
+      const type = urlSearchParams.get("type")?.toLowerCase();
+      const searched = urlSearchParams.get("searched");
+      if (searched && ["daytour", "day-tours", "admission", "package-tours", "attractions"].includes(type)) {
+        setDaytourSelectedCountry(searchDaytourParams.country);
+        setDaytourSelectedCity(searchDaytourParams.city);
+        setCardSearchQuery(searchDaytourParams.searchQuery);
 
-      // Trigger a fetch on page load if we have meaningful params
-      const hasDaytourPayload = searchDaytourParams && (searchDaytourParams.country || searchDaytourParams.city || searchDaytourParams.searchQuery);
-      if (hasDaytourPayload) {
+        const categoryId = getProductCategoryId(
+          type,
+          urlSearchParams.get("category"),
+          searchDaytourParams.category_id
+        );
         fetchDaytours({
-          category_id: [1, 3, 8, 12].includes(Number(searchDaytourParams.category_id))
-            ? Number(searchDaytourParams.category_id)
-            : 3,
+          ...searchDaytourParams,
+          category_id: categoryId,
           country: searchDaytourParams.country,
           city: searchDaytourParams.city,
-          name: searchDaytourParams.searchQuery,
+          name: searchDaytourParams.searchQuery || searchDaytourParams.search || "",
         });
       }
-    }
-  }, [urlSearchParams, searchDaytourParams, setSearchDaytourParams, fetchDaytours]);
+    }, [urlSearchParams, searchDaytourParams, fetchDaytours, setDaytourSelectedCountry, setDaytourSelectedCity]);
 
   // Fix 1: Only sync UI card state from store — fetch is handled exclusively by Effect 2 below
   useEffect(() => {
@@ -517,6 +565,7 @@ useEffect(() => {
           <DaytoursList
             searchTerm={daytourSearchTerm}
             sortBy={daytourSortBy}
+            listingCategory={searchCategory}
           />
         );
       case "accommodation":
@@ -543,12 +592,13 @@ useEffect(() => {
     switch (searchCategory) {
       case "daytour":
       case "day-tours":
+      case "admission":
       case "package-tours":
       case "attractions":
         return (
           <div className="text-white text-center py-12">
-            <h2 className="text-2xl font-bold mb-4">Search for Day Tours</h2>
-            <p className="text-muted-foreground">Enter your destination to find amazing day tours</p>
+            <h2 className="text-2xl font-bold mb-4">Search for {daytourSearchLabel}</h2>
+            <p className="text-muted-foreground">Enter your destination to find amazing {daytourSearchLabel.toLowerCase()}</p>
           </div>
         );
       case "accommodation":
@@ -576,6 +626,19 @@ useEffect(() => {
   
   const showFaqs = hasSearched && searchCategory === "transfer" && transferSearchResults.length > 0;
   const isAccommodationCategory = searchCategory === "accommodation" || searchCategory === "hotels";
+  const handleListingTabChange = (tabId) => {
+    setFilterActiveTab(tabId);
+    if ([ADMISSION_CATEGORY_ID, ...DAYTOUR_CATEGORY_IDS, PACKAGE_TOUR_CATEGORY_ID, ATTRACTION_CATEGORY_ID].includes(Number(tabId))) {
+      setSearchCategory(getListingCategory(tabId));
+    }
+  };
+  const daytourSearchLabel = {
+    daytour: "Day Tours",
+    "day-tours": "Day Tours",
+    admission: "Admissions",
+    "package-tours": "Package Tours",
+    attractions: "Attractions",
+  }[searchCategory] || "Day Tours";
 
   const daytoursForMap = (daytoursFilteredResults && daytoursFilteredResults.length > 0) 
     ? daytoursFilteredResults 
@@ -606,7 +669,7 @@ useEffect(() => {
               <SearchFilterCard
               filterActiveTab={filterActiveTab}
               filterTabs={visibleTabs}
-              onSetTab={(id) => setFilterActiveTab(id)}
+              onSetTab={handleListingTabChange}
               onFilterTransfer={handleFilterFromCard}
               rooms={cardRooms}
               initialRooms={cardRooms}

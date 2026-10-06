@@ -9,13 +9,13 @@ import Layout from "@/components/layout/Layout";
 import DaytoursList from "@/components/daytours/DaytoursList";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import "@/styles/globals.css";
-
+import { useEventStore } from "@/store/useEventStore";
 function DaytoursPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const { t } = useTranslation(["common", "daytour"]);
   const searchParams = useSearchParams();
   const { searchResults, fetchSearchResults, isLoading } = useDaytoursStore();
-
+  const { event, FetchEvent } = useEventStore();
   // ✅ Fetch day tours when query params exist
   useEffect(() => {
     const searched = searchParams.get("searched");
@@ -32,7 +32,8 @@ function DaytoursPage() {
         city_id: Number(city_id),
         name,
         is_b2c_only: 1,
-        is_active:1
+        is_active:1,
+          event_id: event?.id || event?.event?.id || null,
       };
 
       console.log("🎯 Fetching Day Tours:", payload);
@@ -56,6 +57,7 @@ function DaytoursPage() {
       name: search || "",
       is_b2c_only: 1,
       is_active: true,
+      event_id: event?.id || event?.event?.id || null,
     };
 
     console.log("🧭 Manual Day Tours Search:", payload);
