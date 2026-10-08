@@ -3,7 +3,6 @@ import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
 import useCurrencyStore from "@/store/useCurrencyStore";
 import { useEventStore } from "@/store/useEventStore";
-import { encodeEventId } from "@/utils/cryptoUtils";
 
 let searchRequestId = 0;
 
@@ -73,7 +72,7 @@ export const useDaytoursStore = create((set, get) => ({
 
     try {
       const encodedPayload = requestPayload.event_id
-        ? { ...requestPayload, event_id: encodeEventId(requestPayload.event_id) }
+        ? { ...requestPayload, event_id: requestPayload.event_id }
         : requestPayload;
       console.log("fetchSearchResults payload:", encodedPayload);
 
