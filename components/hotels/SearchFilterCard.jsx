@@ -689,7 +689,7 @@ export default function SearchFilterCard({
                          </li>
                        ))}
                        {transferLoading ? (
-                         <li className="px-3 py-2.5 text-center text-foreground">Loading...</li>
+                         <li className="px-3 py-2.5 text-center text-primary">Loading...</li>
                        ) : filteredPickupOptions.length > 0 ? (
                          filteredPickupOptions.map((option) => (
                            <li
