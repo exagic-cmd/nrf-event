@@ -16,7 +16,7 @@ export default function SvgLoader({ size = 20}) {
         cx="12"
         cy="12"
         r="10"
-        stroke="var(--primary/30)"
+        stroke="#fff"
         strokeWidth="4"
       ></circle>
       <path

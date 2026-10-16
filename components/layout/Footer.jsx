@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   PhoneCall,
   Mail,
@@ -168,84 +169,130 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="text-foreground bg-background">
-        <hr />
-        <div className="max-w-full mx-4 px-4 sm:px-6 lg:px-8 py-2">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-            {/* Logo and Description */}
-            <div className="space-y-2">
-              <LocalizedLink href="/">
-                <img
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
-                  alt="Logo"
-                  className="h-12 w-auto"
-                />
+      <footer className="relative isolate mt-12 overflow-hidden border-t border-border bg-surface text-foreground sm:mt-16">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-primary opacity-[0.10] sm:h-32 lg:h-56 "
+          style={{
+            maskImage: "url('/partners-skyline.png')",
+            maskPosition: "center bottom",
+            maskRepeat: "no-repeat",
+            maskSize: "100% 100%",
+            WebkitMaskImage: "url('/partners-skyline.png')",
+            WebkitMaskPosition: "center bottom",
+            WebkitMaskRepeat: "no-repeat",
+            WebkitMaskSize: "100% 100%",
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl px-4 mb-12 py-10 sm:px-6 sm:py-12 md:px-8 lg:px-12 lg:py-14">
+          <div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.7fr_1.25fr_0.9fr] lg:gap-10">
+            <div className="space-y-4">
+              <LocalizedLink href="/" className="inline-flex min-h-12 items-center">
+                {event?.event?.logo ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event.event.logo}`}
+                    alt={event?.event?.title || event?.event?.organizer || "Home"}
+                    className="max-h-12 w-auto max-w-[200px] object-contain"
+                  />
+                ) : (
+                  <span className="text-lg font-bold text-foreground">
+                    {event?.event?.organizer || event?.event?.title}
+                  </span>
+                )}
               </LocalizedLink>
-              <p className="text-sm text-foreground max-w-xs">
-                {event?.event?.short_desc}
-              </p>
+              {event?.event?.short_desc && (
+                <p className="max-w-sm text-sm leading-6 text-muted-foreground">
+                  {event.event.short_desc}
+                </p>
+              )}
+              {hasSocialLinks && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {socialLinks.map(
+                    (social) =>
+                      social.href && (
+                        <a
+                          key={social.ariaLabel}
+                          href={social.href}
+                          aria-label={social.ariaLabel}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        >
+                          {social.icon}
+                        </a>
+                      )
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Contact Information */}
+            <nav aria-label="Footer navigation" className="space-y-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
+                Explore
+              </h2>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <LocalizedLink href="/" className="text-muted-foreground transition hover:text-primary">
+                    Home
+                  </LocalizedLink>
+                </li>
+                <li>
+                  <Link href="/#about" className="text-muted-foreground transition hover:text-primary">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
+                    Recommended
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Contact Us</h3>
-              <div className=" text-sm grid grid-cols-1 md:grid-cols-2 gap-14">
-               
-                <div className="space-y-1">
-                  {/* <h4 className="font-semibold text-sm mb-1"></h4> */}
-                  {event?.event?.phone && (
-                    <p className="flex items-center">
-                      <PhoneCall size={14} className="mr-3 flex-shrink-0" />
-                      <span>{event.event.phone}</span>
-                    </p>
-                  )}
-                  {event?.event?.email && (
-                    <p className="flex items-center">
-                      <Mail size={14} className="mr-3 flex-shrink-0" />
-                      <span>{event.event.email}</span>
-                    </p>
-                  )}
-                  {event?.event?.location && (
-                    <p className="flex items-start">
-                      <MapPin size={14} className="mr-3 mt-1 flex-shrink-0" />
-                      <span>{event.event.location}</span>
-                    </p>
-                  )}
-                </div>
-              
-                <div className="space-y-1">
-                 
-                  <p className="flex items-center">
-                    <PhoneCall size={14} className="mr-3 flex-shrink-0" />
-                    <span>+65 9627 4682</span>
-                  </p>
-                  <p className="flex items-center">
-                    <Mail size={14} className="mr-3 flex-shrink-0" />
-                    <span>group@toureast.net</span>
-                  </p>
-                  {/* Static Address */}
-                  <p className="flex items-start">
-                    <MapPin size={14} className="mr-3 mt-1 flex-shrink-0" />
-                    <span>Singapore</span>
-                  </p>
-                </div>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
+                Contact Us
+              </h2>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                {(event?.event?.phone || event?.event?.email || event?.event?.location) && (
+                  <div className="space-y-2.5">
+                    {event?.event?.phone && (
+                      <p className="flex items-start gap-3">
+                        <PhoneCall aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
+                        <span>{event.event.phone}</span>
+                      </p>
+                    )}
+                    {event?.event?.email && (
+                      <p className="flex items-start gap-3">
+                        <Mail aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
+                        <span className="break-all">{event.event.email}</span>
+                      </p>
+                    )}
+                    {event?.event?.location && (
+                      <p className="flex items-start gap-3">
+                        <MapPin aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
+                        <span>{event.event.location}</span>
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Social Media + Legal Links */}
-            <div className="space-y-4">
-                {/* Legal / Info Links */}
+            <div className="space-y-5">
               {hasAnyLegal && (
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Information</h3>
-                  <ul className="space-y-1 text-sm">
+                <div className="space-y-4">
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
+                    Information
+                  </h2>
+                  <ul className="space-y-2.5 text-sm">
                     {hasTerms && (
                       <li>
                         <button
                           onClick={() => openModal("terms")}
-                          className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+                          className="flex items-center gap-2 text-muted-foreground transition hover:text-primary"
                         >
-                          <FileText size={13} />
+                          <FileText size={15} />
                           Event Terms
                         </button>
                       </li>
@@ -254,9 +301,9 @@ const Footer = () => {
                       <li>
                         <button
                           onClick={() => openModal("policy")}
-                          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                          className="flex items-center gap-2 text-muted-foreground transition hover:text-primary"
                         >
-                          <Shield size={13} />
+                          <Shield size={15} />
                           Event Policy
                         </button>
                       </li>
@@ -265,9 +312,9 @@ const Footer = () => {
                       <li>
                         <button
                           onClick={() => openModal("support")}
-                          className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+                          className="flex items-center gap-2 text-muted-foreground transition hover:text-primary"
                         >
-                          <HeadphonesIcon size={13} />
+                          <HeadphonesIcon size={15} />
                           Event Support
                         </button>
                       </li>
@@ -275,34 +322,12 @@ const Footer = () => {
                   </ul>
                 </div>
               )}
-              {hasSocialLinks && (
-              
-                  <div className="flex space-x-4">
-                    {socialLinks.map(
-                      (social) =>
-                        social.href && (
-                          <a
-                            key={social.ariaLabel}
-                            href={social.href}
-                            aria-label={social.ariaLabel}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:text-primary-foreground transition-colors"
-                          >
-                            {social.icon}
-                          </a>
-                        )
-                    )}
-                  </div>
-              )}
-
-            
             </div>
           </div>
 
-          <div className="mt-2 border-t border-border pt-2 text-center text-sm text-muted-foreground">
+          <div className="mt-9 border-t border-border/70 pt-5 text-center text-xs leading-5 text-muted-foreground sm:mt-10 sm:text-sm">
             <p>
-              {event?.event?.organizer} © {currentYear} | All Rights Reserved
+              {event?.event?.organizer || event?.event?.title} © {currentYear} | All Rights Reserved
             </p>
           </div>
         </div>

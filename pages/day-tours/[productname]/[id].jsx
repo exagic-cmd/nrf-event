@@ -563,7 +563,7 @@ const handleVariantSelect = async (variant) => {
                    {t("starting_from", "Starting From")}
                  </div>
                   <div className="my-2 flex flex-col items-center">
-                    <span className="text-2xl font-bold text-gray-900">
+                    <span className="text-2xl font-bold text-primary">
                       {apiData?.currency} {startingPrice}
                     </span>
                     {currencyData && currencyData.exchange_rate !== 1 && (
@@ -588,7 +588,7 @@ const handleVariantSelect = async (variant) => {
                  onClick={handleProceedBooking}
                  className="w-full bg-primary text-white px-4 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                >
-                 {t("proceedBooking")}
+                 {t("daytour:proceedBooking")}
                  <ChevronRight size={20} />
                </button>
              )}
