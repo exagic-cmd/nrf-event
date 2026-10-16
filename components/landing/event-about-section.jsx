@@ -155,7 +155,7 @@ export function AboutSection({ layout = 1 }) {
               <img
                 src={image}
                 alt={title || "About the event"}
-                className="h-60 w-full rounded-2xl object-cover shadow-lg sm:h-72 md:h-[25rem] lg:h-[26rem]"
+                className="h-52 w-full rounded-2xl object-cover shadow-lg sm:h-60 md:h-72 lg:h-86"
               />
             </div>
           )}
