@@ -211,7 +211,7 @@ function DaytourCard({ tour, category = "daytour" }) {
     <button
       type="button"
       onClick={handleBookNow}
-      className="rounded-lg bg-primary text-white px-5 py-2.5 font-semibold active:bg-[#b71c1c] transition cursor-pointer flex items-center justify-center min-w-[120px] min-h-[44px]"
+      className="rounded-lg bg-primary text-white px-5 py-2.5 font-semibold transition cursor-pointer flex items-center justify-center min-w-[120px] min-h-[44px]"
     >
       {isLoading ? (
         <span className="flex items-center justify-center">

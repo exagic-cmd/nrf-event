@@ -27,7 +27,7 @@ import { getFullImageUrl } from "@/utils/imageService";
 import { useTranslation } from "next-i18next";
 import SearchFilterCard from "@/components/hotels/SearchFilterCard"; // ✅ your existing multi-tab component
 
-export default function HeroFilter() {
+export default function HeroFilter({ layout = 2 }) {
   const router = useRouter();
   const { t } = useTranslation("common");
   const { event, FetchEvent } = useEventStore();
@@ -204,11 +204,22 @@ export default function HeroFilter() {
   const handleNationalitySelected = (code) => {};
 
   return (
-    <div className="bg-background">
-      <section className="relative pb-24 md:pb-40 mt-24">
-      
+    <div className={layout === 1 ? "bg-transparent" : "bg-background"}>
+      <section
+        className={
+          layout === 1
+            ? "relative z-10 -mt-16 px-4 pb-8 sm:-mt-20 sm:px-6 md:-mt-24 lg:px-8"
+            : "relative mt-24 pb-24 md:pb-40"
+        }
+      >
 
-        <div className="absolute -top-12 lg:-top-16 lg:px-8 min-w-full z-10">
+        <div
+          className={
+            layout === 1
+              ? "relative mx-auto max-w-7xl"
+              : "absolute -top-12 z-10 min-w-full lg:-top-16 lg:px-8"
+          }
+        >
           {/* Set favicon to event banner when available */}
           {event?.event?.banner && (
             <Head>
@@ -218,11 +229,24 @@ export default function HeroFilter() {
               />
             </Head>
           )}
-          <div className="grid lg:grid-cols-1 md:gap-6 gap-8 lg:gap-0 max-w-full mx-4 ">
-            <div className="flex w-full lg:mx-0 justify-center bg-muted rounded-lg ">
-              <Card className="min-h-[200px] w-full max-w-7xl flex justify-center items-center p-0 bg-transparent border-0 shadow-none">
+          <div className={layout === 1 ? "w-full" : "mx-4 grid max-w-full gap-8 md:gap-6 lg:grid-cols-1 lg:gap-0"}>
+            <div
+              className={
+                layout === 1
+                  ? "w-full rounded-2xl border border-border/70 bg-card p-3 shadow-[0_16px_45px_rgba(15,23,42,0.16)] sm:p-4 md:p-5"
+                  : "flex w-full justify-center rounded-lg bg-muted lg:mx-0"
+              }
+            >
+              <Card
+                className={
+                  layout === 1
+                    ? "flex min-h-0 w-full items-center justify-center border-0 bg-transparent p-0 shadow-none"
+                    : "flex min-h-[200px] w-full max-w-7xl items-center justify-center border-0 bg-transparent p-0 shadow-none"
+                }
+              >
                 <SearchFilterCard
                 isHomepage={true}
+                  layout={layout}
                   filterActiveTab={filterActiveTab}
                   filterTabs={visibleTabs}
                   onSetTab={handleSetTab}

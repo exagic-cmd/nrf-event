@@ -14,6 +14,8 @@ import {
   Ship,
   Train,
   Landmark,
+  Compass,
+  Ticket,
 } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import { useDaytoursStore } from "@/store/useDaytoursStore";
@@ -45,6 +47,7 @@ export default function SearchFilterCard({
   onUpdateSearchQuery,
   initialAccommodationText,
   isHomepage = false,
+  layout = 2,
   rooms, onUpdateRooms, stars, onUpdateStars, initialCheckinDate, initialCheckoutDate, onDatesUpdated,
 }) {
   const {
@@ -549,25 +552,51 @@ export default function SearchFilterCard({
     setSuggestedResults([]);
   }, [filterActiveTab, setSuggestedResults]);
 
-  const Pill = ({ tab }) => (
-    <button
-      type="button"
-      onClick={() => onSetTab?.(tab.id)}
-      className={`p-3 md:p-4 py-2 rounded-t-lg ml-4 text-sm sm:text-md font-semibold transition ${
-        filterActiveTab === tab.id
-          ? "bg-primary text-white sm:py-2.5"
-          : "bg-muted text-sm "
-      }`}
-    >
-      {tab.name}
-    </button>
+  const tabIcons = {
+    1: Ticket,
+    2: Plane,
+    3: MapPin,
+    4: Building2,
+    8: Compass,
+    12: Landmark,
+  };
 
-  );
+  const Pill = ({ tab }) => {
+    const TabIcon = tabIcons[tab.id];
+    const isActive = filterActiveTab === tab.id;
+
+    return (
+      <button
+        type="button"
+        onClick={() => onSetTab?.(tab.id)}
+        className={
+          layout === 1
+            ? `inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition sm:px-4 sm:text-sm ${
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-transparent text-muted-foreground hover:bg-muted"
+              }`
+            : `ml-4 rounded-t-lg p-3 py-2 text-sm font-semibold transition md:p-4 sm:text-md ${
+                isActive ? "bg-primary text-white sm:py-2.5" : "bg-muted text-sm"
+              }`
+        }
+      >
+        {layout === 1 && TabIcon && <TabIcon aria-hidden="true" className="h-4 w-4" />}
+        {tab.name}
+      </button>
+    );
+  };
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-        <div className="flex flex-wrap gap-1 lg:gap-1">
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <div
+          className={
+            layout === 1
+              ? "scrollbar-hide flex min-w-0 flex-1 flex-nowrap gap-1 overflow-x-auto sm:gap-2"
+              : "flex flex-wrap gap-1 lg:gap-1"
+          }
+        >
           {filterTabs
             .map((t) => (
               <Pill key={t.id} tab={t} />
@@ -689,7 +718,7 @@ export default function SearchFilterCard({
                          </li>
                        ))}
                        {transferLoading ? (
-                         <li className="px-3 py-2.5 text-center text-foreground">Loading...</li>
+                         <li className="px-3 py-2.5 text-center text-primary">Loading...</li>
                        ) : filteredPickupOptions.length > 0 ? (
                          filteredPickupOptions.map((option) => (
                            <li

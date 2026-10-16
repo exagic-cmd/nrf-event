@@ -2,6 +2,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { useEffect, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 import { getFullImageUrl } from "@/utils/imageService";
 import { useEventStore } from "@/store/useEventStore";
@@ -86,26 +87,36 @@ export function AboutSection({ layout = 1 }) {
   if (layout === 1) {
     return (
       <section
-        className="w-full my-12 py-12 md:py-20"
+        id="about"
+        className="relative isolate my-8 w-full overflow-hidden my-10 md:py-16 lg:my-12 lg:py-10"
+        style={{ scrollMarginTop: "5.5rem" }}
         aria-labelledby="event-about-title"
       >
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center mt-12 md:mt-2 gap-8 px-4 md:grid-cols-2 md:gap-12 md:px-8 lg:px-12">
-          <div className="order-2 flex flex-col justify-center md:order-1">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-24 top-8 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl sm:h-96 sm:w-96"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 bottom-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl sm:h-96 sm:w-96"
+        />
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-7 px-4 sm:gap-9 sm:px-6 md:grid-cols-2 md:gap-10 md:px-8 lg:gap-14 lg:px-12">
+        <div className="order-2 flex flex-col justify-center md:order-1 md:rounded-3xl md:border md:border-border/70 md:bg-card/75 md:p-7 md:backdrop-blur-sm lg:p-10">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary sm:text-sm">
               About the event
             </p>
 
             {title && (
               <h2
                 id="event-about-title"
-                className="max-w-2xl text-xl font-semibold leading-tight text-foreground md:text-4xl lg:text-5xl"
+                className="max-w-2xl font-semibold leading-tight text-foreground text-xl md:text-2xl lg:text-3xl"
               >
                 {title}
               </h2>
             )}
 
             {description && (
-              <div className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+              <div className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-5 sm:text-base sm:leading-7">
                 <div
                   ref={descriptionRef}
                   className={
@@ -117,15 +128,22 @@ export function AboutSection({ layout = 1 }) {
                   <ReactMarkdown>{description}</ReactMarkdown>
                 </div>
 
-                {hasMoreDescription && (
+                {description && (
                   <button
                     type="button"
                     onClick={() =>
                       setIsDescriptionExpanded((expanded) => !expanded)
                     }
-                    className="mt-3 font-semibold text-primary underline-offset-4 hover:underline"
+                    aria-expanded={isDescriptionExpanded}
+                    className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   >
-                    {isDescriptionExpanded ? "Show less" : "Read more"}
+                    {isDescriptionExpanded ? "Show less" : "Learn More"}
+                    <ArrowRight
+                      aria-hidden="true"
+                      className={`h-4 w-4 transition-transform ${
+                        isDescriptionExpanded ? "-rotate-90" : ""
+                      }`}
+                    />
                   </button>
                 )}
               </div>
@@ -137,7 +155,7 @@ export function AboutSection({ layout = 1 }) {
               <img
                 src={image}
                 alt={title || "About the event"}
-                className="h-64 w-full rounded-2xl object-cover shadow-lg md:h-[27rem]"
+                className="h-60 w-full rounded-2xl object-cover shadow-lg sm:h-72 md:h-[25rem] lg:h-[26rem]"
               />
             </div>
           )}
@@ -156,7 +174,9 @@ export function AboutSection({ layout = 1 }) {
   if (layout === 2) {
     return (
       <section
+        id="about"
         className="w-full my-12 py-12 md:py-20"
+        style={{ scrollMarginTop: "5.5rem" }}
         aria-labelledby="event-about-title"
       >
         <div className="mx-auto max-w-6xl px-4 mt-12 md:mt-2 md:px-14 lg:px-24">
@@ -238,7 +258,9 @@ export function AboutSection({ layout = 1 }) {
 
   return (
     <section
+      id="about"
       className="w-full my-12 py-12 md:py-20"
+      style={{ scrollMarginTop: "5.5rem" }}
       aria-labelledby="event-about-title"
     >
       <div className="mx-auto max-w-6xl mt-12 md:mt-2 px-4 md:px-8 lg:px-12">

@@ -71,14 +71,14 @@ export default function LandingPage() {
   return (
     <Layout className=" ">
       <div>
-        <div className="bg-surface-secondary pt-16">
+        <div className={layout === 1 ? "bg-surface-muted pt-20" : "bg-surface-secondary pt-16"}>
             <Herosection layout={layout}  />
             <HeroFilter layout={layout} />
         </div>
-          <AboutSection  />
+          <AboutSection layout={layout} />
           <ShuttleBannerWeServeSection layout={layout}   />
           <OurRecommendation layout={layout} />
-          <EventPartners  />
+          <EventPartners layout={layout} />
          </div>
       
      

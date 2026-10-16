@@ -4,31 +4,30 @@ import { useEventStore } from "@/store/useEventStore";
 
 const PromotionalBanner = ({ image, alt, href, external = false, title, description }) => {
   const content = (
-    <div className="group relative h-48 overflow-hidden rounded-xl shadow-md sm:h-52 md:h-60 lg:h-[280px]">
+    <div className="group relative h-56 overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-md sm:h-60 md:h-64 lg:h-[280px]">
       <img
         src={image}
         alt={alt}
         className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
       />
-      {title && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent" />
-          <div className="absolute inset-y-0 left-0 flex w-full items-center p-4 text-white sm:p-6 md:p-8">
-            <div className="max-h-full max-w-[85%] overflow-y-auto md:max-w-[55%]">
-              <h2 className="text-lg font-bold leading-tight sm:text-xl md:text-2xl">
-                {title}
-              </h2>
-              {description && (
-                <p className="mt-2 line-clamp-2 text-xs text-white/90 sm:text-sm">
-                  {description}
-                </p>
-              )}
-              <span className="mt-3 inline-flex rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground sm:text-sm">
-                Book Shuttle
-              </span>
-            </div>
-          </div>
-        </>
+     {title && (
+  <div className="absolute inset-x-0 bottom-0 flex items-end justify-end bg-gradient-to-t from-background via-background/90 to-background/0 px-4 pb-4 pt-12 text-foreground sm:px-6 sm:pb-5 md:inset-y-0 md:left-auto md:right-0 md:w-[55%] md:items-center md:bg-gradient-to-l md:from-background md:via-background/90 md:to-background/0 md:px-7 md:py-6 lg:w-1/2 lg:px-9">
+    
+    <div className="w-full max-w-sm text-right flex flex-col items-end">
+        
+        <h2 className="line-clamp-2 text-base font-bold leading-snug sm:text-lg md:text-xl">
+          {title}
+        </h2>
+        {description && (
+          <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-foreground sm:mt-2 sm:text-sm sm:leading-6">
+            {description}
+          </p>
+        )}
+        <span className="mt-2.5 inline-flex rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition-colors group-hover:bg-primary-hover sm:mt-3 sm:px-4 sm:text-sm">
+          Book Shuttle
+        </span>
+    </div>
+  </div>
       )}
     </div>
   );
@@ -71,13 +70,18 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
     { icon: icon2, title: "Best Guides", desc: "Our experienced guides make every trip memorable." },
     { icon: icon3, title: "Easy Booking", desc: "Book your entire trip with just a few clicks." },
   ];
+  const layoutOneValues = [
+    values[1],
+    values[0],
+    values[2],
+  ];
 
   /* ============================================================
      LAYOUT 1 — Single-card image overlay banner
   ============================================================ */
   if (layout === 1) {
     return (
-      <section className="w-full mt-8 md:mt-4">
+      <section className="mt-8 w-full md:mt-4">
         {hasShuttleBanner && (
           <div className="mb-8">
             <PromotionalBanner
@@ -90,22 +94,54 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
           </div>
         )}
 
-        <div className="px-2 md:px-8 lg:px-12 mt-6 md:mt-12 grid grid-cols-1 md:grid-cols-4 gap-10 md:bg-surface bg-foreground/10 py-4 rounded-lg md:mx-0 mx-4">
-          <div className="md:col-span-1 space-y-3 text-center md:text-left">
-            <p className="text-primary font-semibold tracking-wide">WHAT WE SERVE</p>
-            <h2 className="text-xl md:text-2xl font-bold pt-2 leading-snug text-foreground">
-              Top Values <br /> For You
-            </h2>
-            <p className="text-muted-foreground text-sm pt-2">Your Singapore trip, booked in one step.</p>
-          </div>
+        <div className="relative isolate mx-auto mt-8 max-w-7xl px-4 sm:mt-10 sm:px-6 md:mt-12 ">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-8 top-0 -z-10 h-48 w-48 rounded-full bg-primary/10 blur-3xl sm:h-64 sm:w-64"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-8 bottom-0 -z-10 h-48 w-48 rounded-full bg-primary/10 blur-3xl sm:h-64 sm:w-64"
+          />
 
-          {values.map((v) => (
-            <div key={v.title} className="flex flex-col items-center md:items-start space-y-3">
-              <img src={v.icon} alt={`value-icon-${v.title}`} />
-              <h3 className="text-xl font-semibold text-foreground">{v.title}</h3>
-              <p className="text-muted-foreground text-sm">{v.desc}</p>
+          <div className="rounded-3xl border border-border/70 bg-card/75 px-5 py-6 shadow-sm backdrop-blur-sm sm:p-7 md:px-8 md:py-9 lg:px-9 lg:py-10">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-6 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-8 xl:grid-cols-[1.65fr_repeat(3,minmax(0,1fr))] xl:gap-0">
+              <div className="flex flex-col justify-center pb-4 sm:col-span-2 sm:pb-0 lg:col-span-4 xl:col-span-1 xl:border-r xl:border-border/70 xl:pr-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary sm:text-sm">
+                  WHY CHOOSE US
+                </p>
+                <h2 className="mt-2 text-2xl font-bold leading-tight text-foreground sm:text-3xl lg:text-4xl xl:text-[2rem]">
+                  Top Values For You
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
+                  Your Singapore trip, booked in one step.
+                </p>
+              </div>
+
+              {layoutOneValues.map(({ icon, title, desc }) => (
+                <article
+                  key={title}
+                  className="flex flex-col items-center rounded-2xl border border-border/70 bg-surface/70 px-4 py-5 text-center sm:border-0 sm:bg-transparent sm:px-3 sm:py-2 xl:rounded-none xl:border-l xl:border-border/70 xl:px-4 xl:py-1"
+                >
+                  <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-primary/15 bg-primary/10 sm:h-16 sm:w-16">
+                    <img
+                      src={icon}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="h-8 w-8 object-contain sm:h-9 sm:w-9"
+                    />
+                  </div>
+                  <h3 className="text-base font-semibold leading-snug text-foreground sm:text-lg">
+                    {title}
+                  </h3>
+                  <p className="mt-1.5 max-w-[15rem] text-sm leading-5 text-muted-foreground">
+                    {desc}
+                  </p>
+                </article>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
         {hasExternalBanner && (

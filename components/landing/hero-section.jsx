@@ -19,43 +19,33 @@ export default function HeroSection({ layout = 2 }) {
     eventDetails?.hero_paragraph ||
     "Attendees of NRF 2026 APAC can enjoy exclusive flight and hotel rates, only on Tour East!";
 
-  /* ============================================================
-     LAYOUT 1 — Existing design (unchanged)
-  ============================================================ */
   if (layout === 1) {
     return (
-      <div className="min-h-[40vh] bg-surface w-full ">
-        <div className="  py-4 md:py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center ">
-            <div className="flex flex-col justify-center space-y-4 text-center md:text-left px-2 md:px-8 lg:px-12">
-              <div className="">
-                <h1 className="text-xl lg:text-3xl font-semibold text-foreground uppercase tracking-wider">
-                  {heroTitle}
-                  <span className="text-primary block py-1.5 md:py-3 mt-2 text-3xl lg:text-5xl normal-case">
-                    {heroHeading}
-                  </span>
-                </h1>
-              </div>
-              <p className="text-muted-foreground text-[16px] leading-relaxed max-w-md">
+      <section className="relative mx-3 overflow-hidden rounded-2xl bg-surface-strong shadow-sm sm:mx-6 sm:rounded-3xl lg:mx-8">
+        <div className="relative min-h-[280px] sm:min-h-[320px] md:min-h-[360px] lg:min-h-[400px] xl:min-h-[420px]">
+          <img
+            src={heroImage}
+            alt={heroHeading}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+
+          <div className="relative z-10  flex min-h-[280px] max-w-7xl items-start px-5 pb-8 pt-9 sm:min-h-[320px] sm:px-10 sm:pb-10 sm:pt-11 md:min-h-[360px] md:px-14 md:pt-12 lg:min-h-[400px] lg:px-16 lg:pt-14 xl:min-h-[420px] xl:px-20">
+            <div className="max-w-lg lg:max-w-[34rem]">
+              <p className="mb-2 max-w-md text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/90 sm:mb-3 sm:text-xs sm:tracking-[0.18em]">
+                {heroTitle}
+              </p>
+              <h1 className="max-w-xl text-balance text-2xl font-semibold leading-[1.12] text-white sm:text-3xl md:text-4xl lg:text-[2.5rem]">
+                {heroHeading}
+              </h1>
+              <p className="mt-3 max-w-md text-[0.8125rem] leading-5 text-white/90 sm:mt-4 sm:text-sm sm:leading-6 md:text-[0.9375rem]">
                 {heroParagraph}
               </p>
             </div>
-            <div className="flex justify-center items-center md:order-last">
-              <div className="w-full">
-                <div className="relative">
-                  <div className="">
-                    <img
-                      src={heroImage}
-                      alt={heroHeading}
-                      className="w-full h-auto max-h-[450px] object-cover rounded-xl"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
