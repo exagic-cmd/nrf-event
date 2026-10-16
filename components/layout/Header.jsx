@@ -6,7 +6,16 @@ import Link from "next/link";
 import "@/styles/globals.css";
 import LocalizedLink from "@/components/LocalizedLink";
 import useUserStore from "@/store/useAuthStore";
-import { User, ShoppingBag, LogOut } from "lucide-react";
+import {
+  User,
+  ShoppingBag,
+  LogOut,
+  Menu,
+  X,
+  Home,
+  Info,
+  Compass,
+} from "lucide-react";
 import { useEventStore } from "@/store/useEventStore";
 
 export default function Header() {
@@ -17,6 +26,7 @@ export default function Header() {
   const event = useEventStore((state) => state.event);
   const setEvent = useEventStore((state) => state.setEvent);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const userMenuRef = useRef(null);
   const hasFetchedEventRef = useRef(false);
@@ -79,31 +89,84 @@ export default function Header() {
     setUserMenuOpen(false);
   };
 
+  const navigation = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/#about", label: "About", icon: Info },
+    { href: "/#recommendations", label: "Recommended", icon: Compass },
+  ];
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setUserMenuOpen(false);
+  }, [router.asPath]);
+
+  const renderNavigation = (mobile = false) => (
+    <nav
+      aria-label="Main navigation"
+      className={
+        mobile
+          ? "grid gap-1 border-t border-border/70 px-4 py-3 md:hidden"
+          : "hidden items-center gap-1 md:flex"
+      }
+    >
+      {navigation.map(({ href, label, icon: Icon }) => {
+        const className = mobile
+          ? "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-foreground transition hover:bg-muted hover:text-primary"
+          : "rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-primary lg:px-4";
+
+        return href === "/" ? (
+          <LocalizedLink
+            key={href}
+            href={href}
+            className={className}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {mobile && <Icon aria-hidden="true" className="h-4 w-4" />}
+            {label}
+          </LocalizedLink>
+        ) : (
+          <Link
+            key={href}
+            href={href}
+            className={className}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {mobile && <Icon aria-hidden="true" className="h-4 w-4" />}
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+
   const renderUserMenu = (isMobile = false) => (
     <div className="relative" ref={userMenuRef}>
       <button
+        type="button"
+        aria-label="Open account menu"
+        aria-expanded={userMenuOpen}
         onClick={() => setUserMenuOpen(!userMenuOpen)}
-      className={`p-2 rounded-full hover:bg-secondary`}
+        className="rounded-full p-2 text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-      <User className={`${isMobile ? "w-5 h-5 sm:w-6 sm:h-6" : "w-6 h-6"} text-foreground`} />
+        <User className={`${isMobile ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6"}`} />
       </button>
       {userMenuOpen && (
         <div
-        className={`absolute right-0 top-12 bg-primary text-primary-foreground shadow-lg rounded-xl py-3 px-4 flex flex-col space-y-3 animate-fadeIn ${
+          className={`absolute right-0 top-12 z-50 flex flex-col space-y-3 rounded-xl border border-border bg-card px-4 py-3 text-foreground shadow-lg ${
             isMobile ? "w-44" : "w-48"
           }`}
         >
-          <Link href="/profile" className="flex items-center space-x-2 hover:text-foreground">
+          <Link href="/profile" className="flex items-center space-x-2 transition hover:text-primary">
             <User className="w-4 h-4" />
             <span>Profile</span>
           </Link>
-          <Link href="/order" className="flex items-center space-x-2 hover:text-foreground">
+          <Link href="/order" className="flex items-center space-x-2 transition hover:text-primary">
             <ShoppingBag className="w-4 h-4" />
             <span>Booking</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text-secondary-foreground hover:text-secondary-foreground text-left"
+            className="flex items-center space-x-2 text-left transition hover:text-primary"
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
@@ -114,40 +177,45 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-between items-center px-3 sm:px-4 md:px-6 lg:px-8 py-2 bg-card shadow-md z-40">
-      {/* Logo */}
-    <div className="flex items-center">
-  <LocalizedLink href="/">
-    {/* Mobile + Tablet Logo */}
-    <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
-      alt="Mobile Logo"
-      className="h-14 w-auto object-contain lg:hidden"
-    />
+    <header className="fixed left-0 top-0 z-40 w-full border-b border-border/70 bg-background/90 shadow-sm backdrop-blur-xl">
+      <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-6 lg:px-8">
+        <LocalizedLink href="/" className="flex min-w-0 shrink-0 items-center">
+          {event?.event?.logo && (
+            <img
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event.event.logo}`}
+              alt={event?.event?.title || event?.event?.organizer || "Home"}
+              className="h-11 w-auto max-w-[150px] object-contain sm:h-12 sm:max-w-[190px]"
+            />
+          )}
+        </LocalizedLink>
 
-    {/* Desktop Logo */}
-    <img
-      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.event?.logo}`}
-      alt="Desktop Logo"
-      className="hidden lg:block h-16 w-auto object-contain"
-    />
-  </LocalizedLink>
-</div>
-<div></div>
+        {renderNavigation()}
 
-      {/* RIGHT SIDE: USER MENU */}
-      <div className="ml-auto flex items-center gap-2 sm:gap-3">
-
-        {/* DESKTOP USER MENU */}
-      <nav className="hidden lg:flex items-center gap-4">
+        <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2 md:ml-0">
           {token && renderUserMenu()}
-        </nav>
 
-       {/* MOBILE USER MENU */}
-        <div className="lg:hidden flex items-center gap-3 sm:gap-4">
-          {token && renderUserMenu(true)}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:hidden"
+          >
+            {mobileMenuOpen ? (
+              <X aria-hidden="true" className="h-5 w-5" />
+            ) : (
+              <Menu aria-hidden="true" className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div id="mobile-navigation" className="border-t border-border/70 bg-background/95 backdrop-blur-xl md:hidden">
+          {renderNavigation(true)}
+        </div>
+      )}
     </header>
   );
 }

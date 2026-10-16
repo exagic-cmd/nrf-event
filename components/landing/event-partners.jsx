@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useEventStore } from "@/store/useEventStore";
 
 function getPartnerLogo(partner) {
@@ -13,7 +13,7 @@ function getPartnerLogo(partner) {
  */
 function LogoImage({ logo, name, featured = false, large = false, className = "" }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center rounded-2xl bg-primary/10 p-2 shadow-sm border border-border/60 transition-all">
+    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-card p-3 shadow-sm transition-all">
       <img
         src={logo}
         alt={name || "Event partner"}
@@ -45,15 +45,16 @@ function PartnerCard({
   const logo = getPartnerLogo(partner);
   if (!logo) return null;
 
-  // LAYOUT 1: Masked Sliding Curtain Card (Single Logo at a Time)
+  // LAYOUT 1: Static partner logo cards
   if (layout === 1) {
     const cardContent = (
-      <div
-        className={`
-          flex h-32 sm:h-36 md:h-40 w-full items-center justify-center  px-4 py-3
-        `}
-      >
-        <LogoImage logo={logo} name={partner?.name} large={true} />
+      <div className="flex h-24 w-full items-center justify-center rounded-xl border border-border/60 bg-card px-5 py-4 shadow-sm transition-shadow hover:shadow-md sm:h-28 sm:px-6">
+        <img
+          src={logo}
+          alt={partner?.name || "Event partner"}
+          className="max-h-14 w-full object-contain sm:max-h-16"
+          loading="lazy"
+        />
       </div>
     );
 
@@ -165,7 +166,7 @@ export function EventPartners({ layout: layoutProp }) {
     const val = eventDetails.landing_layout ?? eventDetails.layout ?? eventDetails.layout_id;
     const strVal = String(val ?? "1").trim().toLowerCase();
     if (["2", "layout_2", "layout2"].includes(strVal)) return 2;
-    if (["3", "layout_3", "layout3"].includes(strVal)) return 2;
+    if (["3", "layout_3", "layout3"].includes(strVal)) return 3;
     return 1;
   }, [layoutProp, event]);
 
@@ -189,21 +190,25 @@ export function EventPartners({ layout: layoutProp }) {
 
   /*
   |--------------------------------------------------------------------------
-  | Auto spotlight interval for Layout 1, Layout 2 & Layout 3
+  | Auto spotlight interval for Layout 2 & Layout 3
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
-    if (displayPartners.length <= 1) {
+    if (layout === 1 || displayPartners.length <= 1) {
       setActiveIndex(0);
       return;
     }
+
+    setActiveIndex((current) =>
+      current >= displayPartners.length ? 0 : current
+    );
 
     const interval = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % displayPartners.length);
     }, 3000);
 
     return () => window.clearInterval(interval);
-  }, [displayPartners.length]);
+  }, [displayPartners.length, layout]);
 
   /*
   |--------------------------------------------------------------------------
@@ -216,74 +221,49 @@ export function EventPartners({ layout: layoutProp }) {
 
   /*
   |--------------------------------------------------------------------------
-  | LAYOUT 1: Masked Sliding Curtain Slider (Single Logo Visible at a Time)
+  | LAYOUT 1: Partner logo grid
   |--------------------------------------------------------------------------
   */
   if (layout === 1) {
     return (
       <section
-        className="w-full py-12 md:py-16"
+        className="relative isolate w-full overflow-hidden bg-primary/[0.035] py-8 sm:py-10 md:py-12"
         aria-labelledby="event-partners-title-1"
       >
-        <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
-          <div className="mb-8 text-center">
-            <p className="text-primary font-semibold text-xs md:text-sm tracking-widest uppercase">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-2 z-0 h-20 w-64  sm:h-24 sm:w-80 md:top-3 md:h-28 md:w-[26rem]"
+          style={{
+            backgroundColor: "hsl(var(--primary))",
+            maskImage: "url('/partners-skyline.png')",
+            maskPosition: "right center",
+            maskRepeat: "no-repeat",
+            maskSize: "100% 100%",
+            WebkitMaskImage: "url('/partners-skyline.png')",
+            WebkitMaskPosition: "right center",
+            WebkitMaskRepeat: "no-repeat",
+            WebkitMaskSize: "100% 100%",
+          }}
+        />
+        <div className="relative z-10 mx-auto max-w-screen-2xl px-4 sm:px-6 md:px-8 lg:px-12">
+          <div className="mb-6 text-left sm:mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary sm:text-sm">
               OUR PARTNERS
             </p>
             <h2
               id="event-partners-title-1"
-              className="mt-2 text-3xl md:text-4xl font-bold text-foreground"
+              className="mt-1 text-2xl font-bold text-foreground sm:text-3xl md:text-4xl"
             >
               Trusted By
             </h2>
           </div>
 
-          {/* Masked Slider Box: Width bounded, overflow-hidden mask */}
-          <div className="mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md py-2">
-            <div className="relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-primary/5 dark:bg-primary/10 p-3 shadow-lg">
-              {/* Sliding Track */}
-              <div
-                className="flex transition-transform duration-700 ease-in-out"
-                style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-              >
-                {displayPartners.map((partner, index) => (
-                  <div
-                    key={`${partner.id || partner.name}-${index}`}
-                    className="w-full flex-shrink-0 px-1"
-                  >
-                    <PartnerCard
-                      partner={partner}
-                      index={index}
-                      large={true}
-                      layout={1}
-                    />
-                  </div>
-                ))}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5 lg:gap-5">
+            {displayPartners.map((partner, index) => (
+              <div key={`${partner.id || partner.name}-${index}`}>
+                <PartnerCard partner={partner} index={index} layout={1} />
               </div>
-            </div>
-          </div>
-
-          {/* Carousel Control Dots */}
-          <div className="mt-6 flex flex-col items-center justify-center gap-2">
-            <div className="flex items-center justify-center gap-2">
-              {displayPartners.map((_, index) => (
-                <button
-                  type="button"
-                  key={index}
-                  onClick={() => setActiveIndex(index)}
-                  className={`
-                    h-2 rounded-full transition-all duration-500 cursor-pointer
-                    ${
-                      index === activeIndex
-                        ? "w-7 bg-primary"
-                        : "w-2 bg-border hover:bg-muted-foreground/40"
-                    }
-                  `}
-                  aria-label={`Go to partner ${index + 1}`}
-                />
-              ))}
-            </div>
-           
+            ))}
           </div>
         </div>
       </section>
