@@ -6,6 +6,7 @@ import Link from "next/link";
 import "@/styles/globals.css";
 import LocalizedLink from "@/components/LocalizedLink";
 import useUserStore from "@/store/useAuthStore";
+import { getFullImageUrl } from "@/utils/imageService";
 import {
   User,
   ShoppingBag,
@@ -179,13 +180,17 @@ export default function Header() {
   return (
     <header className="fixed left-0 top-0 z-40 w-full border-b border-border/70 bg-background/90 shadow-sm backdrop-blur-xl">
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-6 lg:px-8">
-        <LocalizedLink href="/" className="flex min-w-0 shrink-0 items-center">
-          {event?.event?.logo && (
+        <LocalizedLink href="/" className="mr-auto flex min-w-0 shrink-0 items-center">
+          {event?.event?.logo ? (
             <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event.event.logo}`}
+              src={getFullImageUrl(event.event.logo)}
               alt={event?.event?.title || event?.event?.organizer || "Home"}
-              className="h-11 w-auto max-w-[150px] object-contain sm:h-12 sm:max-w-[190px]"
+              className="h-14 w-auto max-w-[220px] object-contain sm:h-16 sm:max-w-[260px]"
             />
+          ) : (
+            <span className="max-w-[220px] truncate text-lg font-bold tracking-tight text-foreground sm:text-xl">
+              {event?.event?.organizer || event?.event?.title || "Home"}
+            </span>
           )}
         </LocalizedLink>
 

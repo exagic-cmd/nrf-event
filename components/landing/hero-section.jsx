@@ -28,8 +28,8 @@ export default function HeroSection({ layout = 2 }) {
             alt={heroHeading}
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent" />
 
           <div className="relative z-10  flex min-h-[280px] max-w-7xl items-start px-5 pb-8 pt-9 sm:min-h-[320px] sm:px-10 sm:pb-10 sm:pt-11 md:min-h-[360px] md:px-14 md:pt-12 lg:min-h-[400px] lg:px-16 lg:pt-14 xl:min-h-[420px] xl:px-20">
             <div className="max-w-lg lg:max-w-[34rem]">

@@ -33,7 +33,7 @@ const PromotionalBanner = ({ image, alt, href, external = false, title, descript
   );
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-screen-xl">
       {external ? (
         <a href={href} target="_blank" rel="noopener noreferrer" className="block">
           {content}
@@ -94,7 +94,7 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
           </div>
         )}
 
-        <div className="relative isolate mx-auto mt-8 max-w-7xl px-4 sm:mt-10 sm:px-6 md:mt-12 ">
+        <div className="relative isolate mx-auto mt-8 max-w-7xl sm:mt-10 md:mt-12 ">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -left-8 top-0 -z-10 h-48 w-48 rounded-full bg-primary/10 blur-3xl sm:h-64 sm:w-64"
@@ -176,7 +176,7 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
           </div>
         )}
 
-        <div className="px-4 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6">
             <p className="text-primary font-semibold tracking-wide text-sm">WHAT WE SERVE</p>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mt-1">Top Values For You</h2>
@@ -225,8 +225,8 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
         </div>
       )}
 
-      <div className="px-4 md:px-8 lg:px-12 mt-8 md:mt-10 relative z-10">
-        <div className="text-center mb-8">
+      <div className="relative z-10 mx-auto mt-8 max-w-7xl px-4 sm:px-6 md:mt-10 lg:px-8">
+        <div className="mb-8 text-left">
           <p className="text-primary font-semibold tracking-wide text-sm">WHAT WE SERVE</p>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mt-1">
             Top Values For You
