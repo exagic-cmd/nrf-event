@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useEventStore } from "@/store/useEventStore";
+import { getFullImageUrl } from "@/utils/imageService";
 
 // ─── Terms Modal ─────────────────────────────────────────────────────────────
 const TABS = [
@@ -184,19 +185,19 @@ const Footer = () => {
             WebkitMaskSize: "100% 100%",
           }}
         />
-        <div className="relative mx-auto max-w-7xl px-4 mb-12 py-10 sm:px-6 sm:py-12 md:px-8 lg:px-12 lg:py-14">
-          <div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.7fr_1.25fr_0.9fr] lg:gap-10">
+        <div className="relative mx-auto max-w-8xl md:px-10 py-10 px-6 sm:py-12 lg:py-14">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] lg:gap-10">
             <div className="space-y-4">
-              <LocalizedLink href="/" className="inline-flex min-h-12 items-center">
+              <LocalizedLink href="/" className="inline-flex min-h-14 items-center">
                 {event?.event?.logo ? (
                   <img
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event.event.logo}`}
+                    src={getFullImageUrl(event.event.logo)}
                     alt={event?.event?.title || event?.event?.organizer || "Home"}
-                    className="max-h-12 w-auto max-w-[200px] object-contain"
+                    className="max-h-20 w-auto max-w-[280px] object-contain"
                   />
                 ) : (
-                  <span className="text-lg font-bold text-foreground">
-                    {event?.event?.organizer || event?.event?.title}
+                  <span className="text-lg font-bold tracking-tight text-foreground">
+                    {event?.event?.organizer || event?.event?.title || "Explore Singapore"}
                   </span>
                 )}
               </LocalizedLink>
@@ -227,7 +228,7 @@ const Footer = () => {
             </div>
 
             <nav aria-label="Footer navigation" className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
                 Explore
               </h2>
               <ul className="space-y-2.5 text-sm">
@@ -249,13 +250,12 @@ const Footer = () => {
               </ul>
             </nav>
 
-            <div className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
-                Contact Us
-              </h2>
-              <div className="space-y-3 text-sm text-muted-foreground">
-                {(event?.event?.phone || event?.event?.email || event?.event?.location) && (
-                  <div className="space-y-2.5">
+            {(event?.event?.phone || event?.event?.email || event?.event?.location) && (
+              <div className="space-y-4">
+                <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
+                  Contact Us
+                </h2>
+                <div className="space-y-3 text-sm leading-6 text-muted-foreground">
                     {event?.event?.phone && (
                       <p className="flex items-start gap-3">
                         <PhoneCall aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
@@ -274,15 +274,14 @@ const Footer = () => {
                         <span>{event.event.location}</span>
                       </p>
                     )}
-                  </div>
-                )}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="space-y-5">
-              {hasAnyLegal && (
+            {hasAnyLegal && (
+              <div className="space-y-5">
                 <div className="space-y-4">
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
+                  <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
                     Information
                   </h2>
                   <ul className="space-y-2.5 text-sm">
@@ -321,13 +320,13 @@ const Footer = () => {
                     )}
                   </ul>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
-          <div className="mt-9 border-t border-border/70 pt-5 text-center text-xs leading-5 text-muted-foreground sm:mt-10 sm:text-sm">
+          <div className="mt-8 border-t border-border/70 pt-5 text-center text-xs leading-5 text-muted-foreground sm:mt-10 sm:text-sm">
             <p>
-              {event?.event?.organizer || event?.event?.title} © {currentYear} | All Rights Reserved
+              © {currentYear} {event?.event?.organizer || event?.event?.title || "Explore Singapore"}. All rights reserved.
             </p>
           </div>
         </div>
