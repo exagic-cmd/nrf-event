@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { useDaytoursStore } from "@/store/useDaytoursStore"
 import FilterSidebar from "@/components/daytours/FilterSidebar"
 import Image from "next/image"
-import Link from "next/link"
+import LocalizedLink from "@/components/LocalizedLink"
 import { getFullImageUrl } from "@/utils/imageService"
 import MapView from "@/components/daytours/MapView"
 import { useLocalizedRouter } from "@/components/localizedRouter";
@@ -194,13 +194,9 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
         <SvgLoader2 />
       </div>
     )}
-      <a
+      <LocalizedLink
   href={`/day-tours/${slugify(item.title)}/${item.id}`}
-  onClick={(e) => {
-    e.preventDefault();
-    setLoadingId(item.id);
-    localizedPush(`/day-tours/${slugify(item.title)}/${item.id}`);
-  }}
+  onClick={() => setLoadingId(item.id)}
   className="block"
 >
                       <div className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg cursor-pointer">
@@ -216,7 +212,7 @@ const SearchFilterBar = ({ onSearchResults, onFilterChange, onApplyFilters, rese
                           <p className="text-muted-foreground text-xs">Singapore</p>
                         </div>
                       </div>
-                    </a>
+                    </LocalizedLink>
                     </div>
                   ))
                 ) : (

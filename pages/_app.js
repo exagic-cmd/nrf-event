@@ -9,6 +9,8 @@ import '@/styles/globals.css';
 import ThemeProvider from '@/components/ThemeProvider';
 import { eventAppearance } from '@/lib/theme.config';
 import { useEventStore } from '@/store/useEventStore';
+import { getEventSlugFromRouter } from '@/lib/eventRouting';
+import { EventRouteContext } from '@/lib/EventRouteContext';
 
 const GA_TRACKING_ID = 'G-5SQKF4Y54M';
 
@@ -16,12 +18,29 @@ import '@/lib/helpers'; // loads globally
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const { currentLocale, setLocale } = useLanguageStore();
-const event = useEventStore((s) => s.event);
+  const { event, eventSlug, status, error, FetchEvent, clearEvent } = useEventStore();
+  const routeEventSlug =
+    Object.prototype.hasOwnProperty.call(pageProps, 'routeEventSlug')
+      ? pageProps.routeEventSlug
+      : getEventSlugFromRouter(router);
+  const eventMatchesRoute = Boolean(
+    routeEventSlug && eventSlug === routeEventSlug && status === 'ready' && event
+  );
    const appearance = useMemo(() => {
-    const themeMode = event?.event?.theme_mode === 'dark' ? 'dark' : event?.theme_mode === 'light' ? 'light' : eventAppearance.theme;
-    const primaryColor = event?.event?.theme_color || eventAppearance.primaryColor;
+    const activeEvent = eventMatchesRoute ? event : null;
+    const themeMode = activeEvent?.event?.theme_mode === 'dark' ? 'dark' : activeEvent?.theme_mode === 'light' ? 'light' : eventAppearance.theme;
+    const primaryColor = activeEvent?.event?.theme_color || eventAppearance.primaryColor;
     return { theme: themeMode, primaryColor };
-  }, [event?.event?.theme_mode, event?.event?.theme_color]);
+  }, [event, eventMatchesRoute]);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (routeEventSlug) {
+      FetchEvent(routeEventSlug);
+    } else {
+      clearEvent();
+    }
+  }, [router.isReady, router.asPath, routeEventSlug, FetchEvent, clearEvent]);
 
   // Sync language with router
   useEffect(() => {
@@ -61,8 +80,45 @@ const event = useEventStore((s) => s.event);
         `}
       </Script>
       <ThemeProvider appearance={appearance}>
-        <Header />
-        <Component {...pageProps} />
+        <EventRouteContext.Provider value={routeEventSlug}>
+          <Header />
+          {routeEventSlug && !eventMatchesRoute ? (
+          <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
+            <div className="max-w-xl">
+              {status === 'expired' || status === 'not-found' ? (
+                <>
+                  <h1 className="text-3xl font-semibold">
+                    {status === 'expired' ? 'Event unavailable' : 'Event not found'}
+                  </h1>
+                  <p className="mt-3 text-muted-foreground">
+                    {error || 'This event is no longer available.'}
+                  </p>
+                </>
+              ) : status === 'error' ? (
+                <>
+                  <h1 className="text-3xl font-semibold">Unable to load event</h1>
+                  <p className="mt-3 text-muted-foreground">
+                    {error || 'Please check your connection and try again.'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => FetchEvent(routeEventSlug)}
+                    className="mt-6 rounded-lg bg-primary px-5 py-3 font-medium text-primary-foreground"
+                  >
+                    Try again
+                  </button>
+                </>
+              ) : (
+                <p role="status" className="text-muted-foreground">
+                  Loading event…
+                </p>
+              )}
+            </div>
+          </main>
+        ) : (
+          <Component {...pageProps} />
+          )}
+        </EventRouteContext.Provider>
       </ThemeProvider>
     </>
   );

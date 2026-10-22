@@ -7,12 +7,12 @@ import { useProductStore } from "@/store/useProductStore";
 import { getFullImageUrl } from '@/utils/imageService';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useAffiliateStore } from '@/store/useAffiliateStore';
 import PriceDiscrepancyModal from "@/components/checkout/PriceDiscrepancyModal";
 
 const PayNow = ({ bookingDetails, onBack }) => {
-    const router = useRouter();
+    const { localizedPush } = useLocalizedRouter();
   useScrollToTop();
   const submitBooking = useBookingStore(state => state.submitBooking);
   const getPaymentOptions = useBookingStore(state => state.getPaymentOptions);
@@ -226,7 +226,7 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
   };
 
   const closePopup = () => {
-    router.push('/');
+    localizedPush('/');
    };
   return (
     <div className="flex flex-col lg:flex-row gap-8 max-w-full md:mx-24 mx-2 mt-6 p-2 md:p-12">

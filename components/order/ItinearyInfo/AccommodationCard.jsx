@@ -1,7 +1,7 @@
 import { MapPin, UtensilsCrossed, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { getFullImageUrl } from "@/utils/imageService"
-import { useRouter } from "next/navigation"
+import { useLocalizedRouter } from "@/components/localizedRouter"
 import { useState } from 'react'; 
 import { AlertCircle } from 'lucide-react';
 import LoaderSvg from '@/components/common/LoaderSvg'; 
@@ -9,7 +9,7 @@ import { encodeShareToken } from "@/utils/cryptoUtils";
 
 export default function AccommodationCard({ data }) {
   const accommodation = data;
-  const router = useRouter()
+  const { localizedPush } = useLocalizedRouter()
   const [isLoading, setIsLoading] = useState(false); 
 
   const formatDate = (date) => {
@@ -39,7 +39,7 @@ export default function AccommodationCard({ data }) {
       const encoded = encodeShareToken(itinerary_id);
       if (encoded.success) {
         setIsLoading(true);
-        router.push(`/order/detail/${encoded.data}`);
+        localizedPush(`/order/detail/${encoded.data}`);
       }
     }
     // Note: isLoading will reset when the component unmounts during navigation.

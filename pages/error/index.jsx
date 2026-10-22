@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import useUserStore from '@/store/useAuthStore';
 import { useEventStore } from "@/store/useEventStore";
 import { Phone, Mail } from "lucide-react"
@@ -8,10 +9,11 @@ function index() {
   //const [//, setShowFlywire] = useState(false);
   const user = useUserStore((state) => state.user);
   const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { message } = router.query;
-  const { event, FetchEvent } = useEventStore();
+  const event = useEventStore((state) => state.event);
   const handleTryAgain = () => {
-   router.push("/")
+   localizedPush("/")
   };
 
   return (

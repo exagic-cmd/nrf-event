@@ -6,13 +6,13 @@ import { getFullImageUrl } from "@/utils/imageService";
 import dynamic from "next/dynamic";
 import ExpireHoldModal from "./ExpireHoldModal";
 import { toast } from "react-toastify";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 
 
 const CartDrawerContent = dynamic(() => import("./CartDrawerContent"));
 
 const AccommodationTimerBubble = () => {
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { items, extendHoldForItem, removeItem } = useCartStore();
   const { setDrawerContent, openDrawer } = useDrawerStore();
   const [timeNow, setTimeNow] = useState(Date.now());
@@ -75,7 +75,7 @@ const AccommodationTimerBubble = () => {
         setTimeout(() => {
           console.log('🚀 Redirecting to booking page');
           // DO NOT remove flag here - let the new page clean it up
-          router.push(`/accommodation/booking/${itemToExtend.bookingData.accommodationId}`);
+          localizedPush(`/accommodation/booking/${itemToExtend.bookingData.accommodationId}`);
           // Remove from processing keys AFTER redirect is initiated
           setProcessingKeys((k) => k.filter((key) => key !== itemToExtend.key));
           // Reset the trigger after redirect
@@ -98,7 +98,7 @@ const AccommodationTimerBubble = () => {
     };
 
     extendLogic();
-  }, [itemToExtend, extendHoldForItem, router]);
+  }, [itemToExtend, extendHoldForItem, localizedPush]);
 
   const accommodationHolds = items.filter((i) => i.type === "accommodation" && i.holdExpiresAt);
   if (!accommodationHolds || accommodationHolds.length === 0) return null;

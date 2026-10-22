@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import RatingSmiles from "@/components/order/ItinearyInfo/RatingSmiles";
 import { useOrderStore } from "@/store/useOrderStore";
 import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import useUserStore from "@/store/useAuthStore";
 import LoadingSvg2 from "@/components/common/Loader2Svg";
 import { useTranslation } from "next-i18next";
@@ -12,6 +13,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 const ReviewScreen = ({ onBack }) => {
   const { t } = useTranslation("order"); 
   const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { token: qrcode, itinerary_id: itineraryId } = router.query;
 
   const {
@@ -165,7 +167,7 @@ if (successMessage)
           {successMessage || t("success.submitted")}
         </p>
         <button
-          onClick={() => router.push("/order")}
+          onClick={() => localizedPush("/order")}
           className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover"
         >
           {t("button.back")}
@@ -185,7 +187,7 @@ if (successMessage)
             {errorMessage || t("invalid.message")}
           </p>
           <button
-            onClick={() => router.push("/order")}
+            onClick={() => localizedPush("/order")}
             className="px-6 py-2 bg-primary text-primary-foreground rounded-lg"
           >
             {t("button.back")}
@@ -199,7 +201,7 @@ if (successMessage)
       <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
         {/* Back button */}
         <button
-          onClick={onBack ? onBack : () => router.push("/order")}
+          onClick={onBack ? onBack : () => localizedPush("/order")}
           className="flex items-center mt-2 gap-2 text-muted-foreground hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft size={20} /> {t("button.back")}
@@ -223,7 +225,7 @@ if (successMessage)
         "No review questions available for this itinerary."}
     </p>
     <button
-      onClick={() => router.push("/order")}
+      onClick={() => localizedPush("/order")}
       className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg"
     >
       {t('goback')}
@@ -301,7 +303,7 @@ if (successMessage)
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
             <button
-              onClick={onBack ? onBack : () => router.push("/order")}
+              onClick={onBack ? onBack : () => localizedPush("/order")}
               className="flex-1 px-6 py-3 border-2 border-border text-muted-foreground rounded-xl font-semibold hover:bg-muted transition-colors"
             >
               {t("button.cancel")}

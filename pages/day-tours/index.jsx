@@ -15,7 +15,7 @@ function DaytoursPage() {
   const { t } = useTranslation(["common", "daytour"]);
   const searchParams = useSearchParams();
   const { searchResults, fetchSearchResults, isLoading } = useDaytoursStore();
-  const { event, FetchEvent } = useEventStore();
+  const event = useEventStore((state) => state.event);
   // ✅ Fetch day tours when query params exist
   useEffect(() => {
     const searched = searchParams.get("searched");

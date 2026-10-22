@@ -6,7 +6,7 @@ import { useProductStore } from "@/store/useProductStore";
 import { useCartStore } from "@/store/useCartStore";
 import { calculateTierPricing } from "@/utils/tierPricing";
 import { useDrawerStore } from "@/store/useDrawerStore";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useTranslation } from "next-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -18,7 +18,7 @@ import useLanguageStore from "@/store/useLanguageStore";
 
 const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit }) => {
   const { t } = useTranslation("daytour");
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const [formData, setFormData] = useState({
     date: "",
     time: "",
@@ -342,7 +342,7 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
     await new Promise((res) => setTimeout(res, 1200)); // simulate loading
-    router.push("/transfers");
+    localizedPush("/transfers");
     setLoadingButton(null);
   };
 
@@ -350,7 +350,7 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
     setLoadingButton("checkout");
     await new Promise((res) => setTimeout(res, 1200)); // simulate loading
     sessionStorage.setItem("fromBooking", "true");
-    router.push("/checkout");
+    localizedPush("/checkout");
     setLoadingButton(null);
   };
 

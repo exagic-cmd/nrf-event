@@ -155,7 +155,7 @@ export function AboutSection({ layout = 1 }) {
               <img
                 src={image}
                 alt={title || "About the event"}
-                className="h-52 w-full rounded-2xl object-cover shadow-lg sm:h-60 md:h-72 lg:h-86"
+                className="mx-auto h-auto max-h-64 w-full rounded-2xl object-contain shadow-lg sm:max-h-72 md:h-72 md:max-h-none md:object-cover lg:h-[22rem]"
               />
             </div>
           )}
@@ -185,7 +185,7 @@ export function AboutSection({ layout = 1 }) {
               <img
                 src={image}
                 alt={title || "About the event"}
-                className="h-64 w-full rounded-2xl object-cover shadow-lg md:h-[26rem]"
+                className="mx-auto h-auto max-h-[22rem] w-full rounded-2xl object-contain shadow-lg md:h-[26rem] md:max-h-none md:object-cover"
               />
             )}
 
@@ -272,7 +272,7 @@ export function AboutSection({ layout = 1 }) {
               <img
                 src={image}
                 alt={title || "About the event"}
-                className="relative h-64 w-full rounded-2xl object-cover md:h-[24rem]"
+                className="relative mx-auto h-auto max-h-[22rem] w-full rounded-2xl object-contain md:h-[24rem] md:max-h-none md:object-cover"
               />
             </div>
           )}

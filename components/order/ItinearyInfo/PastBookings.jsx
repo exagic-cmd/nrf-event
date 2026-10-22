@@ -5,13 +5,13 @@ import { History, Calendar, Star, Search, Eye, AlertCircle } from "lucide-react"
 import { useOrderStore } from "@/store/useOrderStore"
 import { getFullImageUrl } from "@/utils/imageService"
 import { useTranslation } from "next-i18next"
-import { useRouter } from "next/navigation"
+import { useLocalizedRouter } from "@/components/localizedRouter"
 import Loader2Svg from "@/components/common/Loader2Svg"
 
 const PastBookings = ({ onReviewClick, onDetailsClick }) => {
   const { t } = useTranslation("order")
   const { pastBookings } = useOrderStore()
-  const router = useRouter()
+  const { localizedPush } = useLocalizedRouter()
   const [showPastBookings, setShowPastBookings] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("date")
@@ -213,7 +213,7 @@ const PastBookings = ({ onReviewClick, onDetailsClick }) => {
                                 if (item.category_id === 6) {
                                   sessionStorage.setItem("itineraryItem", JSON.stringify(item))
                                   sessionStorage.setItem("fromOrder", "true")
-                                  router.push(`/accommodations/${item.product_id || item.id}`)
+                                  localizedPush(`/accommodations/${item.product_id || item.id}`)
                                 } else {
                                   onDetailsClick &&
                                     onDetailsClick({ order_id: item.order_id, itinerary_id: item.id })

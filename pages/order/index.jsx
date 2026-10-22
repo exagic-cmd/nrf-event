@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState, useRef } from "react"
-import { useRouter } from "next/navigation"
+import { useLocalizedRouter } from "@/components/localizedRouter"
 import {
   BedDouble,
   BotMessageSquare,
@@ -175,7 +175,7 @@ const TravelInfoPage = () => {
 
   const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
 
-  const router = useRouter()
+  const { localizedPush } = useLocalizedRouter()
   const {
     upcomingBookings,
     pastBookings,
@@ -322,7 +322,7 @@ const TravelInfoPage = () => {
     if (!itineraryId) return
     setDetailLoadingId(itineraryId)
     const encoded = encodeShareToken(itineraryId)
-    if (encoded.success) router.push(`/order/detail/${encoded.data}`)
+    if (encoded.success) localizedPush(`/order/detail/${encoded.data}`)
   }
 
 
@@ -561,7 +561,7 @@ const TravelInfoPage = () => {
                   <button
                     onClick={() => {
                       setReviewLoadingId(`${item.id}-${idx}`);
-                      router.push(`/review/${qrCode}/${item.id || item.itinerary_id}`);
+                      localizedPush(`/review/${qrCode}/${item.id || item.itinerary_id}`);
                     }}
                     disabled={isLoading}
                     className="shrink-0 rounded-lg bg-primary px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground transition-all hover:bg-primary-hover active:scale-95 shadow-sm min-w-[65px] flex items-center justify-center disabled:opacity-70"
@@ -599,7 +599,7 @@ const TravelInfoPage = () => {
     <ProtectedRoute>
       <div className="min-h-screen pt-6 md:pt-12 bg-surface-muted">
         <button
-          onClick={() => router.push("/chat")}
+          onClick={() => localizedPush("/chat")}
           className="fixed bottom-6 right-6 z-50 rounded-full bg-primary p-4 text-primary-foreground shadow-xl transition-transform duration-300 hover:scale-105"
           aria-label={t("chat_with_ai")}
         >

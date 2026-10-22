@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
+import { useLocalizedRouter } from '@/components/localizedRouter';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSearchValuesStore } from '@/store/searchValues.store';
@@ -28,7 +28,7 @@ const fetchRecommendedProducts = async (currency_id) => {
 };
 
 export default function RecommendedProductsModal({ isOpen, onClose, hotelName }) {
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { setTransferParams } = useSearchValuesStore();
   const { currency, currencyId } = useCurrencyStore();
   const resolvedCurrencyId =
@@ -75,7 +75,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
 
     if (category === 'Transfers') {
       if (product.title.toLowerCase().includes('shuttle')) {
-        router.push(`/day-tours/detail/${product.id}`);
+        localizedPush(`/day-tours/detail/${product.id}`);
         return; }
 
       if (!hotelName) {
@@ -106,7 +106,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
               pickup: pickupPoint,
               dropoff: matchedDropoffPoint,
             });
-            router.push('/listings?searched=true&type=transfer');
+            localizedPush('/listings?searched=true&type=transfer');
           } else {
             toast.warn(`Transfer to "${hotelName}" is not available at the moment.`);
             setProductLoading(null);
@@ -120,7 +120,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
         setProductLoading(null);
       }
     } else if (category === 'Day Tours') {
-      router.push(`/day-tours/detail/${product.id}`);
+      localizedPush(`/day-tours/detail/${product.id}`);
     }
   };
 

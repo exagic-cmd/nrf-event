@@ -12,7 +12,7 @@ export default function OrderPaymentPage() {
     const router = useRouter();
   const { id: returnOrderId } = router.query;
   const { t } = useTranslation('order-payment');
-  const { event, FetchEvent } = useEventStore();
+  const event = useEventStore((state) => state.event);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showFlywire, setShowFlywire] = useState(false);

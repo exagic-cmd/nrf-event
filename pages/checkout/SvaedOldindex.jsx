@@ -14,7 +14,7 @@ import PayNowFlywire from '@/components/PayNowFlywire';
 import Head from 'next/head';
 
 const PayNow = ({  }) => {
-     const { localizedPush } = useLocalizedRouter();
+     const { localizedPush, localizedReplace } = useLocalizedRouter();
   useScrollToTop();
   const { items } = useCartStore();
   const submitBooking = useBookingStore(state => state.submitBooking);
@@ -36,7 +36,7 @@ const [flywireTotal, setFlywireTotal] = useState(null);
   const [errors, setErrors] = useState({});
 useEffect(() => {
     if (items.length === 0) {
-      router.replace("/"); 
+      localizedReplace("/");
     }
   }, [items]);
   useEffect(() => {

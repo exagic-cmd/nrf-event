@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useEventStore } from "@/store/useEventStore";
 import LoaderSvg from "@/components/common/LoaderSvg";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 const DEFAULT_REGION = {
   id: 4352,
   region_id: 18196,
@@ -41,7 +41,7 @@ export default function AccommodationFilter({ onSearch, initialSearchText = "", 
   const [isSearching, setIsSearching] = useState(false);
   const [childAges, setChildAges] = useState({});
   const [showChildInput, setShowChildInput] = useState({});
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
 
  // const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -67,17 +67,12 @@ const [search, setSearch] = useState(initialSearchText || DEFAULT_REGION.name);
     setSearchParamsAndSearch,
   } = useAccommodationsStore();
 
-  const { event, FetchEvent } = useEventStore();
+  const event = useEventStore((state) => state.event);
 
   // Fetch nationalities on mount
   // useEffect(() => {
   //   fetchNationalities();
   // }, [fetchNationalities]);
-
-  // Fetch event data on mount
-  useEffect(() => {
-    FetchEvent();
-  }, [FetchEvent]);
 
   // Get booking date range from event store
   const eventDetails = event?.event;
@@ -288,7 +283,7 @@ useEffect(() => {
     if (!isHomepage) {
       setIsSearching(false);
     }
-    if (isHomepage) router.push(`/listings?searched=true&type=accommodation`);
+    if (isHomepage) localizedPush(`/listings?searched=true&type=accommodation`);
   }
 };
 

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+import LocalizedLink from "@/components/LocalizedLink";
 import { redirectToAirwallexCheckout } from '@/utils/airwallex';
 import Layout from "@/components/layout/Layout"
 export default function PaymentFailed() {
@@ -106,14 +106,14 @@ export default function PaymentFailed() {
                 <span className="text-sm">Try Again</span>
               </button>
 
-              <Link href="/" className="block">
+              <LocalizedLink href="/" className="block">
                 <button className="w-full bg-muted hover:bg-secondary text-muted-foreground font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 border border-border">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                   </svg>
                   <span className="text-sm">Back to Home</span>
                 </button>
-              </Link>
+              </LocalizedLink>
             </div>
           </div>
         </div>

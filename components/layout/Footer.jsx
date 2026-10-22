@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   PhoneCall,
   Mail,
@@ -114,18 +113,9 @@ function TermsModal({ open, onClose, initialTab = "terms", event }) {
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const event = useEventStore((state) => state.event);
-  const setEvent = useEventStore((state) => state.setEvent);
 
   const [modalOpen, setModalOpen]   = useState(false);
   const [activeTab, setActiveTab]   = useState("terms");
-
-  useEffect(() => {
-    async function loadEvent() {
-      const data = await $helpers.getEventData();
-      setEvent(data);
-    }
-    loadEvent();
-  }, []);
 
   const openModal = (tab) => {
     setActiveTab(tab);
@@ -238,14 +228,14 @@ const Footer = () => {
                   </LocalizedLink>
                 </li>
                 <li>
-                  <Link href="/#about" className="text-muted-foreground transition hover:text-primary">
+                  <LocalizedLink href="/#about" className="text-muted-foreground transition hover:text-primary">
                     About
-                  </Link>
+                  </LocalizedLink>
                 </li>
                 <li>
-                  <Link href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
+                  <LocalizedLink href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
                     Recommended
-                  </Link>
+                  </LocalizedLink>
                 </li>
               </ul>
             </nav>

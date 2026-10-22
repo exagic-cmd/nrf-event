@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import helpers from "@/lib/helpers"; 
+import { useEventStore } from "@/store/useEventStore";
 import { MapPin, Calendar, Flag, Clock,User,Building2, Globe, Mail, Phone,Globe2,Share2 } from 'lucide-react';
-const { getEventData, formatDate } = helpers;
 function TimeBox({ label, value }) {
   return (
     <div className="flex flex-col items-center text-foreground px-3 py-3 sm:px-4 sm:py-4 rounded-xl min-w-[60px] sm:min-w-[90px]">
@@ -18,23 +17,19 @@ function TimeBox({ label, value }) {
 export default function CountdownTimer({ className = "" }) {
   const [endTime, setEndTime] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
-  const [eventDetails, setEventDetails] = useState(null);
+  const eventDetails = useEventStore((state) => state.event?.event);
   useEffect(() => {
-    async function loadEvent() {
-      const data = await getEventData();
-      const end = data?.event?.reg_end;
-      if (data?.event) {
-        setEventDetails(data.event); 
-      }
-
-      if (end) {
-        const endOfDay = new Date(end);
-        endOfDay.setHours(23, 59, 59, 999);
-        setEndTime(endOfDay.getTime());
-      }
+    const end = eventDetails?.reg_end;
+    if (!end) {
+      setEndTime(null);
+      setTimeLeft(null);
+      return;
     }
-    loadEvent();
-  }, []);
+
+    const endOfDay = new Date(end);
+    endOfDay.setHours(23, 59, 59, 999);
+    setEndTime(endOfDay.getTime());
+  }, [eventDetails?.reg_end]);
 
   useEffect(() => {
     if (!endTime) return;

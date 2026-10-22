@@ -1,5 +1,5 @@
 // pages/404.js
-import Link from "next/link";
+import LocalizedLink from "@/components/LocalizedLink";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
@@ -27,12 +27,12 @@ export default function Custom404() {
       <p className="mt-2 text-muted-foreground">{t("404_message")}</p>
 
      
-      <Link
+      <LocalizedLink
         href="/"
         className="mt-6 rounded-xl bg-primary px-6 py-3 font-medium text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary-hover"
       >
         {t("go_home")}
-      </Link>
+      </LocalizedLink>
     </div>
   );
 }

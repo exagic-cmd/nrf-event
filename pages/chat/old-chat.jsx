@@ -5,6 +5,7 @@ import { ensureChatbotIsActive, sendTransferAgentMessage, fetchChatLogs } from "
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 // Function to generate a random user ID
 const generateUserId = () => {
   return 'user_' + Math.random().toString(36).substr(2, 9);
@@ -24,6 +25,7 @@ const getOrCreateUserId = () => {
 
 export default function ChatPage() {
   const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const [userId, setUserId] = useState("");
   const [lastApiResponse, setLastApiResponse] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -432,7 +434,7 @@ onClick={() => {
   setConfirmVehicle(null);
 
   setTimeout(() => {
-     router.push("/transfers/booking");
+     localizedPush("/transfers/booking");
   }, 800); 
 }}
 className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1"
