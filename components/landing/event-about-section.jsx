@@ -60,7 +60,6 @@ export function AboutSection({ layout = 1 }) {
       );
     };
 
-    // Wait until markdown has rendered
     requestAnimationFrame(measureDescription);
 
     window.addEventListener("resize", measureDescription);
