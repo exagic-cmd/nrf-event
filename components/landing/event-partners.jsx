@@ -13,7 +13,7 @@ function getPartnerLogo(partner) {
  */
 function LogoImage({ logo, name, featured = false, large = false, className = "" }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-card p-3 shadow-sm transition-all">
+    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-primary p-3 text-gray-900 shadow-sm transition-all dark:border-primary/10 dark:bg-zinc-800">
       <img
         src={logo}
         alt={name || "Event partner"}
@@ -48,7 +48,7 @@ function PartnerCard({
   // LAYOUT 1: Static partner logo cards
   if (layout === 1) {
     const cardContent = (
-      <div className="flex h-24 w-full items-center justify-center rounded-xl border border-border/60 bg-card px-5 py-4 shadow-sm transition-shadow hover:shadow-md sm:h-28 sm:px-6">
+      <div className="flex h-24 w-full items-center justify-center rounded-xl border border-border/60 bg-white px-5 py-4 shadow-sm transition-shadow hover:shadow-md sm:h-28 sm:px-6 dark:border-white/10 dark:bg-zinc-200">
         <img
           src={logo}
           alt={partner?.name || "Event partner"}
@@ -232,10 +232,11 @@ export function EventPartners({ layout: layoutProp }) {
       >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute right-0 top-2 z-0 h-20 w-64  sm:h-24 sm:w-80 md:top-3 md:h-28 md:w-[26rem]"
+          className="pointer-events-none absolute right-0 top-2 z-0 h-24 w-[min(78vw,36rem)] text-primary opacity-95 sm:h-28 md:top-3 md:h-32 md:w-[38rem]"
           style={{
-            backgroundColor: "hsl(var(--primary))",
+            backgroundColor: "currentColor",
             maskImage: "url('/partners-skyline.png')",
+            maskMode: "alpha",
             maskPosition: "right center",
             maskRepeat: "no-repeat",
             maskSize: "100% 100%",
@@ -316,9 +317,25 @@ export function EventPartners({ layout: layoutProp }) {
 
     return (
       <section
-        className="w-full py-12 md:py-16 overflow-hidden"
+        className="relative isolate w-full overflow-hidden bg-background py-12 text-foreground md:py-16"
         aria-labelledby="event-partners-title-2"
       >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-2 z-0 h-28 w-[min(72vw,36rem)] text-primary sm:h-32 md:top-3 md:h-36 md:w-[38rem]"
+          style={{
+            backgroundColor: "currentColor",
+            maskImage: "url('/partners-skyline.png')",
+            maskMode: "alpha",
+            maskPosition: "right center",
+            maskRepeat: "no-repeat",
+            maskSize: "100% 100%",
+            WebkitMaskImage: "url('/partners-skyline.png')",
+            WebkitMaskPosition: "right center",
+            WebkitMaskRepeat: "no-repeat",
+            WebkitMaskSize: "100% 100%",
+          }}
+        />
         <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
           <div className="mb-6 text-center">
             <p className="text-primary font-semibold text-xs md:text-sm tracking-widest uppercase">

@@ -56,7 +56,7 @@ const nextConfig = {
     return {
       beforeFiles: [
         {
-          source: `/:slug((?!(?:${reservedRoutes})(?:/|$))[^/]+)/:id*`,
+          source: `/:slug((?!(?:${reservedRoutes})(?:/|$))[^/.]+)/:id*`,
           destination: "/:id*",
         },
       ],

@@ -22,15 +22,15 @@ import { useAccommodationsStore } from "@/store/useAccommodationsStore"; // ✅ 
 import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useSearchValuesStore } from "@/store/searchValues.store.js";
 import { useEventStore } from "@/store/useEventStore";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { getFullImageUrl } from "@/utils/imageService";
 import { useTranslation } from "next-i18next";
 import SearchFilterCard from "@/components/hotels/SearchFilterCard"; // ✅ your existing multi-tab component
 
 export default function HeroFilter({ layout = 2 }) {
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { t } = useTranslation("common");
-  const { event, FetchEvent } = useEventStore();
+  const event = useEventStore((state) => state.event);
 
   // ---- Zustand stores ----
   const {
@@ -64,12 +64,6 @@ export default function HeroFilter({ layout = 2 }) {
   //   fetchVehicles();
   // }, [resetTransferStore, fetchVehicles]);
 
-  useEffect(() => {
-    if (!event) {
-      FetchEvent(router);
-    }
-  }, [event, FetchEvent, router]);
-
   // Tabs
   const filterTabs = useMemo(() => [
     { id: 4, label: "hotels", name: "Accommodations" },
@@ -99,6 +93,10 @@ export default function HeroFilter({ layout = 2 }) {
       if (tab.id === 1) return categoryIds.includes(1); // Admissions (API ID 1)
       return false; });
   }, [event, filterTabs]);
+
+  // Event landing pages should only show search when the event enables a
+  // supported category. Keep the normal homepage search when there is no event.
+  const shouldShowSearch = !event?.event || visibleTabs.length > 0;
 
   const [filterActiveTab, setFilterActiveTab] = useState(4);
 
@@ -148,7 +146,7 @@ export default function HeroFilter({ layout = 2 }) {
       returnDate: null, // or get from date picker later
     });
 
-    router.push(`/listings?searched=true&type=transfer`);
+    localizedPush(`/listings?searched=true&type=transfer`);
     return;
   }
 
@@ -172,7 +170,7 @@ export default function HeroFilter({ layout = 2 }) {
     });
 
     const listingType = payload.category === "daytour" ? "day-tours" : payload.category;
-    router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
+    localizedPush(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
     return;
   }
 
@@ -190,18 +188,20 @@ export default function HeroFilter({ layout = 2 }) {
         region_id: payload.region_id,
       });
 
-      router.push(`/listings?searched=true&type=accommodation`);
+      localizedPush(`/listings?searched=true&type=accommodation`);
     } catch (err) {
       console.error("Accommodation search failed", err);
     }
   }
-}, [router, setSearchTransferParams, setSearchDaytourParams, setSearchAccommodationParams, setSearchParamsAndSearch, fetchTransfers]);
+}, [setSearchTransferParams, setSearchDaytourParams, setSearchAccommodationParams, setSearchParamsAndSearch, fetchTransfers]);
 
   const [noResults, setNoResults] = useState(null);
 
   const handleUpdateStars = (value) => setStars(value);
   const handleUpdateRefund = (value) => {};
   const handleNationalitySelected = (code) => {};
+
+  if (!shouldShowSearch) return null;
 
   return (
     <div className={layout === 1 ? "bg-transparent" : "bg-background"}>
@@ -234,7 +234,7 @@ export default function HeroFilter({ layout = 2 }) {
               className={
                 layout === 1
                   ? "w-full rounded-2xl border border-border/70 bg-card p-3 shadow-[0_16px_45px_rgba(15,23,42,0.16)] sm:p-4 md:p-5"
-                  : "flex w-full justify-center rounded-lg bg-muted lg:mx-0"
+              : "flex w-full justify-center rounded-lg border border-border/70 bg-card text-card-foreground shadow-sm lg:mx-0"
               }
             >
               <Card
@@ -281,15 +281,15 @@ export default function HeroFilter({ layout = 2 }) {
                       onClick={() => {
                         const cat = noResults.category;
                         if (cat === "accommodation") {
-                          router.push(`/listings?searched=true&type=accommodation`);
+                          localizedPush(`/listings?searched=true&type=accommodation`);
                         } else if (["day-tours", "admission", "package-tours", "attractions", "daytour"].includes(cat)) {
                           const categoryId = cat === "admission"
                             ? 1
                             : ([3, 8, 12].includes(filterActiveTab) ? filterActiveTab : 3);
                           const listingType = cat === "daytour" ? "day-tours" : cat;
-                          router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
+                          localizedPush(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
                         } else {
-                          router.push(`/listings?searched=true&type=transfer`);
+                          localizedPush(`/listings?searched=true&type=transfer`);
                         }
                       }}
                     >

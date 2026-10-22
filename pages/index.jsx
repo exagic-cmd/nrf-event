@@ -82,14 +82,14 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   }
 
   return (
-    <Layout className=" ">
+    <Layout footerClassName={routeEventSlug ? "!mt-0 sm:!mt-0" : ""}>
       <div>
         <div className={layout === 1 ? "bg-surface-muted pt-20" : "bg-surface-secondary pt-16"}>
-            <Herosection layout={layout}  />
+            <Herosection layout={layout} />
             <HeroFilter layout={layout} />
         </div>
           <AboutSection layout={layout} />
-          <ShuttleBannerWeServeSection layout={layout}   />
+          <ShuttleBannerWeServeSection layout={layout} />
           <OurRecommendation layout={layout} />
           <EventPartners layout={layout} />
          </div>

@@ -22,7 +22,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEventStore } from "@/store/useEventStore";
 import { getFullImageUrl } from "@/utils/imageService";
 
-export default function Layout({ children }) {
+export default function Layout({ children, footerClassName = "" }) {
   const { isOpen, drawerContent, closeDrawer } = useDrawerStore();
   const { t } = useTranslation(["common", "privacy"])
   const event = useEventStore((state) => state.event);
@@ -187,7 +187,7 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <Footer />
+      <Footer className={footerClassName} />
       <CookieConsent
       //  onAccept={handleAcceptCookies} 
        />
