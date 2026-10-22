@@ -11,19 +11,19 @@ const PromotionalBanner = ({ image, alt, href, external = false, title, descript
         className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
       />
      {title && (
-  <div className="absolute inset-x-0 bottom-0 flex items-end justify-end bg-gradient-to-t from-primary via-primary/90 to-primary/0 px-4 pb-4 pt-12 text-foreground sm:px-6 sm:pb-5 md:inset-y-0 md:left-auto md:right-0 md:w-[55%] md:items-center md:bg-gradient-to-l md:from-primary md:via-primary/90 md:to-primary/0 md:px-7 md:py-6 lg:w-1/2 lg:px-9">
+  <div className="absolute inset-x-0 bottom-0 flex items-center justify-end bg-gradient-to-t from-primary via-primary/90 to-primary/0 px-4 pb-4 pt-12 text-foreground sm:px-6 sm:pb-5 md:inset-y-0 md:left-auto md:right-0 md:w-[55%] md:bg-gradient-to-l md:from-primary md:via-primary/90 md:to-primary/0 md:px-7 md:py-6 lg:w-1/2 lg:px-9">
     
-    <div className="w-full max-w-sm text-right flex flex-col items-end">
+    <div className="flex w-full max-w-sm flex-col items-end text-right">
         
-        <h2 className="line-clamp-2 text-base text-white font-bold leading-snug sm:text-lg md:text-xl">
+        <h2 className="line-clamp-2 text-base text-white font-bold leading-snug dark:text-black sm:text-lg md:text-xl">
           {title}
         </h2>
         {description && (
-          <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-white sm:mt-2 sm:text-sm sm:leading-6">
+          <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-white dark:text-black sm:mt-2 sm:text-sm sm:leading-6">
             {description} 
           </p>
         )}
-        <span className="mt-2.5 inline-flex rounded-lg bg-white px-3.5 py-2 text-xs font-semibold text-primary transition-colors group-hover:bg-white-hover sm:mt-3 sm:px-4 sm:text-sm">
+        <span className="mt-2.5 inline-flex rounded-lg bg-white px-3.5 py-2 text-xs font-semibold text-primary transition-colors group-hover:bg-white-hover dark:text-black sm:mt-3 sm:px-4 sm:text-sm">
           Book Shuttle
         </span>
     </div>

@@ -88,7 +88,7 @@ export function AboutSection({ layout = 1 }) {
     return (
       <section
         id="about"
-        className="relative isolate my-8 w-full overflow-hidden my-10 md:py-16 lg:my-12 lg:py-10"
+        className="relative isolate my-8 w-full overflow-hidden md:my-10 md:py-16 lg:my-12 lg:py-10"
         style={{ scrollMarginTop: "5.5rem" }}
         aria-labelledby="event-about-title"
       >
@@ -100,8 +100,8 @@ export function AboutSection({ layout = 1 }) {
           aria-hidden="true"
           className="pointer-events-none absolute -right-24 bottom-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl sm:h-96 sm:w-96"
         />
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-7 sm:gap-9 md:grid-cols-2 md:gap-10 lg:gap-14 ">
-        <div className="order-2 flex flex-col justify-center md:order-1 md:rounded-3xl md:border md:border-border/70 md:bg-card/75 md:p-7 md:backdrop-blur-sm lg:p-10">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-5 px-4 sm:gap-9 sm:px-6 md:grid-cols-2 md:gap-10 md:px-8 lg:gap-14">
+        <div className="order-2 flex min-w-0 flex-col justify-center rounded-2xl border border-border/70 bg-card/75 p-4 backdrop-blur-sm md:order-1 md:rounded-3xl md:p-7 lg:p-10">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary sm:text-sm">
               About the event
             </p>
@@ -109,20 +109,20 @@ export function AboutSection({ layout = 1 }) {
             {title && (
               <h2
                 id="event-about-title"
-                className="max-w-2xl font-semibold leading-tight text-foreground text-xl md:text-2xl lg:text-3xl"
+                className="max-w-2xl break-words text-xl font-semibold leading-tight text-foreground [overflow-wrap:anywhere] md:text-2xl lg:text-3xl"
               >
                 {title}
               </h2>
             )}
 
             {description && (
-              <div className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-5 sm:text-base sm:leading-7">
+              <div className="mt-4 min-w-0 max-w-2xl break-words text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere] sm:mt-5 sm:text-base sm:leading-7">
                 <div
                   ref={descriptionRef}
                   className={
                     isDescriptionExpanded
-                      ? "space-y-3"
-                      : "line-clamp-5 space-y-3"
+                      ? "space-y-3 [&_p]:break-words"
+                      : "line-clamp-5 space-y-3 [&_p]:break-words"
                   }
                 >
                   <ReactMarkdown>{description}</ReactMarkdown>
@@ -151,11 +151,11 @@ export function AboutSection({ layout = 1 }) {
           </div>
 
           {image && (
-            <div className="order-1 md:order-2">
+            <div className="order-1 min-w-0 md:order-2">
               <img
                 src={image}
                 alt={title || "About the event"}
-                className="mx-auto h-auto max-h-64 w-full rounded-2xl object-contain shadow-lg sm:max-h-72 md:h-72 md:max-h-none md:object-cover lg:h-[22rem]"
+                className="mx-auto h-52 w-full rounded-2xl object-cover object-center shadow-lg sm:h-64 md:h-72 lg:h-[22rem]"
               />
             </div>
           )}
