@@ -22,24 +22,24 @@ export default function HeroSection({ layout = 1 }) {
   if (layout === 1) {
     return (
       <section className="relative mx-3 overflow-hidden rounded-2xl bg-surface-strong shadow-sm sm:mx-6 sm:rounded-3xl lg:mx-8">
-        <div className="relative min-h-[280px] sm:min-h-[320px] md:min-h-[360px] lg:min-h-[400px] xl:min-h-[420px]">
+        <div className="relative min-h-[340px] sm:min-h-[320px] md:min-h-[360px] lg:min-h-[400px] xl:min-h-[420px]">
           <img
             src={heroImage}
             alt={heroHeading}
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-cover object-[68%_center] sm:object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/25 sm:from-primary/75 sm:via-primary/40 sm:to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent" />
 
-          <div className="relative z-10  flex min-h-[280px] max-w-7xl items-start px-5 pb-8 pt-9 sm:min-h-[320px] sm:px-10 sm:pb-10 sm:pt-11 md:min-h-[360px] md:px-14 md:pt-12 lg:min-h-[400px] lg:px-16 lg:pt-14 xl:min-h-[420px] xl:px-20">
-            <div className="max-w-lg lg:max-w-[34rem]">
-              <p className="mb-2 max-w-md text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/90 sm:mb-3 sm:text-xs sm:tracking-[0.18em]">
+          <div className="relative z-10 flex min-h-[340px] w-full max-w-7xl items-center justify-start px-5 py-7 text-left sm:min-h-[320px] sm:px-10 sm:pb-10 sm:pt-11 md:min-h-[360px] md:px-14 md:pt-12 lg:min-h-[400px] lg:px-16 lg:pt-14 xl:min-h-[420px] xl:px-20">
+            <div className="w-full max-w-[20rem] text-left sm:max-w-lg lg:max-w-[34rem]">
+              <p className="mb-2 max-w-md text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/90 dark:text-black sm:mb-3 sm:text-xs sm:tracking-[0.18em]">
                 {heroTitle}
               </p>
-              <h1 className="max-w-xl text-balance text-2xl font-semibold leading-[1.12] text-white sm:text-3xl md:text-4xl lg:text-[2.5rem]">
+              <h1 className="max-w-xl text-balance text-2xl font-semibold leading-[1.12] text-white dark:text-black sm:text-3xl md:text-4xl lg:text-[2.75rem]">
                 {heroHeading}
               </h1>
-              <p className="mt-3 max-w-md text-[0.8125rem] leading-5 text-white/90 sm:mt-4 sm:text-sm sm:leading-6 md:text-[0.9375rem]">
+              <p className="mt-3 max-w-md text-[0.8125rem] leading-5 text-white/90 dark:text-black sm:mt-4 sm:text-sm sm:leading-6 md:text-[0.9375rem]">
                 {heroParagraph}
               </p>
             </div>
@@ -63,14 +63,14 @@ export default function HeroSection({ layout = 1 }) {
         <div className="px-4 py-6 md:px-8 md:py-10  lg:px-12">
           <div className="grid overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
             <div className="order-2 flex flex-col justify-center bg-surface-muted px-6 py-10 text-foreground sm:px-10 md:order-1 md:px-12">
-              <p className="mb-4 w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white sm:text-sm">
+              <p className="mb-4 w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground sm:text-sm">
                 {heroTitle}
               </p>
               <div className="mb-5 h-1 w-14 rounded-full bg-primary" />
-              <h1 className="max-w-xl text-2xl md:text-4xl text-foreground font-semibold leading-[1] ">
+              <h1 className="max-w-xl text-2xl md:text-4xl text-foreground font-semibold leading-[1] dark:text-black">
                 {heroHeading}
               </h1>
-              <p className="mt-5 max-w-lg text-foreground text-sm leading-7  sm:text-base">
+              <p className="mt-5 max-w-lg text-foreground text-sm leading-7 dark:text-gray-900 sm:text-base">
                 {heroParagraph}
               </p>
             </div>

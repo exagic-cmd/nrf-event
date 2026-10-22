@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEventStore } from "@/store/useEventStore";
 
 function getPartnerLogo(partner) {
@@ -13,7 +13,7 @@ function getPartnerLogo(partner) {
  */
 function LogoImage({ logo, name, featured = false, large = false, className = "" }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-primary p-3 text-gray-900 shadow-sm transition-all dark:border-primary/10 dark:bg-zinc-800">
+    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-white p-3 text-gray-900 shadow-sm backdrop-blur-md transition-all dark:border-white/20 dark:bg-slate-300/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]">
       <img
         src={logo}
         alt={name || "Event partner"}
@@ -48,11 +48,11 @@ function PartnerCard({
   // LAYOUT 1: Static partner logo cards
   if (layout === 1) {
     const cardContent = (
-      <div className="flex h-24 w-full items-center justify-center rounded-xl border border-border/60 bg-white px-5 py-4 shadow-sm transition-shadow hover:shadow-md sm:h-28 sm:px-6 dark:border-white/10 dark:bg-zinc-200">
+      <div className="flex h-20 w-full min-w-[9rem] items-center justify-center rounded-xl border border-border/60 bg-white px-5 py-4 shadow-sm transition-shadow hover:shadow-md dark:border-white/20 dark:bg-white md:h-28 md:min-w-0 md:px-6">
         <img
           src={logo}
           alt={partner?.name || "Event partner"}
-          className="max-h-14 w-full object-contain sm:max-h-16"
+          className="max-h-12 w-full object-contain md:max-h-16"
           loading="lazy"
         />
       </div>
@@ -158,6 +158,7 @@ function PartnerCard({
 export function EventPartners({ layout: layoutProp }) {
   const { event } = useEventStore();
   const [activeIndex, setActiveIndex] = useState(0);
+  const mobilePartnerCardsRef = useRef([]);
 
   // Normalize layout from props or store dynamically
   const layout = useMemo(() => {
@@ -205,6 +206,25 @@ export function EventPartners({ layout: layoutProp }) {
 
     const interval = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % displayPartners.length);
+    }, 3000);
+
+    return () => window.clearInterval(interval);
+  }, [displayPartners.length, layout]);
+
+  useEffect(() => {
+    if (layout !== 1 || displayPartners.length <= 1) return;
+
+    const interval = window.setInterval(() => {
+      if (!window.matchMedia("(max-width: 767px)").matches) return;
+      setActiveIndex((current) => {
+        const next = (current + 1) % displayPartners.length;
+        mobilePartnerCardsRef.current[next]?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+        return next;
+      });
     }, 3000);
 
     return () => window.clearInterval(interval);
@@ -259,13 +279,38 @@ export function EventPartners({ layout: layoutProp }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5 lg:gap-5">
+          <div className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0 lg:grid-cols-5 lg:gap-5">
             {displayPartners.map((partner, index) => (
-              <div key={`${partner.id || partner.name}-${index}`}>
+              <div
+                key={`${partner.id || partner.name}-${index}`}
+                ref={(element) => { mobilePartnerCardsRef.current[index] = element; }}
+                className="w-[9rem] shrink-0 snap-center md:w-auto md:shrink"
+              >
                 <PartnerCard partner={partner} index={index} layout={1} />
               </div>
             ))}
           </div>
+          {displayPartners.length > 1 && (
+            <div className="mt-3 flex justify-center gap-1.5 md:hidden" aria-label="Partner slides">
+              {displayPartners.map((partner, index) => (
+                <button
+                  key={`${partner.id || partner.name}-indicator`}
+                  type="button"
+                  aria-label={`Show partner ${index + 1}`}
+                  aria-current={activeIndex === index ? "true" : undefined}
+                  onClick={() => {
+                    setActiveIndex(index);
+                    mobilePartnerCardsRef.current[index]?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "nearest",
+                      inline: "center",
+                    });
+                  }}
+                  className={`h-2 rounded-full transition-all ${activeIndex === index ? "w-6 bg-primary" : "w-2 bg-border"}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     );
