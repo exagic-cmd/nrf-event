@@ -1,7 +1,7 @@
 import React from "react";
 import { useEventStore } from "@/store/useEventStore";
 
-export default function HeroSection({ layout = 2 }) {
+export default function HeroSection({ layout = 1 }) {
   const { event } = useEventStore();
   const eventDetails = event?.event;
 
@@ -46,6 +46,7 @@ export default function HeroSection({ layout = 2 }) {
           </div>
         </div>
       </section>
+    
     );
   }
 
@@ -56,12 +57,12 @@ export default function HeroSection({ layout = 2 }) {
      directly on it inside a padded content wrapper, plus a
      small accent rule under the eyebrow.
   ============================================================ */
-  if (layout === 2) {
+  if (layout === 4) {
     return (
       <div className="w-full ">
         <div className="px-4 py-6 md:px-8 md:py-10  lg:px-12">
-          <div className="bg-primary/30  grid overflow-hidden rounded-2xl shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
-            <div className="order-2 flex flex-col justify-center px-6 py-10 text-background sm:px-10 md:order-1 md:px-12 ">
+          <div className="grid overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-xl md:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
+            <div className="order-2 flex flex-col justify-center bg-surface-muted px-6 py-10 text-foreground sm:px-10 md:order-1 md:px-12">
               <p className="mb-4 w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white sm:text-sm">
                 {heroTitle}
               </p>
@@ -73,11 +74,15 @@ export default function HeroSection({ layout = 2 }) {
                 {heroParagraph}
               </p>
             </div>
-            <div className="order-1 min-h-[16rem] md:order-2 md:min-h-[30rem]">
+            <div className="relative order-1 flex aspect-[16/10] min-h-56 min-w-0 items-center justify-center overflow-hidden bg-surface md:order-2 md:aspect-auto md:min-h-[30rem]">
               <img
                 src={heroImage}
                 alt={heroHeading}
-                className="h-full w-full object-contain object-center md:object-right"
+                className="h-full w-full object-contain object-center md:object-cover md:object-right"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/5 md:bg-gradient-to-l"
               />
             </div>
           </div>

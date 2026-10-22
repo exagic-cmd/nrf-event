@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useRecentlyViewedStore from '@/store/useRecentlyViewedStore';
-import Link from 'next/link';
+import LocalizedLink from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { getFullImageUrl } from "@/utils/imageService";
 import { slugify } from "../../utils/slugify";
@@ -23,7 +23,7 @@ const RecentlyViewed = () => {
           return (
             <div key={item.id} className="relative"> {/* Added key to the outer div */}
               {/* The Link component now wraps the entire card content */}
-              <Link
+              <LocalizedLink
                 href={
                   item.hotel_id
                     ? `/hotel/${slugify(item.name)}/${item.hotel_id}`
@@ -68,7 +68,7 @@ const RecentlyViewed = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </LocalizedLink>
 
               {isLoading && (
                 <div className="absolute inset-0 bg-surface bg-opacity-75 flex items-center justify-center rounded-2xl z-10">

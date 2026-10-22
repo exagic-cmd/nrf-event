@@ -5,7 +5,7 @@ import { useTranslation } from "next-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useUpsellStore } from "@/store/useUpsellStore";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { getFullImageUrl } from "@/utils/imageService";
 import { slugify } from "@/utils/slugify";
 export default function EssentialsSection() {
@@ -13,7 +13,7 @@ export default function EssentialsSection() {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { upsellProducts, fetchUpsellProducts, isLoading } = useUpsellStore();
 
 
@@ -50,7 +50,7 @@ export default function EssentialsSection() {
 
   const goToDetail = (item) => {
     const slug = slugify(item.category_name || 'essentials');
-    router.push(`/${slug}/${item.id}`);
+    localizedPush(`/${slug}/${item.id}`);
   };
 
   if (isLoading) {

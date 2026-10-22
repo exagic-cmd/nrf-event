@@ -3,6 +3,7 @@ import {CarFront, Mail,ArrowLeft,MonitorPlay, Expand,Hotel } from "lucide-react"
 import WhatsappIcon from "@/components/common/whatsapp-icon";
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
+import { useLocalizedRouter } from "@/components/localizedRouter"
 import { useOrderStore } from "@/store/useOrderStore"
 import CancelModal from "@/components/order/ItinearyInfo/CancelModal"
 import { formatInTimeZone } from "date-fns-tz"
@@ -103,6 +104,7 @@ const DriverCard = ({ driver, status }) => {
 
 export default function OrderDetailPage() {
   const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { t } = useTranslation("order","common");
   const isReady = router.isReady;
   const { id, itineraryId } = router.query;
@@ -160,7 +162,7 @@ const confirmCancel = (id, reason) => {
   useEffect(() => {
     if (error === "Invalid or unknown access token.") {
       logout();
-      router.push('/login');
+      localizedPush('/login');
     }
   }, [error, logout, router]);
 
@@ -248,7 +250,7 @@ const confirmCancel = (id, reason) => {
       <button
         onClick={() => {
           sessionStorage.setItem("fromOrder", "true");
-          router.push({
+          localizedPush({
             pathname: `/day-tours/detail/${it.product_id}`,
             query: { post: "true" },
           });
@@ -267,7 +269,7 @@ const confirmCancel = (id, reason) => {
 
        <div className="md:pt-24 pt-20">
          <button
- onClick={() => router.push("/order")}
+ onClick={() => localizedPush("/order")}
                   className="flex items-center gap-2 text-primary hover:text-primary  ml-3 md:ml-6 mb-6 transition-colors"
                 >
                   <ArrowLeft size={20} /> {t("button.back")}

@@ -1,7 +1,7 @@
 // components/accommodations/booking/AccommodationBookNow.jsx
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import useUserStore from "@/store/useAuthStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { useCartStore, getCartCurrency, getItemCurrency } from "@/store/useCartStore";
@@ -21,9 +21,6 @@ const TITLE_OPTIONS = [
   { value: "Ms", label: "Ms" },
 ];
 
-const handleKeepExistingAndCheckout = async () => {
-  router.push = "/checkout";
-};
 // === CONFIRMATION MODAL (ONLY FOR STUBA) ===
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, bookingResponse, price }) => {
   const [expandedRoomIndex, setExpandedRoomIndex] = useState(0);
@@ -309,7 +306,7 @@ const ReplaceItemModal = ({ isOpen, onClose, onConfirm, onKeepExisting, hotelNam
 // === MAIN COMPONENT ===
 const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData = {}, price }) => {
   const { t } = useTranslation("accommodation");
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { setJustAdded } = useDrawerStore();
   const user = useUserStore((state) => state.user);
   const { validateHoldsBeforeCheckout } = useCartStore();
@@ -850,7 +847,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
     await new Promise(r => setTimeout(r, 1200));
-    window.location.href = "/";
+    localizedPush("/");
   };
 
   const handleViewCart = async () => {
@@ -858,7 +855,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
     await new Promise(r => setTimeout(r, 1200));
     sessionStorage.setItem("fromBooking", "true");
     // window.location.href = "/checkout";
-    router.push("/checkout");
+    localizedPush("/checkout");
   };
 
   return (
@@ -1148,7 +1145,7 @@ const AccommodationBookNow = ({ isStuba = false, isNonStuba = false, bookingData
         isOpen={!!itemToReplace}
         onClose={() => setItemToReplace(null)}
         onConfirm={handleReplaceItem}
-        onKeepExisting={() => router.push("/checkout")}
+        onKeepExisting={() => localizedPush("/checkout")}
         hotelName={itemToReplace?.productTitle || ""}
       />
     {showRecommendations && (

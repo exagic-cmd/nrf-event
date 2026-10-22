@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import LocalizedLink from "@/components/LocalizedLink";
 import Layout from "@/components/layout/Layout";
 import { getCheckoutSession } from "../../lib/stripeApi";
 import { MailCheck } from "lucide-react";
@@ -134,11 +134,11 @@ export default function SuccessPage() {
             <p className="text-muted-foreground">📧 marketing@airporttransfers.ai</p>
           </div>
 
-          <Link href="/" className="block pt-2">
+          <LocalizedLink href="/" className="block pt-2">
             <button className="w-full bg-primary text-white font-semibold py-2 px-4 rounded-md hover:opacity-90">
               {t("backHome")}
             </button>
-          </Link>
+          </LocalizedLink>
         </div>
       );
     }

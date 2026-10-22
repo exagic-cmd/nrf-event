@@ -22,6 +22,46 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async rewrites() {
+    const reservedRoutes = [
+      "accommodation",
+      "agentAI",
+      "affiliateProgram",
+      "api",
+      "chat",
+      "checkout",
+      "contactUs",
+      "courses",
+      "custom-booking",
+      "day-tours",
+      "error",
+      "hotel",
+      "landmark",
+      "listings",
+      "location-detail",
+      "login",
+      "order",
+      "payment-failed",
+      "payment-process",
+      "payment-success",
+      "profile",
+      "resume-payment",
+      "review",
+      "rh",
+      "shuttle",
+      "stripe",
+      "tour",
+    ].join("|");
+
+    return {
+      beforeFiles: [
+        {
+          source: `/:slug((?!(?:${reservedRoutes})(?:/|$))[^/.]+)/:id*`,
+          destination: "/:id*",
+        },
+      ],
+    };
+  },
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,

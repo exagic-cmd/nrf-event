@@ -5,12 +5,12 @@ import { useTranslation } from "next-i18next";
 import SvgLoader2 from "@/components/common/Loader2Svg";
 import { getFullImageUrl } from "@/utils/imageService";
 import useLanguageStore from "@/store/useLanguageStore";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 
 export default function LandmarkList({ itineraryId , customColor }) {
   const { t } = useTranslation(["common", "order"]);
   const scrollRef = useRef(null);
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
 
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
@@ -136,7 +136,7 @@ useEffect(() => {
       .replace(/\s+/g, "-")
       .replace(/[^\w-]+/g, "")
       .replace(/--+/g, "-") || "detail";
-    router.push(`/landmark/${slug}/${item.id}`);
+    localizedPush(`/landmark/${slug}/${item.id}`);
   };
 
   return (

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import Image from "next/image";
-import Link from "next/link";
+import LocalizedLink from "@/components/LocalizedLink";
 import { useEffect, useRef, useState } from "react";
 import { useUpsellStore } from "@/store/useUpsellStore";
 import { useCartStore } from "@/store/useCartStore";
@@ -11,6 +12,7 @@ import Layout from "@/components/layout/Layout";
 
 export default function ProductDetail() {
   const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { id } = router.query;
 
   const { upsellDetail, fetchUpsellDetail, isLoading, error } = useUpsellStore();
@@ -52,7 +54,7 @@ export default function ProductDetail() {
 
     setTimeout(() => {
       setShowPopup(false);
-       router.push('/');
+       localizedPush('/');
     }, 1000);
   }
 };
@@ -96,7 +98,7 @@ export default function ProductDetail() {
       {popupMessage.includes("Added") && (
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => router.push("/checkout")}
+            onClick={() => localizedPush("/checkout")}
             className="bg-brand-secondary text-white py-2 rounded-lg font-medium"
           >
             Go to Checkout
@@ -104,7 +106,7 @@ export default function ProductDetail() {
           <button
             onClick={() => {
               setShowPopup(false);
-              router.push("/");
+              localizedPush("/");
             }}
             className="border border-border text-muted-foreground py-2 rounded-lg font-medium hover:bg-muted"
           >
@@ -141,9 +143,9 @@ export default function ProductDetail() {
               Add to Cart
             </button>
             <div className="flex justify-center mt-4">
-              <Link href="/" className="text-muted-foreground hover:text-surface-foreground">
+              <LocalizedLink href="/" className="text-muted-foreground hover:text-surface-foreground">
                 ← Back to Home
-              </Link>
+              </LocalizedLink>
             </div>
           </div>
         </div>
@@ -180,9 +182,9 @@ export default function ProductDetail() {
           Add to Cart
         </button>
         <div className="flex justify-center mt-4">
-          <Link href="/" className="text-muted-foreground hover:text-surface-foreground">
+          <LocalizedLink href="/" className="text-muted-foreground hover:text-surface-foreground">
             ← Back to Home
-          </Link>
+          </LocalizedLink>
         </div>
       </div>
     </div>

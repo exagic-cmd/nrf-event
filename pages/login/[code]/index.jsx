@@ -1,5 +1,6 @@
 // pages/login/[code].js
 import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/useAuthStore";
 import Loading2Svg from "@/components/common/Loader2Svg";
@@ -8,6 +9,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function LoginWithCodePage() {
   const router = useRouter();
+  const { localizedReplace } = useLocalizedRouter();
   const { code } = router.query;
   const { verifyQrCode, user, loading, error } = useUserStore();
   const { t } = useTranslation("order");
@@ -22,10 +24,10 @@ export default function LoginWithCodePage() {
       if (result.success) {
         setStatus(t("loginSuccess"));
         const redirectPath = router.query.router ? `/${router.query.router}` : "/";
-        setTimeout(() => router.replace(redirectPath), 1500);
+        setTimeout(() => localizedReplace(redirectPath), 1500);
       } else {
         setStatus(t("invalidOrExpired"));
-        setTimeout(() => router.replace("/"), 2000);
+        setTimeout(() => localizedReplace("/"), 2000);
       }
     }
 

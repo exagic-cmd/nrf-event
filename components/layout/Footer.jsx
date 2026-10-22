@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   PhoneCall,
   Mail,
@@ -111,21 +110,12 @@ function TermsModal({ open, onClose, initialTab = "terms", event }) {
 }
 
 // ─── Footer ──────────────────────────────────────────────────────────────────
-const Footer = () => {
+const Footer = ({ className = "" }) => {
   const currentYear = new Date().getFullYear();
   const event = useEventStore((state) => state.event);
-  const setEvent = useEventStore((state) => state.setEvent);
 
   const [modalOpen, setModalOpen]   = useState(false);
   const [activeTab, setActiveTab]   = useState("terms");
-
-  useEffect(() => {
-    async function loadEvent() {
-      const data = await $helpers.getEventData();
-      setEvent(data);
-    }
-    loadEvent();
-  }, []);
 
   const openModal = (tab) => {
     setActiveTab(tab);
@@ -170,12 +160,13 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="relative isolate mt-12 overflow-hidden border-t border-border bg-surface text-foreground sm:mt-16">
+      <footer className={`relative isolate mt-12 overflow-hidden border-t border-border bg-surface text-foreground sm:mt-16 ${className}`}>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-primary opacity-[0.10] sm:h-32 lg:h-56 "
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-32 bg-primary opacity-20 sm:h-32 lg:h-56"
           style={{
             maskImage: "url('/partners-skyline.png')",
+            maskMode: "alpha",
             maskPosition: "center bottom",
             maskRepeat: "no-repeat",
             maskSize: "100% 100%",
@@ -185,7 +176,7 @@ const Footer = () => {
             WebkitMaskSize: "100% 100%",
           }}
         />
-        <div className="relative mx-auto max-w-8xl md:px-10 py-10 px-6 sm:py-12 lg:py-14">
+        <div className="relative z-10 mx-auto max-w-8xl md:px-10 py-10 px-6 sm:py-12 lg:py-14">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] lg:gap-10">
             <div className="space-y-4">
               <LocalizedLink href="/" className="inline-flex min-h-14 items-center">
@@ -238,14 +229,14 @@ const Footer = () => {
                   </LocalizedLink>
                 </li>
                 <li>
-                  <Link href="/#about" className="text-muted-foreground transition hover:text-primary">
+                  <LocalizedLink href="/#about" className="text-muted-foreground transition hover:text-primary">
                     About
-                  </Link>
+                  </LocalizedLink>
                 </li>
                 <li>
-                  <Link href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
+                  <LocalizedLink href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
                     Recommended
-                  </Link>
+                  </LocalizedLink>
                 </li>
               </ul>
             </nav>

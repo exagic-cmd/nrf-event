@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useLocalizedRouter } from "@/components/localizedRouter"
 
 export default function ReviewForm({ locationId }) {
-  const router = useRouter()
+  const { localizedPush } = useLocalizedRouter()
 
   const [formData, setFormData] = useState({
     name: "",
@@ -47,7 +47,7 @@ const [cancelLoading, setCancelLoading] = useState(false)
 
   const handleCancel = () => {
     // navigate back to location detail page
-    if (locationId) router.push(`/location-detail/${locationId}`)
+    if (locationId) localizedPush(`/location-detail/${locationId}`)
     else router.back()
   }
 
@@ -174,7 +174,7 @@ const [cancelLoading, setCancelLoading] = useState(false)
     type="button"
     onClick={async () => {
       setCancelLoading(true)
-      if (locationId) router.push(`/location-detail/${locationId}`)
+      if (locationId) localizedPush(`/location-detail/${locationId}`)
       else router.back()
       setTimeout(() => setCancelLoading(false), 1000) // optional delay to show spinner
     }}

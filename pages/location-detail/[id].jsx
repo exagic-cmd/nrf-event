@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { ArrowLeft, ChevronLeft, ChevronRight, Car,Footprints} from "lucide-react";
 import { useVirtualTourStore } from "@/store/useVirtualTourStore";
 import { useOrderStore } from "@/store/useOrderStore";
@@ -13,6 +14,7 @@ import LocationTransition from "@/components/LocationTransition";
 
 export default function TourDetailPage() {
   const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { id } = router.query;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -172,10 +174,10 @@ export default function TourDetailPage() {
 
   const handleGoToReviewRoute = () => {
     if (!qrCode || !itineraryId) {
-      router.push("/review");
+      localizedPush("/review");
       return;
     }
-    router.push(`/review/${qrCode}/${itineraryId}`);
+    localizedPush(`/review/${qrCode}/${itineraryId}`);
   };
 
   const scrollTabsBy = (amount) => {

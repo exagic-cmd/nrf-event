@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import Link from "next/link";
+import LocalizedLink from "@/components/LocalizedLink";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { redirectToAirwallexCheckout } from "@/utils/airwallex";
 import { redirectToStripeCheckout } from "@/components/stripe/CheckoutRedirect"; 
 import Layout from "@/components/layout/Layout";
@@ -11,6 +12,7 @@ export default function ResumePayment() {
   const [orderDetails, setOrderDetails] = useState(null);
 
   const router = useRouter();
+  const { localizedReplace } = useLocalizedRouter();
   const { orderId } = router.query;
 
   const PAYMENT_GATEWAY = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY; // "stripe" or "airwallex"
@@ -30,7 +32,7 @@ export default function ResumePayment() {
           setOrderDetails(order);
 
           if (order.booking_status !== "Unconfirmed") {
-            router.replace(`/payment-success?orderId=${order.id}`);
+            localizedReplace(`/payment-success?orderId=${order.id}`);
             return;
           }
         } else {
@@ -169,7 +171,7 @@ export default function ResumePayment() {
                   <span className="text-sm">Continue Payment</span>
                 </button>
 
-                <Link href="/" className="block">
+                <LocalizedLink href="/" className="block">
                   <button className="w-full bg-muted hover:bg-secondary text-muted-foreground font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 border border-border">
                     <svg
                       className="w-4 h-4"
@@ -180,7 +182,7 @@ export default function ResumePayment() {
                     </svg>
                     <span className="text-sm">Back to Home</span>
                   </button>
-                </Link>
+                </LocalizedLink>
               </div>
             </div>
           </div>

@@ -1,10 +1,10 @@
 import React from "react";
-import Link from "next/link";
+import LocalizedLink from "@/components/LocalizedLink";
 import { useEventStore } from "@/store/useEventStore";
 
 const PromotionalBanner = ({ image, alt, href, external = false, title, description }) => {
   const content = (
-    <div className="group relative h-56 overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-md sm:h-60 md:h-64 lg:h-[280px]">
+    <div className="group relative h-44 min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-md sm:h-52 md:h-64 lg:h-[280px]">
       <img
         src={image}
         alt={alt}
@@ -39,9 +39,9 @@ const PromotionalBanner = ({ image, alt, href, external = false, title, descript
           {content}
         </a>
       ) : (
-        <Link href={href} className="block">
+        <LocalizedLink href={href} className="block">
           {content}
-        </Link>
+        </LocalizedLink>
       )}
     </div>
   );
@@ -81,7 +81,7 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
   ============================================================ */
   if (layout === 1) {
     return (
-      <section className="mt-8 w-full md:mt-4">
+      <section className="mt-8 w-full pb-6 md:mt-4 md:pb-8">
         {hasShuttleBanner && (
           <div className="mb-8">
             <PromotionalBanner
@@ -163,7 +163,7 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
   ============================================================ */
   if (layout === 2) {
     return (
-      <section className="w-full mt-16 md:mt-6">
+      <section className="mt-16 w-full pb-6 md:mt-6 md:pb-8">
         {hasShuttleBanner && (
           <div className="mb-10">
             <PromotionalBanner
@@ -212,7 +212,7 @@ export const ShuttleBannerWeServeSection = ({ layout = 2 }) => {
      LAYOUT 3 — Gradient overlay card banner with value cards
   ============================================================ */
   return (
-    <section className="w-full mt-10 md:mt-8">
+    <section className="mt-10 w-full pb-6 md:mt-8 md:pb-8">
       {hasShuttleBanner && (
         <div className="mb-8 md:mb-10">
           <PromotionalBanner

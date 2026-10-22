@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import LocationCard from "./location-card";
 import TourMap from "./tour-map";
 import { useVirtualTourStore } from "@/store/useVirtualTourStore";
@@ -25,7 +25,7 @@ export default function TourSummary({
   const [showReviewDetails, setShowReviewDetails] = useState(false);
   const [loading, setLoading] = useState(false);
   const reviewSectionRef = useRef(null);
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
 const [selectedAudio, setSelectedAudio] = useState(null);
   const { tour, languages } = useVirtualTourStore();
   const availableLanguages = tour?.languages || [];
@@ -49,7 +49,7 @@ useEffect(() => {
     try {
       setLoading(true);
       await new Promise((res) => setTimeout(res, 1000));
-      router.push(`/location-detail/${id}`);
+      localizedPush(`/location-detail/${id}`);
     } finally {
       setLoading(false);
     }

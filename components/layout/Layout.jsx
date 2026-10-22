@@ -19,10 +19,13 @@ import { createCheckoutSession } from "@/lib/stripeApi";
 import CookieConsent from "@/components/common/CookieConsent";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEventStore } from "@/store/useEventStore";
+import { getFullImageUrl } from "@/utils/imageService";
 
-export default function Layout({ children }) {
+export default function Layout({ children, footerClassName = "" }) {
   const { isOpen, drawerContent, closeDrawer } = useDrawerStore();
   const { t } = useTranslation(["common", "privacy"])
+  const event = useEventStore((state) => state.event);
   const [isVisible, setIsVisible] = useState(false)
   const router = useRouter();
   const { initializeVisitor } = useVisitorStore();
@@ -136,9 +139,13 @@ export default function Layout({ children }) {
   return (
     <>
       <Head>
-        <title>NRF</title>
+        <title>{event?.event?.title || event?.event?.organizer || "Event travel"}</title>
         <meta name="agd-partner-manual-verification" content="" />
-        <link rel="icon" type="image/png" href= { `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}nrf_sg_icon.png`} />
+        <link
+          rel="icon"
+          type="image/png"
+          href={event?.event?.logo ? getFullImageUrl(event.event.logo) : "/favicon.ico"}
+        />
       </Head>
 
     
@@ -180,7 +187,7 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <Footer />
+      <Footer className={footerClassName} />
       <CookieConsent
       //  onAccept={handleAcceptCookies} 
        />

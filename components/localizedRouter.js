@@ -1,18 +1,33 @@
 // utils/localizedRouter.js
+import { useCallback } from 'react';
 import { useRouter } from 'next/router';
 import useLanguageStore from '@/store/useLanguageStore';
+import { withEventPath } from '@/lib/eventRouting';
 
 export function useLocalizedRouter() {
   const router = useRouter();
   const { currentLocale } = useLanguageStore();
 
-  const localizedPush = (url, as, options) => {
-    return router.push(url, as, { ...options, locale: currentLocale });
-  };
-
-  const localizedReplace = (url, as, options) => {
-    return router.replace(url, as, { ...options, locale: currentLocale });
-  };
+  const prefixPath = useCallback(
+    (url) => withEventPath(url, router.asPath, router.locale, router.defaultLocale),
+    [router.asPath, router.locale, router.defaultLocale]
+  );
+  const localizedPush = useCallback(
+    (url, as, options) =>
+      router.push(prefixPath(url), as ? prefixPath(as) : as, {
+        ...options,
+        locale: currentLocale,
+      }),
+    [currentLocale, prefixPath, router.push]
+  );
+  const localizedReplace = useCallback(
+    (url, as, options) =>
+      router.replace(prefixPath(url), as ? prefixPath(as) : as, {
+        ...options,
+        locale: currentLocale,
+      }),
+    [currentLocale, prefixPath, router.replace]
+  );
 
   return { ...router, localizedPush, localizedReplace };
 }

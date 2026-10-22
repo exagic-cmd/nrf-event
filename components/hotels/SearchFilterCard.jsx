@@ -83,7 +83,7 @@ export default function SearchFilterCard({
   } = useDaytoursStore();
 
   const { daytourParams, setDaytourParams, transferParams, accommodationParams, setAccommodationParams } = useSearchValuesStore();
-  const { event, FetchEvent } = useEventStore();
+  const event = useEventStore((state) => state.event);
   const isDaytourTab = dayTourCategoryIds.includes(Number(filterActiveTab));
   const isAdmissionTab = Number(filterActiveTab) === admissionCategoryId;
   const isProductSearchTab = isDaytourTab || isAdmissionTab;
@@ -577,7 +577,7 @@ export default function SearchFilterCard({
                   : "bg-transparent text-muted-foreground hover:bg-muted"
               }`
             : `ml-4 rounded-t-lg p-3 py-2 text-sm font-semibold transition md:p-4 sm:text-md ${
-                isActive ? "bg-primary text-white sm:py-2.5" : "bg-muted text-sm"
+                isActive ? "bg-primary text-primary-foreground sm:py-2.5" : "bg-muted text-muted-foreground text-sm hover:text-foreground"
               }`
         }
       >
@@ -589,23 +589,24 @@ export default function SearchFilterCard({
 
   return (
     <div className="w-full">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <div
-          className={
-            layout === 1
-              ? "scrollbar-hide flex min-w-0 flex-1 flex-nowrap gap-1 overflow-x-auto sm:gap-2"
-              : "flex flex-wrap gap-1 lg:gap-1"
-          }
-        >
-          {filterTabs
-            .map((t) => (
+      {filterTabs?.length > 0 && (
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <div
+            className={
+              layout === 1
+                ? "scrollbar-hide flex min-w-0 flex-1 flex-nowrap gap-1 overflow-x-auto sm:gap-2"
+                : "flex flex-wrap gap-1 lg:gap-1"
+            }
+          >
+            {filterTabs.map((t) => (
               <Pill key={t.id} tab={t} />
             ))}
+          </div>
+          <div className="ml-auto pb-1 mr-1">
+            <CurrencySelector />
+          </div>
         </div>
-        <div className="ml-auto pb-1 mr-1">
-          <CurrencySelector />
-        </div>
-      </div>
+      )}
 <div className="transition-all duration-500 ease-in-out">
            {/* ====== TRANSFERS ====== */}
            {filterActiveTab === 2 && (
@@ -846,7 +847,7 @@ export default function SearchFilterCard({
                  <div className="md:col-span-2 flex items-stretch">
                    <button
                      type="submit"
-                     className="min-w-full rounded-lg bg-primary text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-primary transition touch-manipulation flex justify-center items-center"
+                     className="min-w-full rounded-lg bg-primary text-primary-foreground font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-primary transition touch-manipulation flex justify-center items-center"
                      disabled={isLoading}
                    >
                      {isLoading ? (
@@ -1047,7 +1048,7 @@ export default function SearchFilterCard({
             <div className="md:col-span-2 flex items-stretch">
               <button
                 type="submit"
-                className="min-w-full rounded-lg bg-primary text-white font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-primary transition touch-manipulation flex justify-center items-center"
+                className="min-w-full rounded-lg bg-primary text-primary-foreground font-semibold text-base sm:text-lg py-3 md:py-2 active:bg-primary transition touch-manipulation flex justify-center items-center"
                 disabled={isLoading}
               >
                 {isLoading ? (

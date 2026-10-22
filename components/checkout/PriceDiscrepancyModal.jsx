@@ -292,7 +292,7 @@ const PriceDiscrepancyModal = ({
     if (!remainingCart || remainingCart.length === 0) {
       onClose();
       if (localizedPush) localizedPush("/");
-      else router.push("/");
+      else localizedPush("/");
       return;
     }
 
@@ -340,13 +340,13 @@ const PriceDiscrepancyModal = ({
       if (localizedPush) {
         localizedPush(targetUrl);
       } else {
-        router.push(targetUrl);
+        localizedPush(targetUrl);
       }
     } else if (window.history.length > 1) {
       router.back();
     } else {
       if (localizedPush) localizedPush("/");
-      else router.push("/");
+      else localizedPush("/");
     }
   };
 

@@ -1,19 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useState } from "react";
 import { getFullImageUrl } from "@/utils/imageService";
 import Loading2Svg from "@/components/common/LoaderSvg";
 
 export default function ShuttleCard({ product }) {
   const isShuttle = product.pickup_group === 1;
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNavigate = () => {
     setIsLoading(true);
-    router.push(`/day-tours/detail/${product.id}`);
+    localizedPush(`/day-tours/detail/${product.id}`);
   };
 
   return (

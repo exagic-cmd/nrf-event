@@ -18,7 +18,7 @@ import { useTransferStore } from "@/store/useTransferStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useEventStore } from "@/store/useEventStore";
 import { useSearchValuesStore } from "@/store/searchValues.store.js";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import SearchFilterCard from "@/components/hotels/SearchFilterCard";
 import AccommodationFilterSidebar from "@/components/accommodations/AccommodationFilterSidebar";
 import { Filter, X, ChevronDown } from "lucide-react";
@@ -87,14 +87,8 @@ function ListingsPage() {
   const urlSearchParams = useSearchParams();
   const resultsRef = useRef(null);
   const isFetchingRef = useRef(false);
-  const router = useRouter();
-  const { event, FetchEvent } = useEventStore();
-
-  useEffect(() => {
-    if (!event) {
-      FetchEvent(router);
-    }
-  }, [event, FetchEvent, router]);
+  const { localizedPush } = useLocalizedRouter();
+  const event = useEventStore((state) => state.event);
 
   const [cardRooms, setCardRooms] = useState([{ adult: 2, children: [] }]);
   const [cardStars, setCardStars] = useState("0");
@@ -164,7 +158,7 @@ function ListingsPage() {
       };
       setSearchTransferParams(newTransferParams); 
       setTransferSearchParams(newTransferParams); 
-      router.push(`/listings?searched=true&type=transfer`);
+      localizedPush(`/listings?searched=true&type=transfer`);
       setHasSearched(true);
       setSearchCategory("transfer");
       return;
@@ -186,7 +180,7 @@ function ListingsPage() {
         categoryId === 8 ? "package-tours" :
         categoryId === 12 ? "attractions" :
         "day-tours";
-      router.push(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
+      localizedPush(`/listings?searched=true&type=${listingType}&category=${categoryId}`);
       setHasSearched(true);
       setSearchCategory(listingType);
       return;
@@ -199,7 +193,7 @@ function ListingsPage() {
         checkout: cardCheckout,
       };
       setStoreAccommodationSearchParams(updatedPayload); // This will also trigger fetchAccommodations via Effect 2
-      router.push(`/listings?searched=true&type=accommodation`);
+      localizedPush(`/listings?searched=true&type=accommodation`);
       setHasSearched(true);
       setSearchCategory("accommodation");
       return;

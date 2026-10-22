@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useCartStore } from "@/store/useCartStore";
 import { useScrollToTop } from '@/hooks/use-scroll-top';
 
 const BookingType = ({ id, category_id }) => {
   useScrollToTop();
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   const { itemToEdit } = useCartStore();
 
   useEffect(() => {
@@ -14,12 +14,12 @@ const BookingType = ({ id, category_id }) => {
     const query = itemToEdit ? { edit: "true" } : {};
 
     if (category_id === 2) {
-      router.push({
+      localizedPush({
         pathname: `/transfer-booking/${id}`,
         query,
       });
     } else {
-      router.push({
+      localizedPush({
         pathname: `/booking/${id}`,
         query,
       });

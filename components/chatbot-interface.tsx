@@ -10,7 +10,7 @@ import { Send, Bot, Loader2, X } from "lucide-react"
 import { BookingLogic } from "@/components/booking-logic"
 import LocationSearchForm from "@/components/LocationSearchForm"
 import { useTransferStore } from "@/store/useTransferStore"
-import { useRouter } from 'next/router';
+import { useLocalizedRouter } from "@/components/localizedRouter";
 interface Location {
   id: string
   name: string
@@ -96,7 +96,7 @@ export function ChatbotInterface({ pickup: pickupProp, dropoff: dropoffProp, onE
 
   const [currentPickup, setCurrentPickup] = useState<Location>(normalizeLocation(pickupProp))
   const [currentDropoff, setCurrentDropoff] = useState<Location>(normalizeLocation(dropoffProp))
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
   // const {
   //   setSelectedPickup,
   //   setSelectedDropoff,
@@ -417,7 +417,7 @@ export function ChatbotInterface({ pickup: pickupProp, dropoff: dropoffProp, onE
           addBotMessage("🔄 Redirecting to secure booking page...")
           sessionStorage.setItem("fromBooking", "true")
           setTimeout(() => {
-            router.push("/checkout")
+            localizedPush("/checkout")
           }, 200)
 
           //  addBotMessage("Redirecting you to complete payment and provide contact details...", ["Continue to Payment"])
@@ -460,7 +460,7 @@ export function ChatbotInterface({ pickup: pickupProp, dropoff: dropoffProp, onE
           addBotMessage("🔄 Redirecting to secure booking page...")
           sessionStorage.setItem("fromBooking", "true")
           setTimeout(() => {
-            router.push("/checkout")
+            localizedPush("/checkout")
           }, 1000)
         }
         break

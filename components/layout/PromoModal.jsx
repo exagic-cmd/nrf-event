@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Sparkles, Gift, Check, MessageCircle } from "lucide-react";
 import { getIP } from "@/utils/getIP";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { getFullImageUrl } from "@/utils/imageService";
 export default function PromoModal({ isOpen, onClose, onSuccess, visitorId = null, userId = null, promo = null }) {
   const [email, setEmail] = useState("");
@@ -13,7 +13,7 @@ export default function PromoModal({ isOpen, onClose, onSuccess, visitorId = nul
   const [successMessage, setSuccessMessage] = useState("");
   const [onlineAgent, setOnlineAgent] = useState(null);
   const [agentLoading, setAgentLoading] = useState(true);
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
 
   const activePromo = promo;
 useEffect(() => {
@@ -96,7 +96,7 @@ useEffect(() => {
       if (data?.success) {
         const agentName = onlineAgent?.name || "";
         const chatUrl = `/chat?agent=${encodeURIComponent(agentName)}`;
-        router.push(chatUrl);
+        localizedPush(chatUrl);
       } else {
         setError(data?.message || "Something went wrong. Please try again.");
         setLoading(false);

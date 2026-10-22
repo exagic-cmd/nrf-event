@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import "@/styles/globals.css";
 import LocalizedLink from "@/components/LocalizedLink";
 import useUserStore from "@/store/useAuthStore";
@@ -18,33 +17,26 @@ import {
   Compass,
 } from "lucide-react";
 import { useEventStore } from "@/store/useEventStore";
+import { withEventPath } from "@/lib/eventRouting";
+import { useEventRouteSlug } from "@/lib/EventRouteContext";
 
 export default function Header() {
  // const setLocale = useLanguageStore((state) => state.setLocale);
   const { token, logout, user } = useUserStore();
   const [hydrated, setHydrated] = useState(false);
   const router = useRouter()
-  const event = useEventStore((state) => state.event);
-  const setEvent = useEventStore((state) => state.setEvent);
+  const storedEvent = useEventStore((state) => state.event);
+  const storedEventSlug = useEventStore((state) => state.eventSlug);
+  const routeEventSlug = useEventRouteSlug();
+  const event = storedEventSlug === routeEventSlug ? storedEvent : null;
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const userMenuRef = useRef(null);
-  const hasFetchedEventRef = useRef(false);
   const hasRunUserCheckRef = useRef(false);
 
   useEffect(() => {
     setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (hasFetchedEventRef.current) return;
-    hasFetchedEventRef.current = true;
-    async function loadEvent() {
-      const data = await $helpers.getEventData();
-      setEvent(data);
-    }
-    loadEvent();
   }, []);
 
   useEffect(() => {
@@ -86,7 +78,9 @@ export default function Header() {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.push(
+      withEventPath("/", router.asPath, router.locale, router.defaultLocale)
+    );
     setUserMenuOpen(false);
   };
 
@@ -126,7 +120,7 @@ export default function Header() {
             {label}
           </LocalizedLink>
         ) : (
-          <Link
+          <LocalizedLink
             key={href}
             href={href}
             className={className}
@@ -134,7 +128,7 @@ export default function Header() {
           >
             {mobile && <Icon aria-hidden="true" className="h-4 w-4" />}
             {label}
-          </Link>
+          </LocalizedLink>
         );
       })}
     </nav>
@@ -157,14 +151,14 @@ export default function Header() {
             isMobile ? "w-44" : "w-48"
           }`}
         >
-          <Link href="/profile" className="flex items-center space-x-2 transition hover:text-primary">
+          <LocalizedLink href="/profile" className="flex items-center space-x-2 transition hover:text-primary">
             <User className="w-4 h-4" />
             <span>Profile</span>
-          </Link>
-          <Link href="/order" className="flex items-center space-x-2 transition hover:text-primary">
+          </LocalizedLink>
+          <LocalizedLink href="/order" className="flex items-center space-x-2 transition hover:text-primary">
             <ShoppingBag className="w-4 h-4" />
             <span>Booking</span>
-          </Link>
+          </LocalizedLink>
           <button
             onClick={handleLogout}
             className="flex items-center space-x-2 text-left transition hover:text-primary"

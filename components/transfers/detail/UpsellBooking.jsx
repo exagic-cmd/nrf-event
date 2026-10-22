@@ -5,13 +5,13 @@ import { useUpsellStore } from "@/store/useUpsellStore";
 import { useCartStore } from "@/store/useCartStore";
 import { getFullImageUrl } from "@/utils/imageService";
 import { useEffect } from "react";
-import { useRouter } from "next/router";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { slugify } from "@/utils/slugify";
 
 export default function UpsellProductsRow() {
   const { productBasedUpsell, fetchProductBasedUpsell, isLoading } = useUpsellStore();
   const { items: cartItems } = useCartStore();
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
 
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
@@ -25,7 +25,7 @@ export default function UpsellProductsRow() {
 
   const goToDetail = (item) => {
     const slug = slugify(item.category_name || 'essentials');
-    router.push(`/${slug}/${item.id}`);
+    localizedPush(`/${slug}/${item.id}`);
   };
 
   if (isLoading) {

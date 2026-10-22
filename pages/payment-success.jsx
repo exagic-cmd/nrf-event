@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import Link from "next/link";
+import LocalizedLink from "@/components/LocalizedLink";
 import { useEffect } from "react";
 import { MailCheck } from "lucide-react"
 import Layout from "@/components/layout/Layout"
@@ -97,14 +97,14 @@ export default function PaymentSuccess() {
             </div>
 
             {/* Action Button */}
-            <Link href="/" className="block pt-1">
+            <LocalizedLink href="/" className="block pt-1">
               <button className="w-full bg-brand-secondary text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center space-x-2">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                 </svg>
                 <span className="text-sm">Back to Home</span>
               </button>
-            </Link>
+            </LocalizedLink>
           </div>
         </div>
 

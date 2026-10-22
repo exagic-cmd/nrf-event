@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getFullImageUrl } from "@/utils/imageService";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import { Globe } from "lucide-react"
 export default function SelectGroup({
   guides = [],
@@ -25,7 +25,7 @@ export default function SelectGroup({
 }) {
   const [fromOrderScreenState, setFromOrderScreenState] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const { localizedPush } = useLocalizedRouter();
 
   useEffect(() => {
     if (!selectedLanguage && languages.length > 0) {
@@ -58,7 +58,7 @@ export default function SelectGroup({
     try {
       setLoading(true);
       await new Promise((res) => setTimeout(res, 500));
-      router.push(`/location-detail/${product?.id}?lang=${selectedLanguage}&guide=${selectedGuide}`);
+      localizedPush(`/location-detail/${product?.id}?lang=${selectedLanguage}&guide=${selectedGuide}`);
     } finally {
       setLoading(false);
     }

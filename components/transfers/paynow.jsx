@@ -596,7 +596,7 @@ console.log("cart_items:PAYNOW #####################", cart_items);
     client_id: '',
     agent_id: '',
     source: 'Direct',
-    source_link: "Explore Singapore (NRF)",
+    source_link: event?.event?.title || event?.event?.organizer || "Event booking",
     promo_id: promo || '',
     discount: '',
     session_id: 'vutxsweygb',

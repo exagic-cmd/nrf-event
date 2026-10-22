@@ -1,10 +1,10 @@
 "use client"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useLocalizedRouter } from "@/components/localizedRouter"
 import useUserStore from "@/store/useAuthStore"
 
 export default function ProtectedRoute({ children }) {
-  const router = useRouter()
+  const { localizedPush } = useLocalizedRouter()
   const { token } = useUserStore()
   const [isHydrated, setIsHydrated] = useState(false)
 
@@ -15,9 +15,9 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (isHydrated && !token) {
-      router.push("/")
+      localizedPush("/")
     }
-  }, [token, isHydrated, router])
+  }, [token, isHydrated, localizedPush])
 
   if (!isHydrated) {
     return <p className="text-center py-10">Loading...</p>

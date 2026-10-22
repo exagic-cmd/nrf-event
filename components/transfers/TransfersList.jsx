@@ -5,7 +5,8 @@ import PromoButton from "@/components/transfers/PromoButton";
 import Pagination from "@/components/common/Pagination";
 import { useTransferStore } from "@/store/useTransferStore";
 import { getFullImageUrl } from "@/utils/imageService"
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import { useSearchParams, usePathname } from "next/navigation"
+import { useLocalizedRouter } from "@/components/localizedRouter";
 import dynamic from "next/dynamic"
 const TransferMap = dynamic(() => import("@/components/transfers/detail/TransferMap"), {
   ssr: false,
@@ -18,7 +19,7 @@ function TransfersList() {
   const [sortBy, setSortBy] = useState("cheapest");
   const [currentPage, setCurrentPage] = useState(1);
   const { searchResults, isLoading, tripType, setTripType, fetchTransfers, setSelectedTransfer, searchParams: storeSearchParams, setSearchParams, searchTransfers } = useTransferStore();
-  const router = useRouter();
+  const { localizedReplace } = useLocalizedRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -114,7 +115,7 @@ const passengerCapacity =
 
     const params = new URLSearchParams(searchParams);
     params.set('tripType', newType);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    localizedReplace(`${pathname}?${params.toString()}`, undefined, { scroll: false });
 
     if (searchTransfers && storeSearchParams?.pickup && storeSearchParams?.dropoff) {
       const promoId = typeof window !== 'undefined' ? localStorage.getItem('promo_id') : null;
