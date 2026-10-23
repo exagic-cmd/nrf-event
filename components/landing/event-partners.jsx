@@ -13,7 +13,7 @@ function getPartnerLogo(partner) {
  */
 function LogoImage({ logo, name, featured = false, large = false, className = "" }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-white p-3 text-gray-900 shadow-sm backdrop-blur-md transition-all dark:border-white/20 dark:bg-slate-300/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]">
+    <div className="relative flex h-full w-full items-center justify-center rounded-xl border border-border/60 bg-card p-3 shadow-sm transition-all">
       <img
         src={logo}
         alt={name || "Event partner"}
@@ -158,7 +158,24 @@ function PartnerCard({
 export function EventPartners({ layout: layoutProp }) {
   const { event } = useEventStore();
   const [activeIndex, setActiveIndex] = useState(0);
+  const mobilePartnerSectionRef = useRef(null);
+  const mobilePartnerTrackRef = useRef(null);
   const mobilePartnerCardsRef = useRef([]);
+  const isPartnerSectionVisibleRef = useRef(false);
+
+  const scrollToPartnerCard = (index) => {
+    const track = mobilePartnerTrackRef.current;
+    const card = mobilePartnerCardsRef.current[index];
+    if (!track || !card || !track.contains(card)) return;
+
+    // Measure against the scroll container so the target is independent of
+    // which ancestor happens to establish the card's offset parent.
+    const trackRect = track.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const cardLeft = track.scrollLeft + cardRect.left - trackRect.left;
+    const left = cardLeft - (track.clientWidth - card.clientWidth) / 2;
+    track.scrollTo({ left, top: 0, behavior: "smooth" });
+  };
 
   // Normalize layout from props or store dynamically
   const layout = useMemo(() => {
@@ -212,17 +229,35 @@ export function EventPartners({ layout: layoutProp }) {
   }, [displayPartners.length, layout]);
 
   useEffect(() => {
+    if (layout !== 1) return;
+
+    const section = mobilePartnerSectionRef.current;
+    if (!section || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      // Only auto-advance when the partner section is the main content in
+      // view, not when it is barely peeking in from the top or bottom.
+      isPartnerSectionVisibleRef.current = entry.intersectionRatio >= 0.6;
+    }, { threshold: [0, 0.6, 1] });
+
+    observer.observe(section);
+    return () => {
+      isPartnerSectionVisibleRef.current = false;
+      observer.disconnect();
+    };
+  }, [layout]);
+
+  useEffect(() => {
     if (layout !== 1 || displayPartners.length <= 1) return;
 
     const interval = window.setInterval(() => {
-      if (!window.matchMedia("(max-width: 767px)").matches) return;
+      if (
+        !isPartnerSectionVisibleRef.current ||
+        !window.matchMedia("(max-width: 767px)").matches
+      ) return;
       setActiveIndex((current) => {
         const next = (current + 1) % displayPartners.length;
-        mobilePartnerCardsRef.current[next]?.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
+        scrollToPartnerCard(next);
         return next;
       });
     }, 3000);
@@ -247,6 +282,7 @@ export function EventPartners({ layout: layoutProp }) {
   if (layout === 1) {
     return (
       <section
+        ref={mobilePartnerSectionRef}
         className="relative isolate w-full overflow-hidden bg-primary/[0.035] py-8 sm:py-10 md:py-12"
         aria-labelledby="event-partners-title-1"
       >
@@ -279,7 +315,7 @@ export function EventPartners({ layout: layoutProp }) {
             </h2>
           </div>
 
-          <div className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0 lg:grid-cols-5 lg:gap-5">
+          <div ref={mobilePartnerTrackRef} className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0 lg:grid-cols-5 lg:gap-5">
             {displayPartners.map((partner, index) => (
               <div
                 key={`${partner.id || partner.name}-${index}`}
@@ -300,11 +336,7 @@ export function EventPartners({ layout: layoutProp }) {
                   aria-current={activeIndex === index ? "true" : undefined}
                   onClick={() => {
                     setActiveIndex(index);
-                    mobilePartnerCardsRef.current[index]?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "nearest",
-                      inline: "center",
-                    });
+                    scrollToPartnerCard(index);
                   }}
                   className={`h-2 rounded-full transition-all ${activeIndex === index ? "w-6 bg-primary" : "w-2 bg-border"}`}
                 />
