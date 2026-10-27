@@ -5,6 +5,7 @@ import { encodeEventId } from "@/utils/cryptoUtils";
 let requestSequence = 0;
 const pendingRequests = new Map();
 const ONE_HOUR = 60 * 60 * 1000;
+export const EVENT_PARTNERSHIP_ENDPOINT = "/events/partnership/register";
 
 class EventRequestError extends Error {
   constructor(message, status) {
@@ -52,7 +53,7 @@ function getResolvedEvent(body) {
   return payload?.event ?? payload;
 }
 
-function getEventData(body, fallbackBody) {
+function getEventData(body, fallbackBody = {}) {
   const payload = body.data ?? body;
   const fallbackPayload = fallbackBody.data ?? fallbackBody;
   const event =
@@ -65,12 +66,20 @@ function getEventData(body, fallbackBody) {
     throw new Error("The event-detail API returned invalid event details.");
   }
 
+  const recommendedProducts = [
+    event.recommended_products,
+    payload?.recommended_products,
+    fallbackEvent?.recommended_products,
+    fallbackPayload?.recommended_products,
+  ].find(Array.isArray);
+
   return {
     ...(fallbackPayload?.event ? fallbackPayload : {}),
     ...payload,
     event: {
       ...(fallbackEvent && typeof fallbackEvent === "object" ? fallbackEvent : {}),
       ...event,
+      ...(recommendedProducts ? { recommended_products: recommendedProducts } : {}),
     },
   };
 }
@@ -120,6 +129,21 @@ export const useEventStore = create((set, get) => ({
   status: "idle",
   error: null,
 
+  submitEventPartnership: async (payload) => {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      throw new Error("Event partnership submission requires a payload object.");
+    }
+
+    const request = {
+      method: "POST",
+      endpoint: EVENT_PARTNERSHIP_ENDPOINT,
+      payload,
+    };
+
+    console.info("Event partnership API placeholder; request not sent:", request);
+    return request;
+  },
+
   setEvent: (data, slug = get().eventSlug) => {
     set({
       event: data,
@@ -142,6 +166,107 @@ export const useEventStore = create((set, get) => ({
       status: "idle",
       error: null,
     });
+  },
+
+  FetchEventById: async (id) => {
+    if (id === null || id === undefined || id === "") {
+      return null;
+    }
+
+    const normalizedId = String(id);
+    const requestKey = `id:${normalizedId}`;
+    const current = get();
+
+    if (
+      current.eventSlug === null &&
+      current.status === "ready" &&
+      String(current.event?.event?.id ?? current.event?.id) === normalizedId &&
+      current.lastFetched &&
+      Date.now() - current.lastFetched < ONE_HOUR
+    ) {
+      return current.event;
+    }
+
+    if (current.eventSlug === null && current.status === "loading") {
+      return pendingRequests.get(requestKey) ?? null;
+    }
+
+    const sequence = ++requestSequence;
+    set({
+      event: null,
+      eventSlug: null,
+      lastFetched: null,
+      isLoading: true,
+      status: "loading",
+      error: null,
+    });
+
+    let task;
+    task = Promise.resolve().then(async () => {
+      try {
+        const apiBaseUrl = getApiBaseUrl();
+        const detailResponse = await fetch(
+          `${apiBaseUrl}/events/details/${encodeURIComponent(encodeEventId(id))}`,
+          { method: "GET", headers: { "Content-Type": "application/json" } }
+        );
+        const detailBody = await readResponse(detailResponse);
+        const resolvedEvent = getResolvedEvent(detailBody);
+
+        if (isExpiredEvent(detailBody, resolvedEvent)) {
+          if (sequence === requestSequence && get().eventSlug === null) {
+            set({
+              event: null,
+              isLoading: false,
+              status: "expired",
+              error: "This event is no longer available.",
+            });
+          }
+          return null;
+        }
+
+        const eventData = getEventData(detailBody);
+        if (sequence === requestSequence && get().eventSlug === null) {
+          set({
+            event: eventData,
+            lastFetched: Date.now(),
+            isLoading: false,
+            status: "ready",
+            error: null,
+          });
+          setCurrencies(eventData);
+        }
+
+        return eventData;
+      } catch (error) {
+        const status = error instanceof EventRequestError ? error.status : null;
+        const isNotFound = status === 404;
+        const isExpired = status === 410;
+        const message = isNotFound
+          ? "This event could not be found."
+          : isExpired
+          ? "This event is no longer available."
+          : error.message || "Unable to load this event. Please try again.";
+
+        if (sequence === requestSequence && get().eventSlug === null) {
+          set({
+            event: null,
+            isLoading: false,
+            status: isNotFound ? "not-found" : isExpired ? "expired" : "error",
+            error: message,
+          });
+        }
+
+        console.error(`Failed to load event ID "${normalizedId}":`, error);
+        return null;
+      } finally {
+        if (pendingRequests.get(requestKey) === task) {
+          pendingRequests.delete(requestKey);
+        }
+      }
+    });
+
+    pendingRequests.set(requestKey, task);
+    return task;
   },
 
   FetchEvent: async (slug) => {

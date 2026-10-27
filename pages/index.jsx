@@ -1,16 +1,14 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import Layout from "@/components/layout/Layout"
 import { ShuttleBannerWeServeSection} from "@/components/landing/shuttle-banner-weServe-section"
 import  CountdownTimer  from "@/components/landing/event-count-down"
 import {  OurRecommendation } from "@/components/landing/our-recommendation"
 import { EventPartners } from "@/components/landing/event-partners"
-import { Preloader } from "@/components/landing/preloader"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/router"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations"
-import useUserStore from "@/store/useAuthStore"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
 import { useEventStore } from "@/store/useEventStore";
 import Herosection from "@/components/landing/hero-section";
@@ -27,10 +25,7 @@ function normalizeLayout(value) {
 
 export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const { t } = useTranslation("common")
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const { token } = useUserStore()
-  const [checkingAuth, setCheckingAuth] = useState(true)
   const { trackAffiliateRedirect } = useAffiliateStore();
   const event = useEventStore((state) => state.event);
   const routeEventSlug =
@@ -42,44 +37,9 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const layout = normalizeLayout(layoutValue);
 
   useEffect(() => {
-    if (token) {
-      setCheckingAuth(false)
-    } else {
-      setCheckingAuth(false)
-    }
-  }, [token, router])
-
-  useEffect(() => {
     if (!router.isReady) return;
     trackAffiliateRedirect(router);
   }, [router.isReady]); 
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 500) 
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (!routeEventSlug) {
-    return (
-      <Layout>
-        <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
-          <div>
-            <h1 className="text-3xl font-semibold">Choose an event</h1>
-            <p className="mt-3 text-muted-foreground">
-              Open an event-specific link to view its travel information and booking options.
-            </p>
-          </div>
-        </main>
-      </Layout>
-    );
-  }
-
-  if (isLoading || checkingAuth || !event) {
-    return <Preloader /> 
-  }
 
   return (
     <Layout footerClassName={routeEventSlug ? "!mt-0 sm:!mt-0" : ""}>

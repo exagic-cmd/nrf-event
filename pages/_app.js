@@ -11,21 +11,41 @@ import { eventAppearance } from '@/lib/theme.config';
 import { useEventStore } from '@/store/useEventStore';
 import { getEventSlugFromRouter } from '@/lib/eventRouting';
 import { EventRouteContext } from '@/lib/EventRouteContext';
+import EventPreloader from '@/components/layout/EventPreloader';
 
 const GA_TRACKING_ID = 'G-5SQKF4Y54M';
+const DEFAULT_EVENT_ID = 6;
 
 import '@/lib/helpers'; // loads globally
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const isEventPartnershipPage = router.pathname === '/event-partnership';
   const { currentLocale, setLocale } = useLanguageStore();
-  const { event, eventSlug, status, error, FetchEvent, clearEvent } = useEventStore();
+  const {
+    event,
+    eventSlug,
+    status,
+    error,
+    FetchEvent,
+    FetchEventById,
+    clearEvent,
+  } = useEventStore();
   const routeEventSlug =
     Object.prototype.hasOwnProperty.call(pageProps, 'routeEventSlug')
       ? pageProps.routeEventSlug
       : getEventSlugFromRouter(router);
+  const usesDefaultEventTheme =
+    !routeEventSlug &&
+    (router.pathname === '/' || isEventPartnershipPage);
   const eventMatchesRoute = Boolean(
-    routeEventSlug && eventSlug === routeEventSlug && status === 'ready' && event
+    (routeEventSlug && eventSlug === routeEventSlug && status === 'ready' && event) ||
+    (usesDefaultEventTheme &&
+      eventSlug === null &&
+      status === 'ready' &&
+      String(event?.event?.id ?? event?.id) === String(DEFAULT_EVENT_ID))
   );
+  const isDefaultEventRoute = !routeEventSlug && router.pathname === '/';
+  const showAppHeader = !isEventPartnershipPage && !(isDefaultEventRoute && eventMatchesRoute);
    const appearance = useMemo(() => {
     const activeEvent = eventMatchesRoute ? event : null;
     const themeMode = activeEvent?.event?.theme_mode === 'dark' ? 'dark' : activeEvent?.theme_mode === 'light' ? 'light' : eventAppearance.theme;
@@ -37,10 +57,12 @@ function MyApp({ Component, pageProps }) {
     if (!router.isReady) return;
     if (routeEventSlug) {
       FetchEvent(routeEventSlug);
+    } else if (usesDefaultEventTheme) {
+      FetchEventById(DEFAULT_EVENT_ID);
     } else {
       clearEvent();
     }
-  }, [router.isReady, router.asPath, routeEventSlug, FetchEvent, clearEvent]);
+  }, [router.isReady, router.asPath, router.pathname, routeEventSlug, usesDefaultEventTheme, FetchEvent, FetchEventById, clearEvent]);
 
   // Sync language with router
   useEffect(() => {
@@ -81,8 +103,19 @@ function MyApp({ Component, pageProps }) {
       </Script>
       <ThemeProvider appearance={appearance}>
         <EventRouteContext.Provider value={routeEventSlug}>
-          <Header />
-          {routeEventSlug && !eventMatchesRoute ? (
+          {showAppHeader && <Header />}
+          {(routeEventSlug || isDefaultEventRoute) && (
+            <EventPreloader
+              key={`${routeEventSlug || 'default-event'}-${status}`}
+              isReady={
+                eventMatchesRoute ||
+                status === 'error' ||
+                status === 'expired' ||
+                status === 'not-found'
+              }
+            />
+          )}
+          {(routeEventSlug || isDefaultEventRoute) && !eventMatchesRoute ? (
           <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
             <div className="max-w-xl">
               {status === 'expired' || status === 'not-found' ? (
@@ -102,17 +135,17 @@ function MyApp({ Component, pageProps }) {
                   </p>
                   <button
                     type="button"
-                    onClick={() => FetchEvent(routeEventSlug)}
+                    onClick={() =>
+                      routeEventSlug
+                        ? FetchEvent(routeEventSlug)
+                        : FetchEventById(DEFAULT_EVENT_ID)
+                    }
                     className="mt-6 rounded-lg bg-primary px-5 py-3 font-medium text-primary-foreground"
                   >
                     Try again
                   </button>
                 </>
-              ) : (
-                <p role="status" className="text-muted-foreground">
-                  Loading event…
-                </p>
-              )}
+              ) : null}
             </div>
           </main>
         ) : (

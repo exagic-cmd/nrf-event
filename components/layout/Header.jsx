@@ -20,7 +20,7 @@ import { useEventStore } from "@/store/useEventStore";
 import { withEventPath } from "@/lib/eventRouting";
 import { useEventRouteSlug } from "@/lib/EventRouteContext";
 
-export default function Header() {
+export default function Header({ enableRegisterCta = true }) {
  // const setLocale = useLanguageStore((state) => state.setLocale);
   const { token, logout, user } = useUserStore();
   const [hydrated, setHydrated] = useState(false);
@@ -28,7 +28,12 @@ export default function Header() {
   const storedEvent = useEventStore((state) => state.event);
   const storedEventSlug = useEventStore((state) => state.eventSlug);
   const routeEventSlug = useEventRouteSlug();
+  const showRegisterLink =
+    enableRegisterCta && !routeEventSlug && router.pathname === "/";
   const event = storedEventSlug === routeEventSlug ? storedEvent : null;
+  const hasRecommendations =
+    Array.isArray(event?.event?.recommended_products) &&
+    event.event.recommended_products.length > 0;
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -87,7 +92,9 @@ export default function Header() {
   const navigation = [
     { href: "/", label: "Home", icon: Home },
     { href: "/#about", label: "About", icon: Info },
-    { href: "/#recommendations", label: "Recommended", icon: Compass },
+    ...(hasRecommendations
+      ? [{ href: "/#recommendations", label: "Recommended", icon: Compass }]
+      : []),
   ];
 
   useEffect(() => {
@@ -131,6 +138,15 @@ export default function Header() {
           </LocalizedLink>
         );
       })}
+      {showRegisterLink && (
+        <LocalizedLink
+          href="/event-partnership"
+          className="flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Register
+        </LocalizedLink>
+      )}
     </nav>
   );
 
@@ -191,6 +207,14 @@ export default function Header() {
         {renderNavigation()}
 
         <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2 md:ml-0">
+          {showRegisterLink && (
+            <LocalizedLink
+              href="/event-partnership"
+              className="hidden rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 md:inline-flex"
+            >
+              Register
+            </LocalizedLink>
+          )}
           {token && renderUserMenu()}
 
           <button
