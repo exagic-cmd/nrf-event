@@ -2,9 +2,8 @@
 
 import LoaderSvg from "@/components/common/LoaderSvg";
 import { useTranslation } from "next-i18next";
-import { useState, useEffect, useRef, useTransition } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { useDaytoursStore } from "@/store/useDaytoursStore";
 import { useLocalizedRouter } from "@/components/localizedRouter";
 import { useEventStore } from "@/store/useEventStore";
 import { getFullImageUrl } from "@/utils/imageService"
@@ -13,7 +12,6 @@ export function OurRecommendation({ layout = 1
  }) {
   const { t } = useTranslation("common");
   const { localizedPush } = useLocalizedRouter();
-  const { fetchSearchResults, searchResults } = useDaytoursStore();
   const { event } = useEventStore();
 
   const scrollContainerRef = useRef(null);
@@ -34,21 +32,17 @@ export function OurRecommendation({ layout = 1
     return () => clearInterval(interval);
   }, [benefits.length]);
 
-  const hasFetchedToursRef = useRef(false);
-  /* Sync with searchResults from store (e.g. when currency refetches) */
+  /* Only show products curated for this event. */
   useEffect(() => {
-    if (searchResults?.length) {
-      setTopDayTours(searchResults.slice(0, 6));
-    }
-  }, [searchResults]);
-
-  /* Load top day tours dynamically from recommended_products if available, otherwise fetch from API */
-  useEffect(() => {
-    if (event?.event?.recommended_products?.length) {
-      const mappedTours = event.event.recommended_products.map((tour) => ({
+    const curated = event?.event?.recommended_products;
+    if (Array.isArray(curated)) {
+      const mappedTours = curated.filter(Boolean).map((tour) => ({
         id: tour.id,
-        product_title: tour.title,
-        category_name: tour.category_name || "Day Tours",
+        product_title: tour.title || tour.product_title || tour.name,
+        category_name:
+          typeof tour.category_name === "string"
+            ? tour.category_name
+            : tour.category_name?.name || "Day Tours",
         image: tour.image,
         short_desc: tour.short_description || tour.short_desc,
         currency: tour.currency || "SGD",
@@ -58,33 +52,10 @@ export function OurRecommendation({ layout = 1
       setTopDayTours(mappedTours);
       setIsLoadingDay(false);
     } else {
-      if (hasFetchedToursRef.current) return;
-      hasFetchedToursRef.current = true;
-
-      const loadDayTours = async () => {
-        setIsLoadingDay(true);
-        try {
-          const results = await fetchSearchResults({
-            category_id: 3,
-            event_id: event?.event?.id || event?.id,
-            is_b2c_only: 1,
-            is_active: 1,
-          });
-
-          if (results?.length) {
-            setTopDayTours(results.slice(0, 6));
-          }
-        } catch (err) {
-          hasFetchedToursRef.current = false; // allow retry on error
-          console.error("Error loading day tours:", err);
-        } finally {
-          setIsLoadingDay(false);
-        }
-      };
-
-      loadDayTours();
+      setTopDayTours([]);
+      setIsLoadingDay(false);
     }
-  }, [event, fetchSearchResults]);
+  }, [event]);
 
   const handleCardClick = (tour) => {
     setLoadingTourId(tour.id);

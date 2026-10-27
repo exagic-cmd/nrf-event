@@ -17,6 +17,7 @@ import {
 import LocalizedLink from "@/components/LocalizedLink";
 import { useEventStore } from "@/store/useEventStore";
 import { getFullImageUrl } from "@/utils/imageService";
+import { useEventRouteSlug } from "@/lib/EventRouteContext";
 
 // ─── Terms Modal ─────────────────────────────────────────────────────────────
 const TABS = [
@@ -112,7 +113,13 @@ function TermsModal({ open, onClose, initialTab = "terms", event }) {
 // ─── Footer ──────────────────────────────────────────────────────────────────
 const Footer = ({ className = "" }) => {
   const currentYear = new Date().getFullYear();
-  const event = useEventStore((state) => state.event);
+  const storedEvent = useEventStore((state) => state.event);
+  const storedEventSlug = useEventStore((state) => state.eventSlug);
+  const routeEventSlug = useEventRouteSlug();
+  const event = storedEventSlug === routeEventSlug ? storedEvent : null;
+  const hasRecommendations =
+    Array.isArray(event?.event?.recommended_products) &&
+    event.event.recommended_products.length > 0;
 
   const [modalOpen, setModalOpen]   = useState(false);
   const [activeTab, setActiveTab]   = useState("terms");
@@ -233,11 +240,13 @@ const Footer = ({ className = "" }) => {
                     About
                   </LocalizedLink>
                 </li>
-                <li>
-                  <LocalizedLink href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
-                    Recommended
-                  </LocalizedLink>
-                </li>
+                {hasRecommendations && (
+                  <li>
+                    <LocalizedLink href="/#recommendations" className="text-muted-foreground transition hover:text-primary">
+                      Recommended
+                    </LocalizedLink>
+                  </li>
+                )}
               </ul>
             </nav>
 
