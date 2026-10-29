@@ -11,11 +11,15 @@ const BookingPriceTable = ({ id, accommodation_group_id }) => {
   const { t } = useTranslation("daytour");
   const { tieredPricingData, bookedProductDetail } = useProductStore()
 
+  const productPricingList =
+    tieredPricingData?.tieredPricing?.data?.product_pricing ||
+    tieredPricingData?.data?.product_pricing ||
+    [];
   const isPackageTour = bookedProductDetail?.data?.basicinfo?.category_id === 8 ||
-                        tieredPricingData?.data?.tieredPricing?.data?.product_pricing?.some(p => p.adult_sharing);
+                        productPricingList.some(p => p.adult_sharing);
  const pricingList = isPackageTour && accommodation_group_id
     ? (bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.find(g => String(g.group_id) === String(accommodation_group_id))?.b2c_tiers || [])
-    : (tieredPricingData?.data?.tieredPricing?.data?.product_pricing || tieredPricingData?.data?.b2c_pricing || []);
+    : (productPricingList.length > 0 ? productPricingList : (tieredPricingData?.b2c_pricing || []));
 
   const [isOpen, setIsOpen] = useState(false)
 

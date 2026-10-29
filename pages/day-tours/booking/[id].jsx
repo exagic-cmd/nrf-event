@@ -113,7 +113,7 @@ const DayTourBookingPage = () => {
   }
 
   const handleContinueShopping = () => {
-    localizedPush("/transfers")
+    localizedPush("/")
   }
 
   const handleProceedToCheckout = () => {

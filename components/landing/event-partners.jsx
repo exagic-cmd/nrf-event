@@ -315,34 +315,42 @@ export function EventPartners({ layout: layoutProp }) {
             </h2>
           </div>
 
-          <div ref={mobilePartnerTrackRef} className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0 lg:grid-cols-5 lg:gap-5">
-            {displayPartners.map((partner, index) => (
-              <div
-                key={`${partner.id || partner.name}-${index}`}
-                ref={(element) => { mobilePartnerCardsRef.current[index] = element; }}
-                className="w-[9rem] shrink-0 snap-center md:w-auto md:shrink"
-              >
-                <PartnerCard partner={partner} index={index} layout={1} />
-              </div>
-            ))}
-          </div>
-          {displayPartners.length > 1 && (
-            <div className="mt-3 flex justify-center gap-1.5 md:hidden" aria-label="Partner slides">
-              {displayPartners.map((partner, index) => (
-                <button
-                  key={`${partner.id || partner.name}-indicator`}
-                  type="button"
-                  aria-label={`Show partner ${index + 1}`}
-                  aria-current={activeIndex === index ? "true" : undefined}
-                  onClick={() => {
-                    setActiveIndex(index);
-                    scrollToPartnerCard(index);
-                  }}
-                  className={`h-2 rounded-full transition-all ${activeIndex === index ? "w-6 bg-primary" : "w-2 bg-border"}`}
-                />
+          <div
+            className="group relative overflow-hidden"
+            style={{
+              maskImage:
+                "linear-gradient(to right, transparent 0, black 48px, black calc(100% - 48px), transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0, black 48px, black calc(100% - 48px), transparent 100%)",
+            }}
+          >
+            <div
+              className="flex w-max gap-3 md:gap-5"
+              style={{
+                animation: `partners-marquee ${Math.max(
+                  displayPartners.length * 4,
+                  18
+                )}s linear infinite`,
+                animationPlayState: "running",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.animationPlayState = "paused";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.animationPlayState = "running";
+              }}
+            >
+              {[...displayPartners, ...displayPartners].map((partner, index) => (
+                <div
+                  key={`${partner.id || partner.name}-${index}`}
+                  aria-hidden={index >= displayPartners.length ? "true" : undefined}
+                  className="w-[9rem] shrink-0 md:w-[11rem] lg:w-[12rem]"
+                >
+                  <PartnerCard partner={partner} index={index} layout={1} />
+                </div>
               ))}
             </div>
-          )}
+          </div>
         </div>
       </section>
     );

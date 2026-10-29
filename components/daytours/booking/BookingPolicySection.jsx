@@ -11,6 +11,7 @@ export default function BookingPolicySection({
   productId,
   errors,
   setErrors,
+  onTermsAvailabilityChange,
 }) {
   const { t } = useTranslation("daytour");
   const { languageId } = useLanguageStore.getState();
@@ -54,8 +55,12 @@ export default function BookingPolicySection({
   const options = allOptions.filter((opt) => opt.description?.trim() !== "");
 
   useEffect(() => {
+    const termsAvailable = Boolean(terms?.trim());
     if (setAvailablePolicyIds) {
-      setAvailablePolicyIds(["terms_conditions"]);
+      setAvailablePolicyIds(termsAvailable ? ["terms_conditions"] : []);
+    }
+    if (onTermsAvailabilityChange) {
+      onTermsAvailabilityChange(termsAvailable);
     }
   }, [terms]);
 

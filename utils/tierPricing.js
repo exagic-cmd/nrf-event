@@ -4,7 +4,10 @@ export const calculateTierPricing = (
   childCount = 0,
   tieredPricingData = {}
 ) => {
-  const pricingList = tieredPricingData?.tieredPricing?.data?.product_pricing || [];
+  const pricingList =
+    tieredPricingData?.tieredPricing?.data?.product_pricing ||
+    tieredPricingData?.data?.product_pricing ||
+    [];
 
   const totalPax = adultCount + childCount;
 

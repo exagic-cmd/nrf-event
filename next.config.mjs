@@ -9,10 +9,7 @@ try {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    serverActions: true,
-  },
-  i18n: nextI18n, 
+  i18n: nextI18n,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -21,6 +18,19 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+  },
+  experimental: {
+    serverActions: true,
+    webpackBuildWorker: true,
+    parallelServerBuildTraces: true,
+    parallelServerCompiles: true,
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'date-fns-tz',
+      '@radix-ui/react-icons',
+      'recharts',
+    ],
   },
   async rewrites() {
     const reservedRoutes = [
@@ -61,11 +71,6 @@ const nextConfig = {
         },
       ],
     };
-  },
-  experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
   },
 };
 

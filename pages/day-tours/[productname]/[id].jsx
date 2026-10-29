@@ -8,6 +8,7 @@ import NoProductsFound from "@/components/common/NoProductsFound"
 import { useCartStore } from "@/store/useCartStore"
 import { useDrawerStore } from "@/store/useDrawerStore"
 import { useAffiliateStore } from "@/store/useAffiliateStore"
+import useCurrencyStore from "@/store/useCurrencyStore"
 import TourHeader from "@/components/daytours/tour-detail/TourHeader.jsx"
 import ImageGallery from "@/components/daytours/tour-detail/ImageGallery.jsx"
 import TourInfoCard from "@/components/daytours/tour-detail/TourInfoCard.jsx"
@@ -40,6 +41,8 @@ export async function getServerSideProps(context) {
     ko: 14, 'zh-CN': 4, ru: 16, de: 15
   };
   const languageId = languageMap[locale] || 1;
+  const currencyId = Number(context.req?.cookies?.currency_id) || 2;
+  const currencyQuery = `?currency_id=${currencyId}`;
   let initialBookedProductDetail = null;
   let initialTieredPricingData = {};
   let initialTourMapData = [];
@@ -48,29 +51,41 @@ const translations = await serverSideTranslations(locale, ["common", "daytour","
   if (productid) {
     try {
       const productData = await apiRequest({
-        endpoint: `product/${productid}/${languageId}`,
+        endpoint: `product/${productid}/${languageId}${currencyQuery}`,
         method: "GET",
       })
       initialBookedProductDetail = productData
-
-      const tieredPricing = await apiRequest({
-        endpoint: `product_tiered_pricing/${productid}`,
-        method: "GET",
-      })
-      initialTieredPricingData = tieredPricing
-
-      const tourMapRes = await apiRequest({
-        endpoint: `tour_location/${productid}/${languageId}`,
-        method: "GET",
-      })
-      initialTourMapData = tourMapRes?.data?.markers || []
 
       if (!initialBookedProductDetail?.data?.basicinfo) {
         notFound = true
       }
     } catch (error) {
-      console.error("SSR Data Fetching Error:", error)
+      console.error("SSR Product Fetching Error:", error)
       notFound = true
+    }
+
+    if (!notFound) {
+      try {
+        const tieredPricing = await apiRequest({
+          endpoint: `product_tiered_pricing/${productid}/${languageId}${currencyQuery}`,
+          method: "GET",
+        })
+        initialTieredPricingData = tieredPricing
+      } catch (error) {
+        console.error("SSR Tiered Pricing Fetching Error (non-fatal):", error)
+        initialTieredPricingData = {}
+      }
+
+      try {
+        const tourMapRes = await apiRequest({
+          endpoint: `tour_location/${productid}/${languageId}${currencyQuery}`,
+          method: "GET",
+        })
+        initialTourMapData = tourMapRes?.data?.markers || []
+      } catch (error) {
+        console.error("SSR Tour Map Fetching Error (non-fatal):", error)
+        initialTourMapData = []
+      }
     }
   } else {
     notFound = true
@@ -126,6 +141,11 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
   const [viewingHotels, setViewingHotels] = useState(null);
   const [showAllHotels, setShowAllHotels] = useState(false);
   const accommodationGroups = bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing || [];
+  const { tieredPricingData } = useProductStore();
+  const productPricingTiers =
+    tieredPricingData?.tieredPricing?.data?.product_pricing ||
+    tieredPricingData?.data?.product_pricing ||
+    [];
   const [isLanguageLoading, setIsLanguageLoading] = useState(false)
   const [previousLocale, setPreviousLocale] = useState(router.locale)
 
@@ -196,20 +216,25 @@ const GroupTourDetailPage = ({ initialBookedProductDetail, initialTieredPricingD
 
   const fetchDataForLanguage = async (locale, productId) => {
     const languageId = languageMap[locale] || 1
+    const currencyId =
+      useCurrencyStore.getState()?.currencyId ||
+      (typeof window !== "undefined" && Number(localStorage.getItem("currency_id"))) ||
+      2
+    const currencyQuery = `?currency_id=${currencyId}`
 
     try {
       setIsLanguageLoading(true)
       const [productData, tieredPricing, tourMapRes] = await Promise.all([
         apiRequest({
-          endpoint: `product/${productId}/${languageId}`,
+          endpoint: `product/${productId}/${languageId}${currencyQuery}`,
           method: "GET",
         }),
         apiRequest({
-          endpoint: `product_tiered_pricing/${productId}`,
+          endpoint: `product_tiered_pricing/${productId}/${languageId}${currencyQuery}`,
           method: "GET",
         }),
         apiRequest({
-          endpoint: `tour_location/${productId}/${languageId}`,
+          endpoint: `tour_location/${productId}/${languageId}${currencyQuery}`,
           method: "GET",
         }),
       ]);
@@ -334,7 +359,7 @@ useEffect(() => {
 
   const apiData = bookedProductDetail?.data?.basicinfo
   const itineraryData = apiData?.itinerary || bookedProductDetail?.data?.productitinerary || bookedProductDetail?.data?.product_itinerary || [];
-  const startingPrice = apiData.starting_price || ""
+  const startingPrice = apiData?.starting_price || ""
   if (!apiData) {
     return (
       <Layout>
@@ -442,6 +467,7 @@ const handleVariantSelect = async (variant) => {
 
 
   const isPackageTour = Number(apiData?.category_id) === PACKAGE_TOUR_CATEGORY_ID;
+  const showProductTiers = isPackageTour && accommodationGroups.length === 0 && productPricingTiers.length > 0;
   const handleInquireNow = () => {
     sessionStorage.setItem("fromDetail", "true")
     localizedPush("/inquiry")
@@ -514,7 +540,7 @@ const handleVariantSelect = async (variant) => {
       <>
      <div className="md:hidden block mb-6">
        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-         {isPackageTour && (
+         {isPackageTour && accommodationGroups.length > 0 && (
            <>
              <div className="p-4 border-b bg-gray-50">
                <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -542,12 +568,47 @@ const handleVariantSelect = async (variant) => {
                     </div>
                    <div className="flex justify-between items-center text-xs">
                      <span className="text-gray-500">{t("hotelSelection", "Hotel Selection")}: {group.allow_hotel_selection ? t("yes") : t("no")}</span>
-                     <button 
+                     <button
                        onClick={() => { setViewingHotels(group); setShowAllHotels(false); }}
                        className="text-primary font-bold flex items-center gap-1"
                      >
                        <Eye size={14} /> {t("viewHotels", "View Hotels")}
                      </button>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </>
+         )}
+
+         {showProductTiers && (
+           <>
+             <div className="p-4 border-b bg-gray-50">
+               <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                 <Hotel size={18} className="text-primary" />
+                 {t("packageOptions")}
+               </h3>
+             </div>
+
+             <div className="divide-y divide-gray-100">
+               {productPricingTiers.map((tier) => (
+                 <div key={tier.id} className="p-4 space-y-2 text-sm">
+                   <div className="flex justify-between items-center">
+                     <span className="font-bold text-gray-900">
+                       {tier.min_pax}-{tier.max_pax} Pax
+                     </span>
+                     <span className="text-primary font-bold">
+                       {tier.currency || apiData?.currency} {tier.adult_sharing || "-"}
+                     </span>
+                   </div>
+                   <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600">
+                     {tier.triple_sharing && <div>Triple: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.triple_sharing}</span></div>}
+                     {tier.quad_sharing && <div>Quad: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.quad_sharing}</span></div>}
+                     {tier.adult_private && <div>Private: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.adult_private}</span></div>}
+                     {tier.private_room && <div>Private Room: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.private_room}</span></div>}
+                     {tier.child_with_bed && <div>Child w/ Bed: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.child_with_bed}</span></div>}
+                     {tier.child_without_bed && <div>Child w/o Bed: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.child_without_bed}</span></div>}
+                     {tier.extra_night && Number(tier.extra_night) > 0 && <div>Extra Night: <span className="font-semibold text-gray-800">{tier.currency || apiData?.currency} {tier.extra_night}</span></div>}
                    </div>
                  </div>
                ))}

@@ -49,36 +49,39 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking, isPackageT
     setFromOrderScreen(flag);
   }, []);
 
-  const { bookedProductDetail } = useProductStore();
+  const { bookedProductDetail, tieredPricingData } = useProductStore();
   const [viewingHotels, setViewingHotels] = useState(null);
   const [showAllHotels, setShowAllHotels] = useState(false);
   const accommodationGroups = bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing || [];
+  const productPricingTiers =
+    tieredPricingData?.tieredPricing?.data?.product_pricing ||
+    tieredPricingData?.data?.product_pricing ||
+    [];
+  const showProductTiers = isPackageTour && accommodationGroups.length === 0 && productPricingTiers.length > 0;
 
   const tourFeatures = [
     ...(apiData.duration ? [{
       icon: Clock,
       title: t("duration", { ns: "daytour" }),
-      desc: `${apiData.duration} ${isPackageTour ? t("days", "Days") : t("hours")}`
+      desc: `${apiData.duration} ${isPackageTour ? "Days" : "hours"}`
     }] : []),
 
     ...(apiData.tourtype ? [{
       icon: Mountain,
       title: t("tour_type"),
-      desc: apiData.tourtype === "Private Tour"
-        ? t("privateTour", "Private Tour")
-        : t("shareTour", "Share Tour")
+      desc: apiData.tourtype
     }] : []),
 
     ...(apiData.guide_tour ? [{
       icon: UserCheck,
       title: t("guide"),
-      desc: apiData.guide_tour === "yes" ? t("guided") : t("no_guide")
+      desc: apiData.guide_tour
     }] : []),
 
     ...(apiData.guidelanguage ? [{
       icon: Globe,
       title: t("language"),
-      desc: t("english")
+      desc: apiData.guidelanguage
     }] : []),
 
     ...(apiData.return_transfer === "yes" ? [{
@@ -101,7 +104,7 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking, isPackageT
       {/* Desktop Pricing & Proceed Button Section */}
       {!fromOrderScreen && (
         <div className="hidden md:block bg-card text-card-foreground rounded-xl border border-border shadow-sm overflow-hidden mb-6">
-          {isPackageTour && (
+          {isPackageTour && accommodationGroups.length > 0 && (
             <>
               <div className="p-4 border-b border-border bg-muted">
                 <h3 className="font-bold text-foreground flex items-center gap-2">
@@ -143,12 +146,66 @@ const TourInfoCard = ({ apiData, onScrollToOptions, onProceedBooking, isPackageT
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <button 
+                          <button
                             onClick={() => { setViewingHotels(group); setShowAllHotels(false); }}
                             className="text-primary hover:text-primary-hover flex items-center gap-1 ml-auto font-medium"
                           >
                             <Eye size={14} /> {t("filterSidebar.view")}
                           </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {showProductTiers && (
+            <>
+              <div className="p-4 border-b border-border bg-muted">
+                <h3 className="font-bold text-foreground flex items-center gap-2">
+                  <Hotel size={18} className="text-primary" />
+                  {t("filterSidebar.packageOptions")}
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto my-2">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-muted text-muted-foreground text-[10px] font-bold">
+                    <tr>
+                      <th className="px-4 py-3">Pax</th>
+                      <th className="px-4 py-3">Twin Sharing</th>
+                      <th className="px-4 py-3">Triple</th>
+                      <th className="px-4 py-3">Quad</th>
+                      <th className="px-4 py-3">Private</th>
+                      <th className="px-4 py-3">Child w/ Bed</th>
+                      <th className="px-4 py-3">Child w/o Bed</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {productPricingTiers.map((tier) => (
+                      <tr key={tier.id} className="hover:bg-primary/5 transition-colors">
+                        <td className="px-4 py-3 font-semibold text-foreground">
+                          {tier.min_pax}-{tier.max_pax}
+                        </td>
+                        <td className="px-4 py-3 text-primary font-bold">
+                          {tier.adult_sharing ? `${tier.currency || apiData?.currency} ${tier.adult_sharing}` : "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {tier.triple_sharing ? `${tier.currency || apiData?.currency} ${tier.triple_sharing}` : "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {tier.quad_sharing ? `${tier.currency || apiData?.currency} ${tier.quad_sharing}` : "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {tier.adult_private ? `${tier.currency || apiData?.currency} ${tier.adult_private}` : "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {tier.child_with_bed ? `${tier.currency || apiData?.currency} ${tier.child_with_bed}` : "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {tier.child_without_bed ? `${tier.currency || apiData?.currency} ${tier.child_without_bed}` : "-"}
                         </td>
                       </tr>
                     ))}

@@ -59,7 +59,10 @@ const { refId, refType ,track_agent_id } = useAffiliateStore();
   const { bookedProductDetail, tieredPricingData } = useProductStore();
   const product = bookedProductDetail?.data?.basicinfo?.product_description || "Product";
   const img = bookedProductDetail?.data?.basicinfo?.images?.[0]?.image || "img";
-  const pricingList = tieredPricingData?.tieredPricing?.data?.product_pricing || [];
+  const pricingList =
+    tieredPricingData?.tieredPricing?.data?.product_pricing ||
+    tieredPricingData?.data?.product_pricing ||
+    [];
 
   // Get counts 
   const adultCount = bookingDetails?.adults || 0;

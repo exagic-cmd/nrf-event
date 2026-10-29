@@ -39,7 +39,26 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   useEffect(() => {
     if (!router.isReady) return;
     trackAffiliateRedirect(router);
-  }, [router.isReady]); 
+  }, [router.isReady]);
+
+  if (!routeEventSlug) {
+    return (
+      <Layout>
+        <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
+          <div>
+            <h1 className="text-3xl font-semibold">Choose an event</h1>
+            <p className="mt-3 text-muted-foreground">
+              Open an event-specific link to view its travel information and booking options.
+            </p>
+          </div>
+        </main>
+      </Layout>
+    );
+  }
+
+  if (checkingAuth || !event) {
+    return <Preloader />
+  }
 
   return (
     <Layout footerClassName={routeEventSlug ? "!mt-0 sm:!mt-0" : ""}>
