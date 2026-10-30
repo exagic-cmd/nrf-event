@@ -170,6 +170,8 @@ export default function EventPreloader({
     const build = () => {
       W = root.clientWidth;
       H = root.clientHeight;
+      if (W <= 0 || H <= 0) return;
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = W * dpr;
       canvas.height = H * dpr;
@@ -369,6 +371,10 @@ export default function EventPreloader({
       clearTimeout(rt);
       rt = setTimeout(build, 150);
     };
+    const resizeObserver = typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver(onResize);
+    resizeObserver?.observe(root);
 
     applyVars();
     const start = () => {
@@ -400,6 +406,7 @@ export default function EventPreloader({
       root.removeEventListener("pointerup", onLeave);
       root.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("resize", onResize);
+      resizeObserver?.disconnect();
       link.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
