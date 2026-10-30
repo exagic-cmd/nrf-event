@@ -47,6 +47,7 @@ const nextConfig = {
       "error",
       "hotel",
       "landmark",
+      "event-partnership",
       "listings",
       "location-detail",
       "login",

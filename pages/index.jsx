@@ -15,6 +15,7 @@ import useUserStore from "@/store/useAuthStore";
 import Herosection from "@/components/landing/hero-section";
 import {AboutSection} from "@/components/landing/event-about-section";
 import HeroFilter from "@/components/landing/hero-category-filter"
+import EventRegistrationForm from "@/components/events/EventRegistrationForm";
 import { getEventSlugFromPath, getEventSlugFromRouter } from "@/lib/eventRouting";
 function normalizeLayout(value) {
   const normalizedValue = String(value ?? "1").trim().toLowerCase();
@@ -72,6 +73,11 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
             {isLoggedIn && <HeroFilter layout={layout} />}
         </div>
           <AboutSection layout={layout} />
+          {hydrated && !token && (
+            <section className="mx-auto mt-12 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+              <EventRegistrationForm eventSlug={routeEventSlug} />
+            </section>
+          )}
           <ShuttleBannerWeServeSection layout={layout} />
           {isLoggedIn && <OurRecommendation layout={layout} />}
           <EventPartners layout={layout} />
