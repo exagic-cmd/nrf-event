@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Layout from "@/components/layout/Layout"
 import { ShuttleBannerWeServeSection} from "@/components/landing/shuttle-banner-weServe-section"
 import  CountdownTimer  from "@/components/landing/event-count-down"
@@ -11,6 +11,7 @@ import { useRouter } from "next/router"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
 import { useEventStore } from "@/store/useEventStore";
+import useUserStore from "@/store/useAuthStore";
 import Herosection from "@/components/landing/hero-section";
 import {AboutSection} from "@/components/landing/event-about-section";
 import HeroFilter from "@/components/landing/hero-category-filter"
@@ -28,6 +29,8 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const router = useRouter()
   const { trackAffiliateRedirect } = useAffiliateStore();
   const event = useEventStore((state) => state.event);
+  const token = useUserStore((state) => state.token);
+  const [hydrated, setHydrated] = useState(false);
   const routeEventSlug =
     pageRouteEventSlug !== undefined
       ? pageRouteEventSlug
@@ -35,6 +38,11 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const eventDetails = event?.event || {};
   const layoutValue = eventDetails.landing_layout ?? eventDetails.layout ?? eventDetails.layout_id;
   const layout = normalizeLayout(layoutValue);
+  const isLoggedIn = hydrated && !!token;
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -56,20 +64,16 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
     );
   }
 
-  if (checkingAuth || !event) {
-    return <Preloader />
-  }
-
   return (
     <Layout footerClassName={routeEventSlug ? "!mt-0 sm:!mt-0" : ""}>
       <div>
         <div className={layout === 1 ? "bg-surface-muted pt-20" : "bg-surface-secondary pt-16"}>
             <Herosection layout={layout} />
-            <HeroFilter layout={layout} />
+            {isLoggedIn && <HeroFilter layout={layout} />}
         </div>
           <AboutSection layout={layout} />
           <ShuttleBannerWeServeSection layout={layout} />
-          <OurRecommendation layout={layout} />
+          {isLoggedIn && <OurRecommendation layout={layout} />}
           <EventPartners layout={layout} />
          </div>
       

@@ -35,6 +35,8 @@ function MyApp({ Component, pageProps }) {
     Object.prototype.hasOwnProperty.call(pageProps, 'routeEventSlug')
       ? pageProps.routeEventSlug
       : getEventSlugFromRouter(router);
+  const usesDefaultEventTheme = !routeEventSlug;
+  const isEventPartnershipPage = false;
 
   useEffect(() => {
     setHydrated(true);
