@@ -20,13 +20,17 @@ const TourBookingForm = ({ value = {}, onChange, onHotelsAvailable, errors = {},
   const { id: productId } = router.query
   const { tieredPricingData, bookedProductDetail } = useProductStore()
   const [pickupTimesByDate, setPickupTimesByDate] = useState({});
-  const pricingList = tieredPricingData?.tieredPricing?.data?.product_pricing || []
+  const pricingList =
+    tieredPricingData?.tieredPricing?.data?.product_pricing ||
+    tieredPricingData?.data?.product_pricing ||
+    []
   const minPax = pricingList.length > 0 ? Math.min(...pricingList.map((p) => Number(p.min_pax))) : 1
   const maxPax = pricingList.length > 0 ? Math.max(...pricingList.map((p) => Number(p.max_pax))) : 1
   
   const productCategoryId = Number(bookedProductDetail?.data?.basicinfo?.category_id);
   const isAttraction = productCategoryId === 1;
   const isBookingAllowed = isAttraction ? (bookedProductDetail?.data?.basicinfo?.linked_type?.toLowerCase() === 'cebu' && bookedProductDetail?.data?.basicinfo?.cebu_sku_mappings?.length > 0) : true;
+  const hasAccommodationGroups = (bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.length || 0) > 0;
 
 
  const [form, setForm] = useState({
@@ -124,9 +128,9 @@ const [selectedSkus, setSelectedSkus] = useState(value.selectedSkus || {});
 useEffect(() => {
   if (!productId) return;
   if (!isPackageTour && !isAttraction && !form.hotel) return;
-  
+
   // Requirement 4: Conditional Logic for Package Tours
-  if (isPackageTour) {
+  if (isPackageTour && hasAccommodationGroups) {
     if (!form.accommodation_group_id) return;
     const selectedGroup = bookedProductDetail?.data?.basicinfo?.accommodation_group_pricing?.find(g => String(g.group_id) === String(form.accommodation_group_id));
     if (selectedGroup?.allow_hotel_selection && !form.group_hotel_id) return;
@@ -213,7 +217,7 @@ useEffect(() => {
       setErrorDates(t("bookingForm.failedToLoadDates"));
       setLoadingDates(false);
     });
-}, [productId, form.adults, form.child, form.hotel, isPackageTour, today, form.accommodation_group_id, form.group_hotel_id, tieredPricingData, bookedProductDetail, isAttraction]);
+}, [productId, form.adults, form.child, form.hotel, isPackageTour, hasAccommodationGroups, today, form.accommodation_group_id, form.group_hotel_id, tieredPricingData, bookedProductDetail, isAttraction]);
 
 const getTicketTimes = (data = attractionData) => {
   if (!data) return [];
@@ -567,7 +571,7 @@ useEffect(() => {
           )}
 
           {/* 2. Pricing Table (Tier Pricing) */}
-          {(!isPackageTour || (isPackageTour && form.accommodation_group_id)) && !isAttraction && (
+          {(!isPackageTour || !hasAccommodationGroups || form.accommodation_group_id) && !isAttraction && (
             <BookingPriceTable id={productId} accommodation_group_id={form.accommodation_group_id} />
           )}
 
@@ -615,7 +619,7 @@ useEffect(() => {
             child={form.child}
             minPax={minPax}
             maxPax={maxPax}
-            pricingList={tieredPricingData?.tieredPricing?.data?.product_pricing || []}
+            pricingList={pricingList}
             onClose={handleCancelPassengerModal}
             onApply={handlePassengerApply}
             isPackageTour={isPackageTour}
@@ -744,6 +748,7 @@ useEffect(() => {
           </div>
 
          {/* Time */}
+{!isPackageTour && (
 <div className="space-y-3">
   <label className="flex font-medium text-sm text-foreground items-center gap-2">
     <Clock className="w-4 h-4 text-primary" />
@@ -803,6 +808,7 @@ useEffect(() => {
     <div className="text-sm text-muted-foreground">{t("bookingForm.selectDate")}</div>
   )}
 </div>
+)}
         </CardContent>
       </Card>
       <style jsx global>{`

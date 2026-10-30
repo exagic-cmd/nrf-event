@@ -36,7 +36,7 @@ export default function FlightTracker({
 
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data/1?flight_number=${encodeURIComponent(
             flightNumberTrimmed
           )}&pickup_id=${encodeURIComponent(pickupId)}`
         );

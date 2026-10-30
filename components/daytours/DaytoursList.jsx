@@ -48,6 +48,8 @@ function DaytoursList({ searchTerm, sortBy, listingCategory = 'day-tours' }) {
         landmarks = [];
       }
 
+      const isPackageTour = Number(item.category_id) === 8;
+      const durationUnit = isPackageTour ? "Days" : "hours";
       return {
         ...item,
         id: item.id,
@@ -56,7 +58,7 @@ function DaytoursList({ searchTerm, sortBy, listingCategory = 'day-tours' }) {
         image: getFullImageUrl(item.image),
         price: priceToShow,
         originalPrice: usePromo ? basePrice : null,
-        duration: item.tour_duration ? `${item.tour_duration} hours` : null,
+        duration: item.tour_duration ? `${item.tour_duration} ${durationUnit}` : null,
         rating: 4.5,
         tourtype: item.tour_type,
         shareTour: item.share_tour,
@@ -66,7 +68,7 @@ function DaytoursList({ searchTerm, sortBy, listingCategory = 'day-tours' }) {
         childPrice: item.child_price,
         landmarks,
         features: [
-          item.tour_duration && `Duration: ${item.tour_duration} hours`,
+          item.tour_duration && `Duration: ${item.tour_duration} ${durationUnit}`,
           item.physical_aspect?.length > 0 && `Physical: ${item.physical_aspect.join(", ")}`,
           item.activity_intensity?.length > 0 && `Intensity: ${item.activity_intensity.join(", ")}`,
           item.preference_activities?.length > 0 && `Activities: ${item.preference_activities.slice(0, 2).join(", ")}`,

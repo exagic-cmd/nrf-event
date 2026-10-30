@@ -578,7 +578,7 @@ const handlePickupTrack = async (flightNumber = null) => {
   setPickupTracking(true);
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data/1?flight_number=${encodeURIComponent(
         numberToUse
       )}&pickup_id=${encodeURIComponent(selectedTransfer?.pickup_point_id)}`
     );
@@ -613,7 +613,7 @@ const handleReturnTrack = async (flightNumber = null) => {
   setReturnTracking(true);
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data?flight_number=${encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-flight-data/1?flight_number=${encodeURIComponent(
         numberToUse
       )}&pickup_id=${encodeURIComponent(selectedTransfer?.dropoff_point_id)}`
     );

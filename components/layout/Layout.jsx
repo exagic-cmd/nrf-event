@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SideDrawer from "@/components/layout/SideDrawer";
 import { useDrawerStore } from "@/store/useDrawerStore";
@@ -41,16 +40,19 @@ export default function Layout({ children, footerClassName = "" }) {
 
   const [pendingOrderId, setPendingOrderId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const promoFetchedRef = useRef(false);
 
   useEffect(() => {
     initializeVisitor();
-    getIP(); 
-  }, []); 
+    getIP();
+  }, []);
 
  useEffect(() => {
     if (typeof window === "undefined") return;
 
     if (router.pathname !== "/" && router.pathname !== "/transfers") return;
+    if (promoFetchedRef.current) return;
+    promoFetchedRef.current = true;
 
     const seen = localStorage.getItem("promo_seen");
     let mounted = true;
@@ -148,10 +150,9 @@ export default function Layout({ children, footerClassName = "" }) {
         />
       </Head>
 
-    
+
 
       {/* ===== MAIN LAYOUT ===== */}
-      <Header />
       <main className="min-h-screen">{children}</main>
 
       {/* {pendingOrderId && !loading && (

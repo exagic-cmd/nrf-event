@@ -342,7 +342,7 @@ const BookNow = ({ onBookNow, onPriceChange, id, productTitle, editMode, edit })
   const handleContinueShopping = async () => {
     setLoadingButton("continue");
     await new Promise((res) => setTimeout(res, 1200)); // simulate loading
-    localizedPush("/transfers");
+    localizedPush("/");
     setLoadingButton(null);
   };
 

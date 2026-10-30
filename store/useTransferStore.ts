@@ -252,7 +252,7 @@ setSelectedDates: ({ pickupDate, returnDate }) => set((state) => ({
   set({ isLoading: true });
 
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product-surcharges?product_id=${productId}&pickup_time=${pickupTime}`;
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product-surcharges/1?product_id=${productId}&pickup_time=${pickupTime}`;
     const res = await fetch(url);
     const contentType = res.headers.get("content-type");
     if (!res.ok || !contentType?.includes("application/json")) {

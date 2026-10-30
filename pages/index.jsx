@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Layout from "@/components/layout/Layout"
 import { ShuttleBannerWeServeSection} from "@/components/landing/shuttle-banner-weServe-section"
 import  CountdownTimer  from "@/components/landing/event-count-down"
@@ -11,9 +11,11 @@ import { useRouter } from "next/router"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
 import { useEventStore } from "@/store/useEventStore";
+import useUserStore from "@/store/useAuthStore";
 import Herosection from "@/components/landing/hero-section";
 import {AboutSection} from "@/components/landing/event-about-section";
 import HeroFilter from "@/components/landing/hero-category-filter"
+import EventRegistrationForm from "@/components/events/EventRegistrationForm";
 import { getEventSlugFromPath, getEventSlugFromRouter } from "@/lib/eventRouting";
 function normalizeLayout(value) {
   const normalizedValue = String(value ?? "1").trim().toLowerCase();
@@ -28,6 +30,8 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const router = useRouter()
   const { trackAffiliateRedirect } = useAffiliateStore();
   const event = useEventStore((state) => state.event);
+  const token = useUserStore((state) => state.token);
+  const [hydrated, setHydrated] = useState(false);
   const routeEventSlug =
     pageRouteEventSlug !== undefined
       ? pageRouteEventSlug
@@ -35,22 +39,47 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const eventDetails = event?.event || {};
   const layoutValue = eventDetails.landing_layout ?? eventDetails.layout ?? eventDetails.layout_id;
   const layout = normalizeLayout(layoutValue);
+  const isLoggedIn = hydrated && !!token;
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (!router.isReady) return;
     trackAffiliateRedirect(router);
-  }, [router.isReady]); 
+  }, [router.isReady]);
+
+  if (!routeEventSlug) {
+    return (
+      <Layout>
+        <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
+          <div>
+            <h1 className="text-3xl font-semibold">Choose an event</h1>
+            <p className="mt-3 text-muted-foreground">
+              Open an event-specific link to view its travel information and booking options.
+            </p>
+          </div>
+        </main>
+      </Layout>
+    );
+  }
 
   return (
     <Layout footerClassName={routeEventSlug ? "!mt-0 sm:!mt-0" : ""}>
       <div>
         <div className={layout === 1 ? "bg-surface-muted pt-20" : "bg-surface-secondary pt-16"}>
             <Herosection layout={layout} />
-            <HeroFilter layout={layout} />
+            {isLoggedIn && <HeroFilter layout={layout} />}
         </div>
           <AboutSection layout={layout} />
+          {hydrated && !token && (
+            <section className="mx-auto mt-12 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+              <EventRegistrationForm eventSlug={routeEventSlug} />
+            </section>
+          )}
           <ShuttleBannerWeServeSection layout={layout} />
-          <OurRecommendation layout={layout} />
+          {isLoggedIn && <OurRecommendation layout={layout} />}
           <EventPartners layout={layout} />
          </div>
       

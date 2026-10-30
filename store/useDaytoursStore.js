@@ -66,9 +66,9 @@ export const useDaytoursStore = create((set, get) => ({
     };
     const activeEvent = useEventStore.getState().event;
     const eventId = activeEvent?.event?.id || activeEvent?.id || requestPayload.event_id;
-    if (eventId !== null && eventId !== undefined) {
-      requestPayload.event_id = eventId;
-    }
+    // if (eventId !== null && eventId !== undefined) {
+    //   requestPayload.event_id = eventId;
+    // }
 
     try {
       const encodedPayload = requestPayload.event_id
