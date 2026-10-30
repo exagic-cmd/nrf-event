@@ -227,12 +227,12 @@ export default function EventPreloader({
       phase = "burst";
       burstAt = performance.now();
       setStage("burst");
-      timers.push(setTimeout(() => setStage("open"), 650));
+        timers.push(setTimeout(() => setStage("open"), 360));
       timers.push(
         setTimeout(() => {
           setStage("gone");
           live.current.onComplete && live.current.onComplete();
-        }, 1750)
+        }, 620)
       );
     };
 
@@ -433,10 +433,10 @@ export default function EventPreloader({
       <canvas ref={canvasRef} className="ep-canvas" aria-hidden="true" />
       <div className="ep-hint">Move through the letters</div>
       <div className={"ep-hud" + (stage !== "load" ? " ep-hide" : "")}>
-        <div className="ep-num">
+        {/* <div className="ep-num">
           <span ref={numRef}>0</span>
           <small>%</small>
-        </div>
+        </div> */}
         <div ref={statusRef} className="ep-status">Opening the doors</div>
       </div>
       <div className={"ep-bar" + (stage !== "load" ? " ep-hide" : "")} aria-hidden="true">

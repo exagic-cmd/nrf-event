@@ -1,4 +1,4 @@
-export default function LoaderSvg({ height = "100vh" }) {
+export default function LoaderSvg({ height = "100vh", size = 60 }) {
   return (
     <div
       className="flex items-center justify-center"
@@ -7,15 +7,15 @@ export default function LoaderSvg({ height = "100vh" }) {
       <svg
         className="animate-spin"
         xmlns="http://www.w3.org/2000/svg"
-        width="60"
-        height="60"
+        width={size}
+        height={size}
         viewBox="0 0 100 100"
       >
         <circle
           cx="50"
           cy="50"
           r="40"
-          stroke="#fff"
+          stroke="currentColor"
           className="text-primary"
           strokeWidth="8"
           strokeLinecap="round"

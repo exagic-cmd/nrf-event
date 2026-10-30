@@ -8,7 +8,7 @@ import {
 const inputClassName =
   "mt-1 block w-full rounded-lg border border-input bg-muted/40 px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20";
 
-export default function EventRegistrationForm({ eventSlug }) {
+export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
   const [form, setForm] = useState(null);
   const [answers, setAnswers] = useState({});
   const [ticketTierId, setTicketTierId] = useState("");
@@ -22,6 +22,7 @@ export default function EventRegistrationForm({ eventSlug }) {
   useEffect(() => {
     if (!eventSlug) {
       setLoading(false);
+      onLoadingChange?.(false);
       setLoadError("This registration link is missing its event.");
       return undefined;
     }
@@ -29,6 +30,7 @@ export default function EventRegistrationForm({ eventSlug }) {
     const controller = new AbortController();
     let active = true;
     setLoading(true);
+    onLoadingChange?.(true);
     setLoadError("");
     setForm(null);
 
@@ -43,17 +45,22 @@ export default function EventRegistrationForm({ eventSlug }) {
         );
       })
       .catch((error) => {
-        if (active && error.name !== "AbortError") {
+        if (active && !controller.signal.aborted && error.name !== "AbortError") {
           console.error("Unable to load event registration form:", error);
           setLoadError(error.message || "Unable to load this event’s registration form.");
         }
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+          onLoadingChange?.(false);
+        }
       });
 
     return () => {
       active = false;
+      // Ignore the expected fetch rejection when React cleans up or restarts
+      // this effect (for example during development Strict Mode).
       controller.abort();
     };
   }, [eventSlug, requestVersion]);
