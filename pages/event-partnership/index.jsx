@@ -1,20 +1,36 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { BedDouble, BusFront, Luggage, Plane } from "lucide-react";
 import Header from "@/components/layout/Header";
 import MiceInquiryForm from "@/components/forms/MiceInquiryForm";
 import EventRegistrationForm from "@/components/events/EventRegistrationForm";
 import { getEventSlugFromPath } from "@/lib/eventRouting";
+import { useEventStore } from "@/store/useEventStore";
+import Loader2Svg from "@/components/common/Loader2Svg";
 import styles from "./event-partnership.module.css";
+
+const DEFAULT_EVENT_ID = 6;
 
 export default function EventPartnershipPage({ routeEventSlug = "" }) {
   const router = useRouter();
+  const [registrationLoading, setRegistrationLoading] = useState(Boolean(routeEventSlug));
+  const event = useEventStore((state) => state.event);
+  const loadedEventSlug = useEventStore((state) => state.eventSlug);
+  const eventStatus = useEventStore((state) => state.status);
   const ref = router.isReady && typeof router.query.ref === "string"
     ? router.query.ref.trim()
     : "";
-  const eventSlug = routeEventSlug || (router.isReady
+  const pathSegments = String(router.asPath || "").split(/[?#]/, 1)[0].split("/").filter(Boolean);
+  const partnershipIndex = pathSegments.findIndex((segment) => segment === "event-partnership");
+  const pathEventSlug = partnershipIndex > 0 ? pathSegments[partnershipIndex - 1] : "";
+  const eventSlug = routeEventSlug || pathEventSlug || (router.isReady
     ? getEventSlugFromPath(router.asPath, router.locale, router.defaultLocale) || ""
     : "");
+  const themeReady = eventSlug
+    ? loadedEventSlug === eventSlug && eventStatus === "ready" && Boolean(event)
+    : eventStatus === "ready" &&
+      String(event?.event?.id ?? event?.id) === String(DEFAULT_EVENT_ID);
 
   return (
     <>
@@ -46,7 +62,7 @@ export default function EventPartnershipPage({ routeEventSlug = "" }) {
           </div>
           <div className={styles.contentGrid}>
             {eventSlug
-              ? <EventRegistrationForm eventSlug={eventSlug} />
+              ? <EventRegistrationForm eventSlug={eventSlug} onLoadingChange={setRegistrationLoading} />
               : <MiceInquiryForm refValue={ref} />}
             <aside className={styles.benefits} id="benefits">
               <p className={styles.eyebrow}>WHY REGISTER?</p>
@@ -63,6 +79,11 @@ export default function EventPartnershipPage({ routeEventSlug = "" }) {
           </div>
         </section>
       </main>
+      {(!themeReady || (eventSlug && registrationLoading)) && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-background" role="status" aria-live="polite" aria-label="Loading event theme and registration form">
+          <Loader2Svg height="100vh" size={60} />
+        </div>
+      )}
     </>
   );
 }

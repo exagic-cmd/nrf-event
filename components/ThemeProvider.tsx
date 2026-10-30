@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { createTheme } from "@/lib/createTheme";
 import type { EventAppearance } from "@/lib/theme.config";
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function ThemeProvider({ appearance, children }: Props) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const { mode, vars } = createTheme(appearance);
 
     // Apply CSS variables to documentElement
@@ -26,12 +26,8 @@ export default function ThemeProvider({ appearance, children }: Props) {
       root.classList.remove("dark");
     }
 
-    return () => {
-      // optional: cleanup -> remove inline variables we set (leave defaults from CSS)
-      Object.keys(vars).forEach((key) => {
-        root.style.removeProperty(key);
-      });
-    };
+    // Keep the current theme in place until the next appearance is applied.
+    // Removing variables during route changes briefly flashes the default theme.
   }, [appearance.theme, appearance.primaryColor]);
 
   return <>{children}</>;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
 import useLanguageStore from '@/store/useLanguageStore';
@@ -12,6 +12,7 @@ import { useEventStore } from '@/store/useEventStore';
 import { getEventSlugFromRouter } from '@/lib/eventRouting';
 import { EventRouteContext } from '@/lib/EventRouteContext';
 import EventPreloader from '@/components/layout/EventPreloader';
+import Loader2Svg from '@/components/common/Loader2Svg';
 
 const GA_TRACKING_ID = 'G-5SQKF4Y54M';
 const DEFAULT_EVENT_ID = 6;
@@ -19,6 +20,7 @@ const DEFAULT_EVENT_ID = 6;
 import '@/lib/helpers'; // loads globally
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const [routeLoading, setRouteLoading] = useState(false);
   const isEventPartnershipPage = router.pathname === '/event-partnership';
   const { currentLocale, setLocale } = useLanguageStore();
   const {
@@ -34,16 +36,34 @@ function MyApp({ Component, pageProps }) {
     Object.prototype.hasOwnProperty.call(pageProps, 'routeEventSlug')
       ? pageProps.routeEventSlug
       : getEventSlugFromRouter(router);
+  const pathSegments = String(router.asPath || '').split(/[?#]/, 1)[0].split('/').filter(Boolean);
+  const partnershipIndex = pathSegments.findIndex((segment) => segment === 'event-partnership');
+  const slugBeforePartnership = partnershipIndex > 0
+    ? decodeURIComponent(pathSegments[partnershipIndex - 1])
+    : null;
+  const partnershipEventSlug = isEventPartnershipPage
+    ? (slugBeforePartnership || pageProps.routeEventSlug || routeEventSlug ||
+      (typeof router.query.slug === 'string' ? router.query.slug : null))
+    : null;
   const usesDefaultEventTheme =
-    !routeEventSlug &&
-    (router.pathname === '/' || isEventPartnershipPage);
+    !routeEventSlug && (router.pathname === '/' || isEventPartnershipPage);
+  const activeEventSlug = partnershipEventSlug || routeEventSlug;
+  const reusesDefaultEvent = Boolean(
+    isEventPartnershipPage && !activeEventSlug && eventSlug === null &&
+    status === 'ready' &&
+    String(event?.event?.id ?? event?.id) === String(DEFAULT_EVENT_ID)
+  );
   const eventMatchesRoute = Boolean(
-    (routeEventSlug && eventSlug === routeEventSlug && status === 'ready' && event) ||
+    (activeEventSlug && eventSlug === activeEventSlug && status === 'ready' && event) ||
+    reusesDefaultEvent ||
     (usesDefaultEventTheme &&
       eventSlug === null &&
       status === 'ready' &&
       String(event?.event?.id ?? event?.id) === String(DEFAULT_EVENT_ID))
   );
+  const partnershipNeedsEvent = isEventPartnershipPage && Boolean(activeEventSlug || usesDefaultEventTheme);
+  const partnershipLoading = partnershipNeedsEvent && !eventMatchesRoute &&
+    !['error', 'expired', 'not-found'].includes(status);
   const isDefaultEventRoute = !routeEventSlug && router.pathname === '/';
   const showAppHeader = !isEventPartnershipPage && !(isDefaultEventRoute && eventMatchesRoute);
    const appearance = useMemo(() => {
@@ -55,14 +75,36 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (routeEventSlug) {
-      FetchEvent(routeEventSlug);
+    if (activeEventSlug && eventSlug === activeEventSlug && status === 'loading') {
+      return;
+    }
+    if (activeEventSlug && eventSlug !== activeEventSlug) {
+      FetchEvent(activeEventSlug);
+    } else if (activeEventSlug && eventSlug === activeEventSlug && status === 'ready') {
+      // Keep the event data available to the registration page after it loads.
     } else if (usesDefaultEventTheme) {
       FetchEventById(DEFAULT_EVENT_ID);
+    } else if (isEventPartnershipPage && reusesDefaultEvent) {
+      // Reuse the default event fetched on the home page.
     } else {
       clearEvent();
     }
-  }, [router.isReady, router.asPath, router.pathname, routeEventSlug, usesDefaultEventTheme, FetchEvent, FetchEventById, clearEvent]);
+  }, [router.isReady, router.asPath, router.pathname, activeEventSlug, eventSlug, status, reusesDefaultEvent, isEventPartnershipPage, usesDefaultEventTheme, FetchEvent, FetchEventById, clearEvent]);
+
+  useEffect(() => {
+    const onStart = (url) => {
+      if (url.includes('/event-partnership')) setRouteLoading(true);
+    };
+    const onComplete = () => setRouteLoading(false);
+    router.events.on('routeChangeStart', onStart);
+    router.events.on('routeChangeComplete', onComplete);
+    router.events.on('routeChangeError', onComplete);
+    return () => {
+      router.events.off('routeChangeStart', onStart);
+      router.events.off('routeChangeComplete', onComplete);
+      router.events.off('routeChangeError', onComplete);
+    };
+  }, [router.events]);
 
   // Sync language with router
   useEffect(() => {
@@ -102,20 +144,32 @@ function MyApp({ Component, pageProps }) {
         `}
       </Script>
       <ThemeProvider appearance={appearance}>
-        <EventRouteContext.Provider value={routeEventSlug}>
+        <EventRouteContext.Provider value={activeEventSlug}>
           {showAppHeader && <Header />}
-          {(routeEventSlug || isDefaultEventRoute) && (
+          {!isEventPartnershipPage && (activeEventSlug || isDefaultEventRoute) && (
             <EventPreloader
-              key={`${routeEventSlug || 'default-event'}-${status}`}
+              key={`${activeEventSlug || 'default-event'}`}
+              theme={eventMatchesRoute && event ? {
+                mode: event?.event?.theme_mode || event?.theme_mode,
+                primary: event?.event?.theme_color || event?.theme_color,
+              } : undefined}
               isReady={
                 eventMatchesRoute ||
                 status === 'error' ||
                 status === 'expired' ||
                 status === 'not-found'
               }
+              minDuration={700}
             />
           )}
-          {(routeEventSlug || isDefaultEventRoute) && !eventMatchesRoute ? (
+          {(routeLoading || partnershipLoading) && (
+            <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[10000]" role="status" aria-live="polite" aria-label="Loading event registration">
+              <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-center bg-background/70">
+                <Loader2Svg height="72px" size={32} />
+              </div>
+            </div>
+          )}
+          {(activeEventSlug || isDefaultEventRoute) && !eventMatchesRoute && !isEventPartnershipPage ? (
           <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
             <div className="max-w-xl">
               {status === 'expired' || status === 'not-found' ? (
@@ -136,8 +190,8 @@ function MyApp({ Component, pageProps }) {
                   <button
                     type="button"
                     onClick={() =>
-                      routeEventSlug
-                        ? FetchEvent(routeEventSlug)
+                      activeEventSlug
+                        ? FetchEvent(activeEventSlug)
                         : FetchEventById(DEFAULT_EVENT_ID)
                     }
                     className="mt-6 rounded-lg bg-primary px-5 py-3 font-medium text-primary-foreground"
