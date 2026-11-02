@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import {
   fetchEventRegistrationForm,
   submitEventRegistration,
 } from "@/lib/eventRegistrationApi";
+import { STATIC_CURRENCIES } from "@/store/useCurrencyStore";
+import { useLocalizedRouter } from "@/components/localizedRouter";
 
 const inputClassName =
   "mt-1 block w-full rounded-lg border border-input bg-muted/40 px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20";
 
+const CURRENCY_CODE_BY_ID = STATIC_CURRENCIES.reduce((map, item) => {
+  map[item.id] = item.code || item.name || "";
+  return map;
+}, {});
+
 export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
+  const { localizedPush } = useLocalizedRouter();
   const [form, setForm] = useState(null);
   const [answers, setAnswers] = useState({});
   const [ticketTierId, setTicketTierId] = useState("");
@@ -110,11 +118,15 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
 
     setSubmitting(true);
     try {
-      await submitEventRegistration(eventSlug, {
+      const response = await submitEventRegistration(eventSlug, {
         ticket_tier_id: selectedTier?.id ?? null,
         answers,
       });
       setSubmitted(true);
+      const qrCode = response?.data?.qr_code ?? response?.qr_code;
+      if (qrCode) {
+        localizedPush(`/login/${encodeURIComponent(qrCode)}`);
+      }
     } catch (error) {
       console.error("Unable to submit event registration:", error);
       setSubmitError(error.message || "Unable to submit your registration. Please try again.");
@@ -164,6 +176,34 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
     );
   }
 
+  const selectedTier = form.tiers.find((tier) => String(tier.id) === ticketTierId);
+  const needsTierSelection = form.tiers.length > 0 && !selectedTier;
+
+  if (needsTierSelection) {
+    return (
+      <RegistrationFrame eventTitle={form.eventTitle}>
+        {form.registrationOpen === false && (
+          <p className="mb-6 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground" role="status">
+            {form.closedReason || "Registration for this event is currently closed."}
+          </p>
+        )}
+        <p className="mb-6 text-sm leading-6 text-muted-foreground">
+          Choose a ticket option to continue to the registration form.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {form.tiers.map((tier) => (
+            <TierCard
+              key={tier.id}
+              tier={tier}
+              disabled={!form.registrationOpen}
+              onSelect={() => setTicketTierId(String(tier.id))}
+            />
+          ))}
+        </div>
+      </RegistrationFrame>
+    );
+  }
+
   return (
     <RegistrationFrame eventTitle={form.eventTitle}>
       {form.registrationOpen === false && (
@@ -175,30 +215,33 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
         Answer the questions below to register. Fields marked with an asterisk are required.
       </p>
       <form className="space-y-6" onSubmit={handleSubmit}>
-        {form.tiers.length > 0 && (
-          <section>
-            <h2 className="text-lg font-semibold text-primary">Ticket</h2>
-            <label className="mt-4 block text-sm font-medium text-card-foreground">
-              Ticket option <span className="text-destructive">*</span>
-              <select
-                className={inputClassName}
-                value={ticketTierId}
-                onChange={(event) => setTicketTierId(event.target.value)}
-                required
-              >
-                <option value="">Select a ticket option</option>
-                {form.tiers.map((tier) => (
-                  <option key={tier.id} value={String(tier.id)}>
-                    {tier.label}{tier.priceLabel ? ` — ${tier.priceLabel}` : ""}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {form.tiers.find((tier) => String(tier.id) === ticketTierId)?.description && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                {form.tiers.find((tier) => String(tier.id) === ticketTierId).description}
-              </p>
-            )}
+        {selectedTier && (
+          <section className="rounded-lg border border-primary/40 bg-primary/5 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary">Selected ticket</p>
+                <h3 className="mt-1 text-base font-semibold text-card-foreground">{selectedTier.label}</h3>
+                {selectedTier.priceLabel && (
+                  <p className="mt-1 text-sm font-medium text-card-foreground">
+                    {selectedTier.priceLabel}
+                    {selectedTier.hasPromo && selectedTier.originalPriceLabel && (
+                      <span className="ml-2 text-xs text-muted-foreground line-through">
+                        {selectedTier.originalPriceLabel}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+              {form.tiers.length > 1 && (
+                <button
+                  type="button"
+                  className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-card-foreground transition hover:border-primary/60"
+                  onClick={() => setTicketTierId("")}
+                >
+                  Change
+                </button>
+              )}
+            </div>
           </section>
         )}
 
@@ -233,6 +276,77 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
         </button>
       </form>
     </RegistrationFrame>
+  );
+}
+
+function TierCard({ tier, disabled, onSelect }) {
+  const soldOut = tier.remaining === 0;
+  return (
+    <div
+      className={`flex h-full flex-col rounded-xl border border-border bg-background p-4 shadow-sm transition ${
+        disabled || soldOut ? "opacity-60" : "hover:border-primary/60 hover:shadow-md"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-semibold text-card-foreground">{tier.label}</h3>
+        {tier.remaining !== null && tier.remaining > 0 && (
+          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+            {tier.remaining} left
+          </span>
+        )}
+        {soldOut && (
+          <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">
+            Sold out
+          </span>
+        )}
+      </div>
+
+      {tier.priceLabel && (
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="text-xl font-semibold text-primary">{tier.priceLabel}</span>
+          {tier.hasPromo && tier.originalPriceLabel && (
+            <span className="text-sm text-muted-foreground line-through">
+              {tier.originalPriceLabel}
+            </span>
+          )}
+        </div>
+      )}
+
+      {tier.description && (
+        <p className="mt-2 text-sm text-muted-foreground">{tier.description}</p>
+      )}
+
+      {tier.inclusions.length > 0 && (
+        <ul className="mt-3 space-y-1.5 text-sm text-card-foreground">
+          {tier.inclusions.map((item) => (
+            <li key={`inc-${item}`} className="flex items-start gap-2">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <span className="min-w-0 break-words">{item}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {tier.exclusions.length > 0 && (
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Not included</p>
+          <ul className="mt-1.5 space-y-1 text-sm text-muted-foreground">
+            {tier.exclusions.map((item) => (
+              <li key={`exc-${item}`} className="min-w-0 break-words">— {item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={onSelect}
+        disabled={disabled || soldOut}
+        className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-55"
+      >
+        {soldOut ? "Sold out" : "Choose Plan"}
+      </button>
+    </div>
   );
 }
 
@@ -388,11 +502,28 @@ function normalizeRegistrationForm(form) {
     if (tier?.id === undefined) {
       throw new Error("The registration form contains an invalid ticket option.");
     }
+    const actualPrice = normalizePrice(tier.actual_price ?? tier.price ?? tier.amount);
+    const promoPrice = normalizePrice(tier.promo_price);
+    const currencyCode = resolveCurrencyCode(tier);
+    const hasPromo = promoPrice !== null && actualPrice !== null && promoPrice < actualPrice;
+    const displayPrice = hasPromo ? promoPrice : actualPrice;
+    const remaining = tier.remaining === null || tier.remaining === undefined
+      ? null
+      : Number(tier.remaining);
     return {
       id: tier.id,
       label: String(tier.name ?? tier.title ?? tier.label ?? "Ticket"),
       description: tier.description ?? "",
-      priceLabel: getPriceLabel(tier, form.pricing_type),
+      actualPrice,
+      promoPrice,
+      hasPromo,
+      displayPrice,
+      currencyCode,
+      priceLabel: formatPriceLabel(displayPrice, currencyCode, form.pricing_type),
+      originalPriceLabel: hasPromo ? formatPriceLabel(actualPrice, currencyCode, form.pricing_type) : "",
+      inclusions: splitLines(tier.inclusions),
+      exclusions: splitLines(tier.exclusions),
+      remaining: Number.isFinite(remaining) ? remaining : null,
     };
   });
 
@@ -459,11 +590,33 @@ function isFieldActive(field) {
   );
 }
 
-function getPriceLabel(tier, pricingType) {
-  const amount = tier.price ?? tier.amount ?? tier.price_amount;
-  if (amount === undefined || amount === null || amount === "") {
+function normalizePrice(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
+
+function resolveCurrencyCode(tier) {
+  if (tier.currency_code) return String(tier.currency_code);
+  if (tier.currency && typeof tier.currency === "string") return tier.currency;
+  if (tier.currency?.code) return String(tier.currency.code);
+  const id = Number(tier.currency_id);
+  if (Number.isFinite(id) && CURRENCY_CODE_BY_ID[id]) return CURRENCY_CODE_BY_ID[id];
+  return "";
+}
+
+function formatPriceLabel(amount, currencyCode, pricingType) {
+  if (amount === null || amount === undefined) {
     return pricingType === "free" ? "Free" : "";
   }
-  const currency = tier.currency ?? tier.currency_code ?? "";
-  return `${currency ? `${currency} ` : ""}${amount}`;
+  const formatted = Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
+  return `${currencyCode ? `${currencyCode} ` : ""}${formatted}`;
+}
+
+function splitLines(value) {
+  if (!value || typeof value !== "string") return [];
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
