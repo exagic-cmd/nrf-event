@@ -2,6 +2,19 @@ import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
 import { persist } from "zustand/middleware";
 import useLanguageStore from "@/store/useLanguageStore"
+import useCurrencyStore from "@/store/useCurrencyStore"
+
+function resolveCurrencyId(explicit?: number | string | null): number {
+  const direct = Number(explicit);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const fromStore = Number(useCurrencyStore.getState()?.currencyId);
+  if (Number.isFinite(fromStore) && fromStore > 0) return fromStore;
+  if (typeof window !== "undefined") {
+    const fromStorage = Number(localStorage.getItem("currency_id"));
+    if (Number.isFinite(fromStorage) && fromStorage > 0) return fromStorage;
+  }
+  return 2;
+}
 
 export const useProductStore = create(
   persist(
@@ -41,17 +54,19 @@ setSelectedVariant: (variant) => set({ selectedVariant: variant }),
       setTourMap: (mapData) => set({ tourMap: mapData }),
 
       // for client-side
-      bookProduct: async (id, lang_id) => {
+      bookProduct: async (id, lang_id, currency_id) => {
         console.log("Booking product with ID (client-side re-fetch):", id)
         try {
+          const currencyId = resolveCurrencyId(currency_id);
+          const currencyQuery = `?currency_id=${currencyId}`;
 
           const productData = await apiRequest({
-            endpoint: `product/${id}/${lang_id}`,
+            endpoint: `product/${id}/${lang_id}${currencyQuery}`,
             method: "GET",
           });
 
           const tieredPricing = await apiRequest({
-            endpoint: `product_tiered_pricing/${id}`,
+            endpoint: `product_tiered_pricing/${id}${currencyQuery}`,
             method: "GET",
           });
 
@@ -112,9 +127,10 @@ setSelectedVariant: (variant) => set({ selectedVariant: variant }),
         }
       },
       // tourroute for client-side
-      fetchTourMap: async (id, langId) => {
+      fetchTourMap: async (id, langId, currency_id) => {
+        const currencyId = resolveCurrencyId(currency_id);
         const res = await apiRequest({
-          endpoint: `tour_location/${id}/${langId}`,
+          endpoint: `tour_location/${id}/${langId}?currency_id=${currencyId}`,
           method: "GET",
         })
         set({ tourMap: res?.data?.markers || [] })

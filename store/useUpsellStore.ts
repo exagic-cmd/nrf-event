@@ -1,6 +1,19 @@
 import { create } from "zustand";
 import { apiRequest } from "@/lib/clientApi";
 import { persist } from "zustand/middleware";
+import useCurrencyStore from "@/store/useCurrencyStore";
+
+function resolveCurrencyId(explicit?: number | string | null): number {
+  const direct = Number(explicit);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const fromStore = Number(useCurrencyStore.getState()?.currencyId);
+  if (Number.isFinite(fromStore) && fromStore > 0) return fromStore;
+  if (typeof window !== "undefined") {
+    const fromStorage = Number(localStorage.getItem("currency_id"));
+    if (Number.isFinite(fromStorage) && fromStorage > 0) return fromStorage;
+  }
+  return 2;
+}
 
 export const useUpsellStore = create(
   persist(
@@ -35,11 +48,12 @@ export const useUpsellStore = create(
       },
 
 
-fetchUpsellDetail: async (productId, langId = 1) => {
+fetchUpsellDetail: async (productId, langId = 1, currency_id) => {
   set({ isLoading: true, error: null, upsellDetail: null });
   try {
+    const currencyId = resolveCurrencyId(currency_id);
     const res = await apiRequest({
-      endpoint: `product/${productId}/${langId}`,
+      endpoint: `product/${productId}/${langId}?currency_id=${currencyId}`,
       method: "GET",
     });
 

@@ -5,13 +5,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 
-const CartDrawerContent = dynamic(() => import("./CartDrawerContent")); 
+const CartDrawerContent = dynamic(() => import("./CartDrawerContent"));
 
 const CartBubble = () => {
   const router = useRouter();
   const { items } = useCartStore();
-  const { openDrawer, setDrawerContent } = useDrawerStore();
+  const { openDrawer, setDrawerContent, justAdded, setJustAdded } = useDrawerStore();
   const [show, setShow] = useState(false);
+  const [shaking, setShaking] = useState(false);
 
 
   useEffect(() => {
@@ -24,6 +25,16 @@ const CartBubble = () => {
     setShow(items.length > 0);
   }, [items]);
 
+  useEffect(() => {
+    if (!justAdded) return;
+    setShaking(true);
+    const timer = setTimeout(() => {
+      setShaking(false);
+      setJustAdded(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [justAdded, setJustAdded]);
+
   if (!show) return null;
 
   const handleClick = () => {
@@ -34,7 +45,9 @@ const CartBubble = () => {
   return (
     <button
       onClick={handleClick}
-      className="fixed bottom-[30px] border-b border-black right-5 z-40 bg-surface border shadow-md rounded-full p-3 flex items-center justify-center hover:bg-muted transition"
+      className={`fixed bottom-[30px] border-b border-black right-5 z-40 bg-surface border shadow-md rounded-full p-3 flex items-center justify-center hover:bg-muted transition ${
+        shaking ? "animate-cart-shake" : ""
+      }`}
     >
       <div className="relative">
          <ShoppingCart size={24} className="text-primary" />
