@@ -104,11 +104,20 @@ const config: Config = {
   				to: {
   					height: '0'
   				}
+  			},
+  			'cart-shake': {
+  				'0%, 100%': { transform: 'translateX(0) rotate(0deg)' },
+  				'15%': { transform: 'translateX(-4px) rotate(-6deg)' },
+  				'30%': { transform: 'translateX(4px) rotate(6deg)' },
+  				'45%': { transform: 'translateX(-3px) rotate(-4deg)' },
+  				'60%': { transform: 'translateX(3px) rotate(4deg)' },
+  				'75%': { transform: 'translateX(-2px) rotate(-2deg)' }
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			'cart-shake': 'cart-shake 0.6s ease-in-out'
   		}
   	}
   },
