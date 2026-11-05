@@ -6,6 +6,7 @@ import { ShuttleBannerWeServeSection} from "@/components/landing/shuttle-banner-
 import  CountdownTimer  from "@/components/landing/event-count-down"
 import {  OurRecommendation } from "@/components/landing/our-recommendation"
 import { EventPartners } from "@/components/landing/event-partners"
+import EventTestimonials from "@/components/landing/event-testimonials"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/router"
 import { serverSideTranslations } from "next-i18next/serverSideTranslations"
@@ -89,6 +90,7 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
           <ShuttleBannerWeServeSection layout={layout} />
           {showGatedSections && <OurRecommendation layout={layout} />}
           <EventPartners layout={layout} />
+          <EventTestimonials eventSlug={routeEventSlug} />
          </div>
       
      
