@@ -89,8 +89,8 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
           )}
           <ShuttleBannerWeServeSection layout={layout} />
           {showGatedSections && <OurRecommendation layout={layout} />}
-          <EventPartners layout={layout} />
           <EventTestimonials eventSlug={routeEventSlug} />
+          <EventPartners layout={layout} />
          </div>
       
      
