@@ -221,26 +221,40 @@ const PayNow = ({ totalPrice }) => {
     }
   }, [user]);
   // === Load cart from sessionStorage if store is empty ===
-  const items = (() => {
-    if (storeItems.length > 0) return storeItems;
+  const [fallbackItems, setFallbackItems] = useState([]);
 
-    if (typeof window === "undefined") return [];
+  useEffect(() => {
+    if (storeItems.length > 0 || typeof window === "undefined") return;
 
-    const saved = sessionStorage.getItem("cartItems") || localStorage.getItem("tour_cart");
-    if (!saved) return [];
-
-    try {
-      const parsed = JSON.parse(saved);
-      const storedItems = Array.isArray(parsed) ? parsed : parsed?.state?.items;
-      if (Array.isArray(storedItems)) {
-        setItems(storedItems); // Sync to Zustand
-        return storedItems;
+    const readStoredItems = (storage, key) => {
+      try {
+        const raw = storage.getItem(key);
+        if (!raw) return null;
+        const trimmed = raw.trim();
+        if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) {
+          storage.removeItem(key);
+          return null;
+        }
+        const parsed = JSON.parse(trimmed);
+        const list = Array.isArray(parsed) ? parsed : parsed?.state?.items;
+        return Array.isArray(list) ? list : null;
+      } catch {
+        storage.removeItem(key);
+        return null;
       }
-    } catch (e) {
-      console.error("Failed to parse cart from sessionStorage", e);
+    };
+
+    const stored =
+      readStoredItems(sessionStorage, "cartItems") ||
+      readStoredItems(localStorage, "tour_cart");
+
+    if (stored && stored.length > 0) {
+      setItems(stored);
+      setFallbackItems(stored);
     }
-    return [];
-  })();
+  }, [storeItems.length, setItems]);
+
+  const items = storeItems.length > 0 ? storeItems : fallbackItems;
 
   const hasLinkType10 = items.some(item => item.link_type_id === 10);
 
