@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { Check, Loader2, Minus, Plus, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { fetchEventProducts } from "@/lib/eventRegistrationApi";
 import useLanguageStore from "@/store/useLanguageStore";
@@ -7,6 +8,8 @@ import useCurrencyStore from "@/store/useCurrencyStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { getFullImageUrl } from "@/utils/imageService";
+import { calculateTierPricing } from "@/utils/tierPricing";
+import RecommendedProductsModal from "@/components/accommodations/booking/RecommendedProductsModal";
 
 export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
   const languageId = useLanguageStore((state) => state.languageId) || 1;
@@ -18,6 +21,9 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [requestVersion, setRequestVersion] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [lastAddedTitle, setLastAddedTitle] = useState("");
 
   useEffect(() => {
     if (!eventSlug) {
@@ -59,7 +65,7 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
     };
   }, [eventSlug, languageId, currencyId, requestVersion]);
 
-  function handleChoose(product) {
+  function handleAddToCart(product, { adults, child, pricing }) {
     const result = addItem({
       tourId: product.id,
       title: product.title,
@@ -68,10 +74,13 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
       category_name: product.categoryName,
       type: "daytour",
       currency: product.currency,
+      adults,
+      child,
+      totalPax: adults + child,
       pricing: {
-        total: product.startingPrice,
-        adultPrice: product.startingPrice,
-        childPrice: 0,
+        total: pricing.total,
+        adultPrice: pricing.adultPrice,
+        childPrice: pricing.childPrice,
       },
       inclusions: product.inclusions,
       exclusions: product.exclusions,
@@ -83,8 +92,12 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
     if (result.status === "added") {
       setJustAdded(true);
       toast.success(`${product.title} added to cart`);
+      setSelectedProduct(null);
+      setLastAddedTitle(product.title);
+      setShowRecommendations(true);
     } else if (result.status === "exists") {
       toast.info(`${product.title} is already in your cart`);
+      setSelectedProduct(null);
     }
   }
 
@@ -129,9 +142,29 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
       </p>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} onChoose={() => handleChoose(product)} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            onChoose={() => setSelectedProduct(product)}
+          />
         ))}
       </div>
+      {selectedProduct && (
+        <ParticipantsModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onConfirm={(selection) => handleAddToCart(selectedProduct, selection)}
+        />
+      )}
+      {showRecommendations && typeof document !== "undefined" &&
+        createPortal(
+          <RecommendedProductsModal
+            isOpen={showRecommendations}
+            onClose={() => setShowRecommendations(false)}
+            hotelName={lastAddedTitle}
+          />,
+          document.body
+        )}
     </RegistrationFrame>
   );
 }
@@ -202,6 +235,225 @@ function ProductCard({ product, onChoose }) {
   );
 }
 
+function ParticipantsModal({ product, onClose, onConfirm }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  const hasChildTier = product.tiers.some(
+    (tier) => tier.childPrice > 0 || (tier.childPromoPrice ?? 0) > 0
+  );
+  const minPaxOverall = product.tiers.length
+    ? Math.min(...product.tiers.map((tier) => tier.minPax || 1))
+    : 1;
+  const maxPaxOverall = product.tiers.length
+    ? Math.max(...product.tiers.map((tier) => tier.maxPax || tier.minPax || 1))
+    : 10;
+
+  const [adults, setAdults] = useState(Math.max(minPaxOverall, 1));
+  const [child, setChild] = useState(0);
+
+  const pricing = useMemo(() => {
+    if (!product.tiers.length) {
+      return {
+        adultPrice: product.startingPrice,
+        childPrice: 0,
+        totalAdult: adults * product.startingPrice,
+        totalChild: 0,
+        total: adults * product.startingPrice,
+        selectedTier: null,
+      };
+    }
+    const tieredInput = {
+      data: {
+        product_pricing: product.tiers.map((tier) => ({
+          min_pax: tier.minPax,
+          max_pax: tier.maxPax,
+          adult_price: tier.adultPrice,
+          adult_promo_price: tier.adultPromoPrice ?? 0,
+          child_price: tier.childPrice,
+          child_promo_price: tier.childPromoPrice ?? 0,
+        })),
+      },
+    };
+    return calculateTierPricing(adults, child, tieredInput);
+  }, [adults, child, product.tiers, product.startingPrice]);
+
+  const totalPax = adults + child;
+  const outOfRange = product.tiers.length > 0 && totalPax > maxPaxOverall;
+  const disabled = adults <= 0 || outOfRange;
+
+  function formatMoney(amount) {
+    return formatPriceLabel(Number(amount) || 0, product.currency);
+  }
+
+  function clamp(value) {
+    const n = Number(value) || 0;
+    if (n < 0) return 0;
+    return n;
+  }
+
+  if (!mounted || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4"
+      role="dialog"
+      aria-modal="true"
+      onClick={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 z-10 rounded-full bg-muted/60 p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        {product.imageUrl && (
+          <div className="aspect-[16/9] w-full overflow-hidden bg-muted/30">
+            <img
+              src={product.imageUrl}
+              alt={product.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6">
+          <h3 className="text-lg font-semibold text-foreground">{product.title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Select the number of participants.</p>
+
+          {product.tiers.length > 0 && (
+            <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Pricing tiers
+              </p>
+              <ul className="mt-2 space-y-1 text-sm">
+                {product.tiers.map((tier, idx) => {
+                  const active =
+                    totalPax >= tier.minPax && totalPax <= tier.maxPax;
+                  const tierAdult = tier.adultPromoPrice ?? tier.adultPrice;
+                  return (
+                    <li
+                      key={idx}
+                      className={`flex items-center justify-between rounded px-2 py-1 ${
+                        active ? "bg-primary/10 font-medium text-primary" : "text-foreground"
+                      }`}
+                    >
+                      <span>
+                        {tier.minPax}–{tier.maxPax} pax
+                      </span>
+                      <span>{formatMoney(tierAdult)} <span className="text-xs text-muted-foreground">/participant</span></span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          <div className="mt-5 space-y-4">
+            <Stepper
+              label="Participants"
+              value={adults}
+              min={Math.max(minPaxOverall, 1)}
+              max={maxPaxOverall}
+              onChange={(next) => setAdults(clamp(next))}
+            />
+            {hasChildTier && (
+              <Stepper
+                label="Children"
+                value={child}
+                min={0}
+                max={Math.max(0, maxPaxOverall - adults)}
+                onChange={(next) => setChild(clamp(next))}
+              />
+            )}
+          </div>
+
+          {outOfRange && (
+            <p className="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              Maximum {maxPaxOverall} participants per booking.
+            </p>
+          )}
+
+          <div className="mt-5 flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Total</p>
+              <p className="text-xs text-muted-foreground">
+                {adults} participant{adults === 1 ? "" : "s"}
+                {hasChildTier && child > 0 ? ` · ${child} child${child === 1 ? "" : "ren"}` : ""}
+              </p>
+            </div>
+            <p className="text-xl font-semibold text-primary">{formatMoney(pricing.total)}</p>
+          </div>
+        </div>
+
+        <div className="border-t border-border bg-background p-4 sm:p-5">
+          <button
+            type="button"
+            onClick={() =>
+              onConfirm({
+                adults,
+                child,
+                pricing: {
+                  total: pricing.total,
+                  adultPrice: pricing.adultPrice,
+                  childPrice: pricing.childPrice,
+                },
+              })
+            }
+            disabled={disabled}
+            className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-55"
+          >
+            Add to cart
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function Stepper({ label, value, min, max, onChange }) {
+  const canDecrease = value > min;
+  const canIncrease = value < max;
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2">
+      <span className="text-sm font-medium text-foreground">{label}</span>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => canDecrease && onChange(value - 1)}
+          disabled={!canDecrease}
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground transition hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={`Decrease ${label}`}
+        >
+          <Minus className="h-3.5 w-3.5" />
+        </button>
+        <span className="w-6 text-center text-sm font-semibold tabular-nums">{value}</span>
+        <button
+          type="button"
+          onClick={() => canIncrease && onChange(value + 1)}
+          disabled={!canIncrease}
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground transition hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={`Increase ${label}`}
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function RegistrationFrame({ children }) {
   return (
     <div className="space-y-6 rounded-xl border border-border bg-card/95 p-6 text-card-foreground shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-xl sm:p-7">
@@ -251,6 +503,16 @@ function normalizeProduct(product, eventStartDate) {
     exclusions: splitLines(product?.exclusion),
     questions: Array.isArray(product?.questions) ? product.questions : [],
     startDate: eventStartDate ?? null,
+    tiers: Array.isArray(product?.pricing)
+      ? product.pricing.map((tier) => ({
+          minPax: Number(tier?.min_pax) || 1,
+          maxPax: Number(tier?.max_pax) || Number(tier?.min_pax) || 1,
+          adultPrice: parseAmount(tier?.adult_price) ?? 0,
+          adultPromoPrice: parseAmount(tier?.adult_promo_price),
+          childPrice: parseAmount(tier?.child_price) ?? 0,
+          childPromoPrice: parseAmount(tier?.child_promo_price),
+        }))
+      : [],
   };
 }
 

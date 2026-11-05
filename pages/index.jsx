@@ -12,6 +12,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import { useAffiliateStore } from "@/store/useAffiliateStore";
 import { useEventStore } from "@/store/useEventStore";
 import useUserStore from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 import Herosection from "@/components/landing/hero-section";
 import {AboutSection} from "@/components/landing/event-about-section";
 import HeroFilter from "@/components/landing/hero-category-filter"
@@ -31,6 +32,7 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const { trackAffiliateRedirect } = useAffiliateStore();
   const event = useEventStore((state) => state.event);
   const token = useUserStore((state) => state.token);
+  const cartItems = useCartStore((state) => state.items);
   const [hydrated, setHydrated] = useState(false);
   const routeEventSlug =
     pageRouteEventSlug !== undefined
@@ -40,6 +42,9 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
   const layoutValue = eventDetails.landing_layout ?? eventDetails.layout ?? eventDetails.layout_id;
   const layout = normalizeLayout(layoutValue);
   const isLoggedIn = hydrated && !!token;
+  const hasEventPassInCart =
+    hydrated && cartItems.some((item) => Number(item?.category_id) === 13);
+  const showGatedSections = isLoggedIn || hasEventPassInCart;
 
   useEffect(() => {
     setHydrated(true);
@@ -70,8 +75,9 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
       <div>
         <div className={layout === 1 ? "bg-surface-muted pt-20" : "bg-surface-secondary pt-16"}>
             <Herosection layout={layout} />
-            {isLoggedIn && <HeroFilter layout={layout} />}
+            {showGatedSections && <HeroFilter layout={layout} />}
         </div>
+          <CountdownTimer />
           <AboutSection layout={layout} />
           {hydrated && !token && (
             <section className="mx-auto mt-12 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -79,7 +85,7 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
             </section>
           )}
           <ShuttleBannerWeServeSection layout={layout} />
-          {isLoggedIn && <OurRecommendation layout={layout} />}
+          {showGatedSections && <OurRecommendation layout={layout} />}
           <EventPartners layout={layout} />
          </div>
       

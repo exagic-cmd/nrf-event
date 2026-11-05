@@ -178,16 +178,23 @@ export default function Header({ enableRegisterCta = true }) {
     </nav>
   );
 
-  const renderUserMenu = (isMobile = false) => (
+  const renderUserMenu = (isMobile = false) => {
+    const displayName = user?.name ? String(user.name).trim().split(/\s+/)[0] : "";
+    return (
     <div className="relative" ref={userMenuRef}>
       <button
         type="button"
         aria-label="Open account menu"
         aria-expanded={userMenuOpen}
         onClick={() => setUserMenuOpen(!userMenuOpen)}
-        className="rounded-full p-2 text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="flex items-center gap-2 rounded-full p-2 text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-3"
       >
         <User className={`${isMobile ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6"}`} />
+        {displayName && (
+          <span className="hidden max-w-[120px] truncate text-sm font-medium text-foreground sm:inline">
+            {displayName}
+          </span>
+        )}
       </button>
       {userMenuOpen && (
         <div
@@ -213,7 +220,8 @@ export default function Header({ enableRegisterCta = true }) {
         </div>
       )}
     </div>
-  );
+    );
+  };
 
   return (
     <header className="fixed left-0 top-0 z-40 w-full border-b border-border/70 bg-background/90 shadow-sm backdrop-blur-xl">

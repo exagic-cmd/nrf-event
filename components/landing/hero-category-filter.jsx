@@ -206,6 +206,8 @@ export default function HeroFilter({ layout = 2 }) {
   return (
     <div className={layout === 1 ? "bg-transparent" : "bg-background"}>
       <section
+        id="hero-filter"
+        style={{ scrollMarginTop: "5rem" }}
         className={
           layout === 1
             ? "relative z-10 -mt-16 px-4 pb-8 sm:-mt-20 sm:px-6 md:-mt-24 lg:px-8"

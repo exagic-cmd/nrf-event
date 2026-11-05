@@ -4,7 +4,21 @@ import { persist } from "zustand/middleware";
 import { useOrderStore } from "./useOrderStore";
 import { toast } from 'react-toastify';
 import useCurrencyStore from "./useCurrencyStore";
+import useUserStore from "./useAuthStore";
 import Cookies from "js-cookie";
+
+const EVENT_PASS_CATEGORY_ID = 13;
+
+function requiresEventPassFirst(item: any, existingItems: any[]): boolean {
+  const isLoggedIn = Boolean(useUserStore.getState()?.token);
+  if (isLoggedIn) return false;
+  const isEventPass = Number(item?.category_id) === EVENT_PASS_CATEGORY_ID;
+  if (isEventPass) return false;
+  const hasEventPass = existingItems.some(
+    (i) => Number(i?.category_id) === EVENT_PASS_CATEGORY_ID
+  );
+  return !hasEventPass;
+}
 
 // Utility: slugify strings
 const slug = (s: string | undefined | null): string =>
@@ -169,6 +183,16 @@ export const useCartStore = create<CartState>()(
         const existingItems = get().items;
         const cartCurrency = getCartCurrency(existingItems);
 
+        // Non-logged-in users must have an Event Pass in cart before adding anything else
+        if (requiresEventPassFirst(item, existingItems)) {
+          const alertMessage = "Please add an Event Pass first to continue booking as a guest.";
+          toast.error(alertMessage, { position: "top-right", autoClose: 5000 });
+          return {
+            status: "requires_event_pass" as any,
+            message: alertMessage,
+          };
+        }
+
         // Disallow adding products with different currencies to the cart
         if (cartCurrency && itemCurrency && cartCurrency !== itemCurrency) {
           const alertMessage = `In your cart you have a product in ${cartCurrency}, so you cannot add this product in a different currency.`;
@@ -209,6 +233,16 @@ export const useCartStore = create<CartState>()(
         const itemCurrency = getItemCurrency(item);
         const existingItems = get().items;
         const cartCurrency = getCartCurrency(existingItems);
+
+        // Non-logged-in users must have an Event Pass in cart before adding anything else
+        if (requiresEventPassFirst(item, existingItems)) {
+          const alertMessage = "Please add an Event Pass first to continue booking as a guest.";
+          toast.error(alertMessage, { position: "top-right", autoClose: 5000 });
+          return {
+            status: "requires_event_pass" as any,
+            message: alertMessage,
+          };
+        }
 
         // Disallow adding accommodation with different currencies to the cart
         if (cartCurrency && itemCurrency && cartCurrency !== itemCurrency) {
