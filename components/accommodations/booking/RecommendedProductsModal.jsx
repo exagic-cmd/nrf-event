@@ -73,6 +73,21 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
   const handleProductClick = async (product, category) => {
     setProductLoading(product.id);
 
+    if (Number(product?.category_id) === 13 || category === 'Event Pass') {
+      onClose();
+      setTimeout(() => {
+        if (typeof document === 'undefined') return;
+        const target = document.getElementById('hero-filter');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          localizedPush('/#hero-filter');
+        }
+      }, 50);
+      setProductLoading(null);
+      return;
+    }
+
     if (category === 'Transfers') {
       if (product.title.toLowerCase().includes('shuttle')) {
         localizedPush(`/day-tours/detail/${product.id}`);

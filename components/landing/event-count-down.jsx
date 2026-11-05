@@ -2,14 +2,48 @@
 
 import { useState, useEffect } from "react";
 import { useEventStore } from "@/store/useEventStore";
-import { MapPin, Calendar, Flag, Clock,User,Building2, Globe, Mail, Phone,Globe2,Share2 } from 'lucide-react';
+import { MapPin, Calendar, Flag, Clock, User, Globe } from "lucide-react";
+
+function formatDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 function TimeBox({ label, value }) {
   return (
-    <div className="flex flex-col items-center text-foreground px-3 py-3 sm:px-4 sm:py-4 rounded-xl min-w-[60px] sm:min-w-[90px]">
-      <span className="text-2xl sm:text-4xl font-bold tracking-wide text-white">
-        {String(value).padStart(2, "0")}
+    <div className="flex min-w-[64px] flex-col items-center sm:min-w-[96px]">
+      <div className="flex w-full items-center justify-center rounded-2xl bg-primary px-3 py-3 text-primary-foreground shadow-sm sm:px-5 sm:py-5">
+        <span className="text-3xl font-semibold tabular-nums tracking-tight sm:text-5xl">
+          {String(value).padStart(2, "0")}
+        </span>
+      </div>
+      <span className="mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-xs">
+        {label}
       </span>
-      <span className="text-xs sm:text-sm uppercase text-muted-foreground mt-1">{label}</span>
+    </div>
+  );
+}
+
+function DetailRow({ icon: Icon, label, children }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+        <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {label}
+        </p>
+        <p className="mt-1 break-words text-sm font-medium text-foreground sm:text-base">
+          {children}
+        </p>
+      </div>
     </div>
   );
 }
@@ -18,6 +52,7 @@ export default function CountdownTimer({ className = "" }) {
   const [endTime, setEndTime] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const eventDetails = useEventStore((state) => state.event?.event);
+
   useEffect(() => {
     const end = eventDetails?.reg_end;
     if (!end) {
@@ -25,7 +60,6 @@ export default function CountdownTimer({ className = "" }) {
       setTimeLeft(null);
       return;
     }
-
     const endOfDay = new Date(end);
     endOfDay.setHours(23, 59, 59, 999);
     setEndTime(endOfDay.getTime());
@@ -35,14 +69,11 @@ export default function CountdownTimer({ className = "" }) {
     if (!endTime) return;
 
     const tick = () => {
-      const now = Date.now();
-      const diff = endTime - now;
-
+      const diff = endTime - Date.now();
       if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
-
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -55,201 +86,104 @@ export default function CountdownTimer({ className = "" }) {
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [endTime]);
-  if (!timeLeft || !eventDetails) {
+
+  if (!eventDetails || !timeLeft) {
     return (
-      <section className="w-full py-8 sm:py-12 md:py-24 bg-surface relative overflow-hidden">
-        <div className="text-surface-foreground text-center animate-pulse text-base sm:text-lg">
-          Loading countdown...
+      <section className={`w-full py-10 ${className}`}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse rounded-2xl border border-border bg-card/60 p-10 text-center text-sm text-muted-foreground">
+            Loading countdown…
+          </div>
         </div>
       </section>
     );
   }
-  const registrationEnded = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
-  const { title, location, start_date, end_date } = eventDetails;
+
+  const registrationEnded =
+    timeLeft.days === 0 &&
+    timeLeft.hours === 0 &&
+    timeLeft.minutes === 0 &&
+    timeLeft.seconds === 0;
+
+  const { location, start_date, end_date } = eventDetails;
+
   return (
     <section
-      className={`w-full pt-2 pb-3 md:pb-6 bg-surface relative overflow-hidden ${className}`}
+      className={`relative w-full overflow-hidden py-10 sm:py-12 md:py-16 ${className}`}
+      aria-labelledby="event-countdown-heading"
     >
-      <div className="container px-4 sm:px-6 mx-auto max-w-7xl flex flex-col items-center">
-      
-        {/* <div className="text-center mb-2 max-w-3xl">
-         
-          {registrationEnded ? (
-            <p className="text-xl text-red-400 font-semibold">
-              ⚠️ Registration for this event has ended!
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-24 top-10 -z-10 h-64 w-64 rounded-full bg-primary/10 blur-3xl sm:h-80 sm:w-80"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 bottom-0 -z-10 h-64 w-64 rounded-full bg-primary/10 blur-3xl sm:h-80 sm:w-80"
+      />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="rounded-2xl border border-border bg-card/75 p-6 shadow-sm backdrop-blur-sm sm:p-8 md:p-10">
+          <div className="flex flex-col items-center text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary sm:text-sm">
+              {registrationEnded ? "Registration closed" : "Registration closes in"}
             </p>
-          ) : (
-            <p className="text-xl text-[#CCA555] font-semibold">
-              Time left to register before the deadline:
-            </p>
-          )}
-        </div> */}
-        <div className="w-full max-w-xl p-4 sm:p-6 md:p-8 flex flex-wrap sm:flex-nowrap items-center justify-center gap-4 sm:gap-6 mb-6">
-          <TimeBox label="Days" value={timeLeft.days} />
-          <TimeBox label="Hours" value={timeLeft.hours} />
-          <TimeBox label="Minutes" value={timeLeft.minutes} />
-          <TimeBox label="Sec" value={timeLeft.seconds} />
-        </div>
+            <h2
+              id="event-countdown-heading"
+              className="mt-2 max-w-2xl text-xl font-semibold leading-tight text-foreground sm:text-2xl md:text-3xl"
+            >
+              {registrationEnded
+                ? "Thanks — registration for this event has ended."
+                : `Secure your spot before ${formatDate(eventDetails.reg_end)}`}
+            </h2>
 
-{/* --- Event Details Card --- */}
-<div className="w-full p-6 sm:p-8 bg-surface rounded-2xl shadow-xl border border-[#12366A]">
-  {/* <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">
-    Event Details
-  </h2> */}
+            <div className="mt-7 flex flex-wrap items-start justify-center gap-3 sm:gap-5">
+              <TimeBox label="Days" value={timeLeft.days} />
+              <TimeBox label="Hours" value={timeLeft.hours} />
+              <TimeBox label="Minutes" value={timeLeft.minutes} />
+              <TimeBox label="Seconds" value={timeLeft.seconds} />
+            </div>
+          </div>
 
-  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 text-foreground">
-
-    {/* Location */}
-    <div className="flex items-start gap-4">
-      <MapPin className="w-6 h-6 text-[#2176FF] mt-1" />
-      <div>
-        <p className="font-semibold text-foreground">Location</p>
-        <p className="text-muted-foreground">{location}</p>
-      </div>
-    </div>
-
-    {/* Start Date */}
-    <div className="flex items-start gap-4">
-      <Calendar className="w-6 h-6 text-[#2176FF] mt-1" />
-      <div>
-        <p className="font-semibold text-foreground">Start Date</p>
-        <p className="text-muted-foreground">{formatDate(start_date)}</p>
-      </div>
-    </div>
-
-    {/* End Date */}
-    <div className="flex items-start gap-4">
-      <Flag className="w-6 h-6 text-[#2176FF] mt-1" />
-      <div>
-        <p className="font-semibold text-foreground">End Date</p>
-        <p className="text-muted-foreground">{formatDate(end_date)}</p>
-      </div>
-    </div>
-
-    {/* Registration Deadline */}
-    <div className="flex items-start gap-4">
-      <Clock className="w-6 h-6 text-[#2176FF] mt-1" />
-      <div>
-        <p className="font-semibold text-foreground">Registration Deadline</p>
-        <p className="text-primary font-semibold">
-          {formatDate(eventDetails.reg_end)}
-        </p>
-      </div>
-    </div>
-
-    {/* Time Zone */}
-    {eventDetails.time_zone?.name && (
-      <div className="flex items-start gap-4">
-        <Globe className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Time Zone</p>
-          <p className="text-muted-foreground">{eventDetails.time_zone.name}</p>
-        </div>
-      </div>
-    )}
-
-    {/* Organizer */}
-    {eventDetails.organizer && (
-      <div className="flex items-start gap-4">
-        <User className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Organizer</p>
-          <p className="text-muted-foreground">{eventDetails.organizer}</p>
-        </div>
-      </div>
-    )}
-
-    {/* Company Name */}
-    {/* {eventDetails.company_name && (
-      <div className="flex items-start gap-4">
-        <Building2 className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Company</p>
-          <p className="text-muted-foreground">{eventDetails.company_name}</p>
-        </div>
-      </div>
-    )} */}
-
-    {/* Contact Number */}
-    {/* {eventDetails.phone && (
-      <div className="flex items-start gap-4">
-        <Phone className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Phone</p>
-          <p className="text-muted-foreground">{eventDetails.phone}</p>
-        </div>
-      </div>
-    )} */}
-
-    {/* Email */}
-    {/* {eventDetails.email && (
-      <div className="flex items-start gap-4">
-        <Mail className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Email</p>
-          <p className="text-muted-foreground">{eventDetails.email}</p>
-        </div>
-      </div>
-    )} */}
-
-    {/* Website */}
-    {/* {eventDetails.web_link && (
-      <div className="flex items-start gap-4">
-        <Globe2 className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Website</p>
-          <a
-            href={eventDetails.web_link}
-            target="_blank"
-            className="text-blue-600 underline"
-          >
-            Visit Website
-          </a>
-        </div>
-      </div>
-    )} */}
-
-    {/* Social Links */}
-    {/* {(eventDetails.fb_link || eventDetails.twitter_link || eventDetails.linkedIn_link) && (
-      <div className="flex items-start gap-4">
-        <Share2 className="w-6 h-6 text-[#2176FF] mt-1" />
-        <div>
-          <p className="font-semibold text-foreground">Social</p>
-          <div className="flex gap-3 mt-1">
-            {eventDetails.fb_link && (
-              <a href={eventDetails.fb_link} target="_blank" className="text-blue-600 underline">
-                Facebook
-              </a>
+          <div className="mt-10 grid grid-cols-1 gap-6 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-3">
+            {location && (
+              <DetailRow icon={MapPin} label="Location">
+                {location}
+              </DetailRow>
             )}
-            {eventDetails.twitter_link && (
-              <a href={eventDetails.twitter_link} target="_blank" className="text-blue-600 underline">
-                Twitter
-              </a>
+            {start_date && (
+              <DetailRow icon={Calendar} label="Start date">
+                {formatDate(start_date)}
+              </DetailRow>
             )}
-            {eventDetails.linkedIn_link && (
-              <a href={eventDetails.linkedIn_link} target="_blank" className="text-blue-600 underline">
-                LinkedIn
-              </a>
+            {end_date && (
+              <DetailRow icon={Flag} label="End date">
+                {formatDate(end_date)}
+              </DetailRow>
+            )}
+            {eventDetails.reg_end && (
+              <DetailRow icon={Clock} label="Registration deadline">
+                <span className="text-primary">{formatDate(eventDetails.reg_end)}</span>
+              </DetailRow>
+            )}
+            {eventDetails.time_zone?.name && (
+              <DetailRow icon={Globe} label="Time zone">
+                {eventDetails.time_zone.name}
+              </DetailRow>
+            )}
+            {eventDetails.organizer && (
+              <DetailRow icon={User} label="Organizer">
+                {eventDetails.organizer}
+              </DetailRow>
             )}
           </div>
+
+          {eventDetails.short_desc && (
+            <p className="mt-8 border-t border-border pt-6 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+              <span className="font-semibold text-foreground">About the event: </span>
+              {eventDetails.short_desc}
+            </p>
+          )}
         </div>
-      </div>
-    )} */}
-
-  </div>
-
-  {/* Description */}
-  {eventDetails.short_desc && (
-    <p className="mt-10 text-surface-foreground border-t border-border pt-6 leading-relaxed">
-      <span className="font-semibold text-foreground">About the Event: </span>
-      {eventDetails.short_desc}
-    </p>
-  )}
-</div>
-
-
-
-
       </div>
     </section>
   );
