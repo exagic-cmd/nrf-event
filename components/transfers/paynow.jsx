@@ -155,6 +155,7 @@ const PayNow = ({ totalPrice }) => {
   const getPromoExist = useBookingStore(state => state.getPromoExist);
   const { refId, refType, track_agent_id } = useAffiliateStore();
   const user = useUserStore(state => state.user);
+  const token = useUserStore(state => state.token);
   const { event } = useEventStore();
   const eventId = event?.event?.id || event?.id;
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -743,6 +744,13 @@ const PayNow = ({ totalPrice }) => {
   const handlePayNow = async (e) => {
     e.preventDefault();
     if (!validate() || isSubmitting) return;
+
+    const hasEventPassInCart = items.some((item) => Number(item?.category_id) === 13);
+    if (!token && !hasEventPassInCart) {
+      toast.error("Please add an Event Pass to your cart to continue as a guest.");
+      return;
+    }
+
     if (eventId && !areEventProductQuestionsValid) {
       toast.error("Please answer all required event questions.");
       return;
