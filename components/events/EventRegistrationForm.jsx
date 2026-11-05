@@ -24,6 +24,7 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [lastAddedTitle, setLastAddedTitle] = useState("");
+  const [lastRecommendedProducts, setLastRecommendedProducts] = useState([]);
 
   useEffect(() => {
     if (!eventSlug) {
@@ -94,7 +95,10 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
       toast.success(`${product.title} added to cart`);
       setSelectedProduct(null);
       setLastAddedTitle(product.title);
-      setShowRecommendations(true);
+      setLastRecommendedProducts(product.recommendedProducts || []);
+      if ((product.recommendedProducts || []).length > 0) {
+        setShowRecommendations(true);
+      }
     } else if (result.status === "exists") {
       toast.info(`${product.title} is already in your cart`);
       setSelectedProduct(null);
@@ -162,6 +166,7 @@ export default function EventRegistrationForm({ eventSlug, onLoadingChange }) {
             isOpen={showRecommendations}
             onClose={() => setShowRecommendations(false)}
             hotelName={lastAddedTitle}
+            inlineProducts={lastRecommendedProducts}
           />,
           document.body
         )}
@@ -503,6 +508,9 @@ function normalizeProduct(product, eventStartDate) {
     exclusions: splitLines(product?.exclusion),
     questions: Array.isArray(product?.questions) ? product.questions : [],
     startDate: eventStartDate ?? null,
+    recommendedProducts: Array.isArray(product?.recommended_products)
+      ? product.recommended_products
+      : [],
     tiers: Array.isArray(product?.pricing)
       ? product.pricing.map((tier) => ({
           minPax: Number(tier?.min_pax) || 1,

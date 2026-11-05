@@ -27,7 +27,24 @@ const fetchRecommendedProducts = async (currency_id) => {
   }
 };
 
-export default function RecommendedProductsModal({ isOpen, onClose, hotelName }) {
+function groupByCategory(products) {
+  if (!Array.isArray(products) || products.length === 0) return [];
+  const byCategory = new Map();
+  products.forEach((product) => {
+    const title = product?.category_name || "Recommended";
+    if (!byCategory.has(title)) byCategory.set(title, []);
+    byCategory.get(title).push({
+      ...product,
+      description: product?.short_description ?? product?.description ?? "",
+    });
+  });
+  return Array.from(byCategory, ([category_title, products]) => ({
+    category_title,
+    products,
+  }));
+}
+
+export default function RecommendedProductsModal({ isOpen, onClose, hotelName, inlineProducts }) {
   const { localizedPush } = useLocalizedRouter();
   const { setTransferParams } = useSearchValuesStore();
   const { currency, currencyId } = useCurrencyStore();
@@ -49,8 +66,19 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
   useEffect(() => {
     if (isOpen && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
-      setLoading(true);
       setProductLoading(null);
+
+      if (Array.isArray(inlineProducts)) {
+        const grouped = groupByCategory(inlineProducts).filter(
+          (cat) => cat.category_title !== "Additional Services"
+        );
+        setRecommendations(grouped);
+        if (grouped.length > 0) setActiveCategory(grouped[0].category_title);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
       fetchRecommendedProducts(resolvedCurrencyId).then((res) => {
         if (res.success) {
           const filteredData = res.data.filter(
@@ -68,7 +96,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
     if (!isOpen) {
       hasFetchedRef.current = false;
     }
-  }, [isOpen, resolvedCurrencyId]);
+  }, [isOpen, resolvedCurrencyId, inlineProducts]);
   
   const handleProductClick = async (product, category) => {
     setProductLoading(product.id);
@@ -146,6 +174,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName })
   // Helper to construct image URL based on pattern in other files
   const getImageUrl = (path) => {
     if (!path) return null;
+    if (/^https?:\/\//i.test(path)) return path;
     return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}v1617894191/${path}`;
   };
 

@@ -55,7 +55,9 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
     trackAffiliateRedirect(router);
   }, [router.isReady]);
 
-  if (!routeEventSlug) {
+  const hasEventData = Boolean(eventDetails?.id);
+
+  if (!routeEventSlug && !hasEventData) {
     return (
       <Layout>
         <main className="flex min-h-[70vh] items-center justify-center bg-background px-5 py-16 text-center text-foreground">
