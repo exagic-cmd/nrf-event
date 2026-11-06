@@ -82,7 +82,7 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
         </div>
           {Number(eventDetails?.id) !== 6 && <CountdownTimer />}
           <AboutSection layout={layout} />
-          {hydrated && !token && (
+          {hydrated && !token && Number(eventDetails?.id) !== 6 && (
             <section className="mx-auto mt-12 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
               <EventRegistrationForm eventSlug={routeEventSlug} />
             </section>
