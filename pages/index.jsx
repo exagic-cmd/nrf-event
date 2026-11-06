@@ -80,7 +80,7 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
             <Herosection layout={layout} />
             {showGatedSections && <HeroFilter layout={layout} />}
         </div>
-          <CountdownTimer />
+          {Number(eventDetails?.id) !== 6 && <CountdownTimer />}
           <AboutSection layout={layout} />
           {hydrated && !token && (
             <section className="mx-auto mt-12 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
