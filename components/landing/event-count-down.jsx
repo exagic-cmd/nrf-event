@@ -109,7 +109,7 @@ export default function CountdownTimer({ className = "" }) {
 
   return (
     <section
-      className={`relative w-full overflow-hidden py-10 sm:py-12 md:py-16 ${className}`}
+      className={`relative w-full overflow-hidden py-10 sm:py-12 md:py-4 ${className}`}
       aria-labelledby="event-countdown-heading"
     >
       <div
@@ -124,7 +124,7 @@ export default function CountdownTimer({ className = "" }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-border bg-card/75 p-6 shadow-sm backdrop-blur-sm sm:p-8 md:p-10">
           <div className="flex flex-col items-center text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary sm:text-sm">
+            {/* <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary sm:text-sm">
               {registrationEnded ? "Registration closed" : "Registration closes in"}
             </p>
             <h2
@@ -134,7 +134,7 @@ export default function CountdownTimer({ className = "" }) {
               {registrationEnded
                 ? "Thanks — registration for this event has ended."
                 : `Secure your spot before ${formatDate(eventDetails.reg_end)}`}
-            </h2>
+            </h2> */}
 
             <div className="mt-7 flex flex-wrap items-start justify-center gap-3 sm:gap-5">
               <TimeBox label="Days" value={timeLeft.days} />
@@ -144,7 +144,7 @@ export default function CountdownTimer({ className = "" }) {
             </div>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-6 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-3">
+          {/* <div className="mt-10 grid grid-cols-1 gap-6 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-3">
             {location && (
               <DetailRow icon={MapPin} label="Location">
                 {location}
@@ -175,14 +175,14 @@ export default function CountdownTimer({ className = "" }) {
                 {eventDetails.organizer}
               </DetailRow>
             )}
-          </div>
+          </div> */}
 
-          {eventDetails.short_desc && (
+          {/* {eventDetails.short_desc && (
             <p className="mt-8 border-t border-border pt-6 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
               <span className="font-semibold text-foreground">About the event: </span>
               {eventDetails.short_desc}
             </p>
-          )}
+          )} */}
         </div>
       </div>
     </section>

@@ -78,9 +78,21 @@ export default function LandingPage({ routeEventSlug: pageRouteEventSlug }) {
       <div>
         <div className={layout === 1 ? "bg-surface-muted pt-20" : "bg-surface-secondary pt-16"}>
             <Herosection layout={layout} />
-            {showGatedSections && <HeroFilter layout={layout} />}
+            {Number(eventDetails?.id) !== 6 && (
+              <CountdownTimer
+                className={
+                  layout === 1
+                    ? "relative z-10 -mt-16 pb-12 sm:-mt-20 sm:pb-16 md:-mt-24 md:pb-20"
+                    : ""
+                }
+              />
+            )}
         </div>
-          {Number(eventDetails?.id) !== 6 && <CountdownTimer />}
+          {showGatedSections && (
+            <div className={layout === 1 ? "mt-16 sm:mt-20 md:mt-24" : ""}>
+              <HeroFilter layout={layout} />
+            </div>
+          )}
           <AboutSection layout={layout} />
           {hydrated && !token && Number(eventDetails?.id) !== 6 && (
             <section className="mx-auto mt-12 w-full max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -284,7 +284,7 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName, i
               )}
 
               {/* Products — carousel in event-pass mode, grid otherwise */}
-              <div className="flex-1 overflow-hidden p-6 bg-surface">
+              <div className={`flex-1 p-6 bg-surface ${isEventPassMode ? "overflow-y-auto overflow-x-hidden" : "overflow-hidden"}`}>
                 {isEventPassMode ? (
                   <div>
                     <div className="mb-4 flex items-center justify-between">
@@ -405,17 +405,17 @@ export default function RecommendedProductsModal({ isOpen, onClose, hotelName, i
             {isEventPassMode ? (
               <>
                 <Button
+                  onClick={() => { onClose(); localizedPush("/checkout"); }}
+                  className="flex-1 sm:flex-none bg-primary hover:bg-primary-hover"
+                >
+                  Proceed
+                </Button>
+                <Button
                   onClick={handleGoToHeroFilter}
                   variant="outline"
                   className="flex-1 sm:flex-none"
                 >
                   Continue browsing
-                </Button>
-                <Button
-                  onClick={() => { onClose(); localizedPush("/checkout"); }}
-                  className="flex-1 sm:flex-none bg-primary hover:bg-primary-hover"
-                >
-                  Proceed
                 </Button>
               </>
             ) : (

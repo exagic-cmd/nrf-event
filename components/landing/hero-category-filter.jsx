@@ -210,7 +210,7 @@ export default function HeroFilter({ layout = 2 }) {
         style={{ scrollMarginTop: "5rem" }}
         className={
           layout === 1
-            ? "relative z-10 -mt-16 px-4 pb-8 sm:-mt-20 sm:px-6 md:-mt-24 lg:px-8"
+            ? "relative z-10 -mt-16 px-4 pb-8 sm:-mt-20 sm:px-6 md:-mt-36 lg:px-8"
             : "relative mt-24 pb-24 md:pb-40"
         }
       >
